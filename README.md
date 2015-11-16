@@ -3,12 +3,26 @@ NoFlo components for processing RDF related content
 
 ## Development
 
-Run this command make this module global.
+To manually run these components in a UI, perform the following.
 
-    $ npm link
+Register this project globally
 
-Then from the directory of a project that will use it run:
+    noflo-rdf-components$ npm link
 
-    $ npm link noflo-rdf-components
+Checkout noflo-server
+
+    $ git clone https://github.com/rdf-pipeline/noflo-server.git
+
+From the noflo-server project directory run:
+
+    noflo-server$ npm link noflo-rdf-components
+
+Add the noflo-server to the local path:
+
+    noflo-server$ npm link
+
+Then run the noflo-server
+
+    $ noflo-server
 
 
