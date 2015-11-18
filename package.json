@@ -19,7 +19,8 @@
   "dependencies": {
     "underscore": "~1.8.3",
     "noflo": "~0.5.14",
-    "uri-templates": "~0.1.9"
+    "uri-templates": "~0.1.9",
+    "handlebars": "~4.0.4"
   },
   "noflo": {
     "components": {
