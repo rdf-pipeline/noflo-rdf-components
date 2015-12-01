@@ -6,6 +6,10 @@
     "name": "James Leigh",
     "email": "james@3roundstones.com"
   },
+  "contributors": [{
+    "name": "Glenna Mayo",
+    "email": "glenna.hokukahu@gmail.com"
+  }],
   "repository": {
     "type": "git",
     "url": "git://github.com/rdf-pipeline/noflo-rdf-components"
@@ -25,6 +29,7 @@
   "noflo": {
     "components": {
       "RequestTemplate": "./components/RequestTemplate.js"
+      "FileNode": "./components/FileNode.js"
     }
   }
 }
