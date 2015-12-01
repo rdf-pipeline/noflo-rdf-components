@@ -28,7 +28,7 @@
   },
   "noflo": {
     "components": {
-      "RequestTemplate": "./components/RequestTemplate.js"
+      "RequestTemplate": "./components/RequestTemplate.js",
       "FileNode": "./components/FileNode.js"
     }
   }
