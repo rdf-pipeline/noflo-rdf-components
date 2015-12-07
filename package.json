@@ -6,10 +6,12 @@
     "name": "James Leigh",
     "email": "james@3roundstones.com"
   },
-  "contributors": [{
-    "name": "Glenna Mayo",
-    "email": "glenna.hokukahu@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Glenna Mayo",
+      "email": "glenna.hokukahu@gmail.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/rdf-pipeline/noflo-rdf-components"
@@ -21,14 +23,21 @@
     }
   ],
   "dependencies": {
-    "underscore": "~1.8.3",
+    "handlebars": "~4.0.4",
+    "jsonld": "^0.4.2",
     "noflo": "~0.5.14",
-    "uri-templates": "~0.1.9",
-    "handlebars": "~4.0.4"
+    "promise": "^7.0.4",
+    "rdfstore": "~0.9.7",
+    "underscore": "~1.8.3",
+    "uri-templates": "~0.1.9"
   },
   "noflo": {
     "components": {
       "RequestTemplate": "./components/RequestTemplate.js",
+      "rdf-load": "./components/rdf-load.js",
+      "rdf-query": "./components/rdf-query.js",
+      "rdf-update": "./components/rdf-update.js",
+      "rdf-jsonld": "./components/rdf-jsonld.js",
       "FileNode": "./components/FileNode.js"
     }
   }

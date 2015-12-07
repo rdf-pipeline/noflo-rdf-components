@@ -1,0 +1,306 @@
+{
+  "properties": {
+    "name": "/home/james/Projects/2015/noflo-rdf-components/master/output.json"
+  },
+  "inports": {},
+  "outports": {},
+  "groups": [],
+  "processes": {
+    "rdf-load": {
+      "component": "rdf-components/rdf-load",
+      "metadata": {
+        "label": "rdf-load",
+        "x": 288,
+        "y": 216,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Errors": {
+      "component": "core/Output",
+      "metadata": {
+        "label": "Errors",
+        "x": 720,
+        "y": 216,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "rdf-jsonld": {
+      "component": "rdf-components/rdf-jsonld",
+      "metadata": {
+        "label": "rdf-jsonld",
+        "x": 576,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Success": {
+      "component": "core/Output",
+      "metadata": {
+        "label": "Success",
+        "x": 864,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Delayed": {
+      "component": "core/RepeatDelayed",
+      "metadata": {
+        "label": "Delayed",
+        "x": 36,
+        "y": 252,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "strings/Jsonify_vjnau": {
+      "component": "strings/Jsonify",
+      "metadata": {
+        "label": "strings/Jsonify",
+        "x": 720,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "rdf-update": {
+      "component": "rdf-components/rdf-update",
+      "metadata": {
+        "label": "rdf-update",
+        "x": 432,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "rdf-query": {
+      "component": "rdf-components/rdf-query",
+      "metadata": {
+        "label": "rdf-query",
+        "x": 576,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "strings/ParseJson_4glro": {
+      "component": "strings/ParseJson",
+      "metadata": {
+        "label": "strings/ParseJson",
+        "x": 144,
+        "y": 252,
+        "width": 72,
+        "height": 72
+      }
+    }
+  },
+  "connections": [
+    {
+      "src": {
+        "process": "rdf-load",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Errors",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 1
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-jsonld",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Errors",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 1
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-jsonld",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "strings/Jsonify_vjnau",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "strings/Jsonify_vjnau",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "Success",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-load",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "rdf-update",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-update",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "rdf-jsonld",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-update",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Errors",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 1
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-update",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "rdf-query",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-query",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Errors",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 1
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-query",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "Success",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "Delayed",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "strings/ParseJson_4glro",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 7
+      }
+    },
+    {
+      "src": {
+        "process": "strings/ParseJson_4glro",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "rdf-load",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "strings/ParseJson_4glro",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "rdf-jsonld",
+        "port": "frame"
+      },
+      "metadata": {
+        "route": 7
+      }
+    },
+    {
+      "data": 500,
+      "tgt": {
+        "process": "Delayed",
+        "port": "delay"
+      }
+    },
+    {
+      "data": "{   \"@context\": \"http://json-ld.org/contexts/person.jsonld\",   \"@id\": \"http://dbpedia.org/resource/John_Lennon\",   \"name\": \"John Lennon\",   \"born\": \"1940-10-09\",   \"spouse\": \"http://dbpedia.org/resource/Cynthia_Lennon\" }",
+      "tgt": {
+        "process": "Delayed",
+        "port": "in"
+      }
+    },
+    {
+      "data": true,
+      "tgt": {
+        "process": "strings/Jsonify_vjnau",
+        "port": "pretty"
+      }
+    },
+    {
+      "data": "INSERT DATA { <http://dbpedia.org/resource/Cynthia_Lennon> <http://xmlns.com/foaf/0.1/name> \"Cynthia Lennon\" }",
+      "tgt": {
+        "process": "rdf-update",
+        "port": "update"
+      }
+    },
+    {
+      "data": "ASK { ?s ?p ?o }",
+      "tgt": {
+        "process": "rdf-query",
+        "port": "query"
+      }
+    }
+  ]
+}
