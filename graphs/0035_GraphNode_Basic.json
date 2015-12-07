@@ -11,7 +11,7 @@
       "metadata": {
         "label": "CLEAR ALL",
         "x": 180,
-        "y": 252,
+        "y": 216,
         "width": 72,
         "height": 72
       }
@@ -21,7 +21,7 @@
       "metadata": {
         "label": "Error Log",
         "x": 720,
-        "y": 108,
+        "y": 216,
         "width": 72,
         "height": 72
       }
@@ -30,7 +30,7 @@
       "component": "rdf-components/RequestTemplate",
       "metadata": {
         "label": "LOAD INTO GRAPH",
-        "x": 288,
+        "x": 324,
         "y": 180,
         "width": 72,
         "height": 72
@@ -71,6 +71,16 @@
       "metadata": {
         "label": "Settings",
         "x": 36,
+        "y": 108,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Success Log": {
+      "component": "core/Output",
+      "metadata": {
+        "label": "Success Log",
+        "x": 720,
         "y": 36,
         "width": 72,
         "height": 72
@@ -86,6 +96,9 @@
       "tgt": {
         "process": "Error Log",
         "port": "in"
+      },
+      "metadata": {
+        "route": 1
       }
     },
     {
@@ -96,6 +109,9 @@
       "tgt": {
         "process": "Error Log",
         "port": "in"
+      },
+      "metadata": {
+        "route": 1
       }
     },
     {
@@ -106,16 +122,9 @@
       "tgt": {
         "process": "Error Log",
         "port": "in"
-      }
-    },
-    {
-      "src": {
-        "process": "INSERT INTO_6d46l",
-        "port": "out"
       },
-      "tgt": {
-        "process": "Error Log",
-        "port": "in"
+      "metadata": {
+        "route": 1
       }
     },
     {
@@ -126,6 +135,9 @@
       "tgt": {
         "process": "Error Log",
         "port": "in"
+      },
+      "metadata": {
+        "route": 1
       }
     },
     {
@@ -138,7 +150,7 @@
         "port": "data"
       },
       "metadata": {
-        "route": 0
+        "route": 7
       }
     },
     {
@@ -151,7 +163,7 @@
         "port": "data"
       },
       "metadata": {
-        "route": 0
+        "route": 7
       }
     },
     {
@@ -164,7 +176,7 @@
         "port": "data"
       },
       "metadata": {
-        "route": 0
+        "route": 7
       }
     },
     {
@@ -177,7 +189,7 @@
         "port": "data"
       },
       "metadata": {
-        "route": 0
+        "route": 7
       }
     },
     {
@@ -190,7 +202,7 @@
         "port": "in"
       },
       "metadata": {
-        "route": 0
+        "route": 4
       }
     },
     {
@@ -203,7 +215,7 @@
         "port": "in"
       },
       "metadata": {
-        "route": null
+        "route": 4
       }
     },
     {
@@ -216,7 +228,7 @@
         "port": "in"
       },
       "metadata": {
-        "route": null
+        "route": 4
       }
     },
     {
@@ -229,7 +241,20 @@
         "port": "in"
       },
       "metadata": {
-        "route": null
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "INSERT INTO_6d46l",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "Success Log",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
       }
     },
     {
