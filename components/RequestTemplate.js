@@ -33,7 +33,7 @@ exports.getComponent = function() {
                 required: false,
                 addressable: false,
                 buffered: false,
-                process: on({data: assignUriTemplate('method')})
+                process: on({data: assign('method', newUriTemplate)})
             },
             url: {
                 description: "URI-Template (RFC6570)",
@@ -41,7 +41,7 @@ exports.getComponent = function() {
                 required: true,
                 addressable: false,
                 buffered: false,
-                process: on({data: assignUriTemplate('url')})
+                process: on({data: assign('url', newUriTemplate)})
             },
             headers: {
                 description: "Request headers as name:template pairs using the URI-Template syntax",
@@ -49,7 +49,7 @@ exports.getComponent = function() {
                 required: false,
                 addressable: false,
                 buffered: false,
-                process: on({data: assignUriTemplate('headers')})
+                process: on({data: assign('headers', newUriTemplate)})
             },
             body: {
                 description: "Request body template using the Handlebars syntax",
@@ -57,15 +57,20 @@ exports.getComponent = function() {
                 required: false,
                 addressable: false,
                 buffered: false,
-                process: on({data: assignHandlebarsTemplate('body')})
+                process: on({data: assign('body', Handlebars.compile)})
             },
-            data: {
+            parameters: {
                 description: "Object data used to populate the templates, but not trigger the request",
                 datatype: 'object',
                 required: true,
                 addressable: false,
                 buffered: false,
-                process: on({data: merge('base')})
+                process: on({data: assign('parameters', _.defaults)})
+            },
+            data: {
+                description: "Use parameters port instead",
+                datatype: 'object',
+                process: on({data: assign('parameters', _.defaults)})
             },
             'in': {
                 description: "Object data used to populate the templates and trigger the request",
@@ -73,7 +78,10 @@ exports.getComponent = function() {
                 required: true,
                 addressable: false,
                 buffered: false,
-                process: on({data: assign('data'), disconnect: execute})
+                process: on({
+                    data: assign('data', _.defaults),
+                    disconnect: execute
+                })
             }
         }
     }), {
@@ -89,75 +97,66 @@ function on(type, callback) {
     };
 }
 
-function assign(name){
+function assign(name, transform){
     return function(data){
-        this[name] = data;
+        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
     };
 }
 
-function merge(name){
-    return function(data){
-        this[name] = _.extend(this[name] || {}, data);
-    };
-}
-
-function assignUriTemplate(name) {
-	return function(template){
-	    if (_.isString(template)) {
-	        var compiled = new uriTemplates(template);
-		    this[name] = function(data){
-		        return compiled.fill(data);
-		    };
-	    } else if (_.isObject(template)) {
-	        var compiled = _.mapObject(template, function(temp){
-	            return new uriTemplates(temp);
-	        });
-		    this[name] = function(data){
-		        return _.mapObject(compiled, function(comp){
-		            return comp.fill(data);
-		        });
-		    };
-	    } else {
-		    this[name] = function(data){
-		        return template;
-		    };
-        }
-	};
-}
-
-function assignHandlebarsTemplate(name) {
-	return function(template){
-		this[name] = Handlebars.compile(template);
-	};
+function newUriTemplate(template){
+    if (_.isString(template)) {
+        var compiled = new uriTemplates(template);
+        return compiled.fill.bind(compiled);
+    } else if (_.isObject(template)) {
+        var compiled = _.mapObject(template, function(temp){
+            return newUriTemplate(temp);
+        });
+        return function(data){
+            return _.mapObject(compiled, function(comp){
+                return comp(data);
+            });
+        };
+    } else if (_.isArray(template)) {
+        var compiled = _.map(template, function(temp){
+            return newUriTemplate(temp);
+        });
+        return function(data){
+            return _.map(compiled, function(comp){
+                return comp(data);
+            });
+        };
+    } else {
+        return _.constant(template);
+    }
 }
 
 function execute() {
-	if (!this.url) return _.defer(execute.bind(this));
-	var self = this;
-	var data = self.base && self.data ? _.extend({}, self.base, self.data) :
-	    self.base ? self.base : self.data;
-	var options = url.parse(self.url(data));
-	var prot = options.protocol == 'https:' ? https : http;
-	var req = prot.request(_.extend(options, {
-		method: self.method ? self.method(data) : 'GET',
-		headers: self.headers(data)
-	}), function(res){
-		var output = res.statusCode < 400 ?
-				self.outPorts.out : self.outPorts.error;
-		res.setEncoding('utf8');
-	    output.connect();
-		res.on('data', function(data){
-			output.send(data);
-		}).on('end', function(){
-			output.disconnect();
-		}).on('error', function(e){
-			self.outPorts.error.send(e);
-		    self.outPorts.error.disconnect();
-		});
-	}).on('error', function(e){
-		self.outPorts.error.send(e);
-		self.outPorts.error.disconnect();
-	});
-	if (self.body) req.write(self.body(data));
-	req.end();
+    if (!this.url) return _.defer(execute.bind(this));
+    var outPorts = this.outPorts;
+    var data = _.defaults(this.data || {}, this.parameters);
+    if (this.data) this.data = null; // clear for next dataset
+    var options = url.parse(this.url(data));
+    var prot = options.protocol == 'https:' ? https : http;
+    var req = prot.request(_.extend(options, {
+        method: this.method ? this.method(data) : 'GET',
+        headers: this.headers(data)
+    }), function(res){
+        var output = res.statusCode < 400 ?
+                outPorts.out : outPorts.error;
+        res.setEncoding('utf8');
+        output.connect();
+        res.on('data', function(data){
+            output.send(data);
+        }).on('end', function(){
+            output.disconnect();
+        }).on('error', function(e){
+            outPorts.error.send(e);
+            outPorts.error.disconnect();
+        });
+    }).on('error', function(e){
+        outPorts.error.send(e);
+        outPorts.error.disconnect();
+    });
+    if (this.body) req.write(this.body(data));
+    req.end();
 }
