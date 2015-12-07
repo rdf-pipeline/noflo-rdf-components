@@ -1,1 +1,406 @@
-{"properties":{"name":"/home/james/Projects/2015/noflo-rdf-components/master/graphs/0035_GraphNode_Basic.json"},"inports":{},"outports":{},"groups":[],"processes":{"CLEAR ALL":{"component":"rdf-components/RequestTemplate","metadata":{"label":"CLEAR ALL","x":180,"y":252,"width":72,"height":72}},"Error Log":{"component":"core/Output","metadata":{"label":"Error Log","x":720,"y":108,"width":72,"height":72}},"LOAD INTO GRAPH":{"component":"rdf-components/RequestTemplate","metadata":{"label":"LOAD INTO GRAPH","x":288,"y":180,"width":72,"height":72}},"INSERT INTO":{"component":"rdf-components/RequestTemplate","metadata":{"label":"INSERT INTO","x":432,"y":108,"width":72,"height":72}},"INSERT INTO_6d46l":{"component":"rdf-components/RequestTemplate","metadata":{"label":"INSERT INTO","x":576,"y":36,"width":72,"height":72}},"Delayed Start":{"component":"core/RunTimeout","metadata":{"label":"Delayed Start","x":36,"y":252,"width":72,"height":72}},"Settings":{"component":"strings/ParseJson","metadata":{"label":"Settings","x":36,"y":36,"width":72,"height":72}}},"connections":[{"src":{"process":"CLEAR ALL","port":"error"},"tgt":{"process":"Error Log","port":"in"}},{"src":{"process":"LOAD INTO GRAPH","port":"error"},"tgt":{"process":"Error Log","port":"in"}},{"src":{"process":"INSERT INTO","port":"error"},"tgt":{"process":"Error Log","port":"in"}},{"src":{"process":"INSERT INTO_6d46l","port":"out"},"tgt":{"process":"Error Log","port":"in"}},{"src":{"process":"INSERT INTO_6d46l","port":"error"},"tgt":{"process":"Error Log","port":"in"}},{"src":{"process":"Settings","port":"out"},"tgt":{"process":"CLEAR ALL","port":"data"},"metadata":{"route":0}},{"src":{"process":"Settings","port":"out"},"tgt":{"process":"LOAD INTO GRAPH","port":"data"},"metadata":{"route":0}},{"src":{"process":"Settings","port":"out"},"tgt":{"process":"INSERT INTO","port":"data"},"metadata":{"route":0}},{"src":{"process":"Settings","port":"out"},"tgt":{"process":"INSERT INTO_6d46l","port":"data"},"metadata":{"route":0}},{"src":{"process":"Delayed Start","port":"out"},"tgt":{"process":"CLEAR ALL","port":"in"},"metadata":{"route":0}},{"src":{"process":"INSERT INTO","port":"out"},"tgt":{"process":"INSERT INTO_6d46l","port":"in"},"metadata":{"route":null}},{"src":{"process":"LOAD INTO GRAPH","port":"out"},"tgt":{"process":"INSERT INTO","port":"in"},"metadata":{"route":null}},{"src":{"process":"CLEAR ALL","port":"out"},"tgt":{"process":"LOAD INTO GRAPH","port":"in"},"metadata":{"route":null}},{"data":"POST","tgt":{"process":"CLEAR ALL","port":"method"}},{"data":{"Content-Type":"application/sparql-update"},"tgt":{"process":"CLEAR ALL","port":"headers"}},{"data":"http://{+origin}/openrdf-sesame/repositories/{+repository}/statements","tgt":{"process":"CLEAR ALL","port":"url"}},{"data":"CLEAR ALL","tgt":{"process":"CLEAR ALL","port":"body"}},{"data":"POST","tgt":{"process":"LOAD INTO GRAPH","port":"method"}},{"data":"http://{+origin}/openrdf-sesame/repositories/{+repository}/statements","tgt":{"process":"LOAD INTO GRAPH","port":"url"}},{"data":{"Content-Type":"application/sparql-update"},"tgt":{"process":"LOAD INTO GRAPH","port":"headers"}},{"data":"POST","tgt":{"process":"INSERT INTO","port":"method"}},{"data":"http://{+origin}/openrdf-sesame/repositories/{+repository}/statements","tgt":{"process":"INSERT INTO","port":"url"}},{"data":{"Content-Type":"application/sparql-update"},"tgt":{"process":"INSERT INTO","port":"headers"}},{"data":"PREFIX foaf:<http://xmlns.com/foaf/0.1/>  CLEAR SILENT GRAPH <{{{out}}}> ;  INSERT {   GRAPH <{{{out}}}> {     ?president foaf:givenName \"William\" .     ?president foaf:familyName ?familyName .     }   } WHERE {   GRAPH <{{{in}}}> {     ?president foaf:givenName \"Bill\" .     ?president foaf:familyName ?familyName .     }   }","tgt":{"process":"INSERT INTO","port":"body"}},{"data":"POST","tgt":{"process":"INSERT INTO_6d46l","port":"method"}},{"data":"http://{+origin}/openrdf-sesame/repositories/{+repository}/statements","tgt":{"process":"INSERT INTO_6d46l","port":"url"}},{"data":{"Content-Type":"application/sparql-update"},"tgt":{"process":"INSERT INTO_6d46l","port":"headers"}},{"data":"LOAD <{{{file}}}> INTO GRAPH <{{{graph}}}>","tgt":{"process":"LOAD INTO GRAPH","port":"body"}},{"data":"PREFIX foaf:<http://xmlns.com/foaf/0.1/>  CLEAR SILENT GRAPH <{{{out}}}> ;  INSERT {   GRAPH <{{{out}}}> {     ?president foaf:givenName \"Willy\" .     ?president foaf:familyName ?familyName .     }   } WHERE {   GRAPH <{{{in}}}> {     ?president foaf:givenName \"William\" .     ?president foaf:familyName ?familyName .     }   }","tgt":{"process":"INSERT INTO_6d46l","port":"body"}},{"data":1000,"tgt":{"process":"Delayed Start","port":"time"}},{"data":"{\"origin\":\"localhost:8080\",\"repository\":\"rdf-pipeline-test\"}","tgt":{"process":"Settings","port":"in"}},{"data":{"graph":"urn:test:bill","file":"file:///home/james/Projects/2015/rdf-pipeline/framework/RDF-Pipeline/t/tests/0035_GraphNode_Basic/setup-files/node/bill-presidents.ttl"},"tgt":{"process":"LOAD INTO GRAPH","port":"data"}},{"data":{"in":"urn:test:williams","out":"urn:test:wilies"},"tgt":{"process":"INSERT INTO_6d46l","port":"data"}},{"data":{"in":"urn:test:bill","out":"urn:test:williams"},"tgt":{"process":"INSERT INTO","port":"data"}}]}
+{
+  "properties": {
+    "name": "/home/james/Projects/2015/noflo-rdf-components/master/graphs/0035_GraphNode_Basic.json"
+  },
+  "inports": {},
+  "outports": {},
+  "groups": [],
+  "processes": {
+    "CLEAR ALL": {
+      "component": "rdf-components/RequestTemplate",
+      "metadata": {
+        "label": "CLEAR ALL",
+        "x": 180,
+        "y": 252,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Error Log": {
+      "component": "core/Output",
+      "metadata": {
+        "label": "Error Log",
+        "x": 720,
+        "y": 108,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "LOAD INTO GRAPH": {
+      "component": "rdf-components/RequestTemplate",
+      "metadata": {
+        "label": "LOAD INTO GRAPH",
+        "x": 288,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "INSERT INTO": {
+      "component": "rdf-components/RequestTemplate",
+      "metadata": {
+        "label": "INSERT INTO",
+        "x": 432,
+        "y": 108,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "INSERT INTO_6d46l": {
+      "component": "rdf-components/RequestTemplate",
+      "metadata": {
+        "label": "INSERT INTO",
+        "x": 576,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Delayed Start": {
+      "component": "core/RunTimeout",
+      "metadata": {
+        "label": "Delayed Start",
+        "x": 36,
+        "y": 252,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Settings": {
+      "component": "strings/ParseJson",
+      "metadata": {
+        "label": "Settings",
+        "x": 36,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    }
+  },
+  "connections": [
+    {
+      "src": {
+        "process": "CLEAR ALL",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Error Log",
+        "port": "in"
+      }
+    },
+    {
+      "src": {
+        "process": "LOAD INTO GRAPH",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Error Log",
+        "port": "in"
+      }
+    },
+    {
+      "src": {
+        "process": "INSERT INTO",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Error Log",
+        "port": "in"
+      }
+    },
+    {
+      "src": {
+        "process": "INSERT INTO_6d46l",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "Error Log",
+        "port": "in"
+      }
+    },
+    {
+      "src": {
+        "process": "INSERT INTO_6d46l",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Error Log",
+        "port": "in"
+      }
+    },
+    {
+      "src": {
+        "process": "Settings",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "CLEAR ALL",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 0
+      }
+    },
+    {
+      "src": {
+        "process": "Settings",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "LOAD INTO GRAPH",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 0
+      }
+    },
+    {
+      "src": {
+        "process": "Settings",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "INSERT INTO",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 0
+      }
+    },
+    {
+      "src": {
+        "process": "Settings",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "INSERT INTO_6d46l",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 0
+      }
+    },
+    {
+      "src": {
+        "process": "Delayed Start",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "CLEAR ALL",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 0
+      }
+    },
+    {
+      "src": {
+        "process": "INSERT INTO",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "INSERT INTO_6d46l",
+        "port": "in"
+      },
+      "metadata": {
+        "route": null
+      }
+    },
+    {
+      "src": {
+        "process": "LOAD INTO GRAPH",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "INSERT INTO",
+        "port": "in"
+      },
+      "metadata": {
+        "route": null
+      }
+    },
+    {
+      "src": {
+        "process": "CLEAR ALL",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "LOAD INTO GRAPH",
+        "port": "in"
+      },
+      "metadata": {
+        "route": null
+      }
+    },
+    {
+      "data": "POST",
+      "tgt": {
+        "process": "CLEAR ALL",
+        "port": "method"
+      }
+    },
+    {
+      "data": {
+        "Content-Type": "application/sparql-update"
+      },
+      "tgt": {
+        "process": "CLEAR ALL",
+        "port": "headers"
+      }
+    },
+    {
+      "data": "http://{+origin}/openrdf-sesame/repositories/{+repository}/statements",
+      "tgt": {
+        "process": "CLEAR ALL",
+        "port": "url"
+      }
+    },
+    {
+      "data": "CLEAR ALL",
+      "tgt": {
+        "process": "CLEAR ALL",
+        "port": "body"
+      }
+    },
+    {
+      "data": "POST",
+      "tgt": {
+        "process": "LOAD INTO GRAPH",
+        "port": "method"
+      }
+    },
+    {
+      "data": "http://{+origin}/openrdf-sesame/repositories/{+repository}/statements",
+      "tgt": {
+        "process": "LOAD INTO GRAPH",
+        "port": "url"
+      }
+    },
+    {
+      "data": {
+        "Content-Type": "application/sparql-update"
+      },
+      "tgt": {
+        "process": "LOAD INTO GRAPH",
+        "port": "headers"
+      }
+    },
+    {
+      "data": "POST",
+      "tgt": {
+        "process": "INSERT INTO",
+        "port": "method"
+      }
+    },
+    {
+      "data": "http://{+origin}/openrdf-sesame/repositories/{+repository}/statements",
+      "tgt": {
+        "process": "INSERT INTO",
+        "port": "url"
+      }
+    },
+    {
+      "data": {
+        "Content-Type": "application/sparql-update"
+      },
+      "tgt": {
+        "process": "INSERT INTO",
+        "port": "headers"
+      }
+    },
+    {
+      "data": "PREFIX foaf:<http://xmlns.com/foaf/0.1/>  CLEAR SILENT GRAPH <{{{out}}}> ;  INSERT {   GRAPH <{{{out}}}> {     ?president foaf:givenName \"William\" .     ?president foaf:familyName ?familyName .     }   } WHERE {   GRAPH <{{{in}}}> {     ?president foaf:givenName \"Bill\" .     ?president foaf:familyName ?familyName .     }   }",
+      "tgt": {
+        "process": "INSERT INTO",
+        "port": "body"
+      }
+    },
+    {
+      "data": "POST",
+      "tgt": {
+        "process": "INSERT INTO_6d46l",
+        "port": "method"
+      }
+    },
+    {
+      "data": "http://{+origin}/openrdf-sesame/repositories/{+repository}/statements",
+      "tgt": {
+        "process": "INSERT INTO_6d46l",
+        "port": "url"
+      }
+    },
+    {
+      "data": {
+        "Content-Type": "application/sparql-update"
+      },
+      "tgt": {
+        "process": "INSERT INTO_6d46l",
+        "port": "headers"
+      }
+    },
+    {
+      "data": "LOAD <{{{file}}}> INTO GRAPH <{{{graph}}}>",
+      "tgt": {
+        "process": "LOAD INTO GRAPH",
+        "port": "body"
+      }
+    },
+    {
+      "data": "PREFIX foaf:<http://xmlns.com/foaf/0.1/>  CLEAR SILENT GRAPH <{{{out}}}> ;  INSERT {   GRAPH <{{{out}}}> {     ?president foaf:givenName \"Willy\" .     ?president foaf:familyName ?familyName .     }   } WHERE {   GRAPH <{{{in}}}> {     ?president foaf:givenName \"William\" .     ?president foaf:familyName ?familyName .     }   }",
+      "tgt": {
+        "process": "INSERT INTO_6d46l",
+        "port": "body"
+      }
+    },
+    {
+      "data": 1000,
+      "tgt": {
+        "process": "Delayed Start",
+        "port": "time"
+      }
+    },
+    {
+      "data": "{\"origin\":\"localhost:8080\",\"repository\":\"rdf-pipeline-test\"}",
+      "tgt": {
+        "process": "Settings",
+        "port": "in"
+      }
+    },
+    {
+      "data": {
+        "graph": "urn:test:bill",
+        "file": "file:///home/james/Projects/2015/rdf-pipeline/framework/RDF-Pipeline/t/tests/0035_GraphNode_Basic/setup-files/node/bill-presidents.ttl",
+        "origin": "localhost:8080",
+        "repository": "rdf-pipeline-test"
+      },
+      "tgt": {
+        "process": "LOAD INTO GRAPH",
+        "port": "data"
+      }
+    },
+    {
+      "data": {
+        "in": "urn:test:williams",
+        "out": "urn:test:wilies",
+        "origin": "localhost:8080",
+        "repository": "rdf-pipeline-test"
+      },
+      "tgt": {
+        "process": "INSERT INTO_6d46l",
+        "port": "data"
+      }
+    },
+    {
+      "data": {
+        "in": "urn:test:bill",
+        "out": "urn:test:williams",
+        "origin": "localhost:8080",
+        "repository": "rdf-pipeline-test"
+      },
+      "tgt": {
+        "process": "INSERT INTO",
+        "port": "data"
+      }
+    }
+  ]
+}
