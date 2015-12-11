@@ -1,4 +1,4 @@
-// RequestTemplate.js
+// request-template.js
 
 var _ = require('underscore');
 var http = require('http');
@@ -13,58 +13,39 @@ exports.getComponent = function() {
         outPorts: {
             out: {
                 description: "Response body when response status is 200/300",
-                datatype: 'string',
-                required: false,
-                addressable: false,
-                buffered: false
+                datatype: 'string'
             },
             error: {
                 description: "Response body when response status is 400/500",
-                datatype: 'string',
-                required: false,
-                addressable: false,
-                buffered: false
+                datatype: 'object'
             }
         },
         inPorts: {
             method: {
                 description: "HTTP method",
                 datatype: 'string',
-                required: false,
-                addressable: false,
-                buffered: false,
                 process: on({data: assign('method', newUriTemplate)})
             },
             url: {
                 description: "URI-Template (RFC6570)",
                 datatype: 'string',
                 required: true,
-                addressable: false,
-                buffered: false,
                 process: on({data: assign('url', newUriTemplate)})
             },
             headers: {
                 description: "Request headers as name:template pairs using the URI-Template syntax",
                 datatype: 'object',
-                required: false,
-                addressable: false,
-                buffered: false,
                 process: on({data: assign('headers', newUriTemplate)})
             },
             body: {
                 description: "Request body template using the Handlebars syntax",
                 datatype: 'string',
-                required: false,
-                addressable: false,
-                buffered: false,
                 process: on({data: assign('body', Handlebars.compile)})
             },
             parameters: {
                 description: "Object data used to populate the templates, but not trigger the request",
                 datatype: 'object',
                 required: true,
-                addressable: false,
-                buffered: false,
                 process: on({data: assign('parameters', _.defaults)})
             },
             data: {
@@ -76,8 +57,6 @@ exports.getComponent = function() {
                 description: "Object data used to populate the templates and trigger the request",
                 datatype: 'object',
                 required: true,
-                addressable: false,
-                buffered: false,
                 process: on({
                     data: assign('data', _.defaults),
                     disconnect: execute
