@@ -1,6 +1,6 @@
 {
   "properties": {
-    "name": "/home/james/Projects/2015/noflo-rdf-components/master/output.json"
+    "name": "jsonld-load-stringify"
   },
   "inports": {},
   "outports": {},
