@@ -74,17 +74,32 @@ function push(item, array) {
 function execute(graph) {
     var outPorts = this.outPorts;
     var query = this.query(this.parameters);
-    var store = graph.rdfstore;
     var graphURI = graph.graphURI;
     var defaultURIs = _.compact([graphURI].concat(this.defaultURIs));
-    // TODO handle missing store/graphURI
-    var args = (this.defaultURIs || this.namespaceURIs) ?
-        [query, this.defaultURIs || [], this.namespaceURIs || []] : [query];
-    Promise.denodeify(store.execute).apply(store, args).then(function(result){
+    var args = (this.defaultURIs || this.namespaceURIs || graphURI) ?
+        [query, defaultURIs, this.namespaceURIs || []] : [query];
+    asRdfStore(graph).then(function(store){
+        return Promise.denodeify(store.execute).apply(store, args);
+    }).then(function(result){
         outPorts.out.send(result);
         outPorts.out.disconnect();
-    }).catch(function(err){
+    }, function(err){
         outPorts.error.send(err);
         outPorts.error.disconnect();
     });
+}
+
+function asRdfStore(graph) {
+    if (graph.rdfstore) return Promise.resolve(graph.rdfstore);
+    else return denodeify(rdfstore, 'create', {}).then(function(store){
+        return Promise.resolve(graph).then(function(graph){
+            if (!graph.graphURI) return denodeify(store, 'insert', graph);
+            else return denodeify(store, 'insert', graph, graph.graphURI);
+        }).then(_.constant(store));
+    });
+}
+
+function denodeify(object, functionName /* arguments */) {
+    var args = _.toArray(arguments).slice(2);
+    return Promise.denodeify(object[functionName]).apply(object, args);
 }

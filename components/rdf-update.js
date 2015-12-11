@@ -74,26 +74,36 @@ function push(item, array) {
 function execute(graph) {
     var outPorts = this.outPorts;
     var update = this.update(this.parameters);
-    var store = graph.rdfstore;
     var graphURI = graph.graphURI;
     var defaultURIs = _.compact([graphURI].concat(this.defaultURIs));
-    // TODO handle missing store/graphURI
-    var args = (this.defaultURIs || this.namespaceURIs) ?
-        [update, this.defaultURIs || [], this.namespaceURIs || []] : [update];
-    Promise.denodeify(store.execute).apply(store, args).then(function(){
-        if (graphURI) {
-            return denodeify(store, 'graph', graphURI);
-        } else {
-            return denodeify(store, 'graph');
-        }
-    }).then(function(graph){
-        graph.rdfstore = store;
-        graph.graphURI = graphURI;
-        outPorts.out.send(graph);
-        outPorts.out.disconnect();
+    var args = (this.defaultURIs || this.namespaceURIs || graphURI) ?
+        [update, defaultURIs, this.namespaceURIs || []] : [update];
+    asRdfStore(graph).then(function(store){
+        return Promise.denodeify(store.execute).apply(store, args).then(function(){
+            if (graphURI) {
+                return denodeify(store, 'graph', graphURI);
+            } else {
+                return denodeify(store, 'graph');
+            }
+        }).then(function(graph){
+            graph.rdfstore = store;
+            graph.graphURI = graphURI;
+            outPorts.out.send(graph);
+            outPorts.out.disconnect();
+        });
     }).catch(function(err){
         outPorts.error.send(err);
         outPorts.error.disconnect();
+    });
+}
+
+function asRdfStore(graph) {
+    if (graph.rdfstore) return Promise.resolve(graph.rdfstore);
+    else return denodeify(rdfstore, 'create', {}).then(function(store){
+        return Promise.resolve(graph).then(function(graph){
+            if (!graph.graphURI) return denodeify(store, 'insert', graph);
+            else return denodeify(store, 'insert', graph, graph.graphURI);
+        }).then(_.constant(store));
     });
 }
 
