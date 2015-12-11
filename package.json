@@ -41,6 +41,7 @@
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "http-accept": "./components/http-accept.js",
+      "round-robin": "./components/round-robin.js",
       "FileNode": "./components/FileNode.js"
     }
   }
