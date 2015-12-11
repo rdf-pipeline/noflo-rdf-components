@@ -21,6 +21,16 @@ exports.getComponent = function() {
             }
         },
         inPorts: {
+            limit: {
+                description: "Request Content-Length limit",
+                datatype: 'int',
+                process: on({data: assign('limit')})
+            },
+            encoding: {
+                description: "Request body character encoding",
+                datatype: 'string',
+                process: on({data: assign('encoding')})
+            },
             type: {
                 description: "Request Content-Type",
                 datatype: 'string',
@@ -70,7 +80,10 @@ function handle(pair){
             outPorts.out.send(pair.req.body);
             outPorts.out.disconnect();
         } else {
-            body(pair.req, function(err, body){
+            body(pair.req, {
+                limit: this.limit,
+                encoding: this.encoding
+            }, function(err, body){
                 if (err) {
                     if (outPorts.rejected.isAttached()) {
                         pair.res.writeHead(413);
