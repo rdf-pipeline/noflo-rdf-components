@@ -1,0 +1,164 @@
+{
+  "properties": {
+    "name": "http-accept"
+  },
+  "inports": {},
+  "outports": {},
+  "groups": [],
+  "processes": {
+    "http-accept": {
+      "component": "rdf-components/http-accept",
+      "metadata": {
+        "label": "http-accept",
+        "x": 180,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Server": {
+      "component": "webserver/Server",
+      "metadata": {
+        "label": "Server",
+        "x": 36,
+        "y": 72,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "SendResponse": {
+      "component": "webserver/SendResponse",
+      "metadata": {
+        "label": "SendResponse",
+        "x": 288,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Output": {
+      "component": "core/Output",
+      "metadata": {
+        "label": "Output",
+        "x": 432,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Error": {
+      "component": "core/Output",
+      "metadata": {
+        "label": "Error",
+        "x": 180,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "ParseJson": {
+      "component": "strings/ParseJson",
+      "metadata": {
+        "label": "ParseJson",
+        "x": 288,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    }
+  },
+  "connections": [
+    {
+      "src": {
+        "process": "http-accept",
+        "port": "rejected"
+      },
+      "tgt": {
+        "process": "SendResponse",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 1
+      }
+    },
+    {
+      "src": {
+        "process": "http-accept",
+        "port": "accepted"
+      },
+      "tgt": {
+        "process": "SendResponse",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "Server",
+        "port": "error"
+      },
+      "tgt": {
+        "process": "Error",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 1
+      }
+    },
+    {
+      "src": {
+        "process": "Server",
+        "port": "request"
+      },
+      "tgt": {
+        "process": "http-accept",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "http-accept",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "ParseJson",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "ParseJson",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "Output",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "data": 1337,
+      "tgt": {
+        "process": "Server",
+        "port": "listen"
+      }
+    },
+    {
+      "data": "application/json",
+      "tgt": {
+        "process": "http-accept",
+        "port": "type"
+      }
+    }
+  ]
+}

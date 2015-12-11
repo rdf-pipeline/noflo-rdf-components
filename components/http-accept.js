@@ -1,0 +1,115 @@
+// http-accept.js
+
+var _ = require('underscore');
+var body = require('body');
+var noflo = require('noflo');
+
+exports.getComponent = function() {
+    return _.extend(new noflo.Component({
+        outPorts: {
+            out: {
+                description: "Request body as a String",
+                datatype: 'string'
+            },
+            rejected: {
+                description: "HTTP 415 Unsupported Media Type request/response pair {req, res}",
+                datatype: 'object'
+            },
+            accepted: {
+                description: "HTTP 202 Accepted request/response pair {req, res}",
+                datatype: 'object'
+            }
+        },
+        inPorts: {
+            type: {
+                description: "Request Content-Type",
+                datatype: 'string',
+                process: on({data: assign('types', push)})
+            },
+            'in': {
+                description: "HTTP request/response pair {req, res}",
+                datatype: 'object',
+                required: true,
+                process: on({data: handle})
+            }
+        }
+    }), {
+        description: "Extracts the request body as a String and produces a 202 Accepted response. Optionally, also filters on request content type.",
+        icon: 'sign-in'
+    });
+};
+
+function on(type, callback) {
+    return function(event, payload) {
+        if (type[event]) type[event].call(this.nodeInstance, payload);
+    };
+}
+
+function assign(name, transform){
+    return function(data){
+        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
+    };
+}
+
+function push(item, array) {
+    var ar = array || [];
+    ar.push(item);
+    return ar;
+}
+
+function handle(pair){
+    var outPorts = this.outPorts;
+    if (contentTypeMatches(this.types, pair.req.headers['content-type'])) {
+        if (_.has(pair.req, 'body')) {
+            if (outPorts.accepted.isAttached()) {
+                pair.res.writeHead(202);
+                pair.res.write("Accepted");
+                outPorts.accepted.send(pair);
+                outPorts.accepted.disconnect();
+            }
+            outPorts.out.send(pair.req.body);
+            outPorts.out.disconnect();
+        } else {
+            body(pair.req, function(err, body){
+                if (err) {
+                    if (outPorts.rejected.isAttached()) {
+                        pair.res.writeHead(413);
+                        pair.res.write(err.message);
+                        outPorts.rejected.send(pair);
+                        outPorts.rejected.disconnect();
+                    }
+                } else {
+                    if (outPorts.accepted.isAttached()) {
+                        pair.res.writeHead(202);
+                        pair.res.write("Accepted\n");
+                        outPorts.accepted.send(pair);
+                        outPorts.accepted.disconnect();
+                    }
+                    outPorts.out.send(body);
+                    outPorts.out.disconnect();
+                }
+            });
+        }
+    } else {
+        if (outPorts.rejected.isAttached()) {
+            pair.res.writeHead(415);
+            pair.res.write("Expected " + this.types + " not " + pair.req.headers['content-type']);
+            outPorts.rejected.send(pair);
+            outPorts.rejected.disconnect();
+        }
+    }
+}
+
+function contentTypeMatches(possible, type) {
+    if (_.isEmpty(possible)) return true;
+    else if (!type) return false;
+    else return possible.find(function(item){
+        if (item == type) return true;
+        var base = item.substring(0, item.indexOf('/') + 1);
+        var suffix = item.substring(item.indexOf('/') + 1);
+        if (base != '*' && type.indexOf(base) !== 0) return false;
+        else if (suffix == '*') return true;
+        else if (type.indexOf('/' + suffix) > 0) return true;
+        else if (type.indexOf('+' + suffix) > 0) return true;
+    });
+}

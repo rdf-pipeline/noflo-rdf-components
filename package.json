@@ -23,6 +23,7 @@
     }
   ],
   "dependencies": {
+    "body": "^5.1.0",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
     "noflo": "~0.5.14",
@@ -39,6 +40,7 @@
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
+      "http-accept": "./components/http-accept.js",
       "FileNode": "./components/FileNode.js"
     }
   }
