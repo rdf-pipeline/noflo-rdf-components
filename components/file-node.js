@@ -1,26 +1,26 @@
-// FileNode.js
+// file-node.js
 
 /**
- * This FileNode component is a noflo implementation of the RDF Pipeline FileNode as defined 
- * in the framework: https://github.com/rdf-pipeline/framework/wiki/FileNode-Wrapper
+ * This file-node component is a noflo implementation of the RDF Pipeline file-node as defined 
+ * in the framework: https://github.com/rdf-pipeline/framework/wiki/file-node-Wrapper
  *
- * In the RDF pipeline, a FileNode represents its state as a file. Its updater is an 
+ * In the RDF pipeline, a file-node represents its state as a file. Its updater is an 
  * executable command, such as a shell script.  It passes on state to other nodes upon processing
  * so that they may also be automatically updated.
  *
- * This FileNode component is configured with an options json object, passed as 
+ * This file-node component is configured with an options json object, passed as 
  * input on the "Options" port.  The expected format of that object is: 
- *    { "name": <name of this FileNode instance; this is a required setting>,
+ *    { "name": <name of this file-node instance; this is a required setting>,
  *      "state_file": <path for the state file to be used as backing store for this node; required setting>,
- *      "updater": <path to the FileNode updater used to modify data; this is a required setting>,
+ *      "updater": <path to the file-node updater used to modify data; this is a required setting>,
  *      "updater_args_template": <template for substituting input values into the updater command line; this is optional" }
  *  It currently uses the updater_args instead of the environment variables documented in the original
  *  framework.
  *
- * The FileNode component will send the following object on its output port upon completion: 
- *     { "name": <name of this FileNode instance>,
+ * The file-node component will send the following object on its output port upon completion: 
+ *     { "name": <name of this file-node instance>,
  *       "state_file": <path for the state file to be used as backing store for this node>,
- *       "updater_args": <the arguments specified in the input options when updating this FileNode, if there are any.> }
+ *       "updater_args": <the arguments specified in the input options when updating this file-node, if there are any.> }
  */
 
 var _ = require('underscore');
@@ -31,10 +31,9 @@ var noflo = require('noflo');
 exports.getComponent = function() {
     return _.extend(new noflo.Component({
 
-
         outPorts: {
             out: {
-                description: "State file for this FileNode",
+                description: "State file for this file-node",
                 datatype: 'string',
                 required: false,
                 addressable: false,
@@ -50,7 +49,7 @@ exports.getComponent = function() {
         },
         inPorts: {
             'options': {
-                description: "RDF FileNode configuration settings",
+                description: "RDF file-node configuration settings",
                 datatype: 'object',
                 required: false,
                 addressable: false,
@@ -67,7 +66,7 @@ exports.getComponent = function() {
             }
         }
     }), {
-        description: "Component for a RDF Pipeline FileNode", 
+        description: "Component for a RDF Pipeline file-node", 
         icon: 'external-link',
 
         // The expected input/output port attribute names
@@ -77,7 +76,7 @@ exports.getComponent = function() {
             updater_args: "updater_args"
         },
 
-        // FileNode configuration attributes expected to be passed into the options inPort
+        // file-node configuration attributes expected to be passed into the options inPort
         optionsAttrs: {
             node_name: "name", 
             node_state_file: "state_file",
@@ -112,7 +111,7 @@ function ondata(callback) {
     };
 }
 
-// Once all data has been received, this function executes the RDF FileNode update work
+// Once all data has been received, this function executes the RDF file-node update work
 // and passes on the results to the next component(s).
 function execute(data) {
 
@@ -167,6 +166,7 @@ function execute(data) {
             var replacementVal = _.findWhere(self.dataArray, {name: templateVarName});
             templatedArgs = applyToTemplate( templateArg, replacementVal.file, templatedArgs ); 
         }
+         
         updaterCmd += " " + templatedArgs;
     } else { 
         updaterCmd += " "+ data.file;
@@ -187,9 +187,9 @@ function execute(data) {
         }
     }
 
-    if ( self.debug ) {
+    // if ( self.debug ) {
         console.log("Executing "+updaterCmd);
-    }
+    // }
 
     exec(updaterCmd, {timeout:3000}, function(error, stdout, stderr) {
 
