@@ -21,12 +21,13 @@ var _ = require('underscore');
 var fs = require('fs');
 var noflo = require('noflo');
 
-var BaseFileNode = require('./base-file-node');
+var basenode = require('./base-node');
+var basefnode = require('./base-file-node');
 
 exports.getComponent = function() {
     return _.extend(
       new noflo.Component( _.extend( {},
-                         BaseFileNode.defaultPorts,
+                         basenode.defaultPorts,
                          { inPorts: {
                              options: {
                                  description: "Node configuration settings",
@@ -34,7 +35,7 @@ exports.getComponent = function() {
                                  required: false,
                                  addressable: false,
                                  buffered: false,
-                                 process: BaseFileNode.ondata(BaseFileNode.assign('options'))
+                                 process: basenode.ondata(basenode.assign('options'))
                              },
                              in: {
                                  description: "Source name and Json source input file",
@@ -42,7 +43,7 @@ exports.getComponent = function() {
                                  required: true,
                                  addressable: false,
                                  buffered: false,
-                                 process: BaseFileNode.ondata(execute)
+                                 process: basenode.ondata(execute)
                                }
                              }
                          })),
@@ -97,7 +98,7 @@ function execute(data) {
         var jsObject =  JSON.parse(fs.readFileSync(jsonFilePath));
 
         if ( this.updater ) { 
-            if ( BaseFileNode.isJsFile( this.updater ) ) { 
+            if ( basefnode.isJsFile( this.updater ) ) { 
 
                 // execute a javascript updater file
                 var scriptPath = process.cwd()+"/"+this.updater;
@@ -111,7 +112,7 @@ function execute(data) {
 
                      var stateFile = 
                          (self.stateFile) ? self.stateFile : 
-                             BaseFileNode.defaultStateFile( this.name, process );;
+                             basefnode.defaultStateFile( this.name, process );;
 
                      var sendPayload = 
                          ( data.updaterArgs ) ? { [self.outAttrs.sourceName]: self.name,
@@ -121,7 +122,7 @@ function execute(data) {
                                                    { [self.outAttrs.sourceName]: self.name,
                                                      [self.outAttrs.sourceJsObject]: result };
 
-                     BaseFileNode.writeStateFile( stateFile,
+                     basefnode.writeStateFile( stateFile,
                                                   JSON.stringify(result),
                                                   self.outPorts,
                                                   sendPayload ); 

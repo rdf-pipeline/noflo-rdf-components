@@ -12,13 +12,14 @@ var _ = require('underscore');
 var fs = require('fs');
 var noflo = require('noflo');
 
-var BaseFileNode = require('./base-file-node');
+var basenode = require('./base-node');
+var basefnode = require('./base-file-node');
 
 exports.getComponent = function() {
     return _.extend(
       new noflo.Component(
                _.extend( {},
-                         BaseFileNode.defaultPorts,
+                         basenode.defaultPorts,
                          { inPorts: {
                              options: {
                                  description: "Node configuration settings",
@@ -26,7 +27,7 @@ exports.getComponent = function() {
                                  required: false,
                                  addressable: false,
                                  buffered: false,
-                                 process: BaseFileNode.ondata(BaseFileNode.assign('options'))
+                                 process: basenode.ondata(basenode.assign('options'))
                              },
                              in: {
                                  description: "Source name and Javascript object input",
@@ -34,7 +35,7 @@ exports.getComponent = function() {
                                  required: true,
                                  addressable: false,
                                  buffered: false,
-                                 process: BaseFileNode.ondata(execute)
+                                 process: basenode.ondata(execute)
                                }
                              }
                          }
@@ -54,9 +55,8 @@ exports.getComponent = function() {
         // file-node configuration attributes expected to be passed into the options inPort
         optionsAttrs: {
             nodeName: "name",
-            stateFile: "stateFile",
-            updater: "updater",
-            updaterArgsTemplate: "updaterArgsTemplate"
+            stateFile: "stateFile", // (optional)
+            updater: "updater"
         }
      });
 }
@@ -97,13 +97,13 @@ function execute(data) {
     }
 
     var stateFile = (this.stateFile) ? this.stateFile :
-                        BaseFileNode.defaultStateFile( this.name, process );;
+                        basefnode.defaultStateFile( this.name, process );;
 
     var jsScriptPath = process.cwd()+"/"+this.updater;
 
     // Get a unique array of all values of updaterArgs from input
-    var unique_updaterArgs = BaseFileNode.uniqElemsWithAttr( this.dataArray, 
-                                                             this.inOutAttrs.updaterArgs );
+    var unique_updaterArgs = basefnode.uniqElemsWithAttr( this.dataArray, 
+                                                          this.inOutAttrs.updaterArgs );
 
     var self = this;
 
@@ -120,10 +120,10 @@ function execute(data) {
         if ( result ) { 
             var sendPayload = { [self.inOutAttrs.sourceName]: self.name,
                                 [self.inOutAttrs.sourceJsObject]: result };
-            BaseFileNode.writeStateFile( stateFile, 
-                                         JSON.stringify(result),
-                                         self.outPorts,
-                                         sendPayload );
+            basefnode.writeStateFile( stateFile, 
+                                      JSON.stringify(result),
+                                      self.outPorts,
+                                      sendPayload );
             if ( self.dataArray ) {
                 self.dataArray.length = 0;
             }

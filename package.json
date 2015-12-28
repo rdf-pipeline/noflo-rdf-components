@@ -24,13 +24,16 @@
   ],
   "dependencies": {
     "body": "^5.1.0",
+    "chai": "^3.4.1",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
     "noflo": "~0.5.14",
     "promise": "^7.0.4",
     "rdfstore": "~0.9.7",
+    "sinon": "^1.17.2",
     "underscore": "~1.8.3",
-    "uri-templates": "~0.1.9"
+    "uri-templates": "~0.1.9",
+    "utils": "^0.3.1"
   },
   "noflo": {
     "components": {
