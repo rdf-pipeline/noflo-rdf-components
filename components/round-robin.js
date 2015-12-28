@@ -3,6 +3,8 @@
 var _ = require('underscore');
 var noflo = require('noflo');
 
+var basenode = require('./base-node');
+
 exports.getComponent = function() {
     return _.extend(new noflo.Component({
         outPorts: {
@@ -16,7 +18,7 @@ exports.getComponent = function() {
                 description: "Each input group is send to exactly one output socket",
                 datatype: 'all',
                 required: true,
-                process: on({
+                process: basenode.on({
                     begingroup: begingroup,
                     data: send,
                     endgroup: endgroup
@@ -28,12 +30,6 @@ exports.getComponent = function() {
         icon: 'refresh'
     });
 };
-
-function on(type, callback) {
-    return function(event, payload) {
-        if (type[event]) type[event].call(this.nodeInstance, payload);
-    };
-}
 
 function begingroup(group){
     this.groupPort = nextSocket(this);

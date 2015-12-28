@@ -42,7 +42,7 @@ return _.extend(
                                  required: false,
                                  addressable: false,
                                  buffered: false,
-                                 process: basenode.ondata(basenode.assign('options'))
+                                 process: basenode.on({data: basenode.assign('options')})
                              },
                              in: {
                                  description: "Source name and Json source input file",
@@ -50,7 +50,7 @@ return _.extend(
                                  required: true,
                                  addressable: false,
                                  buffered: false,
-                                 process: basenode.ondata(execute)
+                                 process: basenode.on({data: execute})
                                }
                              }
                          })),

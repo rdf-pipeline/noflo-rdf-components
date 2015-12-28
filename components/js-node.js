@@ -27,7 +27,7 @@ exports.getComponent = function() {
                                  required: false,
                                  addressable: false,
                                  buffered: false,
-                                 process: basenode.ondata(basenode.assign('options'))
+                                 process: basenode.on({data: basenode.assign('options')})
                              },
                              in: {
                                  description: "Source name and Javascript object input",
@@ -35,7 +35,7 @@ exports.getComponent = function() {
                                  required: true,
                                  addressable: false,
                                  buffered: false,
-                                 process: basenode.ondata(execute)
+                                 process: basenode.on({data: execute})
                                }
                              }
                          }

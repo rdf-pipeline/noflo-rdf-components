@@ -6,6 +6,8 @@ var Handlebars = require('handlebars');
 var rdfstore = require('rdfstore');
 var noflo = require('noflo');
 
+var basenode = require('./base-node');
+
 exports.getComponent = function() {
     return _.extend(new noflo.Component({
         outPorts: {
@@ -22,29 +24,29 @@ exports.getComponent = function() {
             parameters: {
                 description: "A map of template parameters",
                 datatype: 'object',
-                process: on({data: assign('parameters')})
+                process: basenode.on({data: assign('parameters')})
             },
             query: {
                 description: "SPARQL query template string in handlebars syntax",
                 datatype: 'string',
                 required: true,
-                process: on({data: assign('query', Handlebars.compile)})
+                process: basenode.on({data: assign('query', Handlebars.compile)})
             },
             "default": {
                 description: "Graph URI for the default dataset",
                 datatype: 'string',
-                process: on({data: assign('defaultURIs', push)})
+                process: basenode.on({data: assign('defaultURIs', basenode.push)})
             },
             namespaces: {
                 description: "Graph URI for the named dataset",
                 datatype: 'string',
-                process: on({data: assign('namespacesURIs', push)})
+                process: basenode.on({data: assign('namespacesURIs', basenode.push)})
             },
             'in': {
                 description: "RDF JS Interface Graph object",
                 datatype: 'object',
                 required: true,
-                process: on({data: execute})
+                process: basenode.on({data: execute})
             }
         }
     }), {
@@ -53,22 +55,11 @@ exports.getComponent = function() {
     });
 };
 
-function on(type, callback) {
-    return function(event, payload) {
-        if (type[event]) type[event].call(this.nodeInstance, payload);
-    };
-}
 
 function assign(name, transform){
     return function(data){
         this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
     };
-}
-
-function push(item, array) {
-    var ar = array || [];
-    ar.push(item);
-    return ar;
 }
 
 function execute(graph) {

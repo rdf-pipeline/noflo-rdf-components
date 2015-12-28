@@ -74,11 +74,11 @@ describe('base-node', function() {
     });
   });
 
-  describe('#ondata', function () {
+  describe('#on', function () {
    
     it('should call the specified function to process data.', function() {
-      should.exist( basenode.ondata );
-      basenode.ondata.should.be.a('function');
+      should.exist( basenode.on );
+      basenode.on.should.be.a('function');
 
       var testDataValue = 'testData';
       var testData = { payload: testDataValue };
@@ -90,12 +90,12 @@ describe('base-node', function() {
         data.payload.should.equal(testDataValue);
       };
 
-      var ondata = basenode.ondata(execute); 
-      ondata.should.be.a('function');
+      var on = basenode.on(execute); 
+      on.should.be.a('function');
 
      
       delete this.ondataExecuted;
-      ondata.call( this, testData );
+      on.call( this, testData );
     });
   });
 

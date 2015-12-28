@@ -8,6 +8,8 @@ var uriTemplates = require('uri-templates');
 var Handlebars = require('handlebars');
 var noflo = require('noflo');
 
+var basenode = require('./base-node');
+
 exports.getComponent = function() {
     return _.extend(new noflo.Component({
         outPorts: {
@@ -24,40 +26,40 @@ exports.getComponent = function() {
             method: {
                 description: "HTTP method",
                 datatype: 'string',
-                process: on({data: assign('method', newUriTemplate)})
+                process: basenode.on({data: assign('method', newUriTemplate)})
             },
             url: {
                 description: "URI-Template (RFC6570)",
                 datatype: 'string',
                 required: true,
-                process: on({data: assign('url', newUriTemplate)})
+                process: basenode.on({data: assign('url', newUriTemplate)})
             },
             headers: {
                 description: "Request headers as name:template pairs using the URI-Template syntax",
                 datatype: 'object',
-                process: on({data: assign('headers', newUriTemplate)})
+                process: basenode.on({data: assign('headers', newUriTemplate)})
             },
             body: {
                 description: "Request body template using the Handlebars syntax",
                 datatype: 'string',
-                process: on({data: assign('body', Handlebars.compile)})
+                process: basenode.on({data: assign('body', Handlebars.compile)})
             },
             parameters: {
                 description: "Object data used to populate the templates, but not trigger the request",
                 datatype: 'object',
                 required: true,
-                process: on({data: assign('parameters', _.defaults)})
+                process: basenode.on({data: assign('parameters', _.defaults)})
             },
             data: {
                 description: "Use parameters port instead",
                 datatype: 'object',
-                process: on({data: assign('parameters', _.defaults)})
+                process: basenode.on({data: assign('parameters', _.defaults)})
             },
             'in': {
                 description: "Object data used to populate the templates and trigger the request",
                 datatype: 'object',
                 required: true,
-                process: on({
+                process: basenode.on({
                     data: assign('data', _.defaults),
                     disconnect: execute
                 })
@@ -69,12 +71,6 @@ exports.getComponent = function() {
         icon: 'external-link'
     });
 };
-
-function on(type, callback) {
-    return function(event, payload) {
-        if (type[event]) type[event].call(this.nodeInstance, payload);
-    };
-}
 
 function assign(name, transform){
     return function(data){

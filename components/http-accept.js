@@ -4,6 +4,8 @@ var _ = require('underscore');
 var body = require('body');
 var noflo = require('noflo');
 
+var basenode = require('./base-node');
+
 exports.getComponent = function() {
     return _.extend(new noflo.Component({
         outPorts: {
@@ -24,23 +26,23 @@ exports.getComponent = function() {
             limit: {
                 description: "Request Content-Length limit",
                 datatype: 'int',
-                process: on({data: assign('limit')})
+                process: basenode.on({data: assign('limit')})
             },
             encoding: {
                 description: "Request body character encoding",
                 datatype: 'string',
-                process: on({data: assign('encoding')})
+                process: basenode.on({data: assign('encoding')})
             },
             type: {
                 description: "Request Content-Type",
                 datatype: 'string',
-                process: on({data: assign('types', push)})
+                process: basenode.on({data: assign('types', basenode.push)})
             },
             'in': {
                 description: "HTTP request/response pair {req, res}",
                 datatype: 'object',
                 required: true,
-                process: on({data: handle})
+                process: basenode.on({data: handle})
             }
         }
     }), {
@@ -49,22 +51,10 @@ exports.getComponent = function() {
     });
 };
 
-function on(type, callback) {
-    return function(event, payload) {
-        if (type[event]) type[event].call(this.nodeInstance, payload);
-    };
-}
-
 function assign(name, transform){
     return function(data){
         this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
     };
-}
-
-function push(item, array) {
-    var ar = array || [];
-    ar.push(item);
-    return ar;
 }
 
 function handle(pair){

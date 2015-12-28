@@ -5,6 +5,8 @@ var Promise = require('promise');
 var jsonld = require('jsonld').promises;
 var noflo = require('noflo');
 
+var basenode = require('./base-node');
+
 exports.getComponent = function() {
     return _.extend(new noflo.Component({
         outPorts: {
@@ -21,13 +23,13 @@ exports.getComponent = function() {
             frame: {
                 description: "JSON-LD Frame object",
                 datatype: 'object',
-                process: on({data: assign('frame')})
+                process: basenode.on({data: assign('frame')})
             },
             'in': {
                 description: "RDF JS Interface Graph object",
                 datatype: 'object',
                 required: true,
-                process: on({data: execute})
+                process: basenode.on({data: execute})
             }
         }
     }), {
@@ -35,12 +37,6 @@ exports.getComponent = function() {
         icon: 'edit'
     });
 };
-
-function on(type, callback) {
-    return function(event, payload) {
-        if (type[event]) type[event].call(this.nodeInstance, payload);
-    };
-}
 
 function assign(name, transform){
     return function(data){
