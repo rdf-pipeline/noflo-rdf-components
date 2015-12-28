@@ -28,45 +28,33 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var noflo = require('noflo');
 
-exports.getComponent = function() {
-    return _.extend(new noflo.Component({
+var basenode = require('./base-node');
+var basefnode = require('./base-file-node');
 
-        outPorts: {
-            out: {
-                description: "State file for this file-node",
-                datatype: 'string',
-                required: false,
-                addressable: false,
-                buffered: false
-            },
-            error: {
-                description: "Error info or Stderr of the file updater script",
-                datatype: 'string',
-                required: false,
-                addressable: false,
-                buffered: false
-            }
-        },
-        inPorts: {
-            'options': {
-                description: "RDF file-node configuration settings",
-                datatype: 'object',
-                required: false,
-                addressable: false,
-                buffered: false,
-                process: ondata(assign('options'))
-            },
-            'in': {
-                description: "Source name and initial input file",
-                datatype: 'object',
-                required: true,
-                addressable: false,
-                buffered: false,
-                process: ondata(execute)
-            }
-        }
-    }), {
-        description: "Component for a RDF Pipeline file-node", 
+exports.getComponent = function() {
+return _.extend(
+      new noflo.Component( _.extend( {},
+                         basenode.defaultPorts,
+                         { inPorts: {
+                             options: {
+                                 description: "Node configuration settings",
+                                 datatype: 'object',
+                                 required: false,
+                                 addressable: false,
+                                 buffered: false,
+                                 process: basenode.ondata(basenode.assign('options'))
+                             },
+                             in: {
+                                 description: "Source name and Json source input file",
+                                 datatype: 'object',
+                                 required: true,
+                                 addressable: false,
+                                 buffered: false,
+                                 process: basenode.ondata(execute)
+                               }
+                             }
+                         })),
+      { description: "Component for a RDF Pipeline file-node", 
         icon: 'external-link',
 
         // The expected input/output port attribute names
@@ -84,32 +72,9 @@ exports.getComponent = function() {
             updater_args_template: "updater_args_template"
         }
 
-     });
+      });
 };
 
-// Set all name value pairs in a json object to members of the current instance and then
-// Set an instance member with the name of the original object to true to indicate that this
-// input object has been received and processed.
-function assign(name){
-    return function(data){
-        for (var key in data) {
-           if (data.hasOwnProperty(key)) { 
-              this[key] = data[key];
-           }
-        }
-        // Record that this object was processed 
-        this[name] = true;
-    };
-}
-
-// Handler for any input port data event.  
-function ondata(callback) {
-    return function(event, payload) {
-        switch(event) {
-            case 'data': return callback.call(this.nodeInstance, payload);
-        };
-    };
-}
 
 // Once all data has been received, this function executes the RDF file-node update work
 // and passes on the results to the next component(s).
@@ -148,8 +113,11 @@ function execute(data) {
     }
 
     var self = this;
-    var updaterCmd = self.updater;
 
+    var stateFile = (self.stateFile) ? self.stateFile :
+                     basefnode.defaultStateFile( self.name, process );
+
+    var updaterCmd = self.updater;
     if ( self.updater_args_template ) { 
 
         var templateArgs = self.updater_args_template.match(/\$\w+/g);
@@ -172,64 +140,23 @@ function execute(data) {
         updaterCmd += " "+ data.file;
     }
         
-    // Get a unique array of all values of updater_args  
-    var updaterArgs = function(array){
-        return _.pluck(array,self.inOutAttrs.updater_args);
-    }
-    var args = updaterArgs(self.dataArray);
-    if ( !  _.isEmpty(args[0])) {
-        var unique_updater_args = _.uniq( args,  
-                                          function(x) { 
-                                              return JSON.stringify( x ); 
-                                         });
-        for (var u=0, len=unique_updater_args.length; u < len; u++ ) { 
-            updaterCmd += " \""+unique_updater_args[u].toString()+"\"";
-        }
-    }
+    // Get a unique array of all values of updaterArgs from input
+    var unique_updaterArgs = basefnode.uniqElemsWithAttr( this.dataArray,
+                                                          this.inOutAttrs.updaterArgs );
+    updaterCmd += unique_updaterArgs.join(' ');
 
-    // if ( self.debug ) {
+    if ( self.debug ) {
         console.log("Executing "+updaterCmd);
-    // }
+    }
 
-    exec(updaterCmd, {timeout:3000}, function(error, stdout, stderr) {
-
-        if (error !== null) {
-            console.log("error: "+error.toString());
-            self.outPorts.error.send(error);
-        }
-
-        if (stdout !== null) {
-            var stateFile = self.state_file.toString();
-            fs.writeFile( stateFile, stdout, function (err) {
-
-                if (err) {
-                    self.outPorts.error.send(err);
-                    self.outPorts.out.disconnect();
-                    return console.log(err);
-                }
-
-                console.log("Saved updated node "+self.name+" state to "+stateFile);
-                var payload = ( unique_updater_args ) ? 
-                              { [self.inOutAttrs.source_name]: self.name, 
-                                [self.inOutAttrs.updater_args]: unique_updater_args, 
-                                [self.inOutAttrs.source_file]: stateFile } 
-                              : { [self.inOutAttrs.source_name]: self.name, 
-                                  [self.inOutAttrs.source_file]: stateFile };
-                self.outPorts.out.send( payload );
-                self.outPorts.out.disconnect();
-                if ( self.dataArray ) { 
-                    self.dataArray.length = 0;
-                }
-             });
-        }
-
-        if (stderr !== null && stderr.length > 0) {
-            console.log("stderr: "+stderr.toString());
-            self.outPorts.error.send(stderr);
-            self.outPorts.out.disconnect();
-         }
-
-         self.outPorts.out.disconnect();
-         self.outPorts.error.disconnect();
-    });
+    var payload = ( unique_updaterArgs ) ? 
+                    { [self.inOutAttrs.source_name]: self.name, 
+                      [self.inOutAttrs.updater_args]: unique_updaterArgs, 
+                      [self.inOutAttrs.source_file]: stateFile } 
+                  : { [self.inOutAttrs.source_name]: self.name, 
+                      [self.inOutAttrs.source_file]: stateFile };
+    basefnode.execUpdater( updaterCmd, self.name, stateFile, self.outPorts, payload );
+    if ( self.dataArray ) { 
+        self.dataArray.length = 0;
+    }
 }

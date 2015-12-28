@@ -112,7 +112,7 @@ function execute(data) {
 
                      var stateFile = 
                          (self.stateFile) ? self.stateFile : 
-                             basefnode.defaultStateFile( this.name, process );;
+                             basefnode.defaultStateFile( this.name, process );
 
                      var sendPayload = 
                          ( data.updaterArgs ) ? { [self.outAttrs.sourceName]: self.name,

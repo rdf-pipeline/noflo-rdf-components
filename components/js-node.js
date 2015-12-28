@@ -97,7 +97,7 @@ function execute(data) {
     }
 
     var stateFile = (this.stateFile) ? this.stateFile :
-                        basefnode.defaultStateFile( this.name, process );;
+                        basefnode.defaultStateFile( this.name, process );
 
     var jsScriptPath = process.cwd()+"/"+this.updater;
 
