@@ -50,14 +50,20 @@ module.exports = {
    * @param callback callback function to be executed
    */
    on: function(type, callback) {
-     return function(event, payload) {
-       if (type[event]) type[event].call(this.nodeInstance, payload);
-     };
+     if ( type ) { 
+       return function(event, payload) {
+         if (type[event]) type[event].call(this.nodeInstance, payload);
+       };
+     } else {
+       throw new Error("Expected an event type!");
+     }
    },
 
    push: function(item, array) {
      var ar = array || [];
-     ar.push(item);
+     if ( item ) { 
+       ar.push(item);
+     }
      return ar;
    } 
 
