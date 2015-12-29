@@ -8,7 +8,8 @@
  *
  * Configuration is specified using with an options json object, passed as 
  * input on the "Options" port.  The expected format of that object is: 
- *    { "name": <name of this file-node instance; this is a required setting>,
+ *    { "name": <name of this node instance; this is a required setting>,
+ *      "stateFile": <cannonical path for state file of this node (optional)>,
  *      "updater": <path to the javascript updater used to modify data; this is a required setting> }
  *
  * The json-file-node component will send the following object on its output port upon completion: 
@@ -25,10 +26,10 @@ var basenode = require('./base-node');
 var basefnode = require('./base-file-node');
 
 exports.getComponent = function() {
-    return _.extend(
-      new noflo.Component( _.extend( {},
-                         basenode.defaultPorts,
-                         { inPorts: {
+  return _.extend(
+    new noflo.Component( _.extend( {},
+                           basenode.defaultPorts,
+                           { inPorts: {
                              options: {
                                  description: "Node configuration settings",
                                  datatype: 'object',
@@ -43,7 +44,7 @@ exports.getComponent = function() {
                                  required: true,
                                  addressable: false,
                                  buffered: false,
-                                 process: basenode.on({data: execute})
+                                 process: basenode.on({data: handle})
                                }
                              }
                          })),
@@ -63,33 +64,28 @@ exports.getComponent = function() {
             sourceName: "name",
             sourceJsObject: "js_object",
             updaterArgs: "updaterArgs"
-        },
-
-        // file-node configuration attributes expected to be passed into the options port
-        optionsAttrs: {
-            node_name: "name",
-            updater: "updater",
         }
 
      });
 }
 
 
-// Once all data has been received, this function executes the RDF file-node update work
+// Once all data has been received, this function handles the RDF file-node update work
 // and passes on the results to the next component(s).
-function execute(data) {
+function handle(data) {
 
     // Do we have all the input we need to proceed?
     if ( ! this.options ) {
-        return _.defer(execute.bind(this, data));
+        return _.defer(handle.bind(this, data));
     }
 
-    if ( this.debug ) { 
-        console.log("\njson-file-node processing "+this.name);
+    if ( this.options.debug ) { 
+        console.log("\njson-file-node processing "+this.options.name);
     }
 
-    var self = this;
-
+    if (!this.options.name) {
+        throw new Error('Missing required setting "name".');
+    }
 
     try { 
 
@@ -97,11 +93,11 @@ function execute(data) {
         var jsonFilePath = process.cwd() + "/" + data.file;
         var jsObject =  JSON.parse(fs.readFileSync(jsonFilePath));
 
-        if ( this.updater ) { 
-            if ( basefnode.isJsFile( this.updater ) ) { 
+        if ( this.options.updater ) { 
+            if ( basefnode.isJsFile( this.options.updater ) ) { 
 
                 // execute a javascript updater file
-                var scriptPath = process.cwd()+"/"+this.updater;
+                var scriptPath = process.cwd()+"/"+this.options.updater;
                 var myScript = require( scriptPath );
 
                 var result = ( data.updaterArgs ) ? myScript.execute( { "args": data.updaterArgs, 
@@ -111,36 +107,36 @@ function execute(data) {
                 if ( result ) {
 
                      var stateFile = 
-                         (self.stateFile) ? self.stateFile : 
-                             basefnode.defaultStateFile( this.name, process );
+                         (this.options.stateFile) ? this.options.stateFile : 
+                             basefnode.defaultStateFile( this.options.name, process );
 
                      var sendPayload = 
-                         ( data.updaterArgs ) ? { [self.outAttrs.sourceName]: self.name,
-                                                   [self.outAttrs.updaterArgs]: data.updaterArgs,
-                                                   [self.outAttrs.sourceJsObject]: result } 
+                         ( data.updaterArgs ) ? { [this.outAttrs.sourceName]: this.options.name,
+                                                   [this.outAttrs.updaterArgs]: data.updaterArgs,
+                                                   [this.outAttrs.sourceJsObject]: result } 
                                                : 
-                                                   { [self.outAttrs.sourceName]: self.name,
-                                                     [self.outAttrs.sourceJsObject]: result };
+                                                   { [this.outAttrs.sourceName]: this.options.name,
+                                                     [this.outAttrs.sourceJsObject]: result };
 
                      basefnode.writeStateFile( stateFile,
-                                                  JSON.stringify(result),
-                                                  self.outPorts,
-                                                  sendPayload ); 
+                                               JSON.stringify(result),
+                                               this.outPorts,
+                                               sendPayload ); 
 
                 } else {
                      // No result after executing the updater - this is not good
-                     throw new Error("Nothing found after executing "+this.updater);
+                     throw new Error("Nothing found after executing "+this.options.updater);
                 }
 
              } else {
                 // Don't have a javascript updater - this is an error!
                 throw new Error( "Expected a javascript updater but found " + 
-                                 this.updater + ".  Please check the configuration.");
+                                 this.options.updater + ".  Please check the configuration.");
              }
 
         } else {
             // No updater configured - go ahead and send whatever json object we parsed  
-            this.outPorts.out.send( { [this.outAttrs.sourceName]: this.name,
+            this.outPorts.out.send( { [this.outAttrs.sourceName]: this.options.name,
                                       [this.outAttrs.sourceJsObject]: jsObject } );
         } 
 

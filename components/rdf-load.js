@@ -23,24 +23,24 @@ exports.getComponent = function() {
             options: {
                 description: "A map of configuration options for the store",
                 datatype: 'object',
-                process: basenode.on({data: assign('options')})
+                process: basenode.on({data: basenode.assign('options')})
             },
             media: {
                 description: "Media type (application/json, text/n3...) of the data to be parsed or the value 'remote' if a URI for the data is passed instead",
                 datatype: 'string',
-                process: basenode.on({data: assign('media')})
+                process: basenode.on({data: basenode.assign('media')})
             },
             graph: {
                 description: "Graph URI template where the parsed triples will be inserted. If it is not specified, triples will be loaded in the default graph",
                 datatype: 'string',
-                process: basenode.on({data: assign('graph')})
+                process: basenode.on({data: basenode.assign('graph')})
             },
             'in': {
                 description: "RDF data to be parsed and loaded or an URI where the data will be retrieved after performing content negotiation",
                 datatype: 'all',
                 required: true,
                 process: basenode.on({
-                    data: assign('data'),
+                    data: basenode.assign('data'),
                     disconnect: load
                 })
             }
@@ -50,12 +50,6 @@ exports.getComponent = function() {
         icon: 'sign-in'
     });
 };
-
-function assign(name, transform){
-    return function(data){
-        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
-    };
-}
 
 function load() {
     var outPorts = this.outPorts;

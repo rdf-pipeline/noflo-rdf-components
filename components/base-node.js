@@ -16,15 +16,7 @@ module.exports = {
    */
   assign: function(name, transform) { 
     return function(data){
-      for (var key in data) {
-        if (data.hasOwnProperty(key)) { 
-          this[key] = data[key];
-          // console.log('base-node assign setting '+key+' to ' + data[key]);
-        }
-      }
-      // Record that this object was processed 
-      this[name] = true;
-      // console.log('Assign has processed object '+name);
+        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
     };
   },
 

@@ -57,11 +57,11 @@ module.exports = {
      * Forks the specified command and waits until it returns.  
      * Sends the results to the next component.
      */
-     execUpdater: function( command, 
-                            nodeName,
-                            stateFile, 
-                            outPorts,
-                            sendPayload) {
+     execute: function( command, 
+                        nodeName,
+                        stateFile, 
+                        outPorts,
+                        sendPayload) {
 
         var self = this;
         exec(command, {timeout:3000}, function(error, stdout, stderr) {

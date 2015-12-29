@@ -26,41 +26,41 @@ exports.getComponent = function() {
             method: {
                 description: "HTTP method",
                 datatype: 'string',
-                process: basenode.on({data: assign('method', newUriTemplate)})
+                process: basenode.on({data: basenode.assign('method', newUriTemplate)})
             },
             url: {
                 description: "URI-Template (RFC6570)",
                 datatype: 'string',
                 required: true,
-                process: basenode.on({data: assign('url', newUriTemplate)})
+                process: basenode.on({data: basenode.assign('url', newUriTemplate)})
             },
             headers: {
                 description: "Request headers as name:template pairs using the URI-Template syntax",
                 datatype: 'object',
-                process: basenode.on({data: assign('headers', newUriTemplate)})
+                process: basenode.on({data: basenode.assign('headers', newUriTemplate)})
             },
             body: {
                 description: "Request body template using the Handlebars syntax",
                 datatype: 'string',
-                process: basenode.on({data: assign('body', Handlebars.compile)})
+                process: basenode.on({data: basenode.assign('body', Handlebars.compile)})
             },
             parameters: {
                 description: "Object data used to populate the templates, but not trigger the request",
                 datatype: 'object',
                 required: true,
-                process: basenode.on({data: assign('parameters', _.defaults)})
+                process: basenode.on({data: basenode.assign('parameters', _.defaults)})
             },
             data: {
                 description: "Use parameters port instead",
                 datatype: 'object',
-                process: basenode.on({data: assign('parameters', _.defaults)})
+                process: basenode.on({data: basenode.assign('parameters', _.defaults)})
             },
             'in': {
                 description: "Object data used to populate the templates and trigger the request",
                 datatype: 'object',
                 required: true,
                 process: basenode.on({
-                    data: assign('data', _.defaults),
+                    data: basenode.assign('data', _.defaults),
                     disconnect: execute
                 })
             }
@@ -71,12 +71,6 @@ exports.getComponent = function() {
         icon: 'external-link'
     });
 };
-
-function assign(name, transform){
-    return function(data){
-        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
-    };
-}
 
 function newUriTemplate(template){
     if (_.isString(template)) {

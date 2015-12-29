@@ -23,7 +23,7 @@ exports.getComponent = function() {
             frame: {
                 description: "JSON-LD Frame object",
                 datatype: 'object',
-                process: basenode.on({data: assign('frame')})
+                process: basenode.on({data: basenode.assign('frame')})
             },
             'in': {
                 description: "RDF JS Interface Graph object",
@@ -37,12 +37,6 @@ exports.getComponent = function() {
         icon: 'edit'
     });
 };
-
-function assign(name, transform){
-    return function(data){
-        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
-    };
-}
 
 function execute(graph) {
     var outPorts = this.outPorts;

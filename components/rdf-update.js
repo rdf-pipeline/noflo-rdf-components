@@ -24,23 +24,23 @@ exports.getComponent = function() {
             parameters: {
                 description: "A map of template parameters",
                 datatype: 'object',
-                process: basenode.on({data: assign('parameters')})
+                process: basenode.on({data: basenode.assign('parameters')})
             },
             update: {
                 description: "SPARQL update template string in handlebars syntax",
                 datatype: 'string',
                 required: true,
-                process: basenode.on({data: assign('update', Handlebars.compile)})
+                process: basenode.on({data: basenode.assign('update', Handlebars.compile)})
             },
             "default": {
                 description: "Graph URI for the default dataset",
                 datatype: 'string',
-                process: basenode.on({data: assign('defaultURIs', basenode.push)})
+                process: basenode.on({data: basenode.assign('defaultURIs', basenode.push)})
             },
             namespace: {
                 description: "Graph URI for the named dataset",
                 datatype: 'string',
-                process: basenode.on({data: assign('namespaceURIs', basenode.push)})
+                process: basenode.on({data: basenode.assign('namespaceURIs', basenode.push)})
             },
             'in': {
                 description: "RDF JS Interface Graph object",
@@ -54,12 +54,6 @@ exports.getComponent = function() {
         icon: 'cogs'
     });
 };
-
-function assign(name, transform){
-    return function(data){
-        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
-    };
-}
 
 function execute(graph) {
     var outPorts = this.outPorts;

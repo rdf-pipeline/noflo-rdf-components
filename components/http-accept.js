@@ -26,17 +26,17 @@ exports.getComponent = function() {
             limit: {
                 description: "Request Content-Length limit",
                 datatype: 'int',
-                process: basenode.on({data: assign('limit')})
+                process: basenode.on({data: basenode.assign('limit')})
             },
             encoding: {
                 description: "Request body character encoding",
                 datatype: 'string',
-                process: basenode.on({data: assign('encoding')})
+                process: basenode.on({data: basenode.assign('encoding')})
             },
             type: {
                 description: "Request Content-Type",
                 datatype: 'string',
-                process: basenode.on({data: assign('types', basenode.push)})
+                process: basenode.on({data: basenode.assign('types', basenode.push)})
             },
             'in': {
                 description: "HTTP request/response pair {req, res}",
@@ -50,12 +50,6 @@ exports.getComponent = function() {
         icon: 'sign-in'
     });
 };
-
-function assign(name, transform){
-    return function(data){
-        this[name] = _.isFunction(transform) ? transform(data, this[name]) : data;
-    };
-}
 
 function handle(pair){
     var outPorts = this.outPorts;
