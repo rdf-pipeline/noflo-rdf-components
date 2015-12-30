@@ -12,13 +12,13 @@ var basenode = require('../components/base-node');
 
 describe('base-node', function() {
 
-  it('basenode should exist', function() {
+  it('base-node should exist', function() {
     should.exist( basenode );
   });
 
   describe('#assign', function () {
 
-    it('assign function should exist in basenode exports', function() {
+    it('assign function should exist in base-node exports', function() {
       should.exist( basenode.assign );
       basenode.assign.should.be.a('function');
     });
@@ -54,7 +54,7 @@ describe('base-node', function() {
 
   describe('#defaultPorts', function () {
     
-    it('defaultPorts should exist in basenode exports', function() {
+    it('defaultPorts should exist in base-node exports', function() {
       should.exist( basenode.defaultPorts );
       basenode.defaultPorts.should.be.an('object');
     });
@@ -85,7 +85,7 @@ describe('base-node', function() {
 
   describe('#on', function () {
    
-    it('on function should exist in basenode exports', function() {
+    it('on function should exist in base-node exports', function() {
       should.exist( basenode.on );
       basenode.on.should.be.a('function');
     });
@@ -116,7 +116,7 @@ describe('base-node', function() {
 
   describe('#push', function () {
    
-    it('push function should exist in basenode exports', function() {
+    it('push function should exist in base-node exports', function() {
       should.exist( basenode.push );
       basenode.push.should.be.a('function');
     });

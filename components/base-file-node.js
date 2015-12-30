@@ -12,6 +12,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 
 var basenode = require('./base-node');
+var debug = false;
 
 module.exports = {
 
@@ -37,19 +38,30 @@ module.exports = {
     writeStateFile: function( stateFile,
                               nodeState, 
                               outPorts, 
-                              sendPayload ) { 
+                              sendPayload,
+                              callback ) { 
 
-        console.log("Saving state to "+stateFile);
-        fs.writeFile( stateFile, nodeState+"\n", function (err) {
+        if ( this.debug ) {
+          console.log("Saving state to "+stateFile);
+        }
+
+        fs.writeFile( stateFile, nodeState, function (err) {
 
           if (err) {
-            console.log(err);
-            outPorts.error.send(err);
-            outPorts.error.disconnect();
+
+            if ( outPorts && outPorts.error ) { 
+              outPorts.error.send(err);
+              outPorts.error.disconnect();
+            }
+
+          } else if ( outPorts && outPorts.out ) { 
+            outPorts.out.send( sendPayload );
+            outPorts.out.disconnect();
           }
 
-          outPorts.out.send( sendPayload );
-          outPorts.out.disconnect();
+          if ( _.isFunction(callback)) {
+            callback( stateFile, err );
+          }
         }); 
     },
 
@@ -61,30 +73,52 @@ module.exports = {
                         nodeName,
                         stateFile, 
                         outPorts,
-                        sendPayload) {
+                        sendPayload, 
+                        callback) {
 
         var self = this;
         exec(command, {timeout:3000}, function(error, stdout, stderr) {
 
-            if (error !== null) {
-                console.log("error: "+error.toString());
-                outPorts.error.send(error);
-                outPorts.out.disconnect();
-                return console.log( err );
+            if ((error || stderr) && outPorts && outPorts.error) { 
+
+                if (error) {
+                  outPorts.error.send(error);
+                } 
+
+                if (stderr) { 
+                  outPorts.error.send(stderr);
+                }
+
+                outPorts.error.disconnect();
             }
 
-            if (stderr !== null && stderr.length > 0) {
-                console.log("stderr: "+stderr.toString());
-                basenode.outPorts.error.send(stderr);
-                basenode.outPorts.out.disconnect();
-                return console.log( stderr );
-            }
+            if (stdout !== null ) {
 
-            if (stdout !== null) {
-                self.writeStateFile( stateFile, 
-                                     stdout, 
-                                     outPorts,
-                                     sendPayload );
+                if (stateFile && stateFile.length > 0) { 
+
+                  self.writeStateFile( stateFile, 
+                                       stdout, 
+                                       outPorts,
+                                       sendPayload, 
+                                       function( stateFile, err ) { 
+                    if ( ! error ) {
+                      error = err;
+                    }
+                    if ( _.isFunction(callback) ) {
+                      callback( stateFile, error );
+                    }
+                  });
+
+                } else {
+                  if (outPorts && outPorts.out) { 
+                    outPorts.out.send( sendPayload );
+                    outPorts.out.disconnect();
+                  }
+
+                  if ( _.isFunction(callback) ) {
+                    callback( stateFile, error );
+                  }
+                }
            }
 
         });
@@ -96,8 +130,9 @@ module.exports = {
      */
     isJsFile: function( string ) {
 
-      if ( string.toLowerCase().endsWith(".js") ) { 
-         return ( 0 > string.trim().replace("\\ ","").indexOf(" "));
+      var cleanString = string.trim().replace("\\ ","");
+      if ( cleanString.toLowerCase().endsWith(".js") ) { 
+         return (cleanString.indexOf(" ") < 0);
       }
 
       return false;
@@ -114,16 +149,22 @@ module.exports = {
         var uniqueElements = [];
 
         // Get elements in array with the specified attribute
-        var elements = _.pluck(array, attrName);
+        var elements = _.pluck(array, attrName).filter(function(x) {
+                           // filter out any undefineds (objects in array that don't have attribute we want)
+                           return (x);
+                       });
 
         // if we got any elements, de-dup the list to be sure there is only one for each
         if ( !  _.isEmpty(elements)) {
+
            uniqueElements = _.uniq( elements,
                                     function(x) {
-                                        return JSON.stringify( x );
+                                        if (x) {
+                                          return JSON.stringify( x );
+                                        }
                                     });
         }
-        return uniqueElements;
+        return _.flatten(uniqueElements);
     }
 
 };

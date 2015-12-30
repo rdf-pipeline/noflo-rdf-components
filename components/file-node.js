@@ -132,11 +132,14 @@ function handle(data) {
     // Get a unique array of all values of updaterArgs from input
     var unique_updaterArgs = basefnode.uniqElemsWithAttr( this.dataArray,
                                                           this.inOutAttrs.updaterArgs );
-    updaterCmd += " '" + unique_updaterArgs.join("' ") + "'";
 
-    if ( this.options.debug ) {
-        console.log("Executing "+updaterCmd);
+    if ( unique_updaterArgs.length > 0 ) {
+      updaterCmd += " '" + unique_updaterArgs.join("' ") + "'";
     }
+
+    // if ( this.options.debug ) {
+        console.log("Executing "+updaterCmd);
+    // }
 
     var payload = ( unique_updaterArgs ) ? 
                     { [this.inOutAttrs.sourceName]: this.options.name, 
