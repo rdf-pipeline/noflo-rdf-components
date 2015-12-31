@@ -1,6 +1,6 @@
 /**
  * File: base-file-node-mocha.js
- * Unit tests for the base-node APIs defined in components/base-node.js
+ * Unit tests for the base-file-node APIs defined in components/base-file-node.js
  */
 
 var fs = require('fs');
@@ -109,7 +109,7 @@ describe('base-file-node', function() {
       basefnode.execute( command,
                          nodeName,
                          stateFileName,
-                         outputPorts,  // TODO: Add stub for output ports
+                         outputPorts,  
                          { name: nodeName },
                          function( stateFile, error ) { 
   
