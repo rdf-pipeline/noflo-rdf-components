@@ -6,10 +6,11 @@
 var fs = require('fs');
 
 var chai = require('chai');
-
 var assert = chai.assert;
 var expect = chai.expect;
 var should = chai.should();
+
+var sinon = require('sinon');
 
 var basefnode = require('../components/base-file-node');
 
@@ -62,6 +63,37 @@ describe('base-file-node', function() {
 
   describe('#execute', function () {
 
+    beforeEach(function(done) {
+      // Set up an outputPort variable we can use for testing 
+      outputPorts = { error: {
+                       disconnect: function() {},
+                       send: function() {}
+                     },
+                     out: {
+                       disconnect: function() {},
+                       send: function() {}
+                     }
+                    };
+
+      // Set up sinon stubs on the APIs so we can verify they
+      // got called when they should and didn't when they should not
+      sinon.stub(outputPorts.out, 'disconnect');
+      sinon.stub(outputPorts.out, 'send');
+      sinon.stub(outputPorts.error, 'disconnect');
+      sinon.stub(outputPorts.error, 'send');
+      done();
+    });
+
+    afterEach(function(done) {
+      // Cleanup stubs
+      outputPorts.out.disconnect.restore();
+      outputPorts.out.send.restore();
+      outputPorts.error.disconnect.restore();
+      outputPorts.error.send.restore();
+      delete outputPorts;
+      done();
+    });
+
     it('execute function should exist in base-file-node exports', function() {
       should.exist( basefnode.execute );
       basefnode.execute.should.be.a('function');
@@ -77,12 +109,18 @@ describe('base-file-node', function() {
       basefnode.execute( command,
                          nodeName,
                          stateFileName,
-                         null,  // TODO: Add stub for output ports
+                         outputPorts,  // TODO: Add stub for output ports
                          { name: nodeName },
                          function( stateFile, error ) { 
   
                            expect(stateFile).to.equal(stateFileName);
-                           expect(error).to.be.a('null');
+                           expect(error).to.be.null;
+
+                           outputPorts.error.send.called.should.be.false;
+                           outputPorts.error.disconnect.called.should.be.false;
+
+                           outputPorts.out.send.called.should.be.true;
+                           outputPorts.out.disconnect.called.should.be.true;
 
                            // Verify file exists and has the right content
                            fs.stat(stateFile, function(error, stats) {
@@ -222,6 +260,37 @@ describe('base-file-node', function() {
 
   describe('#writeStateFile', function () {
 
+    beforeEach(function(done) {
+      // Set up an outputPort variable we can use for testing 
+      outputPorts = { error: {
+                       disconnect: function() {},
+                       send: function() {}
+                     },
+                     out: {
+                       disconnect: function() {},
+                       send: function() {}
+                     }
+                    };
+
+      // Set up sinon stubs on the APIs so we can verify they
+      // got called when they should and didn't when they should not
+      sinon.stub(outputPorts.out, 'disconnect');
+      sinon.stub(outputPorts.out, 'send');
+      sinon.stub(outputPorts.error, 'disconnect');
+      sinon.stub(outputPorts.error, 'send');
+      done();
+    });
+
+    afterEach(function(done) {
+      // Cleanup stubs
+      outputPorts.out.disconnect.restore();
+      outputPorts.out.send.restore();
+      outputPorts.error.disconnect.restore();
+      outputPorts.error.send.restore();
+      delete outputPorts;
+      done();
+    });
+
     it('writeStateFile function should exist in base-file-node exports', function() {
       should.exist( basefnode.writeStateFile );
       basefnode.writeStateFile.should.be.a('function');
@@ -241,12 +310,18 @@ describe('base-file-node', function() {
 
       basefnode.writeStateFile( stateFileName, 
                                 stateToWrite,
-                                null,
+                                outputPorts,
                                 { name: 'TestState' },
                                 function(stateFile, error) { 
 
         expect(stateFile).to.equal(stateFileName);
-        expect(error).to.be.a('null');
+        expect(error).to.be.null;
+
+        outputPorts.error.send.called.should.be.false;
+        outputPorts.error.disconnect.called.should.be.false;
+
+        outputPorts.out.send.called.should.be.true;
+        outputPorts.out.disconnect.called.should.be.true;
 
         // Verify file exists and has the right content
         fs.stat(stateFile, function(error, stats) {
@@ -271,11 +346,17 @@ describe('base-file-node', function() {
       var stateToWrite = 'My Test State';
       basefnode.writeStateFile( stateFileName, 
                                 stateToWrite,
-                                null, // Todo: Add stub for output ports
+                                outputPorts, 
                                 { name: 'TestState' },
                                 function(stateFile, error) { 
          expect(error).to.not.equal(null);
          expect(stateFile).to.equal(stateFileName);
+
+         outputPorts.error.send.called.should.be.true;
+         outputPorts.error.disconnect.called.should.be.true;
+
+         outputPorts.out.send.called.should.be.false;
+         outputPorts.out.disconnect.called.should.be.false;
          done();
       });
     });
