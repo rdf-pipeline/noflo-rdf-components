@@ -51,8 +51,8 @@ module.exports = {
    */
    on: function(type, callback) {
      if ( type ) { 
-       return function(event, payload) {
-         if (type[event]) type[event].call(this.nodeInstance, payload);
+       return function(event, payload, cb) {
+         if (type[event]) type[event].call(this.nodeInstance, payload, cb);
        };
      } else {
        throw new Error("Expected an event type!");

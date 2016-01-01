@@ -62,7 +62,7 @@ exports.getComponent = function() {
         // The expected input port attribute names
         outAttrs: {
             sourceName: "name",
-            sourceJsObject: "js_object",
+            jsObject: "jsObject",
             updaterArgs: "updaterArgs"
         }
 
@@ -70,21 +70,29 @@ exports.getComponent = function() {
 }
 
 
-// Once all data has been received, this function handles the RDF file-node update work
-// and passes on the results to the next component(s).
-function handle(data) {
+/**
+ * Once all data has been received, this function handles the RDF file-node update work
+ * and passes on the results to the next component(s).  
+ *
+ * @param data input data object.  This should contain: 
+ *          { name: <source name string, e.g., Init>
+ *            file: <path to json file to parse> 
+ *            updaterArgs: any arguments that should be passed to the updater }
+ * @param callback optional callback function
+ */
+function handle( data, callback ) {
 
     // Do we have all the input we need to proceed?
     if ( ! this.options ) {
-        return _.defer(handle.bind(this, data));
+      return _.defer(handle.bind(this, data));
     }
 
     if ( this.options.debug ) { 
-        console.log("\njson-file-node processing "+this.options.name);
+      console.log("\njson-file-node processing "+this.options.name);
     }
 
     if (!this.options.name) {
-        throw new Error('Missing required setting "name".');
+      throw new Error('Missing required setting "name".');
     }
 
     try { 
@@ -113,15 +121,16 @@ function handle(data) {
                      var sendPayload = 
                          ( data.updaterArgs ) ? { [this.outAttrs.sourceName]: this.options.name,
                                                    [this.outAttrs.updaterArgs]: data.updaterArgs,
-                                                   [this.outAttrs.sourceJsObject]: result } 
+                                                   [this.outAttrs.jsObject]: result } 
                                                : 
                                                    { [this.outAttrs.sourceName]: this.options.name,
-                                                     [this.outAttrs.sourceJsObject]: result };
+                                                     [this.outAttrs.jsObject]: result };
 
                      basefnode.writeStateFile( stateFile,
                                                JSON.stringify(result),
                                                this.outPorts,
-                                               sendPayload ); 
+                                               sendPayload,
+                                               callback ); 
 
                 } else {
                      // No result after executing the updater - this is not good
@@ -137,12 +146,9 @@ function handle(data) {
         } else {
             // No updater configured - go ahead and send whatever json object we parsed  
             this.outPorts.out.send( { [this.outAttrs.sourceName]: this.options.name,
-                                      [this.outAttrs.sourceJsObject]: jsObject } );
-        } 
-
-        if ( this.outPorts.out.isConnected() ) { 
+                                      [this.outAttrs.jsObject]: jsObject } );
             this.outPorts.out.disconnect();
-        }
+        } 
 
     } catch(e) { 
         var errMsg = "Unable to process json file "+jsonFilePath+": \n" + e.message;

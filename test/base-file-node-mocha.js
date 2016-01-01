@@ -29,7 +29,7 @@ describe('base-file-node', function() {
    
     it('should use state directory', function() {
       var defaultPath =  basefnode.defaultStateFilePath();
-      assert.isTrue( defaultPath.endsWith("/state/"), 
+      assert.isTrue( defaultPath.endsWith('/state/'), 
                      'state file path should end with "/state/"');
 
       if ( process ) { 
@@ -37,6 +37,7 @@ describe('base-file-node', function() {
                 'state file path should use current working directory');
         }
     });
+
   });
 
   describe('#defaultStateFile', function () {
@@ -99,7 +100,7 @@ describe('base-file-node', function() {
       basefnode.execute.should.be.a('function');
     });
 
-    it('should execute "echo Aloha" and write result to state file', function() {
+    it('should execute "echo Aloha" and write result to state file', function(done) {
       var nodeName = 'Aloha';
       var payload = { name: nodeName };
       var stateFileName = '/tmp/'+nodeName;
@@ -124,11 +125,11 @@ describe('base-file-node', function() {
 
                            // Verify file exists and has the right content
                            fs.stat(stateFile, function(error, stats) {
-                             fs.open(stateFile, "r", function(error, fd) {
+                             fs.open(stateFile, 'r', function(error, fd) {
                                var buf = new Buffer(stats.size);
 
                                fs.read(fd, buf, 0, buf.length, null, function(error, bytesRead, buf) {
-                                 var data = buf.toString("utf8", 0, buf.length).replace(/\r?\n|\r/,'');
+                                 var data = buf.toString('utf8', 0, buf.length).replace(/\r?\n|\r/,'');
                                  expect(data).to.equal(nodeName);
                                  fs.close(fd);
                                  done();
@@ -325,11 +326,11 @@ describe('base-file-node', function() {
 
         // Verify file exists and has the right content
         fs.stat(stateFile, function(error, stats) {
-          fs.open(stateFile, "r", function(error, fd) {
+          fs.open(stateFile, 'r', function(error, fd) {
             var buf = new Buffer(stats.size);
 
             fs.read(fd, buf, 0, buf.length, null, function(error, bytesRead, buf) {
-              var data = buf.toString("utf8", 0, buf.length).replace(/\r?\n|\r/,'');
+              var data = buf.toString('utf8', 0, buf.length).replace(/\r?\n|\r/,'');
               expect(data).to.equal(stateToWrite);
               fs.close(fd);
               done();
