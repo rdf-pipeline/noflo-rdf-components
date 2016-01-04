@@ -4,7 +4,6 @@
  */
 
 var chai = require('chai');
-var assert = chai.assert;
 var expect = chai.expect;
 var should = chai.should();
 
@@ -19,17 +18,19 @@ describe('base-node', function() {
   describe('#assign', function () {
 
     it('assign function should exist in base-node exports', function() {
-      should.exist( basenode.assign );
+      basenode.assign.should.exist;
       basenode.assign.should.be.a('function');
     });
-   
+
     it('should assign specified object to "this" instance.', function() {
 
       var assign = basenode.assign('options'); 
       assign.should.be.a('function');
 
+      // ensure we start with fresh options - no past test contamination
       delete this.options;
       
+      // Create a test object with a string, number, and object
       var nameValue = "Test",
         attrValue = 1,
         objAttrValue = "objAttrVal",
@@ -40,15 +41,52 @@ describe('base-node', function() {
         attr: attrValue, 
         obj: objValue 
       };
+
+      // Execute assign function with the test object
       assign.call( this, testObject ); 
 
+      // Verify that all 3 object properties exist
       this.options.name.should.exist;
       this.options.attr.should.exist;
       this.options.obj.should.exist;
 
+      // Verify that all 3 values of the properties are correct
       this.options.name.should.equal(nameValue);
       this.options.attr.should.equal(attrValue);
       this.options.obj.should.equal(objValue);
+
+      // clean up 
+      delete this.options;
+    });
+
+    it('should transform an object before saving it in "this" instance' , function() {
+
+       // Create a simple transformation function - it will concatenate strings
+       var concat=function( string, current ) {
+          current = (current) ? current.toString() + string.toString() : string.toString();
+          return current;
+       }
+
+       // Clear out the test String to be sure there's no garbage hanging around
+       this.testString = '';
+
+       // Get a handle to an assign function for the testString, with a concat transform
+       var assign = basenode.assign('testString', concat); 
+       assign.should.be.a('function');
+
+       // Pass in a string to assign and verify results
+       var first = '1';
+       assign.call(this, first); 
+       this.testString.should.exist;
+       this.testString.should.equal(first);
+
+       // Pass in a second string to assign and verify we got concatenation
+       var second = '2';
+       assign.call(this, second); 
+       this.testString.should.equal(first+second);
+
+       // clean up
+       delete this.testString;
     });
   });
 
@@ -61,32 +99,29 @@ describe('base-node', function() {
    
     it('should contain default output ports', function() {
 
-      should.exist( basenode.defaultPorts );
-      basenode.defaultPorts.should.be.an('object');
-
-      expect(basenode.defaultPorts).to.have.property('outPorts');
-      should.exist( basenode.defaultPorts.outPorts );
+      basenode.defaultPorts.should.have.property('outPorts');
+      basenode.defaultPorts.outPorts.should.exist;
       basenode.defaultPorts.outPorts.should.be.an('object');
     });
 
     it('should contain an "out" output port', function() {
-      expect(basenode.defaultPorts.outPorts).to.have.property('out');
-      should.exist( basenode.defaultPorts.outPorts.out );
+      basenode.defaultPorts.outPorts.should.have.property('out');
+      basenode.defaultPorts.outPorts.out.should.exist;
       basenode.defaultPorts.outPorts.out.should.be.an('object');
     });
 
     it('should contain an "error" output port', function() {
-      expect(basenode.defaultPorts.outPorts).to.have.property('error');
+      basenode.defaultPorts.outPorts.should.have.property('error');
       basenode.defaultPorts.outPorts.error.should.be.an('object');
-      should.exist( basenode.defaultPorts.outPorts.error );
-      assert.typeOf(basenode.defaultPorts.outPorts.error.datatype, 'string');
+      basenode.defaultPorts.outPorts.error.should.exist;
+      basenode.defaultPorts.outPorts.error.datatype.should.equal('string');
     });
   });
 
   describe('#on', function () {
    
     it('on function should exist in base-node exports', function() {
-      should.exist( basenode.on );
+      basenode.on.should.exist;
       basenode.on.should.be.a('function');
     });
 
@@ -96,9 +131,9 @@ describe('base-node', function() {
       var testData = { payload: testDataValue };
 
       var execute = function(data) { 
-        should.exist(data);
+        data.should.exist;
         data.should.be.an('object'); 
-        expect(data).to.have.property('payload');
+        data.should.have.property('payload');
         data.payload.should.equal(testDataValue);
       };
 
@@ -106,7 +141,8 @@ describe('base-node', function() {
       on.should.be.a('function');
 
       delete this.ondataExecuted;
-      on.call( this, testData );
+
+      expect(on.call( this, testData )).to.not.throw.error;
     });
 
     it('on function should fail if called with no parameters', function() {
@@ -117,7 +153,7 @@ describe('base-node', function() {
   describe('#push', function () {
    
     it('push function should exist in base-node exports', function() {
-      should.exist( basenode.push );
+      basenode.push.should.exist;
       basenode.push.should.be.a('function');
     });
 
@@ -125,10 +161,10 @@ describe('base-node', function() {
       var string = "Test String";
       var result = basenode.push(string);
 
-      should.exist( result);
-      assert.typeOf( result, 'array', 'testArray should be an array');
-      expect(result).to.have.length(1);
-      expect(result).to.deep.equal([string]);
+      result.should.exist;
+      result.should.be.an('array');
+      result.should.have.length(1);
+      result.should.be.deep.equal([string]);
     });
 
     it('should add an integer to an existing empty array', function() {
@@ -136,10 +172,10 @@ describe('base-node', function() {
       var testArray = []; 
       var result = basenode.push( anInt, testArray );
 
-      should.exist( result );
-      assert.typeOf( result, 'array', 'Expected an array');
-      expect(result).to.have.length(1);
-      expect(result).to.deep.equal([anInt]);
+      result.should.exist;
+      result.should.be.an('array');
+      result.should.have.length(1);
+      result.should.be.deep.equal([anInt]);
     });
 
     it('should add multiple elements of mixed type to array', function() {
@@ -150,32 +186,32 @@ describe('base-node', function() {
                     int: anInt };
 
       var result = basenode.push(string, testArray);
-      should.exist( result);
-      assert.typeOf( result, 'array', 'testArray should be an array');
-      expect(result).to.have.length(1);
+      result.should.exist;
+      result.should.be.an('array');
+      result.should.have.length(1);
 
       result = basenode.push(anInt, testArray);
-      should.exist( result);
-      assert.typeOf( result, 'array', 'testArray should be an array');
-      expect(result).to.have.length(2);
-      assert.include( result, string, 'result should contain string' );
-      assert.include( result, anInt, 'result should contain integer' );
+      result.should.exist;
+      result.should.be.an('array');
+      result.should.have.length(2);
+      result.should.contain(string);
+      result.should.contain(anInt);
 
       result = basenode.push(myObj, testArray);
-      should.exist( result);
-      assert.typeOf( result, 'array', 'testArray should be an array');
-      expect(result).to.have.length(3);
-      assert.include( result, string, 'result should contain string' );
-      assert.include( result, anInt, 'result should contain integer' );
-      assert.include( result, myObj, 'result should contain object' );
+      result.should.exist;
+      result.should.be.an('array');
+      result.should.have.length(3);
+      result.should.contain(string);
+      result.should.contain(anInt);
+      result.should.contain(myObj);
     });
 
     it('should not fail with a null value', function() {
       var nullVal = null;
       var result = basenode.push(nullVal);
-      should.exist( result);
-      assert.typeOf( result, 'array', 'testArray should be an array');
-      expect(result).to.have.length(0);
+      result.should.exist;
+      result.should.be.an('array');
+      result.should.have.length(0);
     });
   });
 
