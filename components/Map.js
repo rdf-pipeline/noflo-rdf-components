@@ -65,22 +65,25 @@ exports.getComponent = function() {
     });
 };
 
+// ###################### newPayload #########################
 /**
- * Create a new event payload.  The options may depend on the event type:
- *  data -- PUSH event going downstream.  Options:
+ * Create a new NoFlo event payload.  The properties may depend on 
+ * the event type:
+ *  data -- Push an event downstream.  Properties:
  *	vnid: sendersVnid
  *	state: refOfSendersOutportState
  */
-function newPayload(event, options) {
+function newPayload(event, properties) {
   if (event != 'data') return;
-  if (!("vnid" in options)) die("newPayload: data event requires a vnid field");
-  if (!("state" in options)) die("newPayload: data event requires a state field");
+  if (!("vnid" in properties)) die("newPayload: data event requires a vnid property");
+  if (!("state" in properties)) die("newPayload: data event requires a state property");
   var payload = {
-	vnid: options.vnid,
-	state: options.state };
+	vnid: properties.vnid,
+	state: properties.state };
   return payload;
 }
 
+// ###################### forwardData #########################
 /**
  * Temporary function to forward data downstream.
  */
