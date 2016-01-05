@@ -66,6 +66,7 @@ exports.getComponent = function() {
 };
 
 // ###################### newPayload #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Create a new NoFlo event payload.  The properties may depend on 
  * the event type:
@@ -84,6 +85,7 @@ function newPayload(event, properties) {
 }
 
 // ###################### forwardData #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Temporary function to forward data downstream.
  */
@@ -109,6 +111,7 @@ function forwardData(vni, toPortName, event, state) {
 }
 
 // ###################### receiveEvent #########################
+// STATUS: Ready to be merged into base-node
 /**
  * receiveEvent is for handling all NoFlo events on all inports.
  * At some point we might extend it to handle other RDF Pipeline
@@ -165,6 +168,7 @@ function selfReceiveEvent(inport, event, payload) {
 
 
 // ###################### nodePortString #########################
+// STATUS: Ready to be merged into base-node
 /**
  * For the given port, return "nodeName|portName", caching results.
  * If port is null, then return "data0", indicating constant input (NoFlo IIP).
@@ -179,6 +183,7 @@ function nodePortString(port)
 }
 
 // ###################### nodePortStringFromStrings #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Given nodeName and portName return "nodeName|portName", caching results.
  */
@@ -196,6 +201,7 @@ function nodePortStringFromStrings(nodeName, portName)
 }
 
 // ###################### maybeFireUpdater #########################
+// STATUS: Ready to be merged into base-node
 function maybeFireUpdater(vni, event, payload)
 {
   console.log("=============== maybeFireUpdater starting ===============");
@@ -205,6 +211,7 @@ function maybeFireUpdater(vni, event, payload)
 }
 
 // ###################### maybeSendEvent #########################
+// STATUS: Ready to be merged into base-node
 function maybeSendEvent(vni, event, payload)
 {
   console.log("=============== maybeSendEvent starting ===============");
@@ -221,6 +228,7 @@ function maybeSendEvent(vni, event, payload)
 }
 
 // ###################### allInputsHaveData #########################
+// STATUS: Not yet used or tested
 /**
  * Return true iff all required inputs have data.
  */
@@ -238,6 +246,7 @@ function allInputsHaveData(vni)
 }
 
 // ###################### isStale #########################
+// STATUS: Not yet used or tested
 /**
  * Return true iff the given state is stale wrt the given inputs.
  * This function assumes that all required inputs have data.
@@ -265,6 +274,7 @@ function isStale(inputs, state)
 }
 
 // ###################### anyStaleState #########################
+// STATUS: Not yet used or tested
 /**
  * Return true iff all required inputs have data and any are stale
  * with respect to the node's inputs.
@@ -284,10 +294,14 @@ console.log("anyStaleState UNFINISHED");
 }
 
 // ###################### ensureVniExists #########################
+// STATUS: Ready to be merged into base-node
 /**
   * Ensure that the given node's VNI exists
   * for the given vnid (which defaults to ""), and return it.
-  * Create it if it doesn't.  
+  * Create it if it doesn't.   This is needed because we do not
+  * have a way to initialize VNIs when NoFlo starts running the
+  * network.  Instead, we initialize each node on the fly when
+  * an event is first sent to it.
   */
 function ensureVniExists(node, vnid) {
   var vni;
@@ -320,6 +334,7 @@ function ensureVniExists(node, vnid) {
 }
 
 // ###################### newVni #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Create a new VNI (Virtual Node Instance), but do not attach
  * it to the given NoFlo node instance.
@@ -347,6 +362,7 @@ function newVni(node, vnid) {
 }
 
 // ###################### dumpVni #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Print the given VNI to the console.
  */
@@ -378,6 +394,7 @@ function dumpVni(vni) {
 }
 
 // ###################### newStatesFromInputs #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Create a new states hash from a NoFlo node instance and an inputs hash,
  * initializing state data and previousLms to undefined.
@@ -396,6 +413,7 @@ function newStatesFromInputs(node, inputs) {
 }
 
 // ###################### setStateLmsFromInputs #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Set a state's previous LMs based on an inputs object.  The state's
  * previousLms are either set from the LMs in the inputs object (if
@@ -416,6 +434,7 @@ function setStateLmsFromInputs(state, outport, inputs, setLmsFromInputs) {
 }
 
 // ###################### newConstantState #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Create a new state object for a constant input (NoFlo IIP).
  */
@@ -425,6 +444,7 @@ function newConstantState(data) {
 }
 
 // ###################### newState #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Create a new node state object.  previousLms must
  * have already been created if the state is for an output port
@@ -455,6 +475,7 @@ function newState(data, lm, outport, previousLms) {
 }
 
 // ###################### die #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Crash and burn with useful info.
  */
@@ -468,6 +489,7 @@ function die() {
 }
 
 // ###################### setPreviousLms #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Set LMs in a previousLms hash from an inputs hash (of the
  * same node), copying the LMs from the inputs hash to the previousLms hash
@@ -496,6 +518,7 @@ function setPreviousLms(previousLms, inputs, setLmsFromInputs) {
 }
 
 // ###################### newInputs #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Create a new inputs hash, initialized to nulls.
  */
@@ -542,6 +565,7 @@ function newInputs(node) {
 }
 
 // ###################### newLm #########################
+// STATUS: Ready to be merged into base-node
 /**
  * Return a new LM each time this is called, based on the currently
  * reported seconds since the epoch on this server, plus a 
@@ -584,6 +608,7 @@ function newLm() {
 }
 
 // ###################### formalParameters #########################
+// STATUS: Ready to be merged into base-node
 // http://stackoverflow.com/questions/6921588/is-it-possible-to-reflect-the-arguments-of-a-javascript-function#answer-13660631
 // https://github.com/angular/angular.js/blob/master/src/auto/injector.js
 
