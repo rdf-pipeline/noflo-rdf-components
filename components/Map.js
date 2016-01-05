@@ -379,7 +379,6 @@ function dumpVni(vni) {
     console.log("selfNode: "+nodeName);
   }
   console.log("=============== END dumpVni: "+nodeName+" ===============");
-  process.exit(0);
 }
 
 // ###################### newStatesFromInputs #########################
