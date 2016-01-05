@@ -1,4 +1,4 @@
-// FileNode.js
+// Map.js
 
 var _ = require('underscore');
 var exec = require('child_process').exec;
@@ -29,24 +29,14 @@ exports.getComponent = function() {
             }
         },
         inPorts: {
-            name: {
-                description: "Name of this FileNode.  Should be unique within a pipeline.",
+            my_inport: {
+                description: "my_inport_description",
                 datatype: 'string',
                 required: true,
                 addressable: false,
                 buffered: false,
 		multi: true,
                 // process: ondata(assign('name'))
-		// process: dumpEvent
-		process: receiveEvent
-            }, 
-            state_file: {
-                description: "File path to the node state file.",
-                datatype: 'string',
-                required: true,
-                addressable: false,
-                buffered: false,
-                // process: ondata(assign('state_file'))
 		// process: dumpEvent
 		process: receiveEvent
             }, 
@@ -135,6 +125,7 @@ function selfReceiveEvent(inport, event, payload) {
   var vnid;
   var state;		// Used for IIP events
   var nodeInstance;	// nodeInstance
+  var inportName = inport.name;
   var vni;		// VNI for the given vnid
   console.log("############### receiveEvent ###############");
   // console.log("receiveEvent event: "+event+" from node.outport: "+payload.from.process.id+"."+payload.from.port);
@@ -161,49 +152,36 @@ function selfReceiveEvent(inport, event, payload) {
     console.log(" ... IIP event ");
     // IIP event
     vnid = "";
-    state = newState(payload);
+    state = newConstantState(payload);
     console.log(" ... IIP event, state saved: ", state);
   }
   nodeInstance = inport.nodeInstance;
   // I (dbooth) have not found a way to initialize nodes in advance,
   // so we do it on the fly when the first event arrives:
   vni = ensureVniExists(nodeInstance, vnid);
-  assignInputOrPreviousLm(vni.inputs, inport, state);
+  var senderNodePortString = nodePortString(state.selfPort);
+  vni.inputs[inportName][senderNodePortString] = state;
   console.log("vni.inputs:", vni.inputs);
   console.log("########");
   maybeFireUpdater(vni, event, payload);
   // TODO: maybeSendEvent(vni, event, payload);
   console.log("receiveEvent done.  Stored state:", state);
   console.log("##############################");
+  // console.log("############# EXITING ##############");
+  // process.exit(0);
   return;
 }
 
 
-// ###################### assignInputOrPreviousLm #########################
-/**
- * previousLms and inputs use the same structure, so this function
- * can be used with either.
- */
-function assignInputOrPreviousLm(inputsOrLms, inport, value)
-{
-  // TODO: Update this for new inputs structure
-  if (Array.isArray(inputsOrLms[inport.name])) {
-    var nodePort = nodePortString(inport);
-    inputsOrLms[inport.name][nodePort] = value;
-    console.log("Assigning to array nodePort: ", nodePort);
-  } else {
-    inputsOrLms[inport.name] = value;
-    console.log("Assigning to single value inport: ", inport.name);
-  }
-}
-
 // ###################### nodePortString #########################
 /**
  * For the given port, return "nodeName|portName", caching results.
+ * If port is null, then return "data0", indicating constant input (NoFlo IIP).
  */
 function nodePortString(port)
 {
-  return nodePortStringFromStrings(port.nodeInstance.nodeId, port.name);
+  if (port) return nodePortStringFromStrings(port.nodeInstance.nodeId, port.name);
+  else return "data0";
 }
 
 // ###################### nodePortStringFromStrings #########################
@@ -293,130 +271,14 @@ function isStale(inputs, state)
 function anyStaleState(vni)
 {
 /*
-  if (typeof vni === 'undefined') { throw new Error("vni undefined"); };
-  if (typeof vni.inputs === 'undefined') { throw new Error("vni.inputs undefined"); };
+  if (typeof vni === 'undefined') { die("vni undefined"); };
+  if (typeof vni.inputs === 'undefined') { die("vni.inputs undefined"); };
   if (!allInputsHaveData(vni)) { return
 
   for (var portName in vni.selfNode.inPorts.ports) {
     var input = vni.inputs[portName];
     if (
 */
-}
-
-// ###################### newState #########################
-/**
- * Create a new node state object, either with or without previousLms,
- * and with or without initial state data and LM.
- * previousLms indicate the LMs of the inports that existed when the state
- * was last updated.  They are remembered in order to detect when
- * the state is stale.  selfPort is the outport to which this state
- * belongs (if any) within a node.  If outport is null then this state is
- * for an IIP rather than being a state for a node's outport, in
- * which case previousLms should also be null.
- */
-function newState(data, lm, selfPort, previousLms) {
-  // console.log("===============  newState starting ===============");
-  // If we're given a data value, then make sure we have an LM:
-  if (typeof data !== 'undefined' && !lm) {
-    lm = newLm();
-  }
-  selfPort = (typeof selfPort === 'undefined' ? null : selfPort);
-  previousLms = (typeof previousLms === 'undefined' ? null : previousLms);
-  var s = {
-	data: data,
-	lm: lm,
-	previousLms: previousLms,
-	selfPort: selfPort
-  };
-  // process.exit(0);
-  // console.log("===============  newState returning ===============");
-  return(s);
-}
-
-// ###################### newVni #########################
-/**
- * Create a new VNI (Virtual Node Instance), but do not attach
- * it to the given NoFlo node instance.
- */
-function newVni(node, vnid) {
-  if (typeof node === 'undefined') {
-    throw new Error("newVni called with undefined node");
-  }
-  if (typeof vnid === 'undefined') {
-    throw new Error("newVni called with undefined vnid");
-  }
-  var vni;
-  var inputs = newInputs(node);
-  var states = {};
-  for (var portName in node.outPorts.ports) {
-    var port = node.outPorts.ports[portName];
-    var previousLms = newPreviousLms(inputs);
-    states[portName] = newState(null, null, port, previousLms);
-  }
-  vni = {
-    inputs: inputs,
-    states: states,
-    selfNode: node,
-    vnid: vnid
-  };
-  // process.exit(0);
-  return(vni);
-}
-
-// ###################### newPreviousLms #########################
-/**
- * Create a new previousLms hash from an inputs hash of the
- * same node, copying the LMs from the inputs hash to the previousLms hash.
- */
-function newPreviousLms(inputs) {
-  var previousLms = {};
-  for (var portName in inputs) {
-    var state = inputs[portName];
-    // TODO: Change to new inputs structure
-    if (Array.isArray(state)) { 
-      var subLms = {};
-      for (var nodePort in state) {
-	subLms[nodePort] = state[nodePort].lm;
-      }
-      previousLms[portName] = subLms;
-    } else {
-      previousLms[portName] = state.lm;
-    }
-  }
-  return previousLms;
-}
-
-// ###################### newInputs #########################
-/**
- * Create a new inputs hash, initialized to nulls.
- */
-function newInputs(node) {
-  var inputs = {};
-  var i;
-  for (var portName in node.inPorts.ports) {
-    var port = node.inPorts.ports[portName];
-    // Count the IIP vs edge connections for error checking:
-    var nIips = 0;	// IIP, i.e., constant input from NoFlo GUI
-    var nEdges = 0;	// Edge connection from a node port
-    if (!port.sockets) { port.sockets = []; }
-    for (i=0; i<port.sockects.length; i++) {
-      if (port.sockets[i].from) nEdges++; 
-      else nIips++; 
-    }
-    if (nIips && nEdges) 
-      throw new Error("newInputs: Node "+node.id+" port "+portName+" has both "+nEdges+" node connections\n and "+nIips+" constant inputs (IIPs).  You must delete the constant inputs\n if you wish to use node connections.");
-    if (nEdges+nIips > 1 && !port.options.multi) 
-      throw new Error("newInputs: Node "+node.id+" port "+portName+" has "+n+" connections but was not declared with 'multi: true'");
-    var subInputs = inputs[portName] = []; 
-    for (i=0; i<port.sockects.length; i++) {
-      var sourceNodePort;
-      var from = port.sockets[i].from;
-      if (from) sourceNodePort = nodePortStringFromStrings(from.process.id, from.port);
-      else sourceNodePort = "data"+i;	// IIP has no source node|port
-      subInputs[sourceNodePort] = null;
-    }
-  }
-  return inputs;
 }
 
 // ###################### ensureVniExists #########################
@@ -429,7 +291,7 @@ function ensureVniExists(node, vnid) {
   var vni;
   console.log("=========== ensureVniExists starting ===========");
   if (typeof node === 'undefined') {
-	throw new Error("ensureVniExists called with undefined node");
+	die("ensureVniExists called with undefined node");
   }
   vnid = (typeof vnid === 'undefined' ? "" : vnid);
   if (typeof node.vnis === "undefined") {
@@ -445,12 +307,209 @@ function ensureVniExists(node, vnid) {
   }
   // Create a new VNI and wire it into this node:
   vni = newVni(node, vnid)
+  dumpVni(vni);
   node.vnis[vnid] = vni;
   console.log("ensureVniExists created node.vnis["+vnid+"]: ", vni);
   console.log("=========== ensureVniExists returning ===========");
   // console.log("ensureVniExists node: ", node);
   // process.exit(0);
   return vni;
+}
+
+// ###################### newVni #########################
+/**
+ * Create a new VNI (Virtual Node Instance), but do not attach
+ * it to the given NoFlo node instance.
+ */
+function newVni(node, vnid) {
+  console.log("----- newVni starting");
+  if (typeof node === 'undefined') {
+    die("newVni called with undefined node");
+  }
+  if (typeof vnid === 'undefined') {
+    die("newVni called with undefined vnid");
+  }
+  var vni;
+  var inputs = newInputs(node);
+  var states = newStatesFromInputs(node, inputs);
+  vni = {
+    inputs: inputs,
+    states: states,
+    selfNode: node,
+    vnid: vnid
+  };
+  // process.exit(0);
+  console.log("----- newVni returning");
+  return(vni);
+}
+
+// ###################### dumpVni #########################
+function dumpVni(vni) {
+  var nodeName = "undefined";
+  if (typeof vni === 'undefined') nodeName = "undefined vni";
+  else if (vni === null) nodeName = "null vni";
+  else if (!vni.selfNode) nodeName = "undefined vni.selfNode";
+  else nodeName = vni.selfNode.nodeId;
+  console.log("=============== BEGIN dumpVni: "+nodeName+" ===============");
+  if (vni) {
+    console.log("vnid: "+vni.vnid);
+    console.log("inputs: "+vni.inputs);
+    console.log("states: "+vni.states);
+  }
+  console.log("=============== END dumpVni: "+nodeName+" ===============");
+  // process.exit(0);
+}
+
+// ###################### newStatesFromInputs #########################
+/**
+ * Create a new states hash from a NoFlo node instance and an inputs hash,
+ * initializing state data and previousLms to undefined.
+ */
+function newStatesFromInputs(node, inputs) {
+  var states = {};
+  for (var outport in node.outPorts.ports) {
+    var s = setStateLmsFromInputs(undefined, inputs, false);
+    s.selfPort = outport;
+    states[outport.name] = s;
+  }
+  return(states);
+}
+
+// ###################### setStateLmsFromInputs #########################
+/**
+ * Set a state's previous LMs based on an inputs object.  The state's
+ * previousLms are either set from the LMs in the inputs object (if
+ * setLmsFromInputs is true) or set to null (otherwise).
+ * If a state object is provided it will be used.  If a null state
+ * argument is given then a new state object will be created.  In either
+ * case the new state is returned.  Note that the data, lm and outport
+ * fields are *not* set by this function.  They must be set
+ * separately if necessary.
+ */
+function setStateLmsFromInputs(state, inputs, setLmsFromInputs) {
+  if (!state) state = newState(undefined, undefined, undefined, 
+    		setPreviousLms(null, inputs, setLmsFromInputs));
+  else setPreviousLms(state.previousLms, inputs, setLmsFromInputs);
+  return state;
+}
+
+// ###################### newConstantState #########################
+/**
+ * Create a new state object for a constant input (NoFlo IIP).
+ */
+function newConstantState(data) {
+  var s = newState(data, newLm(), null, null);
+  return(s);
+}
+
+// ###################### newState #########################
+/**
+ * Create a new node state object.  previousLms must
+ * have already been created if the state is for an output port
+ * (i.e., if outport is set).  If outport is not set then
+ * a state is being created for an IIP, in which case previousLms
+ * must *not* be set.   If defined data is passed but lm is falsey,
+ * then a newLm() will be generated for the lm.
+ */
+function newState(data, lm, outport, previousLms) {
+  // console.log("===============  newState starting ===============");
+  // If we're given a data value, we should have an LM:
+  if (typeof data !== 'undefined' && !lm) {
+    lm = newLm();
+  }
+  if (outport && !previousLms)
+    die("newState: outport provided with no previousLms");
+  if (previousLms && !outport)
+    die("newState: previousLms provided with no outport");
+  var s = {
+	data: data,
+	lm: lm,
+	previousLms: previousLms,
+	selfPort: outport
+  };
+  // process.exit(0);
+  // console.log("===============  newState returning ===============");
+  return(s);
+}
+
+// ###################### die #########################
+/**
+ * Crash and burn with useful info.
+ */
+function die() {
+  // Make real array from arguments first:
+  var args = Array.prototype.slice.call(arguments); 
+  args.unshift("[ERROR] ");
+  console.log.apply(null, args);
+  console.trace();
+  // process.exit(1);
+}
+
+// ###################### setPreviousLms #########################
+/**
+ * Set LMs in a previousLms hash from an inputs hash (of the
+ * same node), copying the LMs from the inputs hash to the previousLms hash
+ * if setLmsFromInputs is true; otherwise set LMs to undefined.
+ * If previousLms is undefined or null, a new object will be created.
+ */
+function setPreviousLms(previousLms, inputs, setLmsFromInputs) {
+  var useOld = previousLms;
+  if (!useOld) previousLms = {};
+  for (var portName in inputs) {
+    var subPreviousLms = previousLms[portName] = (useOld ? previousLms[portName] : {});
+    var subInputs = inputs[portName];
+    for (var senderNodePort in subInputs) {
+      if (setLmsFromInputs) {
+        var state = subInputs[senderNodePort];
+        if (!state) die("setPreviousLms: Bad state object in inputs["+portName+"]["+senderNodePort+"]");
+        subPreviousLms[senderNodePort] = state.lm;
+      } else {
+        subPreviousLms[senderNodePort] = undefined;
+      }
+    }
+  }
+  return previousLms;
+}
+
+// ###################### newInputs #########################
+/**
+ * Create a new inputs hash, initialized to nulls.
+ */
+function newInputs(node) {
+  console.log("----- newInputs starting");
+  var inputs = {};
+  var i;
+  if (!node) die("newInputs: Called with bad node");
+  if (!node.inPorts) die("newInputs: Called with bad node.inPorts");
+  if (!node.inPorts.ports) die("newInputs: Called with bad node.inPorts.ports");
+  for (var portName in node.inPorts.ports) {
+    console.log("newInputs portName: ", portName);
+    var port = node.inPorts.ports[portName];
+    if (!port) die("newInputs: INTERNAL ERROR: Bad port");
+    // Count the IIP vs edge connections for error checking:
+    var nIips = 0;	// IIP, i.e., constant input from NoFlo GUI
+    var nEdges = 0;	// Edge connection from a node port
+    if (!port.sockets) { port.sockets = []; }
+    console.log("newInputs port.sockets.length: ", port.sockets.length);
+    for (i=0; i<port.sockets.length; i++) {
+      if (port.sockets[i].from) nEdges++; 
+      else nIips++; 
+    }
+    if (nIips && nEdges) 
+      die("newInputs: Node "+node.id+" port "+portName+" has both "+nEdges+" node connections\n and "+nIips+" constant inputs (IIPs).  You must delete the constant inputs\n if you wish to use node connections.");
+    if (nEdges+nIips > 1 && !port.options.multi) 
+      die("newInputs: Node "+node.id+" port "+portName+" has "+n+" connections but was not declared with 'multi: true'");
+    var subInputs = inputs[portName] = []; 
+    for (i=0; i<port.sockets.length; i++) {
+      var senderNodePort;
+      var from = port.sockets[i].from;
+      if (from) senderNodePort = nodePortStringFromStrings(from.process.id, from.port);
+      else senderNodePort = "data"+i;	// IIP has no sender node|port
+      subInputs[senderNodePort] = null;
+    }
+  }
+  return inputs;
+  console.log("----- newInputs returning");
 }
 
 // ###################### newLm #########################
@@ -482,7 +541,7 @@ function newLm() {
     // JavaScript implementation uses milliseconds.submilliseconds:
     //   LM1387256252000.000000000 
     if (lmc.counter > COUNTER_LIMIT) {
-      throw new Error("newLm: globalLmCounter exceeded "+COUNTER_LIMIT);
+      die("newLm: globalLmCounter exceeded "+COUNTER_LIMIT);
     }
   } else {
     lmc.ms = newMs;

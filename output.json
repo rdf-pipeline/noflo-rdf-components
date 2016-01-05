@@ -1,1 +1,111 @@
-{"properties":{"name":"/home/dbooth/rdf-pipeline/noflo/noflo-rdf-components/output.json"},"inports":{},"outports":{},"groups":[],"processes":{"filesystem/ReadFile_89a4a":{"component":"filesystem/ReadFile","metadata":{"label":"filesystem/ReadFile","x":334,"y":100}},"strings/ParseJson_moxf4":{"component":"strings/ParseJson","metadata":{"label":"strings/ParseJson","x":576,"y":108,"width":72,"height":72}},"strings/Jsonify_3z5ip":{"component":"strings/Jsonify","metadata":{"label":"strings/Jsonify","x":792,"y":108,"width":72,"height":72}},"filesystem/WriteFile_ytupn":{"component":"filesystem/WriteFile","metadata":{"label":"filesystem/WriteFile","x":1008,"y":108,"width":72,"height":72}},"map1":{"component":"rdf-components/Map","metadata":{"label":"map1","x":396,"y":-108,"width":72,"height":72}},"map2":{"component":"rdf-components/Map","metadata":{"label":"map2","x":756,"y":-108,"width":72,"height":72}},"core/Copy_1gvuo":{"component":"core/Copy","metadata":{"label":"core/Copy","x":572.4425120772947,"y":-232.86570048309184}}},"connections":[{"src":{"process":"filesystem/ReadFile_89a4a","port":"out"},"tgt":{"process":"strings/ParseJson_moxf4","port":"in"}},{"src":{"process":"strings/ParseJson_moxf4","port":"out"},"tgt":{"process":"strings/Jsonify_3z5ip","port":"in"}},{"src":{"process":"strings/Jsonify_3z5ip","port":"out"},"tgt":{"process":"filesystem/WriteFile_ytupn","port":"in"}},{"src":{"process":"core/Copy_1gvuo","port":"out"},"tgt":{"process":"map2","port":"name"}},{"src":{"process":"map1","port":"out"},"tgt":{"process":"core/Copy_1gvuo","port":"in"},"metadata":{"route":null}},{"src":{"process":"map1","port":"out"},"tgt":{"process":"map2","port":"name"},"metadata":{"route":0}},{"data":"utf-8","tgt":{"process":"filesystem/ReadFile_89a4a","port":"encoding"}},{"data":"/home/dbooth/rdf-pipeline/noflo/noflo-server/output.json","tgt":{"process":"filesystem/ReadFile_89a4a","port":"in"}},{"data":true,"tgt":{"process":"strings/Jsonify_3z5ip","port":"pretty"}},{"data":"/home/dbooth/rdf-pipeline/noflo/noflo-server/output-pretty.json","tgt":{"process":"filesystem/WriteFile_ytupn","port":"filename"}},{"data":"myMap1_name","tgt":{"process":"map1","port":"name"}},{"data":"myMap1_updater","tgt":{"process":"map1","port":"updater"}},{"data":"myMap1_in","tgt":{"process":"map1","port":"in"}},{"data":"to be copied","tgt":{"process":"core/Copy_1gvuo","port":"in"}}]}
+{
+    "connections": [
+        {
+            "src": {
+                "port": "out",
+                "process": "core/Copy_1gvuo"
+            },
+            "tgt": {
+                "port": "my_inport",
+                "process": "map2"
+            }
+        },
+        {
+            "metadata": {
+                "route": null
+            },
+            "src": {
+                "port": "out",
+                "process": "map1"
+            },
+            "tgt": {
+                "port": "in",
+                "process": "core/Copy_1gvuo"
+            }
+        },
+        {
+            "metadata": {
+                "route": 0
+            },
+            "src": {
+                "port": "out",
+                "process": "map1"
+            },
+            "tgt": {
+                "port": "my_inport",
+                "process": "map2"
+            }
+        },
+        {
+            "data": "myMap1_name",
+            "tgt": {
+                "port": "my_inport",
+                "process": "map1"
+            }
+        },
+        {
+            "data": "myMap1_updater",
+            "tgt": {
+                "port": "updater",
+                "process": "map1"
+            }
+        },
+        {
+            "data": "myMap1_in",
+            "tgt": {
+                "port": "in",
+                "process": "map1"
+            }
+        },
+        {
+            "data": "to be copied",
+            "tgt": {
+                "port": "in",
+                "process": "core/Copy_1gvuo"
+            }
+        },
+        {
+            "data": "my inport data",
+            "tgt": {
+                "port": "my_inport",
+                "process": "map1"
+            }
+        }
+    ],
+    "groups": [],
+    "inports": {},
+    "outports": {},
+    "processes": {
+        "core/Copy_1gvuo": {
+            "component": "core/Copy",
+            "metadata": {
+                "label": "core/Copy",
+                "x": 572.4425120772947,
+                "y": -232.86570048309184
+            }
+        },
+        "map1": {
+            "component": "rdf-components/Map",
+            "metadata": {
+                "height": 72,
+                "label": "map1",
+                "width": 72,
+                "x": 396,
+                "y": -108
+            }
+        },
+        "map2": {
+            "component": "rdf-components/Map",
+            "metadata": {
+                "height": 72,
+                "label": "map2",
+                "width": 72,
+                "x": 756,
+                "y": -108
+            }
+        }
+    },
+    "properties": {
+        "name": "/home/dbooth/rdf-pipeline/noflo/noflo-rdf-components/output.json"
+    }
+}
