@@ -351,6 +351,9 @@ function newVni(node, vnid) {
 }
 
 // ###################### dumpVni #########################
+/**
+ * Print the given VNI to the console.
+ */
 function dumpVni(vni) {
   var nodeName;
   if (typeof vni === 'undefined') nodeName = "undefined vni";
