@@ -39,8 +39,6 @@ exports.getComponent = function() {
                 addressable: false,
                 buffered: false,
 		multi: true,
-                // process: ondata(assign('name'))
-		// process: dumpEvent
 		process: receiveEvent
             }, 
             updater: {
@@ -49,8 +47,6 @@ exports.getComponent = function() {
                 required: true,
                 addressable: false,
                 buffered: false,
-                // process: ondata(assign('updater'))
-		// process: dumpEvent
 		process: receiveEvent
             }, 
             'in': {
@@ -59,9 +55,6 @@ exports.getComponent = function() {
                 required: true,
                 addressable: false,
                 buffered: false,
-                // process: ondata(execute)
-		// process: dumpEvent
-		// process: forwardData
 		process: receiveEvent
             }
         }
@@ -72,46 +65,44 @@ exports.getComponent = function() {
     });
 };
 
-function forwardData(nodeInstance, event, payload) {
-  var ps = payload;
-  if (typeof payload === 'object') {
-    ps = "[payload object]";
-  }
-  if (event == 'data') {
-    console.log("Forwarding "+event+" payload: "+ps);
-    console.log("Connect ...");
-    nodeInstance.outPorts.out.connect();
-    console.log("Send ...");
-    nodeInstance.outPorts.out.send("Payload forwarded: "+ps);
-    console.log("Disconnect ...");
-    nodeInstance.outPorts.out.disconnect();
-    console.log("Done");
-  }
-  if (typeof payload === 'object' && 
-    	typeof payload.from === 'object' &&
-	typeof payload.from.process === 'object' &&
-	typeof payload.from.process.component === 'object') {
-    console.log("From component: ", payload.from.process.component);
-  }
+/**
+ * Create a new event payload.  The options may depend on the event type:
+ *  data -- PUSH event going downstream.  Options:
+ *	vnid: sendersVnid
+ *	state: refOfSendersOutportState
+ */
+function newPayload(event, options) {
+  if (event != 'data') return;
+  if (!("vnid" in options)) die("newPayload: data event requires a vnid field");
+  if (!("state" in options)) die("newPayload: data event requires a state field");
+  var payload = {
+	vnid: options.vnid,
+	state: options.state };
+  return payload;
 }
 
-function selfDumpEvent(caller, self, event, payload) {
-  console.log("##############################");
-  console.log("selfDumpEvent "+caller+" node.port: "+self.node+"."+self.name+" event: "+event+" self: ", self);
-  console.log("############");
-  console.log("selfDumpEvent "+caller+" node.port: "+self.node+"."+self.name+" event: "+event+" payload: ", payload);
-  console.log("############");
-  var sockets = self.sockets || [];
-  for (var key in sockets) {
-    var value = sockets[key];
-    console.log("Socket ["+key+"]: ", value);
-  }
-  console.log("##############################");
-  return;
-}
-
-function dumpEvent(event, payload) {
-  selfDumpEvent("dumpEvent", this, event, payload);
+/**
+ * Temporary function to forward data downstream.
+ */
+function forwardData(vni, toPortName, event, state) {
+  var nodeInstance = vni.selfNode;
+  if (event != 'data') return;
+  console.log("forwardData Forwarding "+event+" to port: "+toPortName);
+  console.log("forwardData Connect ...");
+  if (!nodeInstance) die("forwardData: Bad nodeInstance");
+  if (!nodeInstance.outPorts) die("forwardData: Bad nodeInstance.outPorts");
+  if (!nodeInstance.outPorts.ports) die("forwardData: Bad nodeInstance.outPorts.ports");
+  if (!nodeInstance.outPorts.ports[toPortName]) die("forwardData: Bad nodeInstance.outPorts.ports["+toPortName+"]");
+  // console.log("forwarData port: ", util.inspect(nodeInstance.outPorts.ports[toPortName]));
+  // process.exit(1);
+  var toPort = nodeInstance.outPorts.ports[toPortName];
+  var payload = newPayload(event, {vnid: vni.vnid, state: state});
+  toPort.connect();
+  console.log("forwardData Send ...");
+  toPort.send(payload);
+  console.log("forwardData Disconnect ...");
+  toPort.disconnect();
+  console.log("forwardData Done");
 }
 
 // ###################### receiveEvent #########################
@@ -127,21 +118,15 @@ function receiveEvent(event, payload) {
 function selfReceiveEvent(inport, event, payload) {
   var vnid;
   var state;		// Used for IIP events
-  var nodeInstance;	// nodeInstance
   var inportName = inport.name;
+  var nodeInstance = inport.nodeInstance;
   var vni;		// VNI for the given vnid
-  console.log("############### receiveEvent ###############");
-  // console.log("receiveEvent event: "+event+" from node.outport: "+payload.from.process.id+"."+payload.from.port);
-  console.log("receiveEvent event: "+event);
-  // console.log("receiveEvent event: "+event+" inport: ", inport);
-  // console.log("######");
-  // console.log("receiveEvent event: "+event+" payload: ", payload);
-  // console.log("######");
   if (event != 'data') {
-    console.log("receiveEvent ignoring non-data event: "+event);
-    console.log("##############################");
+    console.log("receiveEvent "+nodeInstance.nodeId+"|"+inportName+" ignoring non-data event: "+event);
     return;
   }
+  console.log("############### receiveEvent BEGIN ###############");
+  console.log("receiveEvent "+nodeInstance.nodeId+"|"+inportName+" event: "+event);
   console.log("receiveEvent processing data event.  Payload: ", payload);
   console.log("######");
   // Node-sent event or IIP event?
@@ -156,22 +141,22 @@ function selfReceiveEvent(inport, event, payload) {
     // IIP event
     vnid = "";
     state = newConstantState(payload);
-    console.log(" ... IIP event, state saved: ", state);
+    // console.log(" ... IIP event, state saved: ", state);
   }
-  nodeInstance = inport.nodeInstance;
   // I (dbooth) have not found a way to initialize nodes in advance,
   // so we do it on the fly when the first event arrives:
   vni = ensureVniExists(nodeInstance, vnid);
   var senderNodePortString = nodePortString(state.selfPort);
   vni.inputs[inportName][senderNodePortString] = state;
-  console.log("vni.inputs:", vni.inputs);
-  console.log("########");
+  console.log("receiveEvent stored state:", state);
+  console.log("receiveEvent "+nodeInstance.nodeId+" vnis["+util.inspect(vnid)+"] is now:");
+  dumpVni(vni);
+  // console.log("vni.inputs:", vni.inputs);
+  // console.log("########");
   maybeFireUpdater(vni, event, payload);
-  // TODO: maybeSendEvent(vni, event, payload);
-  console.log("receiveEvent done.  Stored state:", state);
-  console.log("##############################");
-  // console.log("############# EXITING ##############");
-  // process.exit(0);
+  maybeSendEvent(vni, event, payload);
+  console.log("############### receiveEvent END ###############");
+  // console.log("EXITING"); process.exit(0);
   return;
 }
 
@@ -212,6 +197,7 @@ function maybeFireUpdater(vni, event, payload)
 {
   console.log("=============== maybeFireUpdater starting ===============");
   console.log("maybeFireUpdater nodeId: ", vni.selfNode.nodeId);
+  console.log("maybeFireUpdater UNFINISHED");
   console.log("=============== maybeFireUpdater returning ===============");
 }
 
@@ -223,7 +209,11 @@ function maybeSendEvent(vni, event, payload)
   console.log("=====");
   // forwardData is only being used here for testing
   console.log("maybeSendEvent calling forwardData ....");
-  forwardData.call(vni, event, payload);
+  var state = vni.states["out"];
+  state.data = "Forwarded data: "+payload;
+  state.lm = newLm();
+  forwardData(vni, "out", event, state);
+  console.log("maybeSendEvent UNFINISHED");
   console.log("=============== maybeSendEvent returning ===============");
 }
 
@@ -233,6 +223,7 @@ function maybeSendEvent(vni, event, payload)
  */
 function allInputsHaveData(vni)
 {
+  console.log("allInputsHaveData UNTESTED");
   for (var portName in vni.selfNode.inPorts.ports) {
     var port = vni.selfNode.inPorts[portName];
     if (port.required) {
@@ -247,7 +238,7 @@ function allInputsHaveData(vni)
 /**
  * Return true iff the given state is stale wrt the given inputs.
  * This function assumes that all required inputs have data.
- * I.e., allInputsHaveData(vni) must have already been called.
+ * I.e., allInputsHaveData(vni) must have already returned true.
  */
 function isStale(inputs, state)
 {
@@ -258,6 +249,7 @@ function isStale(inputs, state)
     if (typeof outerInputLm === 'string') {
       // Single connection
       // Optional port is allowed to have no data.
+    console.log("isStale UNFINISHED");
 // *** STOPPED HERE***
     inputs.in1.data  
     inputs.in2[i].state.data
@@ -276,6 +268,7 @@ function isStale(inputs, state)
  */
 function anyStaleState(vni)
 {
+console.log("anyStaleState UNFINISHED");
 /*
   if (typeof vni === 'undefined') { die("vni undefined"); };
   if (typeof vni.inputs === 'undefined') { die("vni.inputs undefined"); };
@@ -295,7 +288,7 @@ function anyStaleState(vni)
   */
 function ensureVniExists(node, vnid) {
   var vni;
-  console.log("=========== ensureVniExists starting ===========");
+  // console.log("=========== ensureVniExists starting ===========");
   if (typeof node === 'undefined') {
 	die("ensureVniExists called with undefined node");
   }
@@ -307,16 +300,17 @@ function ensureVniExists(node, vnid) {
   vni = node.vnis[vnid];
   if (typeof vni !== 'undefined') {
     // This VNI already exists.  Nothing to do.
-    console.log("ensureVniExists: Nothing to do"); 
-    console.log("=========== ensureVniExists returning ===========");
+    // console.log("ensureVniExists: Nothing to do"); 
+    // console.log("=========== ensureVniExists returning ===========");
     return vni;
   }
   // Create a new VNI and wire it into this node:
+  // console.log("ensureVniExists: Creating a new VNI for vnid: "+util.inspect(vnid)); 
   vni = newVni(node, vnid)
-  dumpVni(vni);
+  // console.log("=========== ensureVniExists dumped vni ===========");
   node.vnis[vnid] = vni;
-  console.log("ensureVniExists created node.vnis["+vnid+"]: ", vni);
-  console.log("=========== ensureVniExists returning ===========");
+  console.log("ensureVniExists created "+node.nodeId+" node.vnis["+util.inspect(vnid)+"]:");
+  // console.log("=========== ensureVniExists returning ===========");
   // console.log("ensureVniExists node: ", node);
   // process.exit(0);
   return vni;
@@ -328,7 +322,7 @@ function ensureVniExists(node, vnid) {
  * it to the given NoFlo node instance.
  */
 function newVni(node, vnid) {
-  console.log("----- newVni starting");
+  // console.log("----- newVni starting");
   if (typeof node === 'undefined') {
     die("newVni called with undefined node");
   }
@@ -344,9 +338,8 @@ function newVni(node, vnid) {
     selfNode: node,
     vnid: vnid
   };
-  dumpVni(vni);
-  console.log("----- newVni returning");
-  process.exit(0);
+  // console.log("----- newVni returning");
+  // process.exit(0);
   return(vni);
 }
 
@@ -360,9 +353,9 @@ function dumpVni(vni) {
   else if (vni === null) nodeName = "null vni";
   else if (!vni.selfNode) nodeName = "undefined vni.selfNode";
   else nodeName = vni.selfNode.nodeId;
-  console.log("=============== BEGIN dumpVni: "+nodeName+" ===============");
+  console.log("---------------- BEGIN dumpVni: "+nodeName+" ----------------");
   if (typeof vni === 'object') {
-    console.log("vnid: "+vni.vnid);
+    console.log("vnid: "+util.inspect(vni.vnid));
     console.log("inputs: ", vni.inputs);
     console.log("states: ");
     for (var portName in vni.states) {
@@ -378,7 +371,7 @@ function dumpVni(vni) {
     }
     console.log("selfNode: "+nodeName);
   }
-  console.log("=============== END dumpVni: "+nodeName+" ===============");
+  console.log("---------------- END dumpVni: "+nodeName+" ----------------");
 }
 
 // ###################### newStatesFromInputs #########################
@@ -387,15 +380,15 @@ function dumpVni(vni) {
  * initializing state data and previousLms to undefined.
  */
 function newStatesFromInputs(node, inputs) {
-  console.log("--- newStatesFromInputs starting");
+  // console.log("--- newStatesFromInputs starting");
   var states = {};
   for (var outportName in node.outPorts.ports) {
     var outport = node.outPorts.ports[outportName];
-    console.log("newStatesFromInputs outportName: ", outportName);
+    // console.log("newStatesFromInputs outportName: ", outportName);
     var s = setStateLmsFromInputs(undefined, outport, inputs, false);
     states[outportName] = s;
   }
-  console.log("--- newStatesFromInputs returning");
+  // console.log("--- newStatesFromInputs returning");
   return states;
 }
 
@@ -411,11 +404,11 @@ function newStatesFromInputs(node, inputs) {
  * separately if necessary.
  */
 function setStateLmsFromInputs(state, outport, inputs, setLmsFromInputs) {
-  console.log("----- setStatesFromInputs starting");
+  // console.log("----- setStatesFromInputs starting");
   if (!state) state = newState(undefined, undefined, outport, 
     		setPreviousLms(null, inputs, setLmsFromInputs));
   else setPreviousLms(state.previousLms, inputs, setLmsFromInputs);
-  console.log("----- setStatesFromInputs returning");
+  // console.log("----- setStatesFromInputs returning");
   return state;
 }
 
@@ -438,7 +431,7 @@ function newConstantState(data) {
  * then a newLm() will be generated for the lm.
  */
 function newState(data, lm, outport, previousLms) {
-  console.log("===============  newState starting ===============");
+  // console.log("===============  newState starting ===============");
   // If we're given a data value, we should have an LM:
   if (typeof data !== 'undefined' && !lm) {
     lm = newLm();
@@ -454,27 +447,8 @@ function newState(data, lm, outport, previousLms) {
 	selfPort: outport
   };
   // process.exit(0);
-  console.log("===============  newState returning ===============");
+  // console.log("===============  newState returning ===============");
   return(s);
-}
-
-// ###################### formatState #########################
-function formatState(state) {
-  var portName;
-  if (typeof state === 'undefined') portName = "undefined state";
-  else if (state === null) portName = "null state";
-  else if (!state.selfPort) portName = "undefined state.selfPort";
-  else portName = state.selfPort.name;
-  // console.log("== BEGIN formatState: "+portName+" ==");
-  var s = "{ ";
-  if (typeof state === 'object') {
-    s += "data: "+util.inspect(state.data) + "\n";
-    s += "lm: "+state.lm + "\n";
-    s += "previousLms: "+util.inspect(state.previousLms) + "\n";
-    s += "selfPort: "+portName + " }";
-  }
-  // console.log("== END formatState: "+portName+" ==");
-  return s;
 }
 
 // ###################### die #########################
@@ -498,7 +472,7 @@ function die() {
  * If previousLms is undefined or null, a new object will be created.
  */
 function setPreviousLms(previousLms, inputs, setLmsFromInputs) {
-  console.log("----- setPreviousLms starting");
+  // console.log("----- setPreviousLms starting");
   var useOld = previousLms;
   if (!useOld) previousLms = {};
   for (var portName in inputs) {
@@ -514,7 +488,7 @@ function setPreviousLms(previousLms, inputs, setLmsFromInputs) {
       }
     }
   }
-  console.log("----- setPreviousLms returning");
+  // console.log("----- setPreviousLms returning");
   return previousLms;
 }
 
@@ -523,21 +497,21 @@ function setPreviousLms(previousLms, inputs, setLmsFromInputs) {
  * Create a new inputs hash, initialized to nulls.
  */
 function newInputs(node) {
-  console.log("----- newInputs starting");
+  // console.log("----- newInputs starting");
   var inputs = {};
   var i;
   if (!node) die("newInputs: Called with bad node");
   if (!node.inPorts) die("newInputs: Called with bad node.inPorts");
   if (!node.inPorts.ports) die("newInputs: Called with bad node.inPorts.ports");
   for (var portName in node.inPorts.ports) {
-    console.log("newInputs portName: ", portName);
+    // console.log("newInputs portName: ", portName);
     var port = node.inPorts.ports[portName];
     if (!port) die("newInputs: INTERNAL ERROR: Bad port");
     // Count the IIP vs edge connections for error checking:
     var nIips = 0;	// IIP, i.e., constant input from NoFlo GUI
     var nEdges = 0;	// Edge connection from a node port
     if (!port.sockets) { port.sockets = []; }
-    console.log("newInputs port.sockets.length: ", port.sockets.length);
+    // console.log("newInputs port.sockets.length: ", port.sockets.length);
     for (i=0; i<port.sockets.length; i++) {
       if (port.sockets[i].from) nEdges++; 
       else nIips++; 
@@ -560,7 +534,7 @@ function newInputs(node) {
       subInputs[senderNodePort] = null;
     }
   }
-  console.log("----- newInputs returning");
+  // console.log("----- newInputs returning");
   return inputs;
 }
 
