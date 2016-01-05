@@ -442,7 +442,7 @@ function die() {
   args.unshift("[ERROR] ");
   console.log.apply(null, args);
   console.trace();
-  // process.exit(1);
+  process.exit(1);
 }
 
 // ###################### setPreviousLms #########################
