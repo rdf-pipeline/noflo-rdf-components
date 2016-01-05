@@ -1,5 +1,8 @@
 // Map.js
 
+"use strict";
+
+var util = require('util');
 var _ = require('underscore');
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -177,6 +180,9 @@ function selfReceiveEvent(inport, event, payload) {
 /**
  * For the given port, return "nodeName|portName", caching results.
  * If port is null, then return "data0", indicating constant input (NoFlo IIP).
+ * We have no way to distinguish different IIPs that are on the
+ * same inport.  Therefore, we do not allow multiple IIPs on
+ * the same inport.  This is enforced in the newInputs() function.
  */
 function nodePortString(port)
 {
@@ -338,26 +344,39 @@ function newVni(node, vnid) {
     selfNode: node,
     vnid: vnid
   };
-  // process.exit(0);
+  dumpVni(vni);
   console.log("----- newVni returning");
+  process.exit(0);
   return(vni);
 }
 
 // ###################### dumpVni #########################
 function dumpVni(vni) {
-  var nodeName = "undefined";
+  var nodeName;
   if (typeof vni === 'undefined') nodeName = "undefined vni";
   else if (vni === null) nodeName = "null vni";
   else if (!vni.selfNode) nodeName = "undefined vni.selfNode";
   else nodeName = vni.selfNode.nodeId;
   console.log("=============== BEGIN dumpVni: "+nodeName+" ===============");
-  if (vni) {
+  if (typeof vni === 'object') {
     console.log("vnid: "+vni.vnid);
-    console.log("inputs: "+vni.inputs);
-    console.log("states: "+vni.states);
+    console.log("inputs: ", vni.inputs);
+    console.log("states: ");
+    for (var portName in vni.states) {
+      var state = vni.states[portName];
+      console.log("  "+portName+": ");
+      console.log("    data: "+util.inspect(state.data));
+      console.log("    lm: "+util.inspect(state.lm));
+      var prev = util.inspect(state.previousLms);
+      prev = prev.replace(/\r?\n/g, "\n    ");
+      console.log("    previousLms: "+prev);
+      var selfPort = state.selfPort
+      console.log("    selfPort: "+nodePortString(state.selfPort));
+    }
+    console.log("selfNode: "+nodeName);
   }
   console.log("=============== END dumpVni: "+nodeName+" ===============");
-  // process.exit(0);
+  process.exit(0);
 }
 
 // ###################### newStatesFromInputs #########################
@@ -366,13 +385,16 @@ function dumpVni(vni) {
  * initializing state data and previousLms to undefined.
  */
 function newStatesFromInputs(node, inputs) {
+  console.log("--- newStatesFromInputs starting");
   var states = {};
-  for (var outport in node.outPorts.ports) {
-    var s = setStateLmsFromInputs(undefined, inputs, false);
-    s.selfPort = outport;
-    states[outport.name] = s;
+  for (var outportName in node.outPorts.ports) {
+    var outport = node.outPorts.ports[outportName];
+    console.log("newStatesFromInputs outportName: ", outportName);
+    var s = setStateLmsFromInputs(undefined, outport, inputs, false);
+    states[outportName] = s;
   }
-  return(states);
+  console.log("--- newStatesFromInputs returning");
+  return states;
 }
 
 // ###################### setStateLmsFromInputs #########################
@@ -382,14 +404,16 @@ function newStatesFromInputs(node, inputs) {
  * setLmsFromInputs is true) or set to null (otherwise).
  * If a state object is provided it will be used.  If a null state
  * argument is given then a new state object will be created.  In either
- * case the new state is returned.  Note that the data, lm and outport
+ * case the new state is returned.  Note that the data and lm 
  * fields are *not* set by this function.  They must be set
  * separately if necessary.
  */
-function setStateLmsFromInputs(state, inputs, setLmsFromInputs) {
-  if (!state) state = newState(undefined, undefined, undefined, 
+function setStateLmsFromInputs(state, outport, inputs, setLmsFromInputs) {
+  console.log("----- setStatesFromInputs starting");
+  if (!state) state = newState(undefined, undefined, outport, 
     		setPreviousLms(null, inputs, setLmsFromInputs));
   else setPreviousLms(state.previousLms, inputs, setLmsFromInputs);
+  console.log("----- setStatesFromInputs returning");
   return state;
 }
 
@@ -412,7 +436,7 @@ function newConstantState(data) {
  * then a newLm() will be generated for the lm.
  */
 function newState(data, lm, outport, previousLms) {
-  // console.log("===============  newState starting ===============");
+  console.log("===============  newState starting ===============");
   // If we're given a data value, we should have an LM:
   if (typeof data !== 'undefined' && !lm) {
     lm = newLm();
@@ -428,8 +452,27 @@ function newState(data, lm, outport, previousLms) {
 	selfPort: outport
   };
   // process.exit(0);
-  // console.log("===============  newState returning ===============");
+  console.log("===============  newState returning ===============");
   return(s);
+}
+
+// ###################### formatState #########################
+function formatState(state) {
+  var portName;
+  if (typeof state === 'undefined') portName = "undefined state";
+  else if (state === null) portName = "null state";
+  else if (!state.selfPort) portName = "undefined state.selfPort";
+  else portName = state.selfPort.name;
+  // console.log("== BEGIN formatState: "+portName+" ==");
+  var s = "{ ";
+  if (typeof state === 'object') {
+    s += "data: "+util.inspect(state.data) + "\n";
+    s += "lm: "+state.lm + "\n";
+    s += "previousLms: "+util.inspect(state.previousLms) + "\n";
+    s += "selfPort: "+portName + " }";
+  }
+  // console.log("== END formatState: "+portName+" ==");
+  return s;
 }
 
 // ###################### die #########################
@@ -453,6 +496,7 @@ function die() {
  * If previousLms is undefined or null, a new object will be created.
  */
 function setPreviousLms(previousLms, inputs, setLmsFromInputs) {
+  console.log("----- setPreviousLms starting");
   var useOld = previousLms;
   if (!useOld) previousLms = {};
   for (var portName in inputs) {
@@ -468,6 +512,7 @@ function setPreviousLms(previousLms, inputs, setLmsFromInputs) {
       }
     }
   }
+  console.log("----- setPreviousLms returning");
   return previousLms;
 }
 
@@ -499,6 +544,11 @@ function newInputs(node) {
       die("newInputs: Node "+node.id+" port "+portName+" has both "+nEdges+" node connections\n and "+nIips+" constant inputs (IIPs).  You must delete the constant inputs\n if you wish to use node connections.");
     if (nEdges+nIips > 1 && !port.options.multi) 
       die("newInputs: Node "+node.id+" port "+portName+" has "+n+" connections but was not declared with 'multi: true'");
+    // We have no way to distinguish different IIPs that are on the
+    // same inport.  Therefore, we do not allow multiple IIPs on
+    // the same inport.  
+    if (nIips > 1) 
+      die("newInputs: Node "+node.id+" port "+portName+" has "+nIips+" constant input (IIP) connections \n but only one is permitted per inport.");
     var subInputs = inputs[portName] = []; 
     for (i=0; i<port.sockets.length; i++) {
       var senderNodePort;
@@ -508,8 +558,8 @@ function newInputs(node) {
       subInputs[senderNodePort] = null;
     }
   }
-  return inputs;
   console.log("----- newInputs returning");
+  return inputs;
 }
 
 // ###################### newLm #########################
