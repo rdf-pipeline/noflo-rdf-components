@@ -95,6 +95,9 @@ function handle( data, callback ) {
       throw new Error('Missing required setting "name".');
     }
 
+    var stateFile = (this.options.stateFile) ? this.options.stateFile : 
+                      basefnode.defaultStateFile( this.options.name, process );
+
     try { 
 
         // Parse the json file specfied into a javascript object
@@ -114,9 +117,6 @@ function handle( data, callback ) {
 
                 if ( result ) {
 
-                     var stateFile = 
-                         (this.options.stateFile) ? this.options.stateFile : 
-                             basefnode.defaultStateFile( this.options.name, process );
 
                      var sendPayload = 
                          ( data.updaterArgs ) ? { [this.outAttrs.sourceName]: this.options.name,
@@ -145,16 +145,20 @@ function handle( data, callback ) {
 
         } else {
             // No updater configured - go ahead and send whatever json object we parsed  
-            this.outPorts.out.send( { [this.outAttrs.sourceName]: this.options.name,
-                                      [this.outAttrs.jsObject]: jsObject } );
-            this.outPorts.out.disconnect();
+            var sendPayload = { [this.outAttrs.sourceName]: this.options.name,
+                                [this.outAttrs.jsObject]: jsObject };
+            basefnode.writeStateFile( stateFile,
+                                      JSON.stringify(jsObject),
+                                      this.outPorts,
+                                      sendPayload,
+                                      callback ); 
         } 
 
     } catch(e) { 
         var errMsg = "Unable to process json file "+jsonFilePath+": \n" + e.message;
-        console.log(errMsg);
         this.outPorts.error.send(errMsg);
         this.outPorts.error.disconnect();
+        throw new Error( errMsg );
     } 
 }
 
