@@ -3,468 +3,338 @@ NoFlo runtime 0.5 listening at ws://localhost:3005
 NoFlo UI is available at http://localhost:3005/
 Using /home/dbooth/rdf-pipeline/noflo/noflo-server for noflo-ui
 Default permissions are protocol:component, protocol:runtime, protocol:graph, protocol:network, component:getsource, component:setsource
-receiveEvent map1|updater ignoring non-data event: connect
+receiveEvent sum1|in1 ignoring non-data event: connect
 ############### receiveEvent BEGIN ###############
-receiveEvent map1|updater event: data
-receiveEvent processing data event.  Payload:  myMap1_updater
+receiveEvent sum1|in1 event: data
+receiveEvent processing data event.  Payload:  3
 ######
  ... IIP event 
-ensureVniExists created map1 node.vnis['']:
-receiveEvent stored state: { data: 'myMap1_updater',
-  lm: 'LM1452022848362.000000001',
+ensureVniExists created sum1 node.vnis['']:
+receiveEvent stored state: { data: '3',
+  lm: 'LM1452084168992.000000001',
   previousLms: null,
   selfPort: null }
-receiveEvent map1 vnis[''] is now:
----------------- BEGIN dumpVni: map1 ----------------
+receiveEvent sum1 vnis[''] is now:
+---------------- BEGIN dumpVni: sum1 ----------------
 vnid: ''
-inputs:  { my_inport: [ data0: null ],
-  updater: 
-   [ data0: { data: 'myMap1_updater',
-       lm: 'LM1452022848362.000000001',
+inputs:  { in1: 
+   [ data0: { data: '3',
+       lm: 'LM1452084168992.000000001',
        previousLms: null,
        selfPort: null } ],
-  in: [ data0: null ] }
+  in2: [ data0: null ] }
 states: 
   out: 
     data: undefined
     lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map1|out
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum1|out
   error: 
     data: undefined
     lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map1|error
-selfNode: map1
----------------- END dumpVni: map1 ----------------
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum1|error
+selfNode: sum1
+---------------- END dumpVni: sum1 ----------------
 =============== maybeFireUpdater starting ===============
-maybeFireUpdater nodeId:  map1
+maybeFireUpdater nodeId:  sum1
 maybeFireUpdater UNFINISHED
 =============== maybeFireUpdater returning ===============
 =============== maybeSendEvent starting ===============
-maybeSendEvent nodeId:  map1
+maybeSendEvent nodeId:  sum1
 =====
 maybeSendEvent calling forwardData ....
 forwardData Forwarding data to port: out
 forwardData Connect ...
-receiveEvent map2|my_inport ignoring non-data event: connect
+receiveEvent sum2|in1 ignoring non-data event: connect
 forwardData Send ...
 ############### receiveEvent BEGIN ###############
-receiveEvent map2|my_inport event: data
+receiveEvent sum2|in1 event: data
 receiveEvent processing data event.  Payload:  { vnid: '',
   state: 
-   { data: 'Forwarded data: myMap1_updater',
-     lm: 'LM1452022848365.000000000',
-     previousLms: { my_inport: [Object], updater: [Object], in: [Object] },
+   { data: 'Forwarded data: 3',
+     lm: 'LM1452084168995.000000000',
+     previousLms: { in1: [Object], in2: [Object] },
      selfPort: 
       { cache: {},
         options: [Object],
         sockets: [Object],
-        node: 'map1',
+        node: 'sum1',
         name: 'out',
         nodeInstance: [Object],
         _events: {} } } }
 ######
  ... event from a node
 forwardData Disconnect ...
-receiveEvent map2|my_inport ignoring non-data event: disconnect
+receiveEvent sum2|in1 ignoring non-data event: disconnect
 forwardData Done
 maybeSendEvent UNFINISHED
 =============== maybeSendEvent returning ===============
 ############### receiveEvent END ###############
-receiveEvent map1|updater ignoring non-data event: disconnect
-receiveEvent map1|in ignoring non-data event: connect
+receiveEvent sum1|in1 ignoring non-data event: disconnect
+receiveEvent sum1|in2 ignoring non-data event: connect
 ############### receiveEvent BEGIN ###############
-receiveEvent map1|in event: data
-receiveEvent processing data event.  Payload:  myMap1_in
+receiveEvent sum1|in2 event: data
+receiveEvent processing data event.  Payload:  4
 ######
  ... IIP event 
-receiveEvent stored state: { data: 'myMap1_in',
-  lm: 'LM1452022848368.000000000',
+receiveEvent stored state: { data: '4',
+  lm: 'LM1452084168998.000000000',
   previousLms: null,
   selfPort: null }
-receiveEvent map1 vnis[''] is now:
----------------- BEGIN dumpVni: map1 ----------------
+receiveEvent sum1 vnis[''] is now:
+---------------- BEGIN dumpVni: sum1 ----------------
 vnid: ''
-inputs:  { my_inport: [ data0: null ],
-  updater: 
-   [ data0: { data: 'myMap1_updater',
-       lm: 'LM1452022848362.000000001',
+inputs:  { in1: 
+   [ data0: { data: '3',
+       lm: 'LM1452084168992.000000001',
        previousLms: null,
        selfPort: null } ],
-  in: 
-   [ data0: { data: 'myMap1_in',
-       lm: 'LM1452022848368.000000000',
+  in2: 
+   [ data0: { data: '4',
+       lm: 'LM1452084168998.000000000',
        previousLms: null,
        selfPort: null } ] }
 states: 
   out: 
-    data: 'Forwarded data: myMap1_updater'
-    lm: 'LM1452022848365.000000000'
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map1|out
+    data: 'Forwarded data: 3'
+    lm: 'LM1452084168995.000000000'
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum1|out
   error: 
     data: undefined
     lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map1|error
-selfNode: map1
----------------- END dumpVni: map1 ----------------
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum1|error
+selfNode: sum1
+---------------- END dumpVni: sum1 ----------------
 =============== maybeFireUpdater starting ===============
-maybeFireUpdater nodeId:  map1
+maybeFireUpdater nodeId:  sum1
 maybeFireUpdater UNFINISHED
 =============== maybeFireUpdater returning ===============
 =============== maybeSendEvent starting ===============
-maybeSendEvent nodeId:  map1
+maybeSendEvent nodeId:  sum1
 =====
 maybeSendEvent calling forwardData ....
 forwardData Forwarding data to port: out
 forwardData Connect ...
-receiveEvent map2|my_inport ignoring non-data event: connect
+receiveEvent sum2|in1 ignoring non-data event: connect
 forwardData Send ...
 ############### receiveEvent BEGIN ###############
-receiveEvent map2|my_inport event: data
+receiveEvent sum2|in1 event: data
 receiveEvent processing data event.  Payload:  { vnid: '',
   state: 
-   { data: 'Forwarded data: myMap1_in',
-     lm: 'LM1452022848369.000000000',
-     previousLms: { my_inport: [Object], updater: [Object], in: [Object] },
+   { data: 'Forwarded data: 4',
+     lm: 'LM1452084168998.000000001',
+     previousLms: { in1: [Object], in2: [Object] },
      selfPort: 
       { cache: {},
         options: [Object],
         sockets: [Object],
-        node: 'map1',
+        node: 'sum1',
         name: 'out',
         nodeInstance: [Object],
         _events: {} } } }
 ######
  ... event from a node
 forwardData Disconnect ...
-receiveEvent map2|my_inport ignoring non-data event: disconnect
+receiveEvent sum2|in1 ignoring non-data event: disconnect
 forwardData Done
 maybeSendEvent UNFINISHED
 =============== maybeSendEvent returning ===============
 ############### receiveEvent END ###############
-receiveEvent map1|in ignoring non-data event: disconnect
-receiveEvent map1|my_inport ignoring non-data event: connect
+receiveEvent sum1|in2 ignoring non-data event: disconnect
+receiveEvent sum3|in1 ignoring non-data event: connect
 ############### receiveEvent BEGIN ###############
-receiveEvent map1|my_inport event: data
-receiveEvent processing data event.  Payload:  my inport data
+receiveEvent sum3|in1 event: data
+receiveEvent processing data event.  Payload:  5
 ######
  ... IIP event 
-receiveEvent stored state: { data: 'my inport data',
-  lm: 'LM1452022848370.000000000',
+ensureVniExists created sum3 node.vnis['']:
+receiveEvent stored state: { data: '5',
+  lm: 'LM1452084169000.000000000',
   previousLms: null,
   selfPort: null }
-receiveEvent map1 vnis[''] is now:
----------------- BEGIN dumpVni: map1 ----------------
+receiveEvent sum3 vnis[''] is now:
+---------------- BEGIN dumpVni: sum3 ----------------
 vnid: ''
-inputs:  { my_inport: 
-   [ data0: { data: 'my inport data',
-       lm: 'LM1452022848370.000000000',
+inputs:  { in1: 
+   [ data0: { data: '5',
+       lm: 'LM1452084169000.000000000',
        previousLms: null,
        selfPort: null } ],
-  updater: 
-   [ data0: { data: 'myMap1_updater',
-       lm: 'LM1452022848362.000000001',
+  in2: [ data0: null ] }
+states: 
+  out: 
+    data: undefined
+    lm: undefined
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum3|out
+  error: 
+    data: undefined
+    lm: undefined
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum3|error
+selfNode: sum3
+---------------- END dumpVni: sum3 ----------------
+=============== maybeFireUpdater starting ===============
+maybeFireUpdater nodeId:  sum3
+maybeFireUpdater UNFINISHED
+=============== maybeFireUpdater returning ===============
+=============== maybeSendEvent starting ===============
+maybeSendEvent nodeId:  sum3
+=====
+maybeSendEvent calling forwardData ....
+forwardData Forwarding data to port: out
+forwardData Connect ...
+receiveEvent sum2|in1 ignoring non-data event: connect
+forwardData Send ...
+############### receiveEvent BEGIN ###############
+receiveEvent sum2|in1 event: data
+receiveEvent processing data event.  Payload:  { vnid: '',
+  state: 
+   { data: 'Forwarded data: 5',
+     lm: 'LM1452084169001.000000000',
+     previousLms: { in1: [Object], in2: [Object] },
+     selfPort: 
+      { cache: {},
+        options: [Object],
+        sockets: [Object],
+        node: 'sum3',
+        name: 'out',
+        nodeInstance: [Object],
+        _events: {} } } }
+######
+ ... event from a node
+forwardData Disconnect ...
+receiveEvent sum2|in1 ignoring non-data event: disconnect
+forwardData Done
+maybeSendEvent UNFINISHED
+=============== maybeSendEvent returning ===============
+############### receiveEvent END ###############
+receiveEvent sum3|in1 ignoring non-data event: disconnect
+receiveEvent sum3|in2 ignoring non-data event: connect
+############### receiveEvent BEGIN ###############
+receiveEvent sum3|in2 event: data
+receiveEvent processing data event.  Payload:  6
+######
+ ... IIP event 
+receiveEvent stored state: { data: '6',
+  lm: 'LM1452084169002.000000000',
+  previousLms: null,
+  selfPort: null }
+receiveEvent sum3 vnis[''] is now:
+---------------- BEGIN dumpVni: sum3 ----------------
+vnid: ''
+inputs:  { in1: 
+   [ data0: { data: '5',
+       lm: 'LM1452084169000.000000000',
        previousLms: null,
        selfPort: null } ],
-  in: 
-   [ data0: { data: 'myMap1_in',
-       lm: 'LM1452022848368.000000000',
+  in2: 
+   [ data0: { data: '6',
+       lm: 'LM1452084169002.000000000',
        previousLms: null,
        selfPort: null } ] }
 states: 
   out: 
-    data: 'Forwarded data: myMap1_in'
-    lm: 'LM1452022848369.000000000'
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map1|out
+    data: 'Forwarded data: 5'
+    lm: 'LM1452084169001.000000000'
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum3|out
   error: 
     data: undefined
     lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map1|error
-selfNode: map1
----------------- END dumpVni: map1 ----------------
+    previousLms: { in1: { data0: undefined }, in2: { data0: undefined } }
+    selfPort: sum3|error
+selfNode: sum3
+---------------- END dumpVni: sum3 ----------------
 =============== maybeFireUpdater starting ===============
-maybeFireUpdater nodeId:  map1
+maybeFireUpdater nodeId:  sum3
 maybeFireUpdater UNFINISHED
 =============== maybeFireUpdater returning ===============
 =============== maybeSendEvent starting ===============
-maybeSendEvent nodeId:  map1
+maybeSendEvent nodeId:  sum3
 =====
 maybeSendEvent calling forwardData ....
 forwardData Forwarding data to port: out
 forwardData Connect ...
-receiveEvent map2|my_inport ignoring non-data event: connect
+receiveEvent sum2|in1 ignoring non-data event: connect
 forwardData Send ...
 ############### receiveEvent BEGIN ###############
-receiveEvent map2|my_inport event: data
+receiveEvent sum2|in1 event: data
 receiveEvent processing data event.  Payload:  { vnid: '',
   state: 
-   { data: 'Forwarded data: my inport data',
-     lm: 'LM1452022848371.000000000',
-     previousLms: { my_inport: [Object], updater: [Object], in: [Object] },
+   { data: 'Forwarded data: 6',
+     lm: 'LM1452084169003.000000000',
+     previousLms: { in1: [Object], in2: [Object] },
      selfPort: 
       { cache: {},
         options: [Object],
         sockets: [Object],
-        node: 'map1',
+        node: 'sum3',
         name: 'out',
         nodeInstance: [Object],
         _events: {} } } }
 ######
  ... event from a node
 forwardData Disconnect ...
-receiveEvent map2|my_inport ignoring non-data event: disconnect
+receiveEvent sum2|in1 ignoring non-data event: disconnect
 forwardData Done
 maybeSendEvent UNFINISHED
 =============== maybeSendEvent returning ===============
 ############### receiveEvent END ###############
-receiveEvent map1|my_inport ignoring non-data event: disconnect
-receiveEvent map3|my_inport ignoring non-data event: connect
+receiveEvent sum3|in2 ignoring non-data event: disconnect
+receiveEvent sum2|in2 ignoring non-data event: connect
 ############### receiveEvent BEGIN ###############
-receiveEvent map3|my_inport event: data
-receiveEvent processing data event.  Payload:  inport data for map3
+receiveEvent sum2|in2 event: data
+receiveEvent processing data event.  Payload:  7
 ######
  ... IIP event 
-ensureVniExists created map3 node.vnis['']:
-receiveEvent stored state: { data: 'inport data for map3',
-  lm: 'LM1452022848373.000000000',
+ensureVniExists created sum2 node.vnis['']:
+receiveEvent stored state: { data: '7',
+  lm: 'LM1452084169004.000000000',
   previousLms: null,
   selfPort: null }
-receiveEvent map3 vnis[''] is now:
----------------- BEGIN dumpVni: map3 ----------------
+receiveEvent sum2 vnis[''] is now:
+---------------- BEGIN dumpVni: sum2 ----------------
 vnid: ''
-inputs:  { my_inport: 
-   [ data0: { data: 'inport data for map3',
-       lm: 'LM1452022848373.000000000',
-       previousLms: null,
-       selfPort: null } ],
-  updater: [ data0: null ],
-  in: [ data0: null ] }
-states: 
-  out: 
-    data: undefined
-    lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map3|out
-  error: 
-    data: undefined
-    lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map3|error
-selfNode: map3
----------------- END dumpVni: map3 ----------------
-=============== maybeFireUpdater starting ===============
-maybeFireUpdater nodeId:  map3
-maybeFireUpdater UNFINISHED
-=============== maybeFireUpdater returning ===============
-=============== maybeSendEvent starting ===============
-maybeSendEvent nodeId:  map3
-=====
-maybeSendEvent calling forwardData ....
-forwardData Forwarding data to port: out
-forwardData Connect ...
-receiveEvent map2|my_inport ignoring non-data event: connect
-forwardData Send ...
-############### receiveEvent BEGIN ###############
-receiveEvent map2|my_inport event: data
-receiveEvent processing data event.  Payload:  { vnid: '',
-  state: 
-   { data: 'Forwarded data: inport data for map3',
-     lm: 'LM1452022848374.000000000',
-     previousLms: { my_inport: [Object], updater: [Object], in: [Object] },
-     selfPort: 
-      { cache: {},
-        options: [Object],
-        sockets: [Object],
-        node: 'map3',
-        name: 'out',
-        nodeInstance: [Object],
-        _events: {} } } }
-######
- ... event from a node
-forwardData Disconnect ...
-receiveEvent map2|my_inport ignoring non-data event: disconnect
-forwardData Done
-maybeSendEvent UNFINISHED
-=============== maybeSendEvent returning ===============
-############### receiveEvent END ###############
-receiveEvent map3|my_inport ignoring non-data event: disconnect
-receiveEvent map3|updater ignoring non-data event: connect
-############### receiveEvent BEGIN ###############
-receiveEvent map3|updater event: data
-receiveEvent processing data event.  Payload:  my_updater_for_map3
-######
- ... IIP event 
-receiveEvent stored state: { data: 'my_updater_for_map3',
-  lm: 'LM1452022848375.000000000',
-  previousLms: null,
-  selfPort: null }
-receiveEvent map3 vnis[''] is now:
----------------- BEGIN dumpVni: map3 ----------------
-vnid: ''
-inputs:  { my_inport: 
-   [ data0: { data: 'inport data for map3',
-       lm: 'LM1452022848373.000000000',
-       previousLms: null,
-       selfPort: null } ],
-  updater: 
-   [ data0: { data: 'my_updater_for_map3',
-       lm: 'LM1452022848375.000000000',
-       previousLms: null,
-       selfPort: null } ],
-  in: [ data0: null ] }
-states: 
-  out: 
-    data: 'Forwarded data: inport data for map3'
-    lm: 'LM1452022848374.000000000'
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map3|out
-  error: 
-    data: undefined
-    lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map3|error
-selfNode: map3
----------------- END dumpVni: map3 ----------------
-=============== maybeFireUpdater starting ===============
-maybeFireUpdater nodeId:  map3
-maybeFireUpdater UNFINISHED
-=============== maybeFireUpdater returning ===============
-=============== maybeSendEvent starting ===============
-maybeSendEvent nodeId:  map3
-=====
-maybeSendEvent calling forwardData ....
-forwardData Forwarding data to port: out
-forwardData Connect ...
-receiveEvent map2|my_inport ignoring non-data event: connect
-forwardData Send ...
-############### receiveEvent BEGIN ###############
-receiveEvent map2|my_inport event: data
-receiveEvent processing data event.  Payload:  { vnid: '',
-  state: 
-   { data: 'Forwarded data: my_updater_for_map3',
-     lm: 'LM1452022848376.000000000',
-     previousLms: { my_inport: [Object], updater: [Object], in: [Object] },
-     selfPort: 
-      { cache: {},
-        options: [Object],
-        sockets: [Object],
-        node: 'map3',
-        name: 'out',
-        nodeInstance: [Object],
-        _events: {} } } }
-######
- ... event from a node
-forwardData Disconnect ...
-receiveEvent map2|my_inport ignoring non-data event: disconnect
-forwardData Done
-maybeSendEvent UNFINISHED
-=============== maybeSendEvent returning ===============
-############### receiveEvent END ###############
-receiveEvent map3|updater ignoring non-data event: disconnect
-receiveEvent map3|in ignoring non-data event: connect
-############### receiveEvent BEGIN ###############
-receiveEvent map3|in event: data
-receiveEvent processing data event.  Payload:  sample in for map3
-######
- ... IIP event 
-receiveEvent stored state: { data: 'sample in for map3',
-  lm: 'LM1452022848378.000000000',
-  previousLms: null,
-  selfPort: null }
-receiveEvent map3 vnis[''] is now:
----------------- BEGIN dumpVni: map3 ----------------
-vnid: ''
-inputs:  { my_inport: 
-   [ data0: { data: 'inport data for map3',
-       lm: 'LM1452022848373.000000000',
-       previousLms: null,
-       selfPort: null } ],
-  updater: 
-   [ data0: { data: 'my_updater_for_map3',
-       lm: 'LM1452022848375.000000000',
-       previousLms: null,
-       selfPort: null } ],
-  in: 
-   [ data0: { data: 'sample in for map3',
-       lm: 'LM1452022848378.000000000',
+inputs:  { in1: [ 'sum1|out': null, 'sum3|out': null ],
+  in2: 
+   [ data0: { data: '7',
+       lm: 'LM1452084169004.000000000',
        previousLms: null,
        selfPort: null } ] }
 states: 
   out: 
-    data: 'Forwarded data: my_updater_for_map3'
-    lm: 'LM1452022848376.000000000'
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map3|out
+    data: undefined
+    lm: undefined
+    previousLms: { in1: { 'sum1|out': undefined, 'sum3|out': undefined },
+      in2: { data0: undefined } }
+    selfPort: sum2|out
   error: 
     data: undefined
     lm: undefined
-    previousLms: { my_inport: { data0: undefined },
-      updater: { data0: undefined },
-      in: { data0: undefined } }
-    selfPort: map3|error
-selfNode: map3
----------------- END dumpVni: map3 ----------------
+    previousLms: { in1: { 'sum1|out': undefined, 'sum3|out': undefined },
+      in2: { data0: undefined } }
+    selfPort: sum2|error
+selfNode: sum2
+---------------- END dumpVni: sum2 ----------------
 =============== maybeFireUpdater starting ===============
-maybeFireUpdater nodeId:  map3
+maybeFireUpdater nodeId:  sum2
 maybeFireUpdater UNFINISHED
 =============== maybeFireUpdater returning ===============
 =============== maybeSendEvent starting ===============
-maybeSendEvent nodeId:  map3
+maybeSendEvent nodeId:  sum2
 =====
 maybeSendEvent calling forwardData ....
 forwardData Forwarding data to port: out
 forwardData Connect ...
-receiveEvent map2|my_inport ignoring non-data event: connect
 forwardData Send ...
-############### receiveEvent BEGIN ###############
-receiveEvent map2|my_inport event: data
-receiveEvent processing data event.  Payload:  { vnid: '',
-  state: 
-   { data: 'Forwarded data: sample in for map3',
-     lm: 'LM1452022848378.000000001',
-     previousLms: { my_inport: [Object], updater: [Object], in: [Object] },
-     selfPort: 
-      { cache: {},
-        options: [Object],
-        sockets: [Object],
-        node: 'map3',
-        name: 'out',
-        nodeInstance: [Object],
-        _events: {} } } }
-######
- ... event from a node
 forwardData Disconnect ...
-receiveEvent map2|my_inport ignoring non-data event: disconnect
 forwardData Done
 maybeSendEvent UNFINISHED
 =============== maybeSendEvent returning ===============
 ############### receiveEvent END ###############
-receiveEvent map3|in ignoring non-data event: disconnect
+receiveEvent sum2|in2 ignoring non-data event: disconnect
 Saving graph /home/dbooth/rdf-pipeline/noflo/noflo-rdf-components/output.json

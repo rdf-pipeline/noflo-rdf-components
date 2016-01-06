@@ -32,8 +32,8 @@ exports.getComponent = function() {
             }
         },
         inPorts: {
-            my_inport: {
-                description: "my_inport_description",
+            in1: {
+                description: "in1_description",
                 datatype: 'string',
                 required: true,
                 addressable: false,
@@ -41,16 +41,8 @@ exports.getComponent = function() {
 		multi: true,
 		process: receiveEvent
             }, 
-            updater: {
-                description: "File path to the node updater.",
-                datatype: 'string',
-                required: true,
-                addressable: false,
-                buffered: false,
-		process: receiveEvent
-            }, 
-            'in': {
-                description: "File input - An initial input file",
+            in2: {
+                description: "in2_description",
                 datatype: 'string',
                 required: true,
                 addressable: false,
@@ -59,8 +51,7 @@ exports.getComponent = function() {
             }
         }
     }), {
-        description: "Component for a RDF Pipeline FileNode,\
-            using file updater script from the @in port",
+        description: "Component for a RDF Pipeline FileNode",
         icon: 'external-link'
     });
 };
