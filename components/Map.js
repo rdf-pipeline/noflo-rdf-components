@@ -65,6 +65,15 @@ exports.getComponent = function() {
     });
 };
 
+// ###################### sumUpdater #########################
+// STATUS: Unfinished
+/**
+ * Test of a simple updater.
+ */
+function sumUpdater(in1, in2, out) {
+  return {out: in1+in2};
+}
+
 // ###################### newPayload #########################
 // STATUS: Ready to be merged into base-node
 /**
@@ -73,6 +82,9 @@ exports.getComponent = function() {
  *  data -- Push an event downstream.  Properties:
  *	vnid: sendersVnid
  *	state: refOfSendersOutportState
+ *
+ * At some point we may want to add event cycle detection by adding
+ * a portSeen hash to the event payload.
  */
 function newPayload(event, properties) {
   if (event != 'data') return;
@@ -88,6 +100,8 @@ function newPayload(event, properties) {
 // STATUS: Ready to be merged into base-node
 /**
  * Temporary function to forward data downstream.
+ * This is needed only until we get updaters working and
+ * events sent as a result of a state change.
  */
 function forwardData(vni, toPortName, event, state) {
   var nodeInstance = vni.selfNode;
