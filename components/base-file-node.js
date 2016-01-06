@@ -17,11 +17,7 @@ var debug = false;
 module.exports = {
 
   defaultStateFilePath: function() {
-    if ( process ) {
       return process.cwd() + '/state/';
-    } 
-
-    return '/tmp/state/';
   },
 
   /** 
@@ -34,6 +30,8 @@ module.exports = {
   defaultStateFile: function( nodeName, process ) {
     return this.defaultStateFilePath() + nodeName;
   },
+
+  debug: this.debug,
 
   /**
    * Forks the specified command and waits until it returns.  
@@ -55,58 +53,60 @@ module.exports = {
                      sendPayload, 
                      callback) {
 
+    if (this.debug) {
+      console.log("Executing command "+ command+" for node "+nodeName);
+    }
+
     var self = this;
     exec(command, {timeout:3000}, function(error, stdout, stderr) {
 
       // Got any errors?  If so, report them 
       if (error || stderr) { 
 
-        if (error) {
-          outPorts.error.send(error);
-        } 
-
-        if (stderr) { 
-          outPorts.error.send(stderr);
+        self.handleErrors( [ error, stderr ], outPorts );
+        if ( _.isFunction(callback) ) {
+          if ( !error ) error = new Error(stderr);
+          callback( error, stateFilePath);
         }
 
-        outPorts.error.disconnect();
-      }
-
-      // Did the command generate any output?
-      if (stdout !== null ) {
-
-        // Write state file if we have one specified 
-        if (stateFilePath && stateFilePath.length > 0) { 
+      } else // if we have stdout and a state file to write to, then write it
+      if ( stdout && (stateFilePath && stateFilePath.length > 0)) { 
 
           self.writeStateFile( stateFilePath, 
                                stdout, 
                                outPorts,
                                sendPayload, 
-                               function( stateFile, err ) { 
-
-            if ( ! error ) {
-              error = err;
-            }
+                               function( err, stateFile ) { 
 
             if ( _.isFunction(callback) ) {
-              callback( stateFile, error );
+              if ( ! error ) error = err;
+              callback( error, stateFile );
             }
           });
 
-        } else {
-          // No state file specified -> just send payload to next
-          // noflo component and callback that we are done
-          outPorts.out.send( sendPayload );
-          outPorts.out.disconnect();
-
-          if ( _.isFunction(callback) ) {
-            callback( stateFile, error );
-          }
+      } else {
+      
+        // No errors, state file or stdout -> just send payload to next
+        // noflo component and callback that we are done
+        outPorts.out.send( sendPayload );
+        outPorts.out.disconnect();
+        if ( _.isFunction(callback) ) {
+          callback( error, stateFilePath );  
         }
-      } // stdout != null
+      }
     });
   }, 
                           
+  handleErrors: function( errors, outPorts ) {
+
+    if (errors && errors.length > 0  ) { 
+      for (var i = 0, len=errors.length; i < len; i++) {
+        outPorts.error.send(errors[i]);
+      }
+      outPorts.error.disconnect();
+    }
+  },
+
   /**
    * Simplistic check to see if the updater requested is an javascript file that can be
    * required and executed, or if it's a command line that needs to be forked.
@@ -147,7 +147,12 @@ module.exports = {
                                });
     }
 
-    return _.flatten(uniqueElements);
+    var results =  _.flatten(uniqueElements);
+    if ( this.debug ) { 
+       console.log("Unique elements with attribute "+attrName+": "+results);
+    }
+
+    return results;
   },
 
   /** 
@@ -167,17 +172,17 @@ module.exports = {
                             filePayload, 
                             outPorts, 
                             sendPayload,
-                            callback ) { 
+                            callback) { 
 
     if ( this.debug ) {
       console.log("Saving state to " + stateFilePath);
     }
 
-    fs.writeFile( stateFilePath, filePayload, function(err) {
+    var self = this;
+    fs.writeFile( stateFilePath, filePayload, function(error) {
 
-      if (err) {
-        outPorts.error.send(err);
-        outPorts.error.disconnect();
+      if (error) {
+        self.handleErrors( [ error ], outPorts );
 
       } else {
         outPorts.out.send( sendPayload );
@@ -185,7 +190,7 @@ module.exports = {
       }
 
       if ( _.isFunction(callback)) {
-        callback( stateFilePath, err );
+        callback( error, stateFilePath );
       }
     }); 
   }

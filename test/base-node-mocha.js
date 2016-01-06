@@ -11,13 +11,14 @@ var basenode = require('../components/base-node');
 
 describe('base-node', function() {
 
-  it('base-node should exist', function() {
-    should.exist( basenode );
+  it('should exist as an object', function() {
+    basenode.should.exist;
+    basenode.should.be.an('object');
   });
 
   describe('#assign', function () {
 
-    it('assign function should exist in base-node exports', function() {
+    it('should exist in base-node exports', function() {
       basenode.assign.should.exist;
       basenode.assign.should.be.a('function');
     });
@@ -92,7 +93,7 @@ describe('base-node', function() {
 
   describe('#defaultPorts', function () {
     
-    it('defaultPorts should exist in base-node exports', function() {
+    it('should exist in base-node exports', function() {
       should.exist( basenode.defaultPorts );
       basenode.defaultPorts.should.be.an('object');
     });
@@ -120,7 +121,7 @@ describe('base-node', function() {
 
   describe('#on', function () {
    
-    it('on function should exist in base-node exports', function() {
+    it('should exist in base-node exports', function() {
       basenode.on.should.exist;
       basenode.on.should.be.a('function');
     });
@@ -145,14 +146,14 @@ describe('base-node', function() {
       expect(on.call( this, testData )).to.not.throw.error;
     });
 
-    it('on function should fail if called with no parameters', function() {
+    it('should fail if called with no parameters', function() {
       expect(basenode.on).to.throw(Error);
     });
   });
 
   describe('#push', function () {
    
-    it('push function should exist in base-node exports', function() {
+    it('should exist in base-node exports', function() {
       basenode.push.should.exist;
       basenode.push.should.be.a('function');
     });
@@ -211,7 +212,7 @@ describe('base-node', function() {
       var result = basenode.push(nullVal);
       result.should.exist;
       result.should.be.an('array');
-      result.should.have.length(0);
+      result.should.be.empty;
     });
   });
 
