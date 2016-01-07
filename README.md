@@ -55,3 +55,4 @@ To see the code coverage of the tests, run Istanbul and bring the results up in 
     istanbul cover _mocha -- -R spec
     open coverage/lcov-report/index.html 
 
+For documentation on writing tests, please refer to the [noflo-rdf-pipeline developer testing wiki](https://github.com/rdf-pipeline/noflo-rdf-pipeline/wiki/Developer-Testing).
