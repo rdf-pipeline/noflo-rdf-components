@@ -38,9 +38,10 @@ module.exports = function(def){
         };
         return _.defaults({
             process: function(event, payload, socketIndex) {
+                var self = this;
                 var outPorts = this.nodeInstance.outPorts;
                 Promise.resolve().then(function(){
-                    return process.call(this, event, payload, socketIndex);
+                    return process.call(self, event, payload, socketIndex);
                 }).then(function(resolved){
                     if (!_.isUndefined(resolved)) {
                         outPorts[resolvePort.name].send(resolved);
@@ -57,9 +58,9 @@ module.exports = function(def){
         return _.extend(new noflo.Component({
             outPorts: _.defaults(_.object(
                 [resolvePort.name, rejectPort.name],
-                [resolvePort, rejectPort]
-            ), def.outPorts),
-            inPorts: inPorts,
+                [_.clone(resolvePort), _.clone(rejectPort)]
+            ), _.mapObject(def.outPorts, _.clone)),
+            inPorts: _.mapObject(inPorts, _.clone)
         }), _.pick(def, 'description', 'icon'));
     };
 };
