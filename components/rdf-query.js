@@ -4,56 +4,53 @@ var _ = require('underscore');
 var Promise = require('promise');
 var Handlebars = require('handlebars');
 var rdfstore = require('rdfstore');
-var noflo = require('noflo');
 
 var basenode = require('./base-node');
+var promiseComponent = require('./promise-component');
 
-exports.getComponent = function() {
-    return _.extend(new noflo.Component({
-        outPorts: {
-            out: {
-                description: "Query result",
-                datatype: 'object'
-            },
-            error: {
-                description: "Error object",
-                datatype: 'object'
-            }
+exports.getComponent = promiseComponent({
+    description: "Executes the given SPARQL query on the provided RDF graph and returns the result",
+    icon: 'cog',
+    resolvePort: {
+        name: 'out',
+        description: "Query result",
+        datatype: 'object'
+    },
+    rejectPort: {
+        name: 'error',
+        description: "Error object",
+        datatype: 'object'
+    },
+    inPorts: {
+        parameters: {
+            description: "A map of template parameters",
+            datatype: 'object',
+            ondata: basenode.assign('parameters')
         },
-        inPorts: {
-            parameters: {
-                description: "A map of template parameters",
-                datatype: 'object',
-                process: basenode.on({data: basenode.assign('parameters')})
-            },
-            query: {
-                description: "SPARQL query template string in handlebars syntax",
-                datatype: 'string',
-                required: true,
-                process: basenode.on({data: basenode.assign('query', Handlebars.compile)})
-            },
-            "default": {
-                description: "Graph URI for the default dataset",
-                datatype: 'string',
-                process: basenode.on({data: basenode.assign('defaultURIs', basenode.push)})
-            },
-            namespaces: {
-                description: "Graph URI for the named dataset",
-                datatype: 'string',
-                process: basenode.on({data: basenode.assign('namespacesURIs', basenode.push)})
-            },
-            'in': {
-                description: "RDF JS Interface Graph object",
-                datatype: 'object',
-                required: true,
-                process: basenode.on({data: execute})
-            }
+        query: {
+            description: "SPARQL query template string in handlebars syntax",
+            datatype: 'string',
+            required: true,
+            ondata: basenode.assign('query', Handlebars.compile)
+        },
+        "default": {
+            description: "Graph URI for the default dataset",
+            datatype: 'string',
+            ondata: basenode.assign('defaultURIs', basenode.push)
+        },
+        namespaces: {
+            description: "Graph URI for the named dataset",
+            datatype: 'string',
+            ondata: basenode.assign('namespacesURIs', basenode.push)
+        },
+        'in': {
+            description: "RDF JS Interface Graph object",
+            datatype: 'object',
+            required: true,
+            ondata: execute
         }
-    }), {
-        description: "Executes the given SPARQL query on the provided RDF graph and returns the result",
-        icon: 'cog'
-    });
-};
+    }
+});
 
 
 function execute(graph) {
@@ -63,14 +60,8 @@ function execute(graph) {
     var defaultURIs = _.compact([graphURI].concat(this.defaultURIs));
     var args = (this.defaultURIs || this.namespaceURIs || graphURI) ?
         [query, defaultURIs, this.namespaceURIs || []] : [query];
-    asRdfStore(graph).then(function(store){
+    return asRdfStore(graph).then(function(store){
         return Promise.denodeify(store.execute).apply(store, args);
-    }).then(function(result){
-        outPorts.out.send(result);
-        outPorts.out.disconnect();
-    }, function(err){
-        outPorts.error.send(err);
-        outPorts.error.disconnect();
     });
 }
 

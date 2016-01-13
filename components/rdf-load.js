@@ -3,53 +3,48 @@
 var _ = require('underscore');
 var Promise = require('promise');
 var rdfstore = require('rdfstore');
-var noflo = require('noflo');
 
 var basenode = require('./base-node');
+var promiseComponent = require('./promise-component');
 
-exports.getComponent = function() {
-    return _.extend(new noflo.Component({
-        outPorts: {
-            out: {
-                description: "All the quads as a RDF JS Interface Graph object",
-                datatype: 'object'
-            },
-            error: {
-                description: "Error object",
-                datatype: 'object'
-            }
+exports.getComponent = promiseComponent({
+    description: "Loads data into a RDF JS Interface Graph object",
+    icon: 'sign-in',
+    resolvePort: {
+        name: 'out',
+        description: "All the quads as a RDF JS Interface Graph object",
+        datatype: 'object'
+    },
+    rejectPort: {
+        name: 'error',
+        description: "Error object",
+        datatype: 'object'
+    },
+    inPorts: {
+        options: {
+            description: "A map of configuration options for the store",
+            datatype: 'object',
+            ondata: basenode.assign('options')
         },
-        inPorts: {
-            options: {
-                description: "A map of configuration options for the store",
-                datatype: 'object',
-                process: basenode.on({data: basenode.assign('options')})
-            },
-            media: {
-                description: "Media type (application/json, text/n3...) of the data to be parsed or the value 'remote' if a URI for the data is passed instead",
-                datatype: 'string',
-                process: basenode.on({data: basenode.assign('media')})
-            },
-            graph: {
-                description: "Graph URI template where the parsed triples will be inserted. If it is not specified, triples will be loaded in the default graph",
-                datatype: 'string',
-                process: basenode.on({data: basenode.assign('graph')})
-            },
-            'in': {
-                description: "RDF data to be parsed and loaded or an URI where the data will be retrieved after performing content negotiation",
-                datatype: 'all',
-                required: true,
-                process: basenode.on({
-                    data: basenode.assign('data'),
-                    disconnect: load
-                })
-            }
+        media: {
+            description: "Media type (application/json, text/n3...) of the data to be parsed or the value 'remote' if a URI for the data is passed instead",
+            datatype: 'string',
+            ondata: basenode.assign('media')
+        },
+        graph: {
+            description: "Graph URI template where the parsed triples will be inserted. If it is not specified, triples will be loaded in the default graph",
+            datatype: 'string',
+            ondata: basenode.assign('graph')
+        },
+        'in': {
+            description: "RDF data to be parsed and loaded or an URI where the data will be retrieved after performing content negotiation",
+            datatype: 'all',
+            required: true,
+            ondata: basenode.assign('data'),
+            ondisconnect: load
         }
-    }), {
-        description: "Loads data into a RDF JS Interface Graph object",
-        icon: 'sign-in'
-    });
-};
+    }
+});
 
 function load() {
     var outPorts = this.outPorts;
@@ -61,7 +56,7 @@ function load() {
         _.isString(data) ? 'remote' :
         _.isObject(data) ? 'application/json' : undefined;
     if (this.data) this.data = null;
-    denodeify(rdfstore, 'create', this.options || {}).then(function(store){
+    return denodeify(rdfstore, 'create', this.options || {}).then(function(store){
         return Promise.resolve().then(function(){
             if (media) {
                 return denodeify(store, 'load', media, data, graphURI || {});
@@ -75,12 +70,8 @@ function load() {
         }).then(function(graph){
             graph.rdfstore = store;
             graph.graphURI = graphURI;
-            outPorts.out.send(graph);
-            outPorts.out.disconnect();
+            return graph;
         });
-    }).catch(function(err){
-        outPorts.error.send(err);
-        outPorts.error.disconnect();
     });
 }
 

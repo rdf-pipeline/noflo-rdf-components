@@ -6,71 +6,61 @@ var https = require('https');
 var url = require('url');
 var uriTemplates = require('uri-templates');
 var Handlebars = require('handlebars');
-var noflo = require('noflo');
 
 var basenode = require('./base-node');
+var promiseComponent = require('./promise-component');
 
-exports.getComponent = function() {
-    return _.extend(new noflo.Component({
-        outPorts: {
-            out: {
-                description: "Response body when response status is 200/300",
-                datatype: 'string'
-            },
-            error: {
-                description: "Response body when response status is 400/500",
-                datatype: 'object'
-            }
+exports.getComponent = promiseComponent({
+    description: "Initials an HTTP request from uri-template (RFC6570),\
+        using object data from the @in port",
+    icon: 'external-link',
+    resolvePort: {
+        name: 'out',
+        description: "Response body when response status is 200/300",
+        datatype: 'string'
+    },
+    rejectPort: {
+        name: 'error',
+        description: "Response body when response status is 400/500",
+        datatype: 'object'
+    },
+    inPorts: {
+        method: {
+            description: "HTTP method",
+            datatype: 'string',
+            ondata: basenode.assign('method', newUriTemplate)
         },
-        inPorts: {
-            method: {
-                description: "HTTP method",
-                datatype: 'string',
-                process: basenode.on({data: basenode.assign('method', newUriTemplate)})
-            },
-            url: {
-                description: "URI-Template (RFC6570)",
-                datatype: 'string',
-                required: true,
-                process: basenode.on({data: basenode.assign('url', newUriTemplate)})
-            },
-            headers: {
-                description: "Request headers as name:template pairs using the URI-Template syntax",
-                datatype: 'object',
-                process: basenode.on({data: basenode.assign('headers', newUriTemplate)})
-            },
-            body: {
-                description: "Request body template using the Handlebars syntax",
-                datatype: 'string',
-                process: basenode.on({data: basenode.assign('body', Handlebars.compile)})
-            },
-            parameters: {
-                description: "Object data used to populate the templates, but not trigger the request",
-                datatype: 'object',
-                required: true,
-                process: basenode.on({data: basenode.assign('parameters', _.defaults)})
-            },
-            data: {
-                description: "Use parameters port instead",
-                datatype: 'object',
-                process: basenode.on({data: basenode.assign('parameters', _.defaults)})
-            },
-            'in': {
-                description: "Object data used to populate the templates and trigger the request",
-                datatype: 'object',
-                required: true,
-                process: basenode.on({
-                    data: basenode.assign('data', _.defaults),
-                    disconnect: execute
-                })
-            }
+        url: {
+            description: "URI-Template (RFC6570)",
+            datatype: 'string',
+            required: true,
+            ondata: basenode.assign('url', newUriTemplate)
+        },
+        headers: {
+            description: "Request headers as name:template pairs using the URI-Template syntax",
+            datatype: 'object',
+            ondata: basenode.assign('headers', newUriTemplate)
+        },
+        body: {
+            description: "Request body template using the Handlebars syntax",
+            datatype: 'string',
+            ondata: basenode.assign('body', Handlebars.compile)
+        },
+        parameters: {
+            description: "Object data used to populate the templates, but not trigger the request",
+            datatype: 'object',
+            required: true,
+            ondata: basenode.assign('parameters', _.defaults)
+        },
+        'in': {
+            description: "Object data used to populate the templates and trigger the request",
+            datatype: 'object',
+            required: true,
+            ondata: basenode.assign('data', _.defaults),
+            ondisconnect: execute
         }
-    }), {
-        description: "Initials an HTTP request from uri-template (RFC6570),\
-            using object data from the @in port",
-        icon: 'external-link'
-    });
-};
+    }
+});
 
 function newUriTemplate(template){
     if (_.isString(template)) {
@@ -100,32 +90,35 @@ function newUriTemplate(template){
 }
 
 function execute() {
-    if (!this.url) return _.defer(execute.bind(this));
-    var outPorts = this.outPorts;
-    var data = _.defaults(this.data || {}, this.parameters);
+    var self = this;
+    if (!this.url) return new Promise(function(resolve, reject) {
+        _.defer(function(){
+            execute.call(self).then(resolve, reject);
+        });
+    });
+    var data = _.defaults({}, this.data || {}, this.parameters);
     if (this.data) this.data = null; // clear for next dataset
-    var options = url.parse(this.url(data));
-    var prot = options.protocol == 'https:' ? https : http;
-    var req = prot.request(_.extend(options, {
+    var options = _.extend(url.parse(this.url(data)), {
         method: this.method ? this.method(data) : 'GET',
         headers: this.headers(data)
-    }), function(res){
-        var output = res.statusCode < 400 ?
-                outPorts.out : outPorts.error;
-        res.setEncoding('utf8');
-        output.connect();
-        res.on('data', function(data){
-            output.send(data);
-        }).on('end', function(){
-            output.disconnect();
-        }).on('error', function(e){
-            outPorts.error.send(e);
-            outPorts.error.disconnect();
-        });
-    }).on('error', function(e){
-        outPorts.error.send(e);
-        outPorts.error.disconnect();
     });
-    if (this.body) req.write(this.body(data));
-    req.end();
+    var body = this.body;
+    var prot = options.protocol == 'https:' ? https : http;
+    return new Promise(function(resolve, reject) {
+        var req = prot.request(options, function(res){
+            res.setEncoding('utf8');
+            var buffer = [];
+            res.on('data', function(data){
+                buffer.push(data);
+            }).on('end', function(){
+                if (res.statusCode < 400) {
+                    resolve(buffer.join(''));
+                } else {
+                    reject(buffer.join(''));
+                }
+            }).on('error', reject);
+        }).on('error', reject);
+        if (body) req.write(body(data));
+        req.end();
+    });
 }
