@@ -5,10 +5,13 @@ var noflo = require('noflo');
 
 module.exports = function(def){
     if (_.isEmpty(def.inPorts)) throw Error("Missing inPorts");
+    // resolvePort can be used to provide a custom resolvePort.name
     if (def.resolvePort && !_.isString(def.resolvePort.name))
         throw Error("Missing resolvePort name");
+    // rejectPort can be used to provide a custom rejectPort.name
     if (def.rejectPort && !_.isString(def.rejectPort.name))
         throw Error("Missing rejectPort name");
+    // use resolvePort or @out port or create a default
     var resolvePort = def.resolvePort || _.defaults({
         name: 'out'
     }, _.propertyOf(def.outPorts)('out')) || {
@@ -20,6 +23,7 @@ module.exports = function(def){
         required: false,
         caching: false
     };
+    // use rejectPort or @error port or create a default
     var rejectPort = def.rejectPort || _.defaults({
         name: 'error'
     }, _.propertyOf(def.outPorts)('error')) || {
@@ -32,7 +36,7 @@ module.exports = function(def){
         caching: false
     };
     var inPorts = _.mapObject(def.inPorts, function(port, name){
-        var process = port.process || function(event, payload) {
+        var process = port.process || function(event, payload, socketIndex) {
             var key = 'on' + event;
             if (port[key]) return port[key].call(this.nodeInstance, payload);
         };
