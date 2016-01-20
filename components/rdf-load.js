@@ -10,16 +10,6 @@ var promiseComponent = require('./promise-component');
 exports.getComponent = promiseComponent({
     description: "Loads data into a RDF JS Interface Graph object",
     icon: 'sign-in',
-    resolvePort: {
-        name: 'out',
-        description: "All the quads as a RDF JS Interface Graph object",
-        datatype: 'object'
-    },
-    rejectPort: {
-        name: 'error',
-        description: "Error object",
-        datatype: 'object'
-    },
     inPorts: {
         options: {
             description: "A map of configuration options for the store",
@@ -47,7 +37,6 @@ exports.getComponent = promiseComponent({
 });
 
 function load() {
-    var outPorts = this.outPorts;
     var graphURI = this.graph ? this.graph :
         _.isString(data) && !data.match(/[^\w%-._~:\/?#\[\]@!$&'()*+,;=]/) ?
         data : undefined;

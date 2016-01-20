@@ -11,16 +11,6 @@ var promiseComponent = require('./promise-component');
 exports.getComponent = promiseComponent({
     description: "Executes the given SPARQL query on the provided RDF graph and returns the result",
     icon: 'cog',
-    resolvePort: {
-        name: 'out',
-        description: "Query result",
-        datatype: 'object'
-    },
-    rejectPort: {
-        name: 'error',
-        description: "Error object",
-        datatype: 'object'
-    },
     inPorts: {
         parameters: {
             description: "A map of template parameters",
@@ -54,7 +44,6 @@ exports.getComponent = promiseComponent({
 
 
 function execute(graph) {
-    var outPorts = this.outPorts;
     var query = this.query(this.parameters);
     var graphURI = graph.graphURI;
     var defaultURIs = _.compact([graphURI].concat(this.defaultURIs));

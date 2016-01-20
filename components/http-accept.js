@@ -10,16 +10,6 @@ var promiseComponent = require('./promise-component');
 exports.getComponent = promiseComponent({
     description: "Extracts the request body as a String and produces a 202 Accepted response. Optionally, also filters on request content type.",
     icon: 'sign-in',
-    resolvePort: {
-        name: 'out',
-        description: "Request body as a String",
-        datatype: 'string'
-    },
-    rejectPort: {
-        name: 'error',
-        description: "Error object",
-        datatype: 'object'
-    },
     outPorts: {
         rejected: {
             description: "HTTP 415 Unsupported Media Type request/response pair {req, res}",

@@ -10,16 +10,6 @@ var promiseComponent = require('./promise-component');
 exports.getComponent = promiseComponent({
     description: "Converts an RDF JS Interface Graph object into a JSON LD Graph object",
     icon: 'edit',
-    resolvePort: {
-        name: 'out',
-        description: "JSON LD Graph object",
-        datatype: 'object'
-    },
-    rejectPort: {
-        name: 'error',
-        description: "Error object",
-        datatype: 'object'
-    },
     inPorts: {
         frame: {
             description: "JSON-LD Frame object",
@@ -36,7 +26,6 @@ exports.getComponent = promiseComponent({
 });
 
 function execute(graph) {
-    var outPorts = this.outPorts;
     var frame = this.frame;
     return buildJSON(graph).then(function(json) {
         if (frame) return jsonld.frame(json, frame);

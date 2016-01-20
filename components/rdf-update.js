@@ -11,16 +11,6 @@ var promiseComponent = require('./promise-component');
 exports.getComponent = promiseComponent({
     description: "Executes the given SPARQL update on the provided RDF graph and returns it",
     icon: 'cogs',
-    resolvePort: {
-        name: 'out',
-        description: "RDF JS Interface Graph object",
-        datatype: 'object'
-    },
-    rejectPort: {
-        name: 'error',
-        description: "Error object",
-        datatype: 'object'
-    },
     inPorts: {
         parameters: {
             description: "A map of template parameters",
@@ -53,7 +43,6 @@ exports.getComponent = promiseComponent({
 });
 
 function execute(graph) {
-    var outPorts = this.outPorts;
     var update = this.update(this.parameters);
     var graphURI = graph.graphURI;
     var defaultURIs = _.compact([graphURI].concat(this.defaultURIs));

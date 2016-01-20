@@ -12,18 +12,8 @@ var promiseComponent = require('./promise-component');
 
 exports.getComponent = promiseComponent({
     description: "Initials an HTTP request from uri-template (RFC6570),\
-        using object data from the @in port",
+        using object data from the @in port. Resolve 200/300 response body or rejects 400/500 response body",
     icon: 'external-link',
-    resolvePort: {
-        name: 'out',
-        description: "Response body when response status is 200/300",
-        datatype: 'string'
-    },
-    rejectPort: {
-        name: 'error',
-        description: "Response body when response status is 400/500",
-        datatype: 'object'
-    },
     inPorts: {
         method: {
             description: "HTTP method",
