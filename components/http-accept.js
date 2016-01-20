@@ -50,7 +50,7 @@ function handle(pair){
     if (contentTypeMatches(this.types, pair.req.headers['content-type'])) {
         if (_.has(pair.req, 'body')) {
             if (outPorts.accepted.isAttached()) {
-                pair.res.writeHead(202);
+                pair.res.writeHead(202, "Accepted");
                 pair.res.write("Accepted");
                 outPorts.accepted.send(pair);
                 outPorts.accepted.disconnect();
@@ -63,7 +63,7 @@ function handle(pair){
                 encoding: charset || this.encoding || 'utf8'
             }).then(function(body){
                 if (outPorts.accepted.isAttached()) {
-                    pair.res.writeHead(202);
+                    pair.res.writeHead(202, "Accepted");
                     pair.res.write("Accepted\n");
                     outPorts.accepted.send(pair);
                     outPorts.accepted.disconnect();
@@ -71,7 +71,7 @@ function handle(pair){
                 return body;
             }, function(err){
                 if (outPorts.rejected.isAttached()) {
-                    pair.res.writeHead(413);
+                    pair.res.writeHead(413, "Payload Too Large");
                     pair.res.write(err.message);
                     outPorts.rejected.send(pair);
                     outPorts.rejected.disconnect();
@@ -81,7 +81,7 @@ function handle(pair){
         }
     } else {
         if (outPorts.rejected.isAttached()) {
-            pair.res.writeHead(415);
+            pair.res.writeHead(415, "Unsupported Media Type");
             pair.res.write("Expected " + this.types + " not " + pair.req.headers['content-type']);
             outPorts.rejected.send(pair);
             outPorts.rejected.disconnect();
