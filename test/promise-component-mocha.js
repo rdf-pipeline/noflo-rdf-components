@@ -36,6 +36,8 @@ describe('promise-component', function() {
                 }
             }
         }).then(promiseComponent).then(createComponent).then(function(component){
+            // have the handler call a Promise resolve function to
+            // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
                 sendData(component, 'in', "hello");
