@@ -3,53 +3,33 @@
 var _ = require('underscore');
 var Promise = require('promise');
 var jsonld = require('jsonld').promises;
-var noflo = require('noflo');
 
 var basenode = require('./base-node');
+var promiseComponent = require('./promise-component');
 
-exports.getComponent = function() {
-    return _.extend(new noflo.Component({
-        outPorts: {
-            out: {
-                description: "JSON LD Graph object",
-                datatype: 'object'
-            },
-            error: {
-                description: "Error object",
-                datatype: 'object'
-            }
+exports.getComponent = promiseComponent({
+    description: "Converts an RDF JS Interface Graph object into a JSON LD Graph object",
+    icon: 'edit',
+    inPorts: {
+        frame: {
+            description: "JSON-LD Frame object",
+            datatype: 'object',
+            ondata: basenode.assign('frame')
         },
-        inPorts: {
-            frame: {
-                description: "JSON-LD Frame object",
-                datatype: 'object',
-                process: basenode.on({data: basenode.assign('frame')})
-            },
-            'in': {
-                description: "RDF JS Interface Graph object",
-                datatype: 'object',
-                required: true,
-                process: basenode.on({data: execute})
-            }
+        'in': {
+            description: "RDF JS Interface Graph object",
+            datatype: 'object',
+            required: true,
+            ondata: execute
         }
-    }), {
-        description: "Converts an RDF JS Interface Graph object into a JSON LD Graph object",
-        icon: 'edit'
-    });
-};
+    }
+});
 
 function execute(graph) {
-    var outPorts = this.outPorts;
     var frame = this.frame;
-    buildJSON(graph).then(function(json) {
+    return buildJSON(graph).then(function(json) {
         if (frame) return jsonld.frame(json, frame);
         else return json;
-    }).then(function(json) {
-        outPorts.out.send(json);
-        outPorts.out.disconnect();
-    }, function(err){
-        outPorts.error.send(err);
-        outPorts.error.disconnect();
     });
 }
 

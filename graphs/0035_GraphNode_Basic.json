@@ -30,7 +30,7 @@
       "component": "rdf-components/RequestTemplate",
       "metadata": {
         "label": "LOAD INTO GRAPH",
-        "x": 324,
+        "x": 288,
         "y": 180,
         "width": 72,
         "height": 72
@@ -147,7 +147,7 @@
       },
       "tgt": {
         "process": "CLEAR ALL",
-        "port": "data"
+        "port": "parameters"
       },
       "metadata": {
         "route": 7
@@ -160,7 +160,7 @@
       },
       "tgt": {
         "process": "LOAD INTO GRAPH",
-        "port": "data"
+        "port": "parameters"
       },
       "metadata": {
         "route": 7
@@ -173,7 +173,7 @@
       },
       "tgt": {
         "process": "INSERT INTO",
-        "port": "data"
+        "port": "parameters"
       },
       "metadata": {
         "route": 7
@@ -186,7 +186,7 @@
       },
       "tgt": {
         "process": "INSERT INTO_6d46l",
-        "port": "data"
+        "port": "parameters"
       },
       "metadata": {
         "route": 7
@@ -396,11 +396,13 @@
         "graph": "urn:test:bill",
         "file": "file:///home/james/Projects/2015/rdf-pipeline/framework/RDF-Pipeline/t/tests/0035_GraphNode_Basic/setup-files/node/bill-presidents.ttl",
         "origin": "localhost:8080",
-        "repository": "rdf-pipeline-test"
+        "repository": "rdf-pipeline-test",
+        "in": "urn:test:bill",
+        "out": "urn:test:williams"
       },
       "tgt": {
         "process": "LOAD INTO GRAPH",
-        "port": "data"
+        "port": "parameters"
       }
     },
     {
@@ -408,11 +410,13 @@
         "in": "urn:test:williams",
         "out": "urn:test:wilies",
         "origin": "localhost:8080",
-        "repository": "rdf-pipeline-test"
+        "repository": "rdf-pipeline-test",
+        "graph": "urn:test:bill",
+        "file": "file:///home/james/Projects/2015/rdf-pipeline/framework/RDF-Pipeline/t/tests/0035_GraphNode_Basic/setup-files/node/bill-presidents.ttl"
       },
       "tgt": {
         "process": "INSERT INTO_6d46l",
-        "port": "data"
+        "port": "parameters"
       }
     },
     {
@@ -420,11 +424,13 @@
         "in": "urn:test:bill",
         "out": "urn:test:williams",
         "origin": "localhost:8080",
-        "repository": "rdf-pipeline-test"
+        "repository": "rdf-pipeline-test",
+        "graph": "urn:test:bill",
+        "file": "file:///home/james/Projects/2015/rdf-pipeline/framework/RDF-Pipeline/t/tests/0035_GraphNode_Basic/setup-files/node/bill-presidents.ttl"
       },
       "tgt": {
         "process": "INSERT INTO",
-        "port": "data"
+        "port": "parameters"
       }
     }
   ]
