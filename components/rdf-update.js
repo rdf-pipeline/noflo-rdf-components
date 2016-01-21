@@ -24,12 +24,12 @@ exports.getComponent = promiseComponent({
             ondata: basenode.assign('update', Handlebars.compile)
         },
         "default": {
-            description: "Graph URI for the default dataset",
+            description: "Graph URI for the Default Graph",
             datatype: 'string',
             ondata: basenode.assign('defaultURIs', basenode.push)
         },
         namespace: {
-            description: "Graph URI for the named dataset",
+            description: "Graph URI for a Named Graph",
             datatype: 'string',
             ondata: basenode.assign('namespaceURIs', basenode.push)
         },
