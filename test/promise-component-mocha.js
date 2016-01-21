@@ -133,7 +133,7 @@ describe('promise-component', function() {
     function sendData(component, port, payload) {
         var socket = noflo.internalSocket.createSocket();
         component.inPorts[port].attach(socket);
-        socket.send("hello");
+        socket.send(payload);
         socket.disconnect();
         component.inPorts[port].detach(socket);
     }
