@@ -7,6 +7,8 @@
 
 var _ = require('underscore');
 
+var promiseComponent = require('./promise-component');
+
 module.exports = {
 
   /**
@@ -65,7 +67,48 @@ module.exports = {
        ar.push(item);
      }
      return ar;
-   } 
+   },
+
+   /**
+    * Gets a promise to build a no-flo component around a user-defined rdf pipline updater.
+    *
+    * @param def updater definition
+    */
+   updaterComponent: function(def) {
+
+     // Get a promise to return a noflo component 
+     return promiseComponent( 
+
+        // Set the defaults for the component
+        _.defaults(
+          def,
+          { 
+            inPorts: 
+              // add ondata handler function to every port
+              _.mapObject(
+                def.inPorts,
+                function(port, portName) {
+
+                  return _.defaults(
+                           port,
+                           {
+                             // define the ondata handler
+                             ondata: function ( payload, socketIndex ) {
+                               this[portName] = payload;
+                               var self = this;
+                               var keys = _.keys( def.inPorts );
+                               var shouldUpdate = 
+                                 _.reduce( keys, 
+                                           function( memo, key ) { return ( memo && ! _.isUndefined( self[key] )); }, 
+                                           true );
+                               if ( shouldUpdate ) {
+                                 return def.update.call( this, _.pick( this, _.keys(def.inPorts)));
+                               }
+                             }
+                         }) // _.defaults on each port
+              }) // mapObject
+        }) // defaults
+     ); // promise
+   }
 
 };
-

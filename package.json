@@ -24,8 +24,10 @@
   ],
   "dependencies": {
     "chai": "^3.4.1",
+    "chai-as-promised": "~5.2.0",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
+    "jsonpointer":"~3.0.0",
     "media-typer": "^0.3.0",
     "noflo": "~0.5.14",
     "promise": "^7.0.4",
@@ -47,8 +49,9 @@
       "http-accept": "./components/http-accept.js",
       "round-robin": "./components/round-robin.js",
       "file-node": "./components/file-node.js",
+      "js-node": "./components/js-node.js",
       "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "json-splitter": "./components/json-splitter.js"
     }
   }
 }
