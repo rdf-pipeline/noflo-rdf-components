@@ -52,8 +52,12 @@ module.exports = function(def){
                         outPorts[resolvePort.name].disconnect();
                     }
                 }, function(rejected) {
-                    outPorts[rejectPort.name].send(rejected);
-                    outPorts[rejectPort.name].disconnect();
+                    if (outPorts[rejectPort.name].isAttached()) {
+                        outPorts[rejectPort.name].send(rejected);
+                        outPorts[rejectPort.name].disconnect();
+                    } else {
+                        console.error(rejected);
+                    }
                 });
             }
         }, port);
