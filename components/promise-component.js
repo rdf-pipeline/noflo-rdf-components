@@ -60,11 +60,23 @@ module.exports = function(def){
     });
     return function() {
         return _.extend(new noflo.Component({
+
             outPorts: _.defaults(_.object(
                 [resolvePort.name, rejectPort.name],
                 [_.clone(resolvePort), _.clone(rejectPort)]
             ), _.mapObject(def.outPorts, _.clone)),
             inPorts: _.mapObject(inPorts, _.clone)
-        }), _.pick(def, 'description', 'icon'));
+        }), 
+        _.pick(def, 'description', 'icon'), 
+        { handleError:  function(message) {          
+              console.log(message);
+              if ( def.outPorts && def.outPorts.error ) {
+                  def.outPorts.error.send(message);
+                  def.outPorts.error.disconnect();
+              }
+              throw new Error(message);
+           }
+        }
+);
     };
 };
