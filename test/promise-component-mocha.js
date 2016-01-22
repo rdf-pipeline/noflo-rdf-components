@@ -8,6 +8,7 @@ chai.use(chaiAsPromised);
 var _ = require('underscore');
 var noflo = require('noflo');
 var promiseComponent = require('../components/promise-component.js');
+var commonTest = require('./common-test');
 
 describe('promise-component', function() {
     it("should reject undefined definition", function() {
@@ -35,12 +36,12 @@ describe('promise-component', function() {
                     }
                 }
             }
-        }).then(promiseComponent).then(createComponent).then(function(component){
+        }).then(promiseComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'in', "hello");
+                commonTest.sendData(component, 'in', "hello");
             });
         }).should.become("hello");
     });
@@ -53,7 +54,7 @@ describe('promise-component', function() {
                     }
                 }
             }
-        }).then(promiseComponent).then(createComponent).then(function(component){
+        }).then(promiseComponent).then(commonTest.createComponent).then(function(component){
             return onceData(component, 'out', 'error', 'in', "hello");
         }).should.become("hello world");
     });
@@ -66,7 +67,7 @@ describe('promise-component', function() {
                     }
                 }
             }
-        }).then(promiseComponent).then(createComponent).then(function(component){
+        }).then(promiseComponent).then(commonTest.createComponent).then(function(component){
             return onceData(component, 'out', 'error', 'in', "hello");
         }).should.be.rejectedWith("hello world");
     });
@@ -79,7 +80,7 @@ describe('promise-component', function() {
                     }
                 }
             }
-        }).then(promiseComponent).then(createComponent).then(function(component){
+        }).then(promiseComponent).then(commonTest.createComponent).then(function(component){
             return onceData(component, 'out', 'error', 'incoming', "hello");
         }).should.become("hello world");
     });
@@ -95,7 +96,7 @@ describe('promise-component', function() {
             resolvePort: {
                 name: 'outgoing'
             }
-        }).then(promiseComponent).then(createComponent).then(function(component){
+        }).then(promiseComponent).then(commonTest.createComponent).then(function(component){
             return onceData(component, 'outgoing', 'error', 'incoming', "hello");
         }).should.become("hello world");
     });
@@ -114,29 +115,11 @@ describe('promise-component', function() {
             rejectPort: {
                 name: 'sentback'
             }
-        }).then(promiseComponent).then(createComponent).then(function(component){
+        }).then(promiseComponent).then(commonTest.createComponent).then(function(component){
             return onceData(component, 'outgoing', 'sentback', 'incoming', "hello");
         }).should.be.rejectedWith("hello world");
     });
-    function createComponent(getComponent) {
-        var component = getComponent();
-        _.forEach(component.inPorts, function(port, name) {
-            port.nodeInstance = component;
-            port.name = name;
-        });
-        _.forEach(component.outPorts, function(port, name) {
-            port.nodeInstance = component;
-            port.name = name;
-        });
-        return component;
-    }
-    function sendData(component, port, payload) {
-        var socket = noflo.internalSocket.createSocket();
-        component.inPorts[port].attach(socket);
-        socket.send(payload);
-        socket.disconnect();
-        component.inPorts[port].detach(socket);
-    }
+
     function onceData(component, resolvePort, rejectPort, sendPort, sendPayload) {
         return new Promise(function(resolve, reject) {
             var out = noflo.internalSocket.createSocket();
@@ -145,7 +128,7 @@ describe('promise-component', function() {
             component.outPorts[rejectPort].attach(error);
             out.once('data', resolve);
             error.once('data', reject);
-            sendData(component, sendPort, sendPayload);
+            commonTest.sendData(component, sendPort, sendPayload);
         });
     }
 });
