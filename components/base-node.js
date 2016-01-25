@@ -7,6 +7,8 @@
 
 var _ = require('underscore');
 
+var promiseComponent = require('./promise-component');
+
 module.exports = {
 
   /**
@@ -65,7 +67,43 @@ module.exports = {
        ar.push(item);
      }
      return ar;
-   } 
+   },
 
+   updatePromise: function(def) {
+
+     return promiseComponent(
+
+         _.defaults(
+             def,
+             { 
+               inPorts: _.mapObject(
+                          def.inPorts,
+                          function(port, portName) {
+
+                            return _.defaults(
+                                     port,
+                                     {
+                                       ondata: function ( payload, socketIndex ) {
+                                                 this[portName] = payload;
+                                                 var self = this;
+                                                 var shouldUpdate = 
+                                                      _.reduce( _.keys( def.inPorts ), 
+                                                                        function( memo, key ) { 
+                                                                            return ( memo && ! _.isUndefined( self[key] ) );
+                                                                        }, 
+                                                                        true 
+                                                                      );
+                                                 if ( shouldUpdate ) {
+                                                     return def.update.call( this, _.pick( this, _.keys(def.inPorts)));
+                                                 }
+                                               }
+                                     }
+                                   ) // _.defaults on each port
+                          } // map each port function
+                        ) // mapObject
+             }
+        )
+     );
+   },
 };
 
