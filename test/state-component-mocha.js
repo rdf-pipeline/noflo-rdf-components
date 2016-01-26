@@ -176,15 +176,4 @@ describe('state-component', function() {
         socket.disconnect();
         component.inPorts[port].detach(socket);
     }
-    function onceData(component, resolvePort, rejectPort, sendPort, sendPayload) {
-        return new Promise(function(resolve, reject) {
-            var out = noflo.internalSocket.createSocket();
-            var error = noflo.internalSocket.createSocket();
-            component.outPorts[resolvePort].attach(out);
-            component.outPorts[rejectPort].attach(error);
-            out.once('data', resolve);
-            error.once('data', reject);
-            sendData(component, sendPort, sendPayload);
-        });
-    }
 });
