@@ -1,6 +1,7 @@
 // state-component.js
 
 var _ = require('underscore');
+var jsonpointer = require('jsonpointer');
 var promiseComponent = require('./promise-component');
 
 /**
@@ -24,9 +25,9 @@ module.exports = function(def){
 };
 
 function data(indexBy, name) {
-    var by = _.isFunction(indexBy) ? indexBy : _.property(indexBy);
+    var by = _.isFunction(indexBy) ? indexBy : pointer(indexBy);
     return function(payload, socketIndex) {
-        var key = by(payload);
+        var key = by.call(this, payload);
         var state = this.state || {};
         var index = indexBy == null ? payload :
             _.extend(state[name] || {}, _.object([key], [payload]));
@@ -46,4 +47,10 @@ function change(required, onchange) {
         if (_.isEmpty(missing) && _.isFunction(onchange))
             return onchange.call(this, state);
     }
+}
+
+function pointer(path) {
+    if (path && path.charAt(0) == '/')
+        return jsonpointer.compile(path).get;
+    else return _.property(path);
 }

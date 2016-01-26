@@ -9,7 +9,7 @@ var _ = require('underscore');
 var noflo = require('noflo');
 var stateComponent = require('../components/state-component.js');
 
-describe('promise-component', function() {
+describe('state-component', function() {
     it("should reject undefined definition", function() {
         return Promise.resolve().then(stateComponent).should.be.rejected;
     });
@@ -77,12 +77,34 @@ describe('promise-component', function() {
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {aid:"1", a: "A"});
-                sendData(component, 'a', {aid:"2", a: "A"});
-                sendData(component, 'a', {aid:"3", a: "A"});
-                sendData(component, 'b', {bid:"2", b: "B"});
+                sendData(component, 'a', {aid:"1", c: "A"});
+                sendData(component, 'a', {aid:"2", c: "A"});
+                sendData(component, 'a', {aid:"3", c: "A"});
+                sendData(component, 'b', {bid:"2", c: "B"});
             });
-        }).should.become({a: {aid: "2", a: "A"}, b: {bid: "2", b: "B"}});
+        }).should.become({a: {aid: "2", c: "A"}, b: {bid: "2", c: "B"}});
+    });
+    it("map indexed data by pointer", function() {
+        var handler;
+        return Promise.resolve({
+            inPorts:{
+                a: {required: true, indexBy: '/a/id'},
+                b: {required: true, indexBy: '/b/id'}
+            },
+            onchange: function(state) {
+                handler(state);
+            }
+        }).then(stateComponent).then(createComponent).then(function(component){
+            // have the handler call a Promise resolve function to
+            // check that the data sent on the in port is passed to the handler
+            return new Promise(function(callback){
+                handler = callback;
+                sendData(component, 'a', {a:{id:"1"}, c: "A"});
+                sendData(component, 'a', {a:{id:"2"}, c: "A"});
+                sendData(component, 'a', {a:{id:"3"}, c: "A"});
+                sendData(component, 'b', {b:{id:"2"}, c: "B"});
+            });
+        }).should.become({a: {a:{id: "2"}, c: "A"}, b: {b:{id: "2"}, c: "B"}});
     });
     it("map indexed data by function", function() {
         var handler;
@@ -99,12 +121,41 @@ describe('promise-component', function() {
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {aid:"1", a: "A"});
-                sendData(component, 'a', {aid:"2", a: "A"});
-                sendData(component, 'a', {aid:"3", a: "A"});
-                sendData(component, 'b', {bid:"2", b: "B"});
+                sendData(component, 'a', {aid:"1", c: "A"});
+                sendData(component, 'a', {aid:"2", c: "A"});
+                sendData(component, 'a', {aid:"3", c: "A"});
+                sendData(component, 'b', {bid:"2", c: "B"});
             });
-        }).should.become({a: {aid: "2", a: "A"}, b: {bid: "2", b: "B"}});
+        }).should.become({a: {aid: "2", c: "A"}, b: {bid: "2", c: "B"}});
+    });
+    it("map indexed data by function context", function() {
+        var handler;
+        var indexBy = function(obj) {
+            return obj[this.property];
+        };
+        return Promise.resolve({
+            inPorts:{
+                a: {required: true, indexBy: indexBy},
+                b: {required: true, indexBy: indexBy},
+                property: {ondata: function(property) {
+                    this.property = property;
+                }}
+            },
+            onchange: function(state) {
+                handler(state);
+            }
+        }).then(stateComponent).then(createComponent).then(function(component){
+            // have the handler call a Promise resolve function to
+            // check that the data sent on the in port is passed to the handler
+            return new Promise(function(callback){
+                handler = callback;
+                sendData(component, 'property', 'id');
+                sendData(component, 'a', {id:"1", c: "A"});
+                sendData(component, 'a', {id:"2", c: "A"});
+                sendData(component, 'a', {id:"3", c: "A"});
+                sendData(component, 'b', {id:"2", c: "B"});
+            });
+        }).should.become({a: {id: "2", c: "A"}, b: {id: "2", c: "B"}});
     });
     function createComponent(getComponent) {
         var component = getComponent();
