@@ -118,6 +118,32 @@ describe('promise-component', function() {
             return onceData(component, 'outgoing', 'sentback', 'incoming', "hello");
         }).should.be.rejectedWith("hello world");
     });
+    it("should log rejections to console.error when no reject port attached", function() {
+        return Promise.resolve({
+            inPorts:{
+                'in':{
+                    ondata: function(payload) {
+                        throw payload + " world";
+                    }
+                }
+            }
+        }).then(promiseComponent).then(createComponent).then(function(component){
+            var console_error = console.error;
+            return new Promise(function(resolve, reject) {
+                console.error = reject;
+                var out = noflo.internalSocket.createSocket();
+                component.outPorts.out.attach(out);
+                out.once('data', resolve);
+                sendData(component, 'in', "hello");
+            }).then(function(resolved) {
+                console.error = console_error;
+                return resolved;
+            }, function(rejected){
+                console.error = console_error;
+                throw rejected;
+            });
+        }).should.be.rejectedWith("hello world");
+    });
     function createComponent(getComponent) {
         var component = getComponent();
         _.forEach(component.inPorts, function(port, name) {
