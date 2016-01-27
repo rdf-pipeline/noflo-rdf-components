@@ -5,16 +5,18 @@ var jsonpointer = require('jsonpointer');
 var promiseComponent = require('./promise-component');
 
 /**
- * Stores the last packet payload for every inPort and calls an onchange function
- * when received and after when all required port have received something.
- * If multiple ports both provide an indexBy property name, path or function,
- * only packets that both resolve to the same key with be called together.
+ * This combines payloads, from multiple ports, arriving in an asynchronous
+ * fashion. Each port may include an indexBy function, property, or path
+ * that will be used to determine a key that must match payloads from other ports.
+ * If no indexBy is provided then the payload will match any payload from other ports.
+ * A provided onchange function is called when payload is received (from all
+ * required port) with payload having the same key from all other inPorts.
  *
  * Usage:
  *   stateComponent({
- *     inPorts: {name:{indexBy:function(paylod)}} of port names to port options || [] of port names,
+ *     inPorts: {name:{indexBy:function(payload)}} of port names to port options || [] of port names,
  *     onchange: function(inPayloads, outPayload) {
- *         inPayloads = {} of port names to last payload,
+ *         inPayloads = {name:payload} of port names to last payload,
  *         outPayload = previous result of onchange
  *     }
  *   });
@@ -27,28 +29,33 @@ module.exports = function(def){
     return promiseComponent(_.defaults({
         inPorts: _.mapObject(inPorts, function(port, name) {
             return _.extend({
-                ondata: _.compose(change(required, def.onchange), data(port && port.indexBy, name))
+                ondata: _.compose(
+                    fireChangeEvent(required, def.onchange),
+                    indexPayload(port && port.indexBy, name)
+                )
             }, port);
         }),
     }, def));
 };
 
-function data(indexBy, name) {
+function indexPayload(indexBy, name) {
     var by = _.isFunction(indexBy) ? indexBy : pointer(indexBy);
     return function(payload, socketIndex) {
+        // determine a key string or undefined if no key should be used
         var key = indexBy == null ? undefined : ('' + by.call(this, payload));
         var payloads = this.inPayloads || {};
-        var index = indexBy == null ? payload :
+        var index = _.isUndefined(key) ? payload :
             _.extend(payloads[name] || {}, _.object([key], [payload]));
         this.inPayloads = _.extend(payloads, _.object([name], [index]));
         return key;
     };
 }
 
-function change(required, onchange) {
+function fireChangeEvent(required, onchange) {
     return function(key) {
         var wild = _.pick(this.inPayloads, isWild.bind(this));
         if (_.isUndefined(key)) {
+            // no key for this event, first with only wild matching payloas
             var missing = _.difference(required, _.keys(wild));
             if (_.isEmpty(missing) && _.isFunction(onchange)) {
                 var self = this;
@@ -57,6 +64,7 @@ function change(required, onchange) {
                 });
             }
         } else {
+            // a particular key must match payload (or be wild matching)
             var payloads = _.extend(_.mapObject(this.inPayloads, _.property(key)), wild);
             var missing = _.difference(required, _.keys(payloads));
             if (_.isEmpty(missing) && _.isFunction(onchange)) {
