@@ -5,7 +5,7 @@ var jsonpointer = require('jsonpointer');
 var promiseComponent = require('./promise-component');
 
 /**
- * This combines payloads, from multiple ports, arriving in an asynchronous
+ * Combines payloads, from multiple ports, arriving in an asynchronous
  * fashion. Each port may include an indexBy function, property, or path
  * that will be used to determine a key that must match payloads from other ports.
  * If no indexBy is provided then the payload will match any payload from other ports.
@@ -22,6 +22,7 @@ var promiseComponent = require('./promise-component');
  *   });
  */
 module.exports = function(def){
+    if (!_.isFunction(def.onchange)) throw Error("onchange must be a function");
     var inPorts = _.isArray(def.inPorts) ? _.object(def.inPorts, []) : def.inPorts;
     var required = _.compact(_.map(inPorts, function(port, name){
         return port && port.required && name;
@@ -34,7 +35,7 @@ module.exports = function(def){
                     indexPayload(port && port.indexBy, name)
                 )
             }, port);
-        }),
+        })
     }, def));
 };
 
@@ -57,7 +58,7 @@ function fireChangeEvent(required, onchange) {
         if (_.isUndefined(key)) {
             // no key for this event, first with only wild matching payloas
             var missing = _.difference(required, _.keys(wild));
-            if (_.isEmpty(missing) && _.isFunction(onchange)) {
+            if (_.isEmpty(missing)) {
                 var self = this;
                 return Promise.resolve(onchange.call(this, wild, this.outPayload)).then(function(result){
                     return self.outPayload = result;
@@ -67,7 +68,7 @@ function fireChangeEvent(required, onchange) {
             // a particular key must match payload (or be wild matching)
             var payloads = _.extend(_.mapObject(this.inPayloads, _.property(key)), wild);
             var missing = _.difference(required, _.keys(payloads));
-            if (_.isEmpty(missing) && _.isFunction(onchange)) {
+            if (_.isEmpty(missing)) {
                 var outPayloads = this.outPayloads = this.outPayloads || {};
                 return Promise.resolve(onchange.call(this, payloads, outPayloads[key])).then(function(result){
                     return outPayloads[key] = result;
