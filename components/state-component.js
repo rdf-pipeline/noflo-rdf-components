@@ -36,7 +36,7 @@ module.exports = function(def){
 function data(indexBy, name) {
     var by = _.isFunction(indexBy) ? indexBy : pointer(indexBy);
     return function(payload, socketIndex) {
-        var key = by.call(this, payload);
+        var key = indexBy == null ? undefined : ('' + by.call(this, payload));
         var state = this.inStates || {};
         var index = indexBy == null ? payload :
             _.extend(state[name] || {}, _.object([key], [payload]));
@@ -47,17 +47,24 @@ function data(indexBy, name) {
 
 function change(required, onchange) {
     return function(key) {
-        var self = this;
-        var state = _.mapObject(this.inStates, function(index, name) {
-            if (self.inPorts[name].options.indexBy == null) return index;
-            else return index[key];
-        });
-        var missing = _.difference(required, _.keys(state));
-        if (_.isEmpty(missing) && _.isFunction(onchange)) {
-            self.outStates = self.outStates || {};
-            return Promise.resolve(onchange.call(this, state, self.outStates[key])).then(function(result){
-                return self.outStates[key] = result;
-            });
+        var wildStates = _.pick(this.inStates, isWild.bind(this));
+        if (_.isUndefined(key)) {
+            var missing = _.difference(required, _.keys(wildStates));
+            if (_.isEmpty(missing) && _.isFunction(onchange)) {
+                var self = this;
+                return Promise.resolve(onchange.call(this, wildStates, this.outState)).then(function(result){
+                    return self.outState = result;
+                });
+            }
+        } else {
+            var state = _.extend(_.mapObject(this.inStates, _.property(key)), wildStates);
+            var missing = _.difference(required, _.keys(state));
+            if (_.isEmpty(missing) && _.isFunction(onchange)) {
+                var outStates = this.outStates = this.outStates || {};
+                return Promise.resolve(onchange.call(this, state, outStates[key])).then(function(result){
+                    return outStates[key] = result;
+                });
+            }
         }
     }
 }
@@ -66,4 +73,8 @@ function pointer(path) {
     if (path && path.charAt(0) == '/')
         return jsonpointer.compile(path).get;
     else return _.property(path);
+}
+
+function isWild(data, name) {
+    return this.inPorts[name].options.indexBy == null;
 }

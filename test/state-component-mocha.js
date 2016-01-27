@@ -64,6 +64,85 @@ describe('state-component', function() {
             });
         }).should.become("world");
     });
+    it("shouldn't confuse an undefined key with non-indexed port", function() {
+        var handler;
+        return Promise.resolve({
+            inPorts:{
+                a:{indexBy:'id'},
+                b:{indexBy:'id'},
+                c:{}
+            },
+            onchange: function(state, previously) {
+                if (state.c) handler(state);
+            }
+        }).then(stateComponent).then(createComponent).then(function(component){
+            // have the handler call a Promise resolve function to
+            // check that the data sent on the in port is passed to the handler
+            return new Promise(function(callback){
+                handler = callback;
+                sendData(component, 'a', {d:"A"});
+                sendData(component, 'b', {d:"B"});
+                sendData(component, 'c', {d:"C"});
+            });
+        }).should.become({c:{d:"C"}}); // a and b should be absent because their indexed
+    });
+    it("shouldn't confuse a non-indexed port with undefined indexed result", function() {
+        var handler;
+        return Promise.resolve({
+            inPorts:{
+                a:{indexBy:'id'},
+                b:{indexBy:'id'},
+                c:{}
+            },
+            onchange: function(state, previously) {
+                handler(previously);
+                return _.keys(state);
+            }
+        }).then(stateComponent).then(createComponent).then(function(component){
+            // have the handler call a Promise resolve function to
+            // check that the data sent on the in port is passed to the handler
+            return new Promise(function(callback){
+                handler = callback;
+                sendData(component, 'a', {d:"A"});
+            }).then(function(){
+                return new Promise(function(callback){
+                    handler = callback;
+                    sendData(component, 'c', {d:"C1"});
+                });
+            }).then(function(){
+                return new Promise(function(callback){
+                    handler = callback;
+                    sendData(component, 'c', {d:"C2"});
+                });
+            });
+        }).should.become(['c']); // a should be absent because it's indexed
+    });
+    it("shouldn't confuse a non-indexed port with undefined property result", function() {
+        var handler;
+        return Promise.resolve({
+            inPorts:{
+                a:{indexBy:'id'},
+                b:{indexBy:'id'},
+                c:{}
+            },
+            onchange: function(state, previously) {
+                handler(previously);
+                return _.keys(state);
+            }
+        }).then(stateComponent).then(createComponent).then(function(component){
+            // have the handler call a Promise resolve function to
+            // check that the data sent on the in port is passed to the handler
+            return new Promise(function(callback){
+                handler = callback;
+                sendData(component, 'a', {id:'undefined', d:"A"});
+            }).then(function(){
+                return new Promise(function(callback){
+                    handler = callback;
+                    sendData(component, 'c', {d:"C"});
+                });
+            });
+        }).should.become(undefined); // a should be absent because it's indexed
+    });
     it("wait until all required ports have data", function() {
         var handler;
         return Promise.resolve({
