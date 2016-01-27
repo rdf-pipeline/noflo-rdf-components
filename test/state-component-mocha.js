@@ -42,6 +42,28 @@ describe('state-component', function() {
             });
         }).should.become({'hello': "world"});
     });
+    it("should pass previous resolve state as second argument", function() {
+        var handler;
+        return Promise.resolve({
+            inPorts:['hello'],
+            onchange: function(state, previously) {
+                handler(previously);
+                return state.hello;
+            }
+        }).then(stateComponent).then(createComponent).then(function(component){
+            // have the handler call a Promise resolve function to
+            // check that the data sent on the in port is passed to the handler
+            return new Promise(function(callback){
+                handler = callback;
+                sendData(component, 'hello', "world");
+            }).then(function(){
+                return new Promise(function(callback){
+                    handler = callback;
+                    sendData(component, 'hello', "again");
+                });
+            });
+        }).should.become("world");
+    });
     it("wait until all required ports have data", function() {
         var handler;
         return Promise.resolve({
