@@ -56,7 +56,7 @@ function fireChangeEvent(required, onchange) {
     return function(key) {
         var wild = _.pick(this.inPayloads, isWild.bind(this));
         if (_.isUndefined(key)) {
-            // no key for this event, first with only wild matching payloas
+            // no key for this event, fire with only wild matching payloads
             var missing = _.difference(required, _.keys(wild));
             if (_.isEmpty(missing)) {
                 var self = this;
