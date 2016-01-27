@@ -5,17 +5,17 @@ var jsonpointer = require('jsonpointer');
 var promiseComponent = require('./promise-component');
 
 /**
- * Stores the last packet for every inPort and calls an onchange function
+ * Stores the last packet payload for every inPort and calls an onchange function
  * when received and after when all required port have received something.
  * If multiple ports both provide an indexBy property name, path or function,
  * only packets that both resolve to the same key with be called together.
  *
  * Usage:
  *   stateComponent({
- *     inPorts: {} of port names to port options || [] of port names,
- *     onchange: function(inStates, outState) {
- *         inStates = {} of port names to state,
- *         outState = previous result of onchange
+ *     inPorts: {name:{indexBy:function(paylod)}} of port names to port options || [] of port names,
+ *     onchange: function(inPayloads, outPayload) {
+ *         inPayloads = {} of port names to last payload,
+ *         outPayload = previous result of onchange
  *     }
  *   });
  */
@@ -37,32 +37,32 @@ function data(indexBy, name) {
     var by = _.isFunction(indexBy) ? indexBy : pointer(indexBy);
     return function(payload, socketIndex) {
         var key = indexBy == null ? undefined : ('' + by.call(this, payload));
-        var state = this.inStates || {};
+        var payloads = this.inPayloads || {};
         var index = indexBy == null ? payload :
-            _.extend(state[name] || {}, _.object([key], [payload]));
-        this.inStates = _.extend(state, _.object([name], [index]));
+            _.extend(payloads[name] || {}, _.object([key], [payload]));
+        this.inPayloads = _.extend(payloads, _.object([name], [index]));
         return key;
     };
 }
 
 function change(required, onchange) {
     return function(key) {
-        var wildStates = _.pick(this.inStates, isWild.bind(this));
+        var wild = _.pick(this.inPayloads, isWild.bind(this));
         if (_.isUndefined(key)) {
-            var missing = _.difference(required, _.keys(wildStates));
+            var missing = _.difference(required, _.keys(wild));
             if (_.isEmpty(missing) && _.isFunction(onchange)) {
                 var self = this;
-                return Promise.resolve(onchange.call(this, wildStates, this.outState)).then(function(result){
-                    return self.outState = result;
+                return Promise.resolve(onchange.call(this, wild, this.outPayload)).then(function(result){
+                    return self.outPayload = result;
                 });
             }
         } else {
-            var state = _.extend(_.mapObject(this.inStates, _.property(key)), wildStates);
-            var missing = _.difference(required, _.keys(state));
+            var payloads = _.extend(_.mapObject(this.inPayloads, _.property(key)), wild);
+            var missing = _.difference(required, _.keys(payloads));
             if (_.isEmpty(missing) && _.isFunction(onchange)) {
-                var outStates = this.outStates = this.outStates || {};
-                return Promise.resolve(onchange.call(this, state, outStates[key])).then(function(result){
-                    return outStates[key] = result;
+                var outPayloads = this.outPayloads = this.outPayloads || {};
+                return Promise.resolve(onchange.call(this, payloads, outPayloads[key])).then(function(result){
+                    return outPayloads[key] = result;
                 });
             }
         }
