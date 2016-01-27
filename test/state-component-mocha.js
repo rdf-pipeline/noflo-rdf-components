@@ -8,6 +8,7 @@ chai.use(chaiAsPromised);
 var _ = require('underscore');
 var noflo = require('noflo');
 var stateComponent = require('../components/state-component.js');
+var commonTest = require('./common-test');
 
 describe('state-component', function() {
     it("should reject undefined definition", function() {
@@ -22,7 +23,7 @@ describe('state-component', function() {
     it("should accept array of inPort names", function() {
         return Promise.resolve({
             inPorts:['in']
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             return _.keys(component.inPorts);
         }).should.eventually.contain('in');
     });
@@ -33,12 +34,12 @@ describe('state-component', function() {
             onchange: function(state) {
                 handler(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'hello', "world");
+                commonTest.sendData(component, 'hello', "world");
             });
         }).should.become({'hello': "world"});
     });
@@ -50,16 +51,16 @@ describe('state-component', function() {
                 handler(previously);
                 return state.hello;
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'hello', "world");
+                commonTest.sendData(component, 'hello', "world");
             }).then(function(){
                 return new Promise(function(callback){
                     handler = callback;
-                    sendData(component, 'hello', "again");
+                    commonTest.sendData(component, 'hello', "again");
                 });
             });
         }).should.become("world");
@@ -75,14 +76,14 @@ describe('state-component', function() {
             onchange: function(state, previously) {
                 if (state.c) handler(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {d:"A"});
-                sendData(component, 'b', {d:"B"});
-                sendData(component, 'c', {d:"C"});
+                commonTest.sendData(component, 'a', {d:"A"});
+                commonTest.sendData(component, 'b', {d:"B"});
+                commonTest.sendData(component, 'c', {d:"C"});
             });
         }).should.become({c:{d:"C"}}); // a and b should be absent because their indexed
     });
@@ -98,21 +99,21 @@ describe('state-component', function() {
                 handler(previously);
                 return _.keys(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {d:"A"});
+                commonTest.sendData(component, 'a', {d:"A"});
             }).then(function(){
                 return new Promise(function(callback){
                     handler = callback;
-                    sendData(component, 'c', {d:"C1"});
+                    commonTest.sendData(component, 'c', {d:"C1"});
                 });
             }).then(function(){
                 return new Promise(function(callback){
                     handler = callback;
-                    sendData(component, 'c', {d:"C2"});
+                    commonTest.sendData(component, 'c', {d:"C2"});
                 });
             });
         }).should.become(['c']); // a should be absent because it's indexed
@@ -129,16 +130,16 @@ describe('state-component', function() {
                 handler(previously);
                 return _.keys(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {id:'undefined', d:"A"});
+                commonTest.sendData(component, 'a', {id:'undefined', d:"A"});
             }).then(function(){
                 return new Promise(function(callback){
                     handler = callback;
-                    sendData(component, 'c', {d:"C"});
+                    commonTest.sendData(component, 'c', {d:"C"});
                 });
             });
         }).should.become(undefined); // a should be absent because it's indexed
@@ -153,13 +154,13 @@ describe('state-component', function() {
             onchange: function(state) {
                 handler(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', "A");
-                sendData(component, 'b', "B");
+                commonTest.sendData(component, 'a', "A");
+                commonTest.sendData(component, 'b', "B");
             });
         }).should.become({a: "A", b: "B"});
     });
@@ -173,15 +174,15 @@ describe('state-component', function() {
             onchange: function(state) {
                 handler(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {aid:"1", c: "A"});
-                sendData(component, 'a', {aid:"2", c: "A"});
-                sendData(component, 'a', {aid:"3", c: "A"});
-                sendData(component, 'b', {bid:"2", c: "B"});
+                commonTest.sendData(component, 'a', {aid:"1", c: "A"});
+                commonTest.sendData(component, 'a', {aid:"2", c: "A"});
+                commonTest.sendData(component, 'a', {aid:"3", c: "A"});
+                commonTest.sendData(component, 'b', {bid:"2", c: "B"});
             });
         }).should.become({a: {aid: "2", c: "A"}, b: {bid: "2", c: "B"}});
     });
@@ -195,15 +196,15 @@ describe('state-component', function() {
             onchange: function(state) {
                 handler(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {a:{id:"1"}, c: "A"});
-                sendData(component, 'a', {a:{id:"2"}, c: "A"});
-                sendData(component, 'a', {a:{id:"3"}, c: "A"});
-                sendData(component, 'b', {b:{id:"2"}, c: "B"});
+                commonTest.sendData(component, 'a', {a:{id:"1"}, c: "A"});
+                commonTest.sendData(component, 'a', {a:{id:"2"}, c: "A"});
+                commonTest.sendData(component, 'a', {a:{id:"3"}, c: "A"});
+                commonTest.sendData(component, 'b', {b:{id:"2"}, c: "B"});
             });
         }).should.become({a: {a:{id: "2"}, c: "A"}, b: {b:{id: "2"}, c: "B"}});
     });
@@ -217,15 +218,15 @@ describe('state-component', function() {
             onchange: function(state) {
                 handler(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'a', {aid:"1", c: "A"});
-                sendData(component, 'a', {aid:"2", c: "A"});
-                sendData(component, 'a', {aid:"3", c: "A"});
-                sendData(component, 'b', {bid:"2", c: "B"});
+                commonTest.sendData(component, 'a', {aid:"1", c: "A"});
+                commonTest.sendData(component, 'a', {aid:"2", c: "A"});
+                commonTest.sendData(component, 'a', {aid:"3", c: "A"});
+                commonTest.sendData(component, 'b', {bid:"2", c: "B"});
             });
         }).should.become({a: {aid: "2", c: "A"}, b: {bid: "2", c: "B"}});
     });
@@ -245,36 +246,17 @@ describe('state-component', function() {
             onchange: function(state) {
                 handler(state);
             }
-        }).then(stateComponent).then(createComponent).then(function(component){
+        }).then(stateComponent).then(commonTest.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
             return new Promise(function(callback){
                 handler = callback;
-                sendData(component, 'property', 'id');
-                sendData(component, 'a', {id:"1", c: "A"});
-                sendData(component, 'a', {id:"2", c: "A"});
-                sendData(component, 'a', {id:"3", c: "A"});
-                sendData(component, 'b', {id:"2", c: "B"});
+                commonTest.sendData(component, 'property', 'id');
+                commonTest.sendData(component, 'a', {id:"1", c: "A"});
+                commonTest.sendData(component, 'a', {id:"2", c: "A"});
+                commonTest.sendData(component, 'a', {id:"3", c: "A"});
+                commonTest.sendData(component, 'b', {id:"2", c: "B"});
             });
         }).should.become({a: {id: "2", c: "A"}, b: {id: "2", c: "B"}});
     });
-    function createComponent(getComponent) {
-        var component = getComponent();
-        _.forEach(component.inPorts, function(port, name) {
-            port.nodeInstance = component;
-            port.name = name;
-        });
-        _.forEach(component.outPorts, function(port, name) {
-            port.nodeInstance = component;
-            port.name = name;
-        });
-        return component;
-    }
-    function sendData(component, port, payload) {
-        var socket = noflo.internalSocket.createSocket();
-        component.inPorts[port].attach(socket);
-        socket.send(payload);
-        socket.disconnect();
-        component.inPorts[port].detach(socket);
-    }
 });
