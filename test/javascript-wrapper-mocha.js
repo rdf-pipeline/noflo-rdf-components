@@ -77,6 +77,10 @@ describe('javascript-wrapper', function() {
             sinon.stub(component.outPorts.out, 'send', function( data ) {
                 data.should.exist;
                 data.should.be.an('object');
+                data.should.have.key('out');
+                data.out.should.have.length(2);
+                data.out.should.have.all.keys('0','1');
+                data.out['0'].should.deep.equal({ hello: 'world' });
                 component.outPorts.out.send.restore();
                 done();
             });
