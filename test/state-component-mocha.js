@@ -18,12 +18,20 @@ describe('state-component', function() {
         return Promise.resolve({}).then(stateComponent).should.be.rejected;
     });
     it("should reject empty inPorts", function() {
-        return Promise.resolve({inPorts:{}}).then(stateComponent).should.be.rejected;
+        return Promise.resolve({inPorts:{},onchange:function(){}}).then(stateComponent).should.be.rejected;
     });
-    it("should accept array of inPort names", function() {
+    it("should reject no onchange function", function() {
         return Promise.resolve({
             inPorts:['in']
         }).then(stateComponent).then(commonTest.createComponent).then(function(component){
+            return _.keys(component.inPorts);
+        }).should.be.rejected;
+    });
+    it("should accept array of inPort names", function() {
+        return Promise.resolve({
+            inPorts:['in'],
+            onchange:function(){}
+        }).then(stateComponent).then(createComponent).then(function(component){
             return _.keys(component.inPorts);
         }).should.eventually.contain('in');
     });
