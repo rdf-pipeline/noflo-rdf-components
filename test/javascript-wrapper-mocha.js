@@ -164,6 +164,22 @@ describe('javascript-wrapper', function() {
         }).should.become( 'alpha and omega' );
     });
 
+    it("should call updater with this.nodeInstance context", function() {
+        var handler;
+        var context;
+        var updater = function(x) { 
+           context.should.equal(this); 
+           handler('success');
+        };
+        return Promise.resolve(jswrapper(updater)).then(commonTest.createComponent).then(function(component){
+            return new Promise(function(callback){
+                handler = callback;
+                context = this;
+                commonTest.sendData(component, 'x', "test input");
+            });
+        }).should.become( 'success' );
+    });
+
   // This introspect tests must be run in test mode with NODE_ENV=test 
   // e.g., NODE_ENV=test mocha since we are testing a private function
   describe('#introspect - run with NODE_ENV=test to fully execute these tests', function() {
