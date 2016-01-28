@@ -1,4 +1,3 @@
-
 /**
  * This file contacts the common code used by all of the variations of any RDF
  * node componentin the noflo implementation of the RDF Pipeline.
@@ -12,67 +11,82 @@ var stateComponent = require('./state-component');
  * code to ensure updater callback, and then invoking the RDF pipeline framework to complete building
  * the component and setting up the vni and state metadata.
  *
- * @param def updater definition. This can be a simple updater function, or an object that contains 
+ * @param nodeDef updater node definition. This can be a simple updater function, or an object that contains 
  *        updater metadata (e.g., input/output port definitions, description, icons), and an updater.
  *
  * @return a promise to create the noflo rdf component
  */
-module.exports = function(def) { 
+module.exports = function(nodeDef) { 
 
+    // Save the caller's node instance 
     var self = this;
+    
+    var updaterArgs = null;
+    if ( _.isUndefined(nodeDef) || 
+       ( ! _.isFunction(nodeDef) && ( _.isEmpty( nodeDef ) || ( _.isEmpty( nodeDef.inPorts ))))) {
+       // Got nothing to work with - no input ports and no updater, so create a default updater and input port 
+       nodeDef = { 
+           inPorts: {
+               input: {
+                   datatype: 'object',
+                   description: "default input port" 
+               }
+           },
+           updater: defaultUpdater
+       };
+    }  else if ( _.isUndefined( nodeDef.updater ) && !_.isFunction(nodeDef)) { 
+       // Got some node metadata, but no node updater - use the metadata with default updater
+       nodeDef = _.extend( nodeDef, 
+                           { updater: defaultUpdater } );
+    } else if ( _.isFunction( nodeDef ) ) { 
+        // Got an updater but no metadata - use updater args as input port list
+        // This assumes that all updater arguments are input
+        updaterArgs = introspect( nodeDef );
+        nodeDef = { inPorts: updaterArgs,
+                    updater: nodeDef };
+    } 
 
-    if ( _.isUndefined(def) || ( _.isEmpty(def) && ! _.isFunction( def ))) { 
-        // Nothing to work with - no metadata or updater - can't proceed.
-        throw new Error('javascript-wrapper found no updater definition');
-    }
-
-    if ( _.isUndefined( def.updater ) && !_.isFunction(def)) { 
-       // got called with def metadata, but no updater for this one
-        return stateComponent( def );
-    }
-     
-    // Have an updater - figure out the updater arguments 
-    var updaterArgs = ( _.isFunction(def) ) ? introspect( def ) : introspect( def.updater );
-
-    // Do we have any input port definition?  If we were only passed an updater function, we might not.
-    // In that case, build the list of input port names from the updater function arguments.  We will 
-    // assume that all arguments are input ports.
-    if ( _.isFunction( def ) ) { 
-        def = { updater: def, inPorts: updaterArgs };
-    }
-
-    // set up an onchange callback so we can invoke the updater when we have changes to process
-    var updaterCallback = function() { 
-        return function( state ) {
-
-            // Do we have any updaterArgs?  We might not if we do not have source code
-            if ( _.isEmpty( updaterArgs ) ) { 
-               // No updaterArgs, so just pass the state
-               def.updater.call( self, state );
-
-            } else {
-                // Have one or more parameters - get them in the right order and pass them 
-                var parameters = _.map( updaterArgs, function( arg ) { 
-                    var parameter = state[arg]; 
-                    if ( _.isUndefined(parameter) && def.outPorts && def.outPorts.hasOwnProperty( arg ) ) {
-                        // passing in the name of the output port - is this correct? 
-                        parameter = arg;
-                    }
-                    return parameter; 
-                });
-
-                def.updater.apply( self, parameters );
-            }
-        }
-    }
+    // Have an updater now, no matter what, be it default or not - figure out what the updater arguments are
+    var updaterArgs = (_.isNull( updaterArgs )) ? introspect( nodeDef.updater ) : updaterArgs; 
 
     return stateComponent( 
         _.defaults({
-            onchange: updaterCallback()
-        }, def)
+            // set up an onchange callback so we can invoke the updater when we have changes to process
+            onchange: 
+// function() { 
+                // return function( state, payload ) {
+                function( state, payload ) {
+                    // Do we have any updaterArgs?  We might not if we do not have source code
+                    if ( _.isEmpty( updaterArgs ) ) { 
+                       // No updaterArgs, so just pass the state
+                       return nodeDef.updater.call( self, state, payload );
+        
+                    } else {
+                        // Have one or more parameters - get them in the right order and pass them 
+                        var parameters = _.map( updaterArgs, function( arg ) { 
+                            var parameter = state[arg]; 
+                            if ( _.isUndefined(parameter) && nodeDef.outPorts && nodeDef.outPorts.hasOwnProperty( arg ) ) {
+                                // passing in the name of the output port - is this correct? 
+                                parameter = arg;
+                            }
+                            return parameter; 
+                        });
+        
+                        return nodeDef.updater.apply( self, parameters );
+                    }
+                }
+            // }
+        }, nodeDef)
       ); 
 
 }; // module.exports
+
+// Define a default updater stub function to be used if the caller 
+// did not pass one in.  Simply returns whatever the original input was so it
+// can be sent through the output port to the next component
+var defaultUpdater = function() { 
+    return { out: arguments };
+}
 
 // Introspect the updater to determine what its parameters are.
 // The algorithm here comes from the following sources:

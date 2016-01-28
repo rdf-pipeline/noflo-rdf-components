@@ -26,53 +26,62 @@ describe('javascript-wrapper', function() {
         jswrapper.should.be.a('function');
     });
 
-    it("should reject undefined definition", function() {
-        return Promise.resolve().then(jswrapper).should.be.rejected;
+    it("should use default port & default updater if no node definition", function() {
+        return Promise.resolve()
+        .then(jswrapper).then(commonTest.createComponent).then(function(component){
+            return _.keys(component.inPorts);
+        }).should.eventually.contain('input');
     });
 
-    it("should reject empty definition", function() {
-        return Promise.resolve({}).then(jswrapper).should.be.rejected;
+    it("should use default port & default updater if empty node definition", function() {
+        return Promise.resolve({})
+        .then(jswrapper).then(commonTest.createComponent).then(function(component){
+            return _.keys(component.inPorts);
+        }).should.eventually.contain('input');
     });
 
-    it("should reject empty inPorts", function() {
-        return Promise.resolve({inPorts:{}}).then(jswrapper).should.be.rejected;
+    it("should use default port & default updater if empty inPorts", function() {
+        return Promise.resolve({inPorts:{}})
+        .then(jswrapper).then(commonTest.createComponent).then(function(component){
+            return _.keys(component.inPorts);
+        }).should.eventually.contain('input');
     });
 
     it("should accept array of inPort names", function() {
         return Promise.resolve({
-            inPorts:['in']
+            inPorts:['testport']
         }).then(jswrapper).then(commonTest.createComponent).then(function(component){
             return _.keys(component.inPorts);
-        }).should.eventually.contain('in');
+        }).should.eventually.contain('testport');
     });
 
     it("should accept object with one inPort definition", function() {
         return Promise.resolve({
             inPorts: { 
-                in: { datatype: 'string', 
-                      description: "input description",
-                      required: true }
+                input: { datatype: 'string', 
+                         description: "input description",
+                         required: true }
             }
         }).then(jswrapper).then(commonTest.createComponent).then(function(component){
             return _.keys(component.inPorts);
-        }).should.eventually.contain('in');
+        }).should.eventually.contain('input');
     });
 
-    it("should trigger onchange function if no updater", function() {
+    it("should trigger default updater function if no updater", function(done) {
         var handler;
         return Promise.resolve({
-            inPorts:['hello'],
-            onchange: function(state) {
-                handler(state);
-            }
+            inPorts:['hello']
         }).then(jswrapper).then(commonTest.createComponent).then(function(component){
-            // have the handler call a Promise resolve function to
-            // check that the data sent on the in port is passed to the handler
-            return new Promise(function(callback){
-                handler = callback;
-                commonTest.sendData(component, 'hello', "world");
+            // set up a stub on the output port send to see that it got called with data
+            // sent to the input port, as the stub updater should be doing 
+            sinon.stub(component.outPorts.out, 'send', function( data ) {
+                data.should.exist;
+                data.should.be.an('object');
+                component.outPorts.out.send.restore();
+                done();
             });
-        }).should.become({'hello': "world"});
+            commonTest.sendData(component, 'hello', "world");
+        });
     });
 
     it("should generate input ports and run updater when passed only an updater", function() {
@@ -92,7 +101,7 @@ describe('javascript-wrapper', function() {
         var handler;
         return Promise.resolve({
             inPorts:{
-                in: {required: true},
+                input: {required: true},
             },
             updater: function() {
                handler('success');
@@ -100,7 +109,7 @@ describe('javascript-wrapper', function() {
         }).then(jswrapper).then(commonTest.createComponent).then(function(component){
             return new Promise(function(callback){
                 handler = callback;
-                commonTest.sendData(component, 'in', "test input");
+                commonTest.sendData(component, 'input', "test input");
             });
         }).should.become( 'success' );
     });
@@ -110,21 +119,24 @@ describe('javascript-wrapper', function() {
         var handler;
         // bind function to the current context and pass argument "testArg"; this function cannot be introspected 
         var updater = (function(context,arg1){ 
-             arguments.should.have.length(2);
+             // verify we get 3 args - first will be the testArg on the binding; second will be the
+             // port input; third will be the output payload from onchange which is undefined here
+             arguments.should.have.length(3);
              arguments[0].should.deep.equal('testArg');
-             arguments[1].should.deep.equal( { in:'test input' } );
+             arguments[1].should.deep.equal( { input:'test input' } );
+             should.equal(arguments[2], undefined);
              handler('success');
         }).bind(this,"testArg");
 
         return Promise.resolve({
             inPorts:{
-                in: {required: true}
+                input: {required: true}
             },
             updater: updater 
         }).then(jswrapper).then(commonTest.createComponent).then(function(component){
             return new Promise(function(callback){
                 handler = callback;
-                commonTest.sendData(component, 'in', "test input");
+                commonTest.sendData(component, 'input', "test input");
             });
         }).should.become( 'success' );
     });
