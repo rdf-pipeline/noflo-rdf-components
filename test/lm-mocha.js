@@ -19,123 +19,115 @@ describe('Lm', function() {
         Lm.should.be.a('function');
     });
 
-    it('should create a new lm object"', function() {
+    it('should create a new Lm string with the correct components', function() {
 
-        var currentDate = Date.now();
-        var myLm = Lm();
-
-        // Does it have the right properties?
-        myLm.should.not.be.null;
-        myLm.should.be.an('object');
-        myLm.constructor.name.should.equal('Lm');
-        myLm.should.have.all.keys( 'timestamp', 'counter' );
-        myLm.counter.should.equal(0); 
-        myLm.timestamp.should.be.at.least( currentDate );
-    });
-
-    it('should increment the counter when Lms have the same timestamp', function() {
-        var startingDate = Date.now();
+        // Set up a stub on the date so we can be sure to get a unique LM 
+        // with a counter value of 0
+        var startingDate = Date.now()+1;
         sinon.stub(Date, 'now', function() {
             return startingDate;
         });
 
-        var myLm1 = Lm();
-        var myLm2 = Lm();
-        var myLm3 = Lm();
+        var testLm = Lm();
 
-        myLm1.timestamp.should.equal( myLm2.timestamp );
-        myLm2.timestamp.should.equal( myLm3.timestamp );
+        testLm.should.not.be.null;
+        testLm.should.be.a('string');
 
-        myLm1.counter.should.equal(0);
-        myLm2.counter.should.equal(1);
-        myLm3.counter.should.equal(2);
+        // Verify we got the expected LM prefix 
+        testLm.startsWith('LM').should.be.true;
 
+        // Examine the each of the numeric components in the string
+        var components = testLm.match(/^LM(\d+)\.(\d+)$/);
+        components.should.have.length(3);
+        components[0].should.equal( testLm );
+        Number( components[1] ).should.be.at.least( startingDate );
+        Number( components[2] ).should.equal( 0 );
+
+        // clean up the stub
         Date.now.restore();
     });
 
-    it('should serialize with toString()', function() {
+    it('should increment the counter when Lms have the same timestamp', function() {
 
-        // LMs are composed of a timestamp and a counter in their native 
-        // Javascript object format.  However, they need to serialize to this 
-        // format: LM<timestamp>.<counter>  - this test verifies that we get
-        // this format on a toString() call with no value corruption
+        // Set up a stub on the date so we can be sure to get a unique LM 
+        // with a counter value of 0
+        var startingDate = Date.now()+1;
+        sinon.stub(Date, 'now', function() {
+            return startingDate;
+        });
 
-        var myLm1 = Lm();
-        var myLm1String = myLm1.toString();
+        var testLm1 = Lm();
+        var components1 = testLm1.match(/^LM(\d+)\.(\d+)$/);
+        components1.should.have.length(3);
 
-        myLm1String.should.be.a('string');
-        myLm1String.startsWith('LM').should.be.true;
-        myLm1String.should.contain('.');
+        var testLm2 = Lm();
+        var components2 = testLm2.match(/^LM(\d+)\.(\d+)$/);
+        components2.should.have.length(3);
 
-        // Verify that the values we got in the string match the lm timestamp and counter
-        // First, extract timestamp and counter numbers from our string which will have
-        // look like  LM1454027961694.0000000000000000
-        var components = myLm1String.match(/LM(\d+)\.(\d+)/);
-        Number(components[1]).should.equal(myLm1.timestamp);
-        Number(components[2]).should.equal(myLm1.counter);
-    });
+        var testLm3 = Lm();
+        var components3 = testLm3.match(/^LM(\d+)\.(\d+)$/);
+        components3.should.have.length(3);
 
-    it('should deserialize with LM(<lm string>)', function() {
+        Number( components1[1] ).valueOf().should.equal( Number( components2[1] ).valueOf());
+        Number( components2[1] ).valueOf().should.equal( Number( components3[1] ).valueOf());
 
-        // Get a current LM and serialize it
-        var myLm1 = Lm();
-        var myLm1String = myLm1.toString();
+        parseInt( components1[2]).valueOf().should.equal(0);
+        parseInt( components2[2] ).valueOf().should.equal(1);
+        parseInt( components3[2] ).valueOf().should.equal(2);
 
-        // Deserialize the serialized LM and compare it with the original
-        var myLm2 = Lm( myLm1String );
-        myLm2.should.be.an('object');
-        myLm2.constructor.name.should.equal('Lm');
-        myLm2.timestamp.should.equal( myLm1.timestamp );
-        myLm2.counter.should.equal( myLm1.counter );
-
-        myLm2.should.not.equal(myLm1);  // should be different objects (so not equal)
-        myLm2.should.deep.equal(myLm1); // but with the same deep attribute values
+        // clean up the stub
+        Date.now.restore();
     });
 
     it('should perform equality checks on same reference correctly', function() {
 
-        var myLm1 = Lm();
-        var myLm2 = myLm1;
+        var testLm1 = Lm();
+        var testLm2 = testLm1;
 
-        ( myLm2 != myLm1 ).should.be.false;
-        ( myLm2 == myLm1 ).should.be.true;
+        ( testLm2 != testLm1 ).should.be.false;
+        ( testLm2 == testLm1 ).should.be.true;
 
-        ( myLm2.valueOf() != myLm1.valueOf() ).should.be.false;
-        ( myLm2.valueOf() == myLm1.valueOf() ).should.be.true;
+        ( testLm2.valueOf() != testLm1.valueOf() ).should.be.false;
+        ( testLm2.valueOf() == testLm1.valueOf() ).should.be.true;
 
-        ( myLm2 !== myLm1 ).should.be.false;
-        ( myLm2 === myLm1 ).should.be.true;
+        ( testLm2 !== testLm1 ).should.be.false;
+        ( testLm2 === testLm1 ).should.be.true;
 
-        _.isEqual( myLm2, myLm1 ).should.be.true;
+        _.isEqual( testLm2, testLm1 ).should.be.true;
     });
 
-    it('should handle objects with same property value equality checks consistently with other Javascript objects', function() {
+    it('should perform equality checks on the same Lm string value correctly', function() {
         
-        var myLm1 = Lm();
-        var myLm1String = myLm1.toString();
-        var myLm2 = Lm( myLm1String ); 
+        var testLm1 = Lm();
+        var testLm2 = '' + testLm1; 
 
-        ( myLm2.valueOf() !== myLm1.valueOf() ).should.be.false;
-        ( myLm2.valueOf() === myLm1.valueOf() ).should.be.true;
+        ( testLm2 != testLm1 ).should.be.false;
+        ( testLm2 == testLm1 ).should.be.true;
+
+        ( testLm2.valueOf() !== testLm1.valueOf() ).should.be.false;
+        ( testLm2.valueOf() === testLm1.valueOf() ).should.be.true;
         
-         _.isEqual( myLm2, myLm1 ).should.be.true;
+        ( testLm2 !== testLm1 ).should.be.false;
+        ( testLm2 === testLm1 ).should.be.true;
+
+         _.isEqual( testLm2, testLm1 ).should.be.true;
     });
 
-    it('should handle Lm inequality consistently with other Javascript objects', function() {
+    it('should handle Lm inequality between Lm string values correctly', function() {
         
         // Generate two LMs that should be different from one another
-        var myLm1 = Lm();
-        var myLm2 = Lm();
+        var testLm1 = Lm();
+        var testLm2 = Lm();
 
-        ( myLm2 != myLm1 ).should.be.true;
-        ( myLm2 == myLm1 ).should.be.false;
+        ( testLm2 != testLm1 ).should.be.true;
+        ( testLm2 == testLm1 ).should.be.false;
 
-        ( myLm2.valueOf() !== myLm1.valueOf() ).should.be.true;
-        ( myLm2.valueOf() === myLm1.valueOf() ).should.be.false;
+        ( testLm2.valueOf() !== testLm1.valueOf() ).should.be.true;
+        ( testLm2.valueOf() === testLm1.valueOf() ).should.be.false;
 
-        ( myLm2 !== myLm1 ).should.be.true;
-        ( myLm2 === myLm1 ).should.be.false;
+        ( testLm2 !== testLm1 ).should.be.true;
+        ( testLm2 === testLm1 ).should.be.false;
 
-        _.isEqual( myLm2, myLm1 ).should.be.false;
+        _.isEqual( testLm2, testLm1 ).should.be.false;
    });
 });
