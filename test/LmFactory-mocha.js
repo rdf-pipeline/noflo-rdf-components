@@ -10,13 +10,13 @@ var should = chai.should();
 var sinon = require('sinon');
 var _ = require('underscore');
 
-var Lm = require('../components/Lm');
+var LmFactory = require('../components/LmFactory');
 
-describe('Lm', function() {
+describe('LmFactory', function() {
 
     it('should exist as a function', function() {
-        Lm.should.exist;
-        Lm.should.be.a('function');
+        LmFactory.should.exist;
+        LmFactory.should.be.a('function');
     });
 
     it('should create a new Lm string with the correct components', function() {
@@ -28,7 +28,7 @@ describe('Lm', function() {
             return startingDate;
         });
 
-        var testLm = Lm();
+        var testLm = LmFactory();
 
         testLm.should.not.be.null;
         testLm.should.be.a('string');
@@ -56,15 +56,15 @@ describe('Lm', function() {
             return startingDate;
         });
 
-        var testLm1 = Lm();
+        var testLm1 = LmFactory();
         var components1 = testLm1.match(/^LM(\d+)\.(\d+)$/);
         components1.should.have.length(3);
 
-        var testLm2 = Lm();
+        var testLm2 = LmFactory();
         var components2 = testLm2.match(/^LM(\d+)\.(\d+)$/);
         components2.should.have.length(3);
 
-        var testLm3 = Lm();
+        var testLm3 = LmFactory();
         var components3 = testLm3.match(/^LM(\d+)\.(\d+)$/);
         components3.should.have.length(3);
 
@@ -81,7 +81,7 @@ describe('Lm', function() {
 
     it('should perform equality checks on same reference correctly', function() {
 
-        var testLm1 = Lm();
+        var testLm1 = LmFactory();
         var testLm2 = testLm1;
 
         ( testLm2 != testLm1 ).should.be.false;
@@ -98,7 +98,7 @@ describe('Lm', function() {
 
     it('should perform equality checks on the same Lm string value correctly', function() {
         
-        var testLm1 = Lm();
+        var testLm1 = LmFactory();
         var testLm2 = '' + testLm1; 
 
         ( testLm2 != testLm1 ).should.be.false;
@@ -116,8 +116,8 @@ describe('Lm', function() {
     it('should handle Lm inequality between Lm string values correctly', function() {
         
         // Generate two LMs that should be different from one another
-        var testLm1 = Lm();
-        var testLm2 = Lm();
+        var testLm1 = LmFactory();
+        var testLm2 = LmFactory();
 
         ( testLm2 != testLm1 ).should.be.true;
         ( testLm2 == testLm1 ).should.be.false;
