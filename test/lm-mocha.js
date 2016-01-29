@@ -115,10 +115,27 @@ describe('Lm', function() {
         var myLm1String = myLm1.toString();
         var myLm2 = Lm( myLm1String ); 
 
-
         ( myLm2.valueOf() !== myLm1.valueOf() ).should.be.false;
         ( myLm2.valueOf() === myLm1.valueOf() ).should.be.true;
         
          _.isEqual( myLm2, myLm1 ).should.be.true;
     });
+
+    it('should handle Lm inequality consistently with other Javascript objects', function() {
+        
+        // Generate two LMs that should be different from one another
+        var myLm1 = Lm();
+        var myLm2 = Lm();
+
+        ( myLm2 != myLm1 ).should.be.true;
+        ( myLm2 == myLm1 ).should.be.false;
+
+        ( myLm2.valueOf() !== myLm1.valueOf() ).should.be.true;
+        ( myLm2.valueOf() === myLm1.valueOf() ).should.be.false;
+
+        ( myLm2 !== myLm1 ).should.be.true;
+        ( myLm2 === myLm1 ).should.be.false;
+
+        _.isEqual( myLm2, myLm1 ).should.be.false;
+   });
 });
