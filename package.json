@@ -24,6 +24,7 @@
   ],
   "dependencies": {
     "chai": "^3.4.1",
+    "chai-as-promised": "~5.2.0",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
     "media-typer": "^0.3.0",
