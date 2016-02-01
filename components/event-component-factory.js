@@ -32,7 +32,7 @@ module.exports = function(def){
             outPorts: _.mapObject(def.outPorts, _.clone),
             inPorts: _.mapObject(def.inPorts, _.clone)
         });
-        triggerPortEvents(nodeInstance.outPorts);
+        triggerPortDataEvents(nodeInstance.outPorts);
         registerPorts(nodeInstance.outPorts, def.outPorts);
         registerPorts(nodeInstance.inPorts, def.inPorts);
         registerListeners(nodeInstance, def);
@@ -43,16 +43,11 @@ module.exports = function(def){
 };
 
 /**
- * Fires events when OutPort functions are called on port.
+ * Fires data event when OutPort send function is called on port.
  */
-function triggerPortEvents(ports) {
+function triggerPortDataEvents(ports) {
     _.each(ports, function(port) {
-        // attach and detach already trigger events
-        port.connect = _.partial(thenTrigger, port.connect, 'connect');
-        port.beginGroup = _.partial(thenTrigger, port.beginGroup, 'begingroup');
         port.send = _.partial(thenTrigger, port.send, 'data');
-        port.endGroup = _.partial(thenTrigger, port.endGroup, 'endgroup');
-        port.disconnect = _.partial(thenTrigger, port.disconnect, 'disconnect');
     });
 }
 

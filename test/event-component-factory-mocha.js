@@ -36,76 +36,6 @@ describe('event-component-factory', function() {
             });
         }).should.become("hello");
     });
-    it("should trigger out port onattach function", function() {
-        var handler;
-        return Promise.resolve({
-            outPorts:{
-                'output':{
-                    onattach: function(payload) {
-                        handler(payload);
-                    }
-                }
-            }
-        }).then(componentFactory).then(createComponent).then(function(component){
-            return new Promise(function(callback){
-                handler = callback;
-                var out = noflo.internalSocket.createSocket();
-                component.outPorts.output.attach(out);
-            });
-        }).should.be.fulfilled;
-    });
-    it("should trigger out port ondetach function", function() {
-        var handler;
-        return Promise.resolve({
-            outPorts:{
-                'output':{
-                    ondetach: function(payload) {
-                        handler(payload);
-                    }
-                }
-            }
-        }).then(componentFactory).then(createComponent).then(function(component){
-            return new Promise(function(callback){
-                handler = callback;
-                var out = noflo.internalSocket.createSocket();
-                component.outPorts.output.attach(out);
-                component.outPorts.output.detach(out);
-            });
-        }).should.be.fulfilled;
-    });
-    it("should trigger out port onconnect function", function() {
-        var handler;
-        return Promise.resolve({
-            inPorts:{
-                'input':{
-                    ondata: function(payload) {
-                        this.nodeInstance.outPorts.output.connect();
-                        this.nodeInstance.outPorts.output.send(payload);
-                        this.nodeInstance.outPorts.output.disconnect();
-                    }
-                }
-            },
-            outPorts:{
-                'output':{
-                    onconnect: function(payload) {
-                        handler(payload);
-                    }
-                }
-            }
-        }).then(componentFactory).then(createComponent).then(function(component){
-            return new Promise(function(callback){
-                handler = callback;
-                var output = noflo.internalSocket.createSocket();
-                component.outPorts.output.attach(output);
-                component.outPorts.output.detach(output);
-                var input = noflo.internalSocket.createSocket();
-                component.inPorts.input.attach(input);
-                input.send("hello");
-                input.disconnect();
-                component.inPorts.input.detach(input);
-            });
-        }).should.be.fulfilled;
-    });
     it("should trigger out port ondata function", function() {
         var handler;
         return Promise.resolve({
@@ -121,39 +51,6 @@ describe('event-component-factory', function() {
             outPorts:{
                 'output':{
                     ondata: function(payload) {
-                        handler(payload);
-                    }
-                }
-            }
-        }).then(componentFactory).then(createComponent).then(function(component){
-            return new Promise(function(callback){
-                handler = callback;
-                var output = noflo.internalSocket.createSocket();
-                component.outPorts.output.attach(output);
-                component.outPorts.output.detach(output);
-                var input = noflo.internalSocket.createSocket();
-                component.inPorts.input.attach(input);
-                input.send("hello");
-                input.disconnect();
-                component.inPorts.input.detach(input);
-            });
-        }).should.be.fulfilled;
-    });
-    it("should trigger out port ondisconnect function", function() {
-        var handler;
-        return Promise.resolve({
-            inPorts:{
-                'input':{
-                    ondata: function(payload) {
-                        this.nodeInstance.outPorts.output.connect();
-                        this.nodeInstance.outPorts.output.send(payload);
-                        this.nodeInstance.outPorts.output.disconnect();
-                    }
-                }
-            },
-            outPorts:{
-                'output':{
-                    ondisconnect: function(payload) {
                         handler(payload);
                     }
                 }
