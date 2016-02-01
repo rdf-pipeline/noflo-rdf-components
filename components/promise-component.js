@@ -38,7 +38,7 @@ module.exports = function(def){
     var inPorts = _.mapObject(def.inPorts, function(port, name){
         var process = port.process || function(event, payload, socketIndex) {
             var key = 'on' + event;
-            if (port[key]) return port[key].call(this.nodeInstance, payload);
+            if (port[key]) return port[key].call(this.nodeInstance, payload, socketIndex);
         };
         return _.defaults({
             process: function(event, payload, socketIndex) {
