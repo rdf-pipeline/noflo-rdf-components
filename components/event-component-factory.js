@@ -53,6 +53,7 @@ function triggerPortDataEvents(ports) {
 
 /**
  * Emit event after function is called
+ * @this Port object sending the payload
  * @param fn function to call
  * @param event event to emit
  */
@@ -101,6 +102,7 @@ function isListener(fn, name) {
 
 /**
  * Registers the function handler with the event type for this EventEmitter.
+ * @this EventEmitter (Component or Port) that this fn should be registered with
  * @param fn function handler
  * @param name event type prefixed with 'on'
  */
