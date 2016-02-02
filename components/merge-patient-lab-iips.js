@@ -1,5 +1,6 @@
 // merge-patient-lab-iips.js
 
+var _ = require('underscore');
 var noflo = require('noflo');
 
 exports.getComponent = function() {
