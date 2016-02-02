@@ -47,7 +47,9 @@ module.exports = function(def){
  */
 function triggerPortDataEvents(ports) {
     _.each(ports, function(port) {
-        port.send = _.partial(thenTrigger, port.send, 'data');
+        if (_.isFunction(port.send)) {
+            port.send = _.partial(thenTrigger, port.send, 'data');
+        }
     });
 }
 
