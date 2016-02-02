@@ -74,6 +74,7 @@ function createIndexBy(port) {
 
 /**
  * Higher level function to index payload by a given key.
+ * @this Port that the payload was received on
  * @param indexBy property name, path, or function to index the payload by
  * @param portName the port name of the payload to index
  * @param payload to index
@@ -91,6 +92,7 @@ function indexPayload(indexBy, portName, payload) {
 
 /**
  * Higher level function that will trigger change event with payloads of the given key.
+ * @this a Port with a nodeInstance property
  * @param required array of required port names that must receive something before calling onchange
  * @param onchange({portName:payload},previousResult) the function to call with the payloads of the key
  * @param key the key to that much match the payloads passed to onchange
@@ -117,6 +119,7 @@ function isRequiredOrAttached(port, key) {
 
 /**
  * Determines if the given payload, from the given port is NOT indexed.
+ * @this a Component that includes inPorts and outPorts
  * @param payload
  * @param portName
  */
