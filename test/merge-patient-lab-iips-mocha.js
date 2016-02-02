@@ -49,6 +49,8 @@ describe('merge-patient-lab-iips', function() {
                     patient.send({id: '001',  name: 'Alice', dob: '1979-01-23' });
                     patient.disconnect();
                     component.inPorts.patient.detach(patient);
+                    return component;
+                }).then(promiseLater).then(function(component){
                     return component.rpf.createVni('').getInputState('patient', '', '');
                 }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data','lm', 'previousLms', 'selfPort']));
             });
@@ -59,6 +61,8 @@ describe('merge-patient-lab-iips', function() {
                     patient.send({id: '001',  name: 'Alice', dob: '1979-01-23' });
                     patient.disconnect();
                     component.inPorts.patient.detach(patient);
+                    return component;
+                }).then(promiseLater).then(function(component){
                     return component.rpf.createVni('').getInputState('patient', '', '');
                 }).then(_.property('data')).should.become({id: '001',  name: 'Alice', dob: '1979-01-23' });
             });
@@ -69,6 +73,8 @@ describe('merge-patient-lab-iips', function() {
                     labwork.send({id: '001',  glucose: '75',  date: '2012-02-01'});
                     labwork.disconnect();
                     component.inPorts.patient.detach(labwork);
+                    return component;
+                }).then(promiseLater).then(function(component){
                     return component.rpf.createVni('').getInputState('labwork', '', '');
                 }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data','lm', 'previousLms', 'selfPort']));
             });
@@ -79,6 +85,8 @@ describe('merge-patient-lab-iips', function() {
                     labwork.send({id: '001',  glucose: '75',  date: '2012-02-01'});
                     labwork.disconnect();
                     component.inPorts.patient.detach(labwork);
+                    return component;
+                }).then(promiseLater).then(function(component){
                     return component.rpf.createVni('').getInputState('labwork', '', '');
                 }).then(_.property('data')).should.become({id: '001',  glucose: '75',  date: '2012-02-01'});
             });
@@ -101,6 +109,8 @@ describe('merge-patient-lab-iips', function() {
                     labwork.disconnect();
                     component.inPorts.patient.detach(labwork);
                     component.inPorts.patient.detach(patient);
+                    return component;
+                }).then(promiseLater).then(function(component){
                     return component.rpf.createVni('').getOutputState();
                 }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data','lm', 'previousLms', 'selfPort']));
             });
@@ -116,6 +126,8 @@ describe('merge-patient-lab-iips', function() {
                     labwork.disconnect();
                     component.inPorts.patient.detach(labwork);
                     component.inPorts.patient.detach(patient);
+                    return component;
+                }).then(promiseLater).then(function(component){
                     return component.rpf.createVni('').getOutputState();
                 }).then(_.property('data')).should.become({id: '001',  name: 'Alice', dob: '1979-01-23', glucose: '75',  date: '2012-02-01'});
             });
@@ -134,4 +146,10 @@ function createComponent() {
         port.name = name;
     });
     return component;
+}
+
+function promiseLater(result) {
+    return new Promise(function(cb) {
+        setTimeout(cb, 100);
+    }).then(_.constant(result));
 }
