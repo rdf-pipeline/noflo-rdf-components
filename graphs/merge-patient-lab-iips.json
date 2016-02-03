@@ -1,0 +1,73 @@
+{
+    "properties": {
+        "name":"Merge Patient & Lab IIPs",
+        "description":"Merges a patient JSON IIP with a lab IIP to produce a combined record."
+    },
+    "inports": {},
+    "outports": {},
+    "groups": [],
+    "processes": {
+        "rdf-components/merge-patient-lab-iips_xu23a": {
+            "component": "rdf-components/merge-patient-lab-iips",
+            "metadata": {
+                "label": "rdf-components/merge-patient-lab-iips",
+                "x": 504,
+                "y": 180,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "core/Output_fd5vy": {
+            "component": "core/Output",
+            "metadata": {
+                "label": "core/Output",
+                "x": 828,
+                "y": 288,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "connections": [
+        {
+            "src": {
+                "process": "rdf-components/merge-patient-lab-iips_xu23a",
+                "port": "out"
+            },
+            "tgt": {
+                "process": "core/Output_fd5vy",
+                "port": "in"
+            },
+            "metadata": {
+                "route": 4
+            }
+        },
+        {
+            "src": {
+                "process": "rdf-components/merge-patient-lab-iips_xu23a",
+                "port": "error"
+            },
+            "tgt": {
+                "process": "core/Output_fd5vy",
+                "port": "in"
+            },
+            "metadata": {
+                "route": 1
+            }
+        },
+        {
+            "data": "{\"id\":\"001\",\"name\":\"Alice\",\"dob\":\"1979-01-23\"}",
+            "tgt": {
+                "process": "rdf-components/merge-patient-lab-iips_xu23a",
+                "port": "patient"
+            }
+        },
+        {
+            "data": "{\"id\":\"001\",\"glucose\":\"75\",\"date\":\"2012-02-01\"}",
+            "tgt": {
+                "process": "rdf-components/merge-patient-lab-iips_xu23a",
+                "port": "labwork"
+            }
+        }
+    ]
+}

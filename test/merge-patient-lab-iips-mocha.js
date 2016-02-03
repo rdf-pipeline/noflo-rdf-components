@@ -6,133 +6,175 @@ chai.should();
 chai.use(chaiAsPromised);
 
 var _ = require('underscore');
+
 var noflo = require('noflo');
-var componentFactory = require('../components/merge-patient-lab-iips.js');
+var sinon = require('sinon');
+
+var componentFactory = require('../components/merge-patient-lab-iips');
+var commonTest = require('./common-test');
+var state = require('../components/state');
 
 describe('merge-patient-lab-iips', function() {
-    var component = createComponent(componentFactory);
-    it("should have rdfpf object on nodeInstance", function() {
-        return Promise.resolve(component).then(function(component){
-            return component.rdfpf;
-        }).should.be.an('object');
-    });
-    it("should have createVni function", function() {
-        return Promise.resolve(component).then(function(component){
-            return component.rdfpf.createVni;
-        }).should.be.a('function');
-    });
-    it("createVni should return an object", function() {
-        return Promise.resolve(component).then(function(component){
-            return component.rdfpf.createVni('');
-        }).should.be.an('object');
-    });
-    describe('#createVni', function() {
-        it("should have getInputState function", function() {
-            return Promise.resolve(component).then(function(component){
-                return component.rdfpf.createVni('').getInputState;
-            }).should.be.a('function');
+
+    it("should have an rpf object on nodeInstance", function() {
+        return Promise.resolve(componentFactory.getComponent )
+          .then(commonTest.createComponent).then(function(component){
+            component.rpf.should.exist;
+            component.rpf.should.be.an('object');
         });
-        it("should have getOutputState function", function() {
-                return Promise.resolve(component).then(function(component){
-                return component.rdfpf.createVni('').getOutputState;
-            }).should.be.a('function');
+    });
+
+    describe('#rpf.createVni', function() {
+        it("should have a rpf.createVni function", function() {
+            return Promise.resolve(componentFactory.getComponent )
+              .then(commonTest.createComponent).then(function(component){
+                component.rpf.createVni.should.exist;
+                component.rpf.createVni.should.be.a('function');
+            });
         });
-        describe('#getInputState', function() {
+
+        it("should return a valid vni object", function() {
+            return Promise.resolve(componentFactory.getComponent )
+              .then(commonTest.createComponent).then(function(component){
+
+                var vni = component.rpf.createVni( '' ); 
+                vni.should.be.an('object');
+
+                vni.should.have.ownProperty('vnid');
+                vni.vnid.should.equal( '*' );
+
+                vni.should.have.ownProperty('lm');
+                vni.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+
+                vni.should.have.ownProperty('inputState');
+                vni.inputState.should.be.a('function');
+ 
+                vni.should.have.ownProperty('outputState');
+                vni.outputState.should.be.a('function');
+            });
+        });
+    });
+
+    describe('#rpf.vni', function() {
+        it("should have a rpf.vni function", function() {
+            return Promise.resolve(componentFactory.getComponent )
+              .then(commonTest.createComponent).then(function(component){
+                component.rpf.vni.should.exist;
+                component.rpf.vni.should.be.a('function');
+            });
+        });
+
+        it("should return a valid vni object", function() {
+            return Promise.resolve(componentFactory.getComponent )
+              .then(commonTest.createComponent).then(function(component){
+
+                var createdVni = component.rpf.createVni(); 
+                var vni = component.rpf.vni('');
+
+                vni.should.be.an('object');
+                vni.should.deep.equal( createdVni );
+
+                vni.should.have.ownProperty('vnid');
+                vni.vnid.should.equal( '*' );
+
+                vni.should.have.ownProperty('lm');
+                vni.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+
+                vni.should.have.ownProperty('inputState');
+                vni.inputState.should.be.a('function');
+
+                vni.should.have.ownProperty('outputState');
+                vni.outputState.should.be.a('function');
+            });
+        });
+    });
+ 
+    describe('#vni', function() {
+
+        describe('#inputState', function() {
+
             it("should initially return nothing", function() {
-                return Promise.resolve(component).then(function(component){
-                    return component.rdfpf.createVni('').getInputState('patient', '', '');
-                }).should.become(undefined);
+                return Promise.resolve(componentFactory.getComponent )
+                    .then(commonTest.createComponent).then(function(component){
+                        return component.rpf.vni('').inputState('patient', '', '');
+                    }).should.become(undefined);
             });
-            it("should have patient input state after input", function() {
-                return Promise.resolve(component).then(function(component){
-                    var patient = noflo.internalSocket.createSocket();
-                    component.inPorts.patient.attach(patient);
-                    patient.send({id: '001',  name: 'Alice', dob: '1979-01-23' });
-                    patient.disconnect();
-                    component.inPorts.patient.detach(patient);
-                    return component.rdfpf.createVni('').getInputState('patient', '', '');
-                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data','lm', 'previousLms', 'selfPort']));
+
+            it("should set and return an inputState payload", function() {
+
+                return Promise.resolve(componentFactory.getComponent )
+                    .then(commonTest.createComponent).then(function(component){
+
+                    var vni = component.rpf.createVni('');
+
+                    var payload = {id: '001',  name: 'Alice', dob: '1979-01-23'};
+                    var initialState = vni.inputState('patient','testNode', state.IIP_PORT, payload);
+                    initialState.should.be.an('object');
+                    initialState.should.deep.equal( payload );
+
+                    var retrievedState = vni.inputState('patient','testNode');
+                    retrievedState.should.be.an('object');
+                    retrievedState.should.deep.equal( payload );
+                });
             });
-            it("should have patient input state data after input", function() {
-                return Promise.resolve(component).then(function(component){
-                    var patient = noflo.internalSocket.createSocket();
-                    component.inPorts.patient.attach(patient);
-                    patient.send({id: '001',  name: 'Alice', dob: '1979-01-23' });
-                    patient.disconnect();
-                    component.inPorts.patient.detach(patient);
-                    return component.rdfpf.createVni('').getInputState('patient', '', '');
-                }).then(_.property('data')).should.become({id: '001',  name: 'Alice', dob: '1979-01-23' });
+
+            it("should have patient input state after input", function(done) {
+                return Promise.resolve(componentFactory.getComponent )
+                    .then(commonTest.createComponent).then(function(component){
+
+                      sinon.stub(component.outPorts.out, 'send', function( data ) { 
+                          data.should.exist;
+                          data.should.not.be.empty;
+                          data.should.have.ownProperty('out');
+                          data.out.should.be.an('object');
+                          data.out.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
+                          data.out.id.should.equal('001');
+                          data.out.name.should.equal('Alice');
+                          data.out.dob.should.equal('1979-01-23');
+                          data.out.glucose.should.equal('75');
+                          data.out.date.should.equal('2012-02-01');
+                          component.outPorts.out.send.restore();
+                          done();
+                      });
+
+                    return new Promise( function(callback) { 
+                        commonTest.sendData( component, 'patient', 
+                                             {id: '001',  name: 'Alice', dob: '1979-01-23' });
+                        commonTest.sendData( component,'labwork',
+                                            {id: '001',  glucose: '75',  date: '2012-02-01'});
+                    });
+                });
             });
-            it("should have labwork input state after input", function() {
-                return Promise.resolve(component).then(function(component){
-                    var labwork = noflo.internalSocket.createSocket();
-                    component.inPorts.labwork.attach(labwork);
-                    labwork.send({id: '001',  glucose: '75',  date: '2012-02-01'});
-                    labwork.disconnect();
-                    component.inPorts.patient.detach(labwork);
-                    return component.rdfpf.createVni('').getInputState('labwork', '', '');
-                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data','lm', 'previousLms', 'selfPort']));
-            });
-            it("should have patient input state data after input", function() {
-                return Promise.resolve(component).then(function(component){
-                    var labwork = noflo.internalSocket.createSocket();
-                    component.inPorts.labwork.attach(labwork);
-                    labwork.send({id: '001',  glucose: '75',  date: '2012-02-01'});
-                    labwork.disconnect();
-                    component.inPorts.patient.detach(labwork);
-                    return component.rdfpf.createVni('').getInputState('labwork', '', '');
-                }).then(_.property('data')).should.become({id: '001',  glucose: '75',  date: '2012-02-01'});
-            });
+
         });
-        describe('#getOutputState', function() {
+
+        describe('#outputState', function() {
+
             it("should initially return nothing", function() {
-                return Promise.resolve(component).then(function(component){
-                    return component.rdfpf.createVni('').getOutputState();
-                }).should.become(undefined);
+                return Promise.resolve(componentFactory.getComponent )
+                    .then(commonTest.createComponent).then(function(component){
+                        return component.rpf.vni('').outputState('out');
+                    }).should.become(undefined);
             });
-            it("should have a output state after input", function() {
-                return Promise.resolve(component).then(function(component){
-                    var patient = noflo.internalSocket.createSocket();
-                    var labwork = noflo.internalSocket.createSocket();
-                    component.inPorts.patient.attach(patient);
-                    patient.send({id: '001',  name: 'Alice', dob: '1979-01-23' });
-                    patient.disconnect();
-                    component.inPorts.labwork.attach(labwork);
-                    labwork.send({id: '001',  glucose: '75',  date: '2012-02-01'});
-                    labwork.disconnect();
-                    component.inPorts.patient.detach(labwork);
-                    component.inPorts.patient.detach(patient);
-                    return component.rdfpf.createVni('').getOutputState();
-                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data','lm', 'previousLms', 'selfPort']));
-            });
-            it("should have an output state data after input", function() {
-                return Promise.resolve(component).then(function(component){
-                    var patient = noflo.internalSocket.createSocket();
-                    var labwork = noflo.internalSocket.createSocket();
-                    component.inPorts.patient.attach(patient);
-                    patient.send({id: '001',  name: 'Alice', dob: '1979-01-23' });
-                    patient.disconnect();
-                    component.inPorts.labwork.attach(labwork);
-                    labwork.send({id: '001',  glucose: '75',  date: '2012-02-01'});
-                    labwork.disconnect();
-                    component.inPorts.patient.detach(labwork);
-                    component.inPorts.patient.detach(patient);
-                    return component.rdfpf.createVni('').getOutputState();
-                }).then(_.property('data')).should.become({id: '001',  name: 'Alice', dob: '1979-01-23', glucose: '75',  date: '2012-02-01'});
+
+            it("should set and return an outputState payload", function() {
+
+                return Promise.resolve(componentFactory.getComponent )
+                    .then(commonTest.createComponent).then(function(component){
+
+                    var vni = component.rpf.createVni('');
+
+                    var payload = {out: {id: '001',  name: 'Alice', dob: '1979-01-23'}};
+                    var initialState = vni.outputState('out', payload);
+                    initialState.should.be.an('object');
+                    initialState.should.deep.equal( payload );
+
+                    var retrievedState = vni.outputState('out');
+                    retrievedState.should.be.an('object');
+                    retrievedState.should.deep.equal( payload );
+                });
             });
         });
     });
 });
 
-function createComponent(getComponent) {
-    var component = getComponent();
-    _.forEach(component.inPorts, function(port, name) {
-        port.nodeInstance = component;
-        port.name = name;
-    });
-    _.forEach(component.outPorts, function(port, name) {
-        port.nodeInstance = component;
-        port.name = name;
-    });
-    return component;
-}
