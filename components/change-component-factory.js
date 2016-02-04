@@ -87,6 +87,7 @@ function indexPayload(indexBy, portName, payload) {
     var index = key == null ? payload :
         _.extend(payloads[portName] || {}, _.object([key], [payload]));
     rpf.payloads = _.extend(payloads, _.object([portName], [index]));
+    var vni = rpf.vni('').inputState( portName, 'test', '*', rpf.payloads );
     return key;
 }
 

@@ -3,6 +3,8 @@
 var _ = require('underscore');
 var noflo = require('noflo');
 
+var rpf = require('./rpf');
+
 /**
  * Creates a noflo Component factory function from a component definitation,
  * registers any event handlers on definitation. Triggers ondata events for outPorts.
@@ -38,6 +40,10 @@ module.exports = function(def){
         registerListeners(nodeInstance, def);
         nodeInstance.description = def.description;
         nodeInstance.setIcon(def.icon);
+        nodeInstance.rpf = rpf;
+        if ( ! _.isUndefined( def.updater ) ) { 
+            nodeInstance.rpf.updater = def.updater;
+        }
         return nodeInstance;
     };
 };

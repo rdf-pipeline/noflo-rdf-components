@@ -22,23 +22,14 @@ exports.getComponent = jswrapper({
         }
     },
 
-    outPorts: { 
-      out: { 
-          description: "output port",
-          datatype: 'string',
-          required: true
-      }
-    },
+    updater: function( patient, labwork ) {   
 
-    updater: function( patient, labwork, out ) {   
-
-        // console.log( 'updater called for patient ',patient,' with labwork: ',labwork);
         patient = ( _.isString( patient ) ) ? JSON.parse( patient ) : patient;
         labwork = ( _.isString( labwork ) ) ? JSON.parse( labwork ) : labwork;
         var patientLab = _.extend( {},
                                    patient,
                                    labwork );
 
-        return { out: patientLab };
+        return patientLab;
     }  
 });

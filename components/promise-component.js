@@ -3,8 +3,6 @@
 var _ = require('underscore');
 var noflo = require('noflo');
 
-var rpf = require('./rpf');
-
 module.exports = function(def){
     if (_.isEmpty(def.inPorts)) throw Error("Missing inPorts");
     // resolvePort can be used to provide a custom resolvePort.name
@@ -73,7 +71,6 @@ module.exports = function(def){
                             ), _.mapObject(def.outPorts, _.clone)),
                             inPorts: _.mapObject(inPorts, _.clone)
                        }), 
-            { rpf: rpf },
             _.pick(def, 'description', 'icon'));
     };
 };

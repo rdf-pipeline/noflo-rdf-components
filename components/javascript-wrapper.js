@@ -1,12 +1,9 @@
 /**
- * This file contacts the common code used by all of the variations of any RDF
- * node componentin the noflo implementation of the RDF Pipeline.
+ * File: javascript-wrapper.js 
  */
-
 var _ = require('underscore');
 
-// TODO: Revisit with James' latest work
-var promiseComponent = require('./promise-component');
+var componentFactory = require('./output-component-factory');
 var rpf = require('./rpf');
 
 /**
@@ -15,8 +12,9 @@ var rpf = require('./rpf');
  * the component and setting up the vni and state metadata.
  *
  * @param nodeDef updater node definition. This can be a simple updater function, or an object that contains 
- *        updater metadata (e.g., input/output port definitions, description, icons), and an updater.
+ *        updater metadata (e.g., input port definitions, description, icons) with an updater.
  *
+ * @this the context for this wrapper is the node instance.
  * @return a promise to create the noflo rdf component
  */
 module.exports = function(nodeDef) { 
@@ -55,24 +53,23 @@ module.exports = function(nodeDef) {
 
     // Have an updater now, no matter what, be it default or not - figure out what the updater arguments are
     var updaterArgs = (_.isNull( updaterArgs )) ? introspect( nodeDef.updater ) : updaterArgs; 
-    var inPorts = _.isArray(nodeDef.inPorts) ? _.object(nodeDef.inPorts, []) : nodeDef.inPorts;
 
-    return promiseComponent( 
-                         _.defaults({
-                             inPorts: _.mapObject(inPorts, function(port, name) {
-                                 return _.extend( port, 
-                                                  { ondata: ondata.bind( self, name, updaterArgs, nodeDef )});
-                             })
-                           }, nodeDef)
-                     );
-
+    return componentFactory( 
+        _.defaults(
+             { onchange: function(args) { 
+                           var that = this; // this will be the component context
+                           return onchange.call( that, updaterArgs, args );
+                         }
+             }, 
+             nodeDef)
+        );
 }; // module.exports
 
 // Define a default updater stub function to be used if the caller 
 // did not pass one in.  Simply returns whatever the original input was so it
 // can be sent through the output port to the next component
 var defaultUpdater = function() { 
-    return { out: arguments };
+    return { output: arguments };
 }
 
 // Introspect the updater to determine what its parameters are.
@@ -107,49 +104,26 @@ var introspect = function( fn ) {
     }
 };
 
-var ondata = function( portName, updaterArgs, nodeDef, payload ) {
-
-     // TODO: Integrate with James' work
-     if ( _.isUndefined( this.rpf ) ) { 
-         this.rpf = rpf;
-     } 
-
+var onchange = function( updaterArgs, portData ) {
+ 
      // First, save the data to the state
      var vni = this.rpf.vni('');
-     vni.inputState( portName, 'test', '*', payload );
 
-     // Do we have data for our input ports?  
-     var allInputStates = vni.allInputStates();
-     var inPorts = _.isArray(nodeDef.inPorts) ? _.object(nodeDef.inPorts, []) : nodeDef.inPorts;
-     var required = _.compact(_.map(inPorts, function(port, name){
-         return port && port.required && name;
-     }));
-     var missing = _.difference(required, _.keys(allInputStates));
-     if ( ! _.isEmpty( missing ) ) {
-        // Don't have all port data yet - can't call updater so just return
-       return; 
+     // Do we have any updaterArgs?  We might not if we do not have source code
+     if ( _.isEmpty( updaterArgs ) ) { 
+         // No updaterArgs, so just pass the state 
+         return this.rpf.updater.call( this, this.rpf.state );
 
-     } else { 
-        // Do we have any updaterArgs?  We might not if we do not have source code
-        if ( _.isEmpty( updaterArgs ) ) { 
-           // No updaterArgs, so just pass the state 
-           return nodeDef.updater.call( this, this.rpf.state );
+     } else {
 
-        } else {
-
-           // Have one or more parameters - get them in the right order and pass them 
-           var parameters = _.map( updaterArgs, function( arg ) { 
-               var parameter = vni.inputState( arg, 'test', '*' );
-               if ( _.isUndefined(parameter) && nodeDef.outPorts && nodeDef.outPorts.hasOwnProperty( arg ) ) {
-                   // passing in the name of the output port - is this correct? 
-                   parameter = arg;
-               }
-               return parameter; 
-            });
+         // Have one or more parameters - get them in the right order and pass them 
+         var parameters = _.map( updaterArgs, function( arg ) { 
+             var parameter = portData[arg];
+             return parameter; 
+          });
                 
-            return nodeDef.updater.apply( this, parameters );
-        }
-    }
+          return this.rpf.updater.apply( this, parameters );
+     }
 }; 
 
 if (process.env.NODE_ENV === 'test') {
