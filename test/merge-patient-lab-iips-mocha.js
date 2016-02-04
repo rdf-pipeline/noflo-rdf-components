@@ -12,7 +12,7 @@ var sinon = require('sinon');
 
 var componentFactory = require('../components/merge-patient-lab-iips');
 var commonTest = require('./common-test');
-var state = require('../components/state');
+var state = require('../components/input-state');
 
 describe('merge-patient-lab-iips', function() {
 
@@ -48,9 +48,6 @@ describe('merge-patient-lab-iips', function() {
 
                 vni.should.have.ownProperty('inputState');
                 vni.inputState.should.be.a('function');
- 
-                vni.should.have.ownProperty('outputState');
-                vni.outputState.should.be.a('function');
             });
         });
     });
@@ -82,9 +79,6 @@ describe('merge-patient-lab-iips', function() {
 
                 vni.should.have.ownProperty('inputState');
                 vni.inputState.should.be.a('function');
-
-                vni.should.have.ownProperty('outputState');
-                vni.outputState.should.be.a('function');
             });
         });
     });
@@ -148,33 +142,6 @@ describe('merge-patient-lab-iips', function() {
 
         });
 
-        describe('#outputState', function() {
-
-            it("should initially return nothing", function() {
-                return Promise.resolve(componentFactory.getComponent )
-                    .then(commonTest.createComponent).then(function(component){
-                        return component.rpf.vni('').outputState('out');
-                    }).should.become(undefined);
-            });
-
-            it("should set and return an outputState payload", function() {
-
-                return Promise.resolve(componentFactory.getComponent )
-                    .then(commonTest.createComponent).then(function(component){
-
-                    var vni = component.rpf.createVni('');
-
-                    var payload = {out: {id: '001',  name: 'Alice', dob: '1979-01-23'}};
-                    var initialState = vni.outputState('out', payload);
-                    initialState.should.be.an('object');
-                    initialState.should.deep.equal( payload );
-
-                    var retrievedState = vni.outputState('out');
-                    retrievedState.should.be.an('object');
-                    retrievedState.should.deep.equal( payload );
-                });
-            });
-        });
     });
 });
 

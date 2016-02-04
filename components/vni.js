@@ -2,7 +2,7 @@
 
 var _ = require('underscore');
 var Lm = require('./Lm');
-var state = require('./state');
+var inputs = require('./input-state');
 
 // Hash of vnis
 vnis = []; 
@@ -11,10 +11,10 @@ vnis = [];
 function Vni( vnid ) {
   this.vnid = vnid;
   this.lm = Lm();
-  this.allInputStates = state.allInputStates;
-  this.allOutputStates = state.allOutputStates;
-  this.inputState = state.inputState;
-  this.outputState = state.outputState;
+  this.allInputStates = inputs.allInputStates;
+  this.inputState = inputs.inputState;
+  this.output = {};
+  this.error = {};
   this.node = this.nodeInstance;
 }
 
