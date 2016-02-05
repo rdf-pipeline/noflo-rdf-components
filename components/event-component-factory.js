@@ -13,7 +13,7 @@ var noflo = require('noflo');
  *      icon: 'fontawesome-icon-name',
  *      inPorts: {
  *          portName: {
- *              ondata: function(payload)
+ *              ondata: function(payload, socketIndex)
  *          }
  *      },
  *      outPorts: {
@@ -24,20 +24,20 @@ var noflo = require('noflo');
  *      onicon: function(icon)
  *   });
  */
-module.exports = function(def){
-    if (!def) throw Error("No parameter");
+module.exports = function(nodeDef){
+    if (!nodeDef) throw Error("No parameter");
     return function() {
         // noflo requires each port and nodeInstance to have its own options object
         var nodeInstance = new noflo.Component({
-            outPorts: _.mapObject(def.outPorts, _.clone),
-            inPorts: _.mapObject(def.inPorts, _.clone)
+            outPorts: _.mapObject(nodeDef.outPorts, _.clone),
+            inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
         triggerPortDataEvents(nodeInstance.outPorts);
-        registerPorts(nodeInstance.outPorts, def.outPorts);
-        registerPorts(nodeInstance.inPorts, def.inPorts);
-        registerListeners(nodeInstance, def);
-        nodeInstance.description = def.description;
-        nodeInstance.setIcon(def.icon);
+        registerPorts(nodeInstance.outPorts, nodeDef.outPorts);
+        registerPorts(nodeInstance.inPorts, nodeDef.inPorts);
+        registerListeners(nodeInstance, nodeDef);
+        nodeInstance.description = nodeDef.description;
+        nodeInstance.setIcon(nodeDef.icon);
         return nodeInstance;
     };
 };
@@ -72,7 +72,7 @@ function thenTrigger(fn, event /* arguments to fn and event */) {
  * Usage:
  *  registerPorts({portName: new Port()}, {
  *      portName: {
- *          ondata: function(payload)
+ *          ondata: function(payload, socketIndex)
  *      }
  *  });
  */
@@ -86,7 +86,7 @@ function registerPorts(ports, portDefs) {
  * Registers listers by their event type to this EventEmitter.
  * Usage:
  *  registerListeners(new EventEmitter(), {
- *      ondata: function(payload)
+ *      ondata: function(payload, socketIndex)
  *  });
  */
 function registerListeners(eventEmitter, listeners) {
