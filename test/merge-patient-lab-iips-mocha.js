@@ -12,6 +12,7 @@ var noflo = require('noflo');
 
 var componentFactory = require('../components/merge-patient-lab-iips');
 var getComponent = require('../components/merge-patient-lab-iips').getComponent;
+var State = require('../components/state');
 
 var commonTest = require('./common-test');
 var commonStubs = require('./common-stubs');
@@ -71,6 +72,15 @@ describe('merge-patient-lab-iips', function() {
                             return component.rpf.vni('').errorState();
                     }).should.become(undefined);
                 });
+
+                it("should set error state", function() {
+                    return Promise.resolve(componentFactory.getComponent )
+                        .then(commonTest.createComponent).then(function(component){
+                             component.rpf.vni('').errorState('Setting an error message');
+                             var errState =  component.rpf.vni('').errorState();
+                             errState.data.should.equal('Setting an error message');
+                    })
+                });
             });
 
             describe('#inputState', function() {
@@ -88,13 +98,13 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             component.rpf.vni('').inputState( 'patient',
-                                                              { id: '001', 
-                                                                name: 'Alice',
-                                                                dob: '1979-01-23' } );
+                                                              State( { id: '001', 
+                                                                       name: 'Alice',
+                                                                       dob: '1979-01-23' }) );
 
                             var currentState = component.rpf.vni('').inputState('patient');
                             currentState.should.be.an('object');
-                            currentState.should.have.all.keys( 'data', 'lm', 'port' );
+                            currentState.should.have.all.keys( 'data', 'lm' );
                     });
                 });
 
@@ -103,13 +113,14 @@ describe('merge-patient-lab-iips', function() {
                         .then(commonTest.createComponent).then(function(component){
 
                             // initialize state
-                            var patientState = { id: '001', name: 'Alice', dob: '1979-01-23' };
+                            var patientState = State( { id: '001', name: 'Alice', dob: '1979-01-23' } );
                             component.rpf.vni('').inputState( 'patient',
                                                               patientState );
 
                             var currentState = component.rpf.vni('').inputState('patient');
                             currentState.should.be.an('object');
-			    currentState.data.should.equal( patientState );
+			    currentState.data.should.equal( patientState.data );
+			    currentState.lm.should.equal( patientState.lm );
                     });
                 });
             });
@@ -174,7 +185,7 @@ describe('merge-patient-lab-iips', function() {
                 }).then(commonStubs.promiseLater).then(function(component){
                     return component.rpf.vni('').inputState('patient');
 
-                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm', 'port']));
+                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
         });
 
         it("should have patient input state data after input", function() {
@@ -205,7 +216,7 @@ describe('merge-patient-lab-iips', function() {
 
                     return component.rpf.vni('').inputState('labwork');
 
-                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm', 'port']));
+                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
         });
 
         it("should have labwork input state data after input", function() {
@@ -258,7 +269,7 @@ function stubState( component ) {
     // Set the states we'll need to execute these tests as a stub.
     // This code should be removed when we have a real implementation
     component.rpf.vni('').inputState( 'patient',
-                                      { id: '001', name: 'Alice', dob: '1979-01-23' });
+                                      State( { id: '001', name: 'Alice', dob: '1979-01-23' } ));
     component.rpf.vni('').inputState( 'labwork',
-                                      {id: '001',  glucose: '75',  date: '2012-02-01'});
+                                      State( {id: '001',  glucose: '75',  date: '2012-02-01'} ));
 } 

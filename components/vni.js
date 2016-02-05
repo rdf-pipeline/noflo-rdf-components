@@ -2,11 +2,12 @@
 
 var _ = require('underscore');
 
-var outputStates = require('./outputStates');
 var inputStates = require('./inputStates');
+var outputStates = require('./outputStates');
 
 // Hash of vnis
 vnis = []; 
+
 
 // Returns the vni associated with the specified vnid.
 module.exports = function( vnid ) { 
@@ -17,7 +18,7 @@ module.exports = function( vnid ) {
 
         return {
             inputState: inputStates,
-            outputState: outputStates.bind( this, 'output' ),
-            errorState: outputStates.bind( this, 'error' ),
+            outputState: outputStates.bind(this, 'output'),
+            errorState: outputStates.bind(this, 'error')
         };
 };

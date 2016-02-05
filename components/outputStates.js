@@ -1,23 +1,20 @@
-// outportStates.js
+// outputStates.js
 
 var _ = require('underscore');
 var Lm = require('./Lm');
+var State = require('./state');
 
-var outportStates = [];
+var outputStates = [];
 
 // Returns the vni associated with the specified vnid.
-module.exports = function( outportName, newState ) { 
+module.exports = function( outportName, data ) { 
  
    if ( arguments.length === 1 ) { 
-       if ( _.isUndefined( outportStates[outportName] ) ) { 
-           return;
-       } 
-       return outportStates[outportName];
+       return outputStates[outportName];
    }
 
    if ( arguments.length === 2 ) { 
-       outportStates[outportName] = { lm: Lm(),
-                                      data: newState };
+       outputStates[outportName] = State( data );
        return this;
    }
 };
