@@ -8,6 +8,7 @@ chai.use(chaiAsPromised);
 var _ = require('underscore');
 var noflo = require('noflo');
 var componentFactory = require('../components/event-component-factory.js');
+var test = require('./common-test');
 
 describe('event-component-factory', function() {
     it("should reject undefined definition", function() {
@@ -23,7 +24,7 @@ describe('event-component-factory', function() {
                     }
                 }
             }
-        }).then(componentFactory).then(createComponent).then(function(component){
+        }).then(componentFactory).then(test.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the port is passed to the handler
             return new Promise(function(callback){
@@ -55,7 +56,7 @@ describe('event-component-factory', function() {
                     }
                 }
             }
-        }).then(componentFactory).then(createComponent).then(function(component){
+        }).then(componentFactory).then(test.createComponent).then(function(component){
             return new Promise(function(callback){
                 handler = callback;
                 var output = noflo.internalSocket.createSocket();
@@ -69,16 +70,4 @@ describe('event-component-factory', function() {
             });
         }).should.be.fulfilled;
     });
-    function createComponent(getComponent) {
-        var component = getComponent();
-        _.forEach(component.inPorts, function(port, name) {
-            port.nodeInstance = component;
-            port.name = name;
-        });
-        _.forEach(component.outPorts, function(port, name) {
-            port.nodeInstance = component;
-            port.name = name;
-        });
-        return component;
-    }
 });
