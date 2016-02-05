@@ -236,31 +236,37 @@ describe('merge-patient-lab-iips', function() {
                 }).then(_.property('data')).should.become({id: '001',  glucose: '75',  date: '2012-02-01'});
         });
 
-        it.skip( "should have patient and labwork output state after input ports processing", function(done) {
+        it( "should have patient and labwork output state after input ports processing", function() {
             return Promise.resolve(componentFactory.getComponent )
                 .then(commonTest.createComponent).then(function(component){
-
-                    sinon.stub(component.outPorts.output, 'send', function( data ) {
-                        data.should.exist;
-                        data.should.not.be.empty;
-                        data.should.have.ownProperty('output');
-                        data.output.should.be.an('object');
-                        data.output.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
-                        data.output.id.should.equal('001');
-                        data.output.name.should.equal('Alice');
-                        data.output.dob.should.equal('1979-01-23');
-                        data.output.glucose.should.equal('75');
-                        data.output.date.should.equal('2012-02-01'); 
-                        component.outPorts.output.send.restore();
-                        done();
-                    });
-
-                    return new Promise( function(callback) {
+                    return new Promise(function(done, fail){
+                        var output = noflo.internalSocket.createSocket();
+                        component.outPorts.output.attach(output);
+                        output.on('data', function( data ) {
+                            data.should.exist;
+                            data.should.not.be.empty;
+                            data.should.have.ownProperty('vnid');
+                            data.vnid.should.equal('');
+                            data.should.have.ownProperty('state');
+                            data.state.should.be.an('object');
+                            data.state.should.have.ownProperty('data');
+                            data.state.data.should.be.an('object');
+                            data.state.data.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
+                            data.state.data.id.should.equal('001');
+                            data.state.data.name.should.equal('Alice');
+                            data.state.data.dob.should.equal('1979-01-23');
+                            data.state.data.glucose.should.equal('75');
+                            data.state.data.date.should.equal('2012-02-01');
+                            done();
+                        });
+                        var error = noflo.internalSocket.createSocket();
+                        component.outPorts.error.attach(error);
+                        error.on('data', fail);
                         commonTest.sendData( component, 'patient',
                                              {id: '001',  name: 'Alice', dob: '1979-01-23' });
                         commonTest.sendData( component,'labwork',
                                              {id: '001',  glucose: '75',  date: '2012-02-01'});
-                    });
+                     });
                 });
         });
     });
