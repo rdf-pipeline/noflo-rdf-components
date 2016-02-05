@@ -43,7 +43,7 @@ describe('merge-patient-lab-iips', function() {
                 return Promise.resolve(componentFactory.getComponent )
                   .then(commonTest.createComponent).then(function(component){
 
-                    var vni = component.rpf.vni('');
+                    var vni = component.rpf.vni();
                     vni.should.be.an('object');
                 });
             });
@@ -51,16 +51,16 @@ describe('merge-patient-lab-iips', function() {
             it("should have inputState function", function() {
                 return Promise.resolve(componentFactory.getComponent )
                     .then(commonTest.createComponent).then(function(component){
-                        component.rpf.vni('').inputState.should.exist;
-                        component.rpf.vni('').inputState.should.be.a('function');
+                        component.rpf.vni().inputState.should.exist;
+                        component.rpf.vni().inputState.should.be.a('function');
                 });
             });
 
             it("should have outputState function", function() {
                 return Promise.resolve(componentFactory.getComponent )
                     .then(commonTest.createComponent).then(function(component){
-                        component.rpf.vni('').outputState.should.exist;
-                        component.rpf.vni('').outputState.should.be.a('function');
+                        component.rpf.vni().outputState.should.exist;
+                        component.rpf.vni().outputState.should.be.a('function');
                 });
             });
 
@@ -69,15 +69,15 @@ describe('merge-patient-lab-iips', function() {
                 it("should initially return nothing", function() {
                     return Promise.resolve(componentFactory.getComponent )
                         .then(commonTest.createComponent).then(function(component){
-                            return component.rpf.vni('').errorState();
+                            return component.rpf.vni().errorState();
                     }).should.become(undefined);
                 });
 
                 it("should set error state", function() {
                     return Promise.resolve(componentFactory.getComponent )
                         .then(commonTest.createComponent).then(function(component){
-                             component.rpf.vni('').errorState('Setting an error message');
-                             var errState =  component.rpf.vni('').errorState();
+                             component.rpf.vni().errorState( State( 'Setting an error message' ));
+                             var errState =  component.rpf.vni().errorState();
                              errState.data.should.equal('Setting an error message');
                     })
                 });
@@ -88,7 +88,7 @@ describe('merge-patient-lab-iips', function() {
                 it("should initially return nothing", function() {
                     return Promise.resolve(componentFactory.getComponent )
                         .then(commonTest.createComponent).then(function(component){
-                            return component.rpf.vni('').inputState('patient');
+                            return component.rpf.vni().inputState('patient');
                     }).should.become(undefined);
                 });
 
@@ -97,12 +97,12 @@ describe('merge-patient-lab-iips', function() {
                         .then(commonTest.createComponent).then(function(component){
 
                             // initialize state
-                            component.rpf.vni('').inputState( 'patient',
+                            component.rpf.vni().inputState( 'patient',
                                                               State( { id: '001', 
                                                                        name: 'Alice',
                                                                        dob: '1979-01-23' }) );
 
-                            var currentState = component.rpf.vni('').inputState('patient');
+                            var currentState = component.rpf.vni().inputState('patient');
                             currentState.should.be.an('object');
                             currentState.should.have.all.keys( 'data', 'lm' );
                     });
@@ -114,10 +114,10 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             var patientState = State( { id: '001', name: 'Alice', dob: '1979-01-23' } );
-                            component.rpf.vni('').inputState( 'patient',
+                            component.rpf.vni().inputState( 'patient',
                                                               patientState );
 
-                            var currentState = component.rpf.vni('').inputState('patient');
+                            var currentState = component.rpf.vni().inputState('patient');
                             currentState.should.be.an('object');
 			    currentState.data.should.equal( patientState.data );
 			    currentState.lm.should.equal( patientState.lm );
@@ -130,7 +130,7 @@ describe('merge-patient-lab-iips', function() {
                 it("should initially return nothing", function() {
                     return Promise.resolve(componentFactory.getComponent )
                         .then(commonTest.createComponent).then(function(component){
-                            return component.rpf.vni('').outputState();
+                            return component.rpf.vni().outputState();
                     }).should.become(undefined);
                 });
 
@@ -139,13 +139,14 @@ describe('merge-patient-lab-iips', function() {
                         .then(commonTest.createComponent).then(function(component){
 
                             // initialize state
-                            component.rpf.vni('').outputState( { id: '001', 
-                                                                 name: 'Alice', 
-                                                                 dob: '1979-01-23', 
-                                                                 glucose: '75',  
-                                                                 date: '2012-02-01'});
+                            component.rpf.vni().outputState( 
+                                State( { id: '001', 
+                                         name: 'Alice', 
+                                         dob: '1979-01-23', 
+                                         glucose: '75',  
+                                         date: '2012-02-01'} ));
 
-                            var currentState = component.rpf.vni('').outputState();
+                            var currentState = component.rpf.vni().outputState();
                             currentState.should.be.an('object');
                             currentState.should.have.all.keys( 'data', 'lm' );
                         });
@@ -156,13 +157,14 @@ describe('merge-patient-lab-iips', function() {
                         .then(commonTest.createComponent).then(function(component){
 
                             // initialize state
-                            var outputState = { id: '001', name: 'Alice', dob: '1979-01-23', 
-                                                glucose: '75',  date: '2012-02-01'};
-                            component.rpf.vni('').outputState( outputState ); 
+                            var outputState = State( { id: '001', name: 'Alice', dob: '1979-01-23', 
+                                                       glucose: '75',  date: '2012-02-01'} );
+                            component.rpf.vni().outputState( outputState ); 
 
-                            var currentState = component.rpf.vni('').outputState();
+                            var currentState = component.rpf.vni().outputState();
                             currentState.should.be.an('object');
-                            currentState.data.should.deep.equal( outputState );
+                            currentState.data.should.deep.equal( outputState.data );
+                            currentState.lm.should.be.a('string');
                         });
                 });
             });
@@ -183,7 +185,7 @@ describe('merge-patient-lab-iips', function() {
                     return component;
 
                 }).then(commonStubs.promiseLater).then(function(component){
-                    return component.rpf.vni('').inputState('patient');
+                    return component.rpf.vni().inputState('patient');
 
                 }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
         });
@@ -198,7 +200,7 @@ describe('merge-patient-lab-iips', function() {
                     return component;
 
                 }).then(commonStubs.promiseLater).then(function(component){
-                    return component.rpf.vni('').inputState('patient');
+                    return component.rpf.vni().inputState('patient');
 
                 }).then(_.property('data')).should.become({id: '001',  name: 'Alice', dob: '1979-01-23' });
         });
@@ -214,7 +216,7 @@ describe('merge-patient-lab-iips', function() {
 
                 }).then(commonStubs.promiseLater).then(function(component){
 
-                    return component.rpf.vni('').inputState('labwork');
+                    return component.rpf.vni().inputState('labwork');
 
                 }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
         });
@@ -229,7 +231,7 @@ describe('merge-patient-lab-iips', function() {
                     return component;
 
                 }).then(commonStubs.promiseLater).then(function(component){
-                    return component.rpf.vni('').inputState('labwork');
+                    return component.rpf.vni().inputState('labwork');
 
                 }).then(_.property('data')).should.become({id: '001',  glucose: '75',  date: '2012-02-01'});
         });
@@ -268,8 +270,8 @@ describe('merge-patient-lab-iips', function() {
 function stubState( component ) { 
     // Set the states we'll need to execute these tests as a stub.
     // This code should be removed when we have a real implementation
-    component.rpf.vni('').inputState( 'patient',
+    component.rpf.vni().inputState( 'patient',
                                       State( { id: '001', name: 'Alice', dob: '1979-01-23' } ));
-    component.rpf.vni('').inputState( 'labwork',
+    component.rpf.vni().inputState( 'labwork',
                                       State( {id: '001',  glucose: '75',  date: '2012-02-01'} ));
 } 

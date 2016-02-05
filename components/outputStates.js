@@ -7,14 +7,14 @@ var State = require('./state');
 var outputStates = [];
 
 // Returns the vni associated with the specified vnid.
-module.exports = function( outportName, data ) { 
+module.exports = function( outportName, newState ) { 
  
    if ( arguments.length === 1 ) { 
        return outputStates[outportName];
    }
 
    if ( arguments.length === 2 ) { 
-       outputStates[outportName] = State( data );
+       outputStates[outportName] = newState;
        return this;
    }
 };

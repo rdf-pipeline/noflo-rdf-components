@@ -13,8 +13,7 @@ module.exports = function( inportName, sourceNodeName, sourcePortName, newState 
    }
 
    if ( arguments.length === 2 || arguments.length === 4 ) { 
-       inputStates[inportName] = { data: arguments[arguments.length-1].data,
-                                   lm: arguments[arguments.length-1].lm };
+       inputStates[inportName] = arguments[arguments.length-1];
        // Will handle sourceNodeName and sourcePortName here in a future sprint
        return this;
    }
