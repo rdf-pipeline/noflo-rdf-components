@@ -76,7 +76,7 @@ describe('merge-patient-lab-iips', function() {
                         data: Error( 'Setting an error message' ),
                         lm: 'LM1328113669.00000000000000001'
                     };
-                    component.rpf.vni().errorState(errorState);
+                    component.rpf.vni().errorState(_.clone(errorState));
                     component.rpf.vni().errorState().should.equal(errorState);
                 });
             });
@@ -120,7 +120,7 @@ describe('merge-patient-lab-iips', function() {
                                 lm: 'LM1328113669.00000000000000001'
                             };
                             component.rpf.vni().inputState( 'patient',
-                                                              patientState );
+                                                              _.mapObject(patientState, _.clone) );
 
                             var currentState = component.rpf.vni().inputState('patient');
                             currentState.should.be.an('object');
@@ -175,7 +175,7 @@ describe('merge-patient-lab-iips', function() {
                                 },
                                 lm: 'LM1328113669.00000000000000001'
                             };
-                            component.rpf.vni().outputState( outputState ); 
+                            component.rpf.vni().outputState( _.mapObject(outputState, _.clone) );
 
                             var currentState = component.rpf.vni().outputState();
                             currentState.should.be.an('object');
@@ -254,21 +254,21 @@ describe('merge-patient-lab-iips', function() {
                     return new Promise(function(done, fail){
                         var output = noflo.internalSocket.createSocket();
                         component.outPorts.output.attach(output);
-                        output.on('data', function( data ) {
-                            data.should.exist;
-                            data.should.not.be.empty;
-                            data.should.have.ownProperty('vnid');
-                            data.vnid.should.equal('');
-                            data.should.have.ownProperty('state');
-                            data.state.should.be.an('object');
-                            data.state.should.have.ownProperty('data');
-                            data.state.data.should.be.an('object');
-                            data.state.data.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
-                            data.state.data.id.should.equal('001');
-                            data.state.data.name.should.equal('Alice');
-                            data.state.data.dob.should.equal('1979-01-23');
-                            data.state.data.glucose.should.equal('75');
-                            data.state.data.date.should.equal('2012-02-01');
+                        output.on('data', function( payload ) {
+                            payload.should.exist;
+                            payload.should.not.be.empty;
+                            payload.should.have.ownProperty('vnid');
+                            payload.vnid.should.equal('');
+                            payload.should.have.ownProperty('state');
+                            payload.state.should.be.an('object');
+                            payload.state.should.have.ownProperty('data');
+                            payload.state.data.should.be.an('object');
+                            payload.state.data.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
+                            payload.state.data.id.should.equal('001');
+                            payload.state.data.name.should.equal('Alice');
+                            payload.state.data.dob.should.equal('1979-01-23');
+                            payload.state.data.glucose.should.equal('75');
+                            payload.state.data.date.should.equal('2012-02-01');
                             done();
                         });
                         var error = noflo.internalSocket.createSocket();
