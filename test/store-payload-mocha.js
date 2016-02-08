@@ -8,20 +8,23 @@ var test = require('./common-test');
 
 var _ = require('underscore');
 var noflo = require('noflo');
-var componentFactory = require('../components/event-component-factory.js');
+var componentFactory = require('../src/event-component-factory.js');
 var storePayload = require('../src/store-payload.js');
 
 describe('store-payload', function() {
     it("should include previously sent payload", function() {
         var handler;
-        var ondata = _.compose(function(payloads) {
-            handler(payloads);
-            this.nodeInstance.outPorts.output.send(payloads.input);
-            this.nodeInstance.outPorts.output.disconnect();
-        }, storePayload);
         return Promise.resolve({
-            inPorts:{input:{ondata:ondata}},
-            outPorts:{output:{ondata:storePayload}}
+            inPorts:{input:{ondata:function(payload) {
+                storePayload(this, payload.vnid || '', payload);
+                var payloads = storePayload(this, payload.vnid || '');
+                handler(payloads);
+                this.nodeInstance.outPorts.output.send(payloads.input);
+                this.nodeInstance.outPorts.output.disconnect();
+            }}},
+            outPorts:{output:{ondata:function(payload) {
+                storePayload(this, payload.vnid || '', payload);
+            }}}
         }).then(componentFactory).then(test.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
             // check that the data sent on the in port is passed to the handler
@@ -38,9 +41,11 @@ describe('store-payload', function() {
     });
     it("should return matched incoming data packets using index key", function() {
         var handler;
-        var ondata = _.compose(function(payloads) {
+        var ondata = function(payload) {
+            storePayload(this, payload.vnid || '', payload);
+            var payloads = storePayload(this, payload.vnid || '');
             if (payloads.b) handler(payloads);
-        }, storePayload);
+        };
         return Promise.resolve({
             inPorts:{
                 a: {required: true, ondata:ondata},
@@ -61,9 +66,11 @@ describe('store-payload', function() {
     });
     it("should use empty string as wild card match", function() {
         var handler;
-        var ondata = _.compose(function(payloads) {
+        var ondata = function(payload) {
+            storePayload(this, payload.vnid || '', payload);
+            var payloads = storePayload(this, payload.vnid || '');
             if (payloads.b) handler(payloads);
-        }, storePayload);
+        };
         return Promise.resolve({
             inPorts:{
                 a: {required: true, ondata:ondata},
@@ -82,9 +89,11 @@ describe('store-payload', function() {
     });
     it("should use no vnid as wild card match", function() {
         var handler;
-        var ondata = _.compose(function(payloads) {
+        var ondata = function(payload) {
+            storePayload(this, payload.vnid || '', payload);
+            var payloads = storePayload(this, payload.vnid || '');
             if (payloads.b) handler(payloads);
-        }, storePayload);
+        };
         return Promise.resolve({
             inPorts:{
                 a: {required: true, ondata:ondata},
@@ -103,9 +112,11 @@ describe('store-payload', function() {
     });
     it("should pass payload from all addressable sockets", function() {
         var handler;
-        var ondata = _.compose(function(payloads) {
+        var ondata = function(payload, socketIndex) {
+            storePayload(this, payload.vnid || '', payload, socketIndex);
+            var payloads = storePayload(this, payload.vnid || '');
             if (payloads.c) handler(payloads);
-        }, storePayload);
+        };
         return Promise.resolve({
             inPorts:{
                 a: {required: true, ondata:ondata},

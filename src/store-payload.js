@@ -4,44 +4,68 @@ var _ = require('underscore');
 var noflo = require('noflo');
 
 /**
- * Stores the given payload for later use and returns a hash of the payloads by
- * port names. If a vnid property is included in the payload, each payload with
- * a unique vnid will be stored and only payloads with the same vnid will be
- * returned. If a port is addressable then the payload from each socket is
- * stored separately and an Array of payloads is returned for those ports.
+ * Stores the given payload for later use or returns a hash of the payloads by
+ * port names. Each payload will have a unique index by vnid. If a port is
+ * addressable then the payload from each socket is stored separately and an
+ * Array of payloads is returned for those ports. Omitting the payload will
+ * not change anything, but return a hash of payloads by port name. Passing an
+ * undefined payload will remove any existing the indexed payload entry.
+ *
+ * @param port a noflo Port
+ * @param vnid a String
+ * @param payload the optional object to store, otherwise retrieves 
+ * @param if the port is addressable, the unique socket index for this port, otherwise undefined
  *
  * Usage:
- *  ondata({vnid:'001',data:{},lm:'LM'}, 0) : {
+ *  ondata(new noflo.Port(), '001', {vnid:'001',data:{},lm:'LM'}, 0) : {
  *      input: {vnid:'001',data:{},lm:'LM'}
  *  }
  */
-module.exports = function(payload, socketIndex){
-    var vnid = _.has(payload, 'vnid') ? ('' + payload.vnid) : '';
-    storePayload(this, socketIndex, vnid, payload);
-    var inPorts = _.pick(this.nodeInstance.inPorts.ports, isPort);
-    var outPorts = _.pick(this.nodeInstance.outPorts.ports, isPort);
-    return _.defaults(
-        _.mapObject(inPorts, retrievePayload.bind(this, vnid)),
-        _.mapObject(outPorts, retrievePayload.bind(this, vnid))
-    );
-}
+module.exports = function(port, vnid, payload, socketIndex){
+    if (!isPort(port)) throw Error("First argument must be a port");
+    if (!_.isString(vnid)) throw Error("Second argument must be a string");
+    if (arguments.length == 2) {
+        var inPorts = _.pick(port.nodeInstance.inPorts.ports, isPort);
+        var outPorts = _.pick(port.nodeInstance.outPorts.ports, isPort);
+        return _.defaults(
+            _.mapObject(inPorts, retrievePayload.bind(this, vnid)),
+            _.mapObject(outPorts, retrievePayload.bind(this, vnid))
+        );
+    } else {
+        storePayload(port, vnid, payload, socketIndex);
+        return this;
+    }
+};
 
 /**
  * Stores a payload on the given port by socketIndex and vnid.
  * @param port the port to store the payload on
+ * @param vnid a String to index the payload by
+ * @param payload the object to store or if undefined delete
  * @param socketIndex the index number of the socket for this payload or undefined
- * @param vnid an identifier for the payload
  */
-function storePayload(port, socketIndex, vnid, payload) {
-    var addressable = port.isAddressable();
-    var rpf = port.rpf = port.rpf || {};
-    if (addressable) {
-        rpf.payloads = rpf.payloads || [];
-        rpf.payloads[socketIndex] = rpf.payloads[socketIndex] || {};
-        rpf.payloads[socketIndex][vnid] = payload;
+function storePayload(port, vnid, payload, socketIndex) {
+    var payloads = getPayloads(port, socketIndex);
+    if (_.isUndefined(payload)) {
+        delete payloads[vnid];
     } else {
-        rpf.payloads = rpf.payloads || {};
-        rpf.payloads[vnid] = payload;
+        payloads[vnid] = payload;
+    }
+}
+
+/**
+ * Checks if a port is addressable and returns the hash that should be used by
+ * the index.
+ * @param port the noflo.Port
+ * @param socketIndex the socket index if the port is addressable
+ */
+function getPayloads(port, socketIndex) {
+    var rpf = port.rpf = port.rpf || {};
+    if (port.isAddressable()) {
+        rpf.payloads = rpf.payloads || [];
+        return rpf.payloads[socketIndex] = rpf.payloads[socketIndex] || {};
+    } else {
+        return rpf.payloads = rpf.payloads || {};
     }
 }
 
