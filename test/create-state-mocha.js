@@ -1,13 +1,13 @@
 /**
  * File: create-state-mocha.js
- * Unit tests for create-state.js 
+ * Unit tests for src/create-state.js 
  */
 
 var chai = require('chai');
 var should = chai.should();
 var expect = chai.expect;
 
-var createState = require('../components/create-state');
+var createState = require('../src/create-state');
 
 describe("State", function() {
 

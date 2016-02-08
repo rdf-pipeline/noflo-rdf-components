@@ -3,7 +3,7 @@
 var _ = require('underscore');
 var noflo = require('noflo');
 
-var basenode = require('./base-node');
+var basenode = require('../src/base-node');
 
 exports.getComponent = function() {
     return _.extend(new noflo.Component({

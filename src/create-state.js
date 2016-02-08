@@ -4,7 +4,7 @@
 
 var _ = require('underscore');
 
-var Lm = require('./Lm');
+var createLm = require('./create-lm');
 
 /**
  * Constructs and returns a new State object
@@ -23,7 +23,7 @@ module.exports = function( vnid, data, lm ) {
            throw new Error("Unable to create state because no vnid was provided");
        }
 
-       var stateLm = lm || Lm();
+       var stateLm = lm || createLm();
        return { vnid: vnid,
                 data: data, 
                 lm: stateLm };

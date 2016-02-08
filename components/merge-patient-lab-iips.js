@@ -7,7 +7,7 @@
 
 var _ = require('underscore');
 
-var jswrapper = require('./javascript-wrapper');
+var jswrapper = require('../src/javascript-wrapper');
 
 exports.getComponent = jswrapper({
 
