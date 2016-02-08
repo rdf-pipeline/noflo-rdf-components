@@ -20,6 +20,11 @@ describe("State", function() {
         expect(createState).to.throw(Error, /Unable to create state because no vnid was provided/);
     });
 
+    it("should throw an error if vnid passed is undefined", function() {
+        var vnid;
+        expect( createState.bind(this,vnid) ).to.throw(Error, /Unable to create state because no vnid was provided/);
+    });
+
     it("should create a new state with undefined data if no data parameter is specified", function() {
 
        // Set up a test state

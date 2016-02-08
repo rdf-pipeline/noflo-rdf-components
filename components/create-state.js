@@ -2,6 +2,8 @@
  *  file: create-state.js
  */
 
+var _ = require('underscore');
+
 var Lm = require('./Lm');
 
 /**
@@ -17,7 +19,7 @@ var Lm = require('./Lm');
  */ 
 module.exports = function( vnid, data, lm ) { 
 
-       if ( arguments.length < 1 ) {
+       if ( _.isUndefined( vnid) ) {
            throw new Error("Unable to create state because no vnid was provided");
        }
 
