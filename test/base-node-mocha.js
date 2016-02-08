@@ -1,13 +1,13 @@
 /**
  * File: base-node-mocha.js
- * Unit tests for the base-node APIs defined in components/base-node.js
+ * Unit tests for the base-node APIs defined in src/base-node.js
  */
 
 var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var basenode = require('../components/base-node');
+var basenode = require('../src/base-node');
 
 describe('base-node', function() {
 

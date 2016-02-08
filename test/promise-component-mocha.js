@@ -7,7 +7,7 @@ chai.use(chaiAsPromised);
 
 var _ = require('underscore');
 var noflo = require('noflo');
-var promiseComponent = require('../components/promise-component.js');
+var promiseComponent = require('../src/promise-component.js');
 
 describe('promise-component', function() {
     it("should reject undefined definition", function() {

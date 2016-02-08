@@ -28,8 +28,8 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var noflo = require('noflo');
 
-var basenode = require('./base-node');
-var basefnode = require('./base-file-node');
+var basenode = require('../src/base-node');
+var basefnode = require('../src/base-file-node');
 
 exports.getComponent = function() {
 return _.extend(

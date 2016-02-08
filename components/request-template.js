@@ -7,8 +7,8 @@ var url = require('url');
 var uriTemplates = require('uri-templates');
 var Handlebars = require('handlebars');
 
-var basenode = require('./base-node');
-var promiseComponent = require('./promise-component');
+var basenode = require('../src/base-node');
+var promiseComponent = require('../src/promise-component');
 
 exports.getComponent = promiseComponent({
     description: "Initials an HTTP request from uri-template (RFC6570),\

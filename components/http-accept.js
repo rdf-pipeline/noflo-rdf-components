@@ -4,8 +4,8 @@ var _ = require('underscore');
 var getRawBody = require('raw-body');
 var typer = require('media-typer');
 
-var basenode = require('./base-node');
-var promiseComponent = require('./promise-component');
+var basenode = require('../src/base-node');
+var promiseComponent = require('../src/promise-component');
 
 exports.getComponent = promiseComponent({
     description: "Extracts the request body as a String and produces a 202 Accepted response. Optionally, also filters on request content type.",

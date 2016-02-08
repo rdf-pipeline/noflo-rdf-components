@@ -4,8 +4,8 @@ var _ = require('underscore');
 var Promise = require('promise');
 var jsonld = require('jsonld').promises;
 
-var basenode = require('./base-node');
-var promiseComponent = require('./promise-component');
+var basenode = require('../src/base-node');
+var promiseComponent = require('../src/promise-component');
 
 exports.getComponent = promiseComponent({
     description: "Converts an RDF JS Interface Graph object into a JSON LD Graph object",

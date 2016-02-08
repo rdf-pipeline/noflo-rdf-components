@@ -1,6 +1,6 @@
 /**
  * File: base-file-node-mocha.js
- * Unit tests for the base-file-node APIs defined in components/base-file-node.js
+ * Unit tests for the base-file-node APIs defined in src/base-file-node.js
  */
 
 var fs = require('fs');
@@ -12,7 +12,7 @@ var should = chai.should();
 
 var sinon = require('sinon');
 
-var basefnode = require('../components/base-file-node');
+var basefnode = require('../src/base-file-node');
 
 describe('base-file-node', function() {
 
