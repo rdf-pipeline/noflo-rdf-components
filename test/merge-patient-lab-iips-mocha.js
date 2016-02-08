@@ -127,9 +127,9 @@ describe('merge-patient-lab-iips', function() {
 
                             var currentState = component.rpf.vni().inputState('patient');
                             currentState.should.be.an('object');
-			                currentState.vnid.should.equal( patientState.vnid );
-			                currentState.data.should.equal( patientState.data );
-			                currentState.lm.should.equal( patientState.lm );
+                            currentState.vnid.should.equal( patientState.vnid );
+                            currentState.data.should.equal( patientState.data );
+                            currentState.lm.should.equal( patientState.lm );
                     });
                 });
             });
