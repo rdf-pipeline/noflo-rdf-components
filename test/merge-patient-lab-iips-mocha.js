@@ -73,6 +73,7 @@ describe('merge-patient-lab-iips', function() {
                 it("should set error state", function() {
                     var component = commonTest.createComponent(getComponent);
                     var errorState = {
+                        vnid: '',
                         data: Error( 'Setting an error message' ),
                         lm: 'LM1328113669.00000000000000001'
                     };
@@ -96,6 +97,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             component.rpf.vni().inputState( 'patient', {
+                                vnid: '',
                                 data: {
                                     id: '001', 
                                     name: 'Alice',
@@ -106,7 +108,7 @@ describe('merge-patient-lab-iips', function() {
 
                             var currentState = component.rpf.vni().inputState('patient');
                             currentState.should.be.an('object');
-                            currentState.should.have.all.keys( 'data', 'lm' );
+                            currentState.should.have.all.keys( 'vnid', 'data', 'lm' );
                     });
                 });
 
@@ -116,6 +118,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             var patientState = {
+                                vnid: '',
                                 data: { id: '001', name: 'Alice', dob: '1979-01-23' },
                                 lm: 'LM1328113669.00000000000000001'
                             };
@@ -124,8 +127,9 @@ describe('merge-patient-lab-iips', function() {
 
                             var currentState = component.rpf.vni().inputState('patient');
                             currentState.should.be.an('object');
-			    currentState.data.should.equal( patientState.data );
-			    currentState.lm.should.equal( patientState.lm );
+                            currentState.vnid.should.equal( patientState.vnid );
+                            currentState.data.should.equal( patientState.data );
+                            currentState.lm.should.equal( patientState.lm );
                     });
                 });
             });
@@ -145,6 +149,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             component.rpf.vni().outputState({
+                                vnid: '',
                                 data: { id: '001', 
                                          name: 'Alice', 
                                          dob: '1979-01-23', 
@@ -156,7 +161,7 @@ describe('merge-patient-lab-iips', function() {
 
                             var currentState = component.rpf.vni().outputState();
                             currentState.should.be.an('object');
-                            currentState.should.have.all.keys( 'data', 'lm' );
+                            currentState.should.have.all.keys( 'vnid', 'data', 'lm' );
                         });
                 });
 
@@ -166,6 +171,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             var outputState = {
+                                vnid: '',
                                 data: {
                                     id: '001',
                                     name: 'Alice',
@@ -202,7 +208,7 @@ describe('merge-patient-lab-iips', function() {
                 }).then(commonStubs.promiseLater).then(function(component){
                     return component.rpf.vni().inputState('patient');
 
-                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
+                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['vnid', 'data', 'lm']));
         });
 
         it("should have patient input state data after input", function() {
@@ -231,7 +237,7 @@ describe('merge-patient-lab-iips', function() {
 
                     return component.rpf.vni().inputState('labwork');
 
-                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
+                }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['vnid', 'data', 'lm']));
         });
 
         it("should have labwork input state data after input", function() {
@@ -259,16 +265,15 @@ describe('merge-patient-lab-iips', function() {
                             payload.should.not.be.empty;
                             payload.should.have.ownProperty('vnid');
                             payload.vnid.should.equal('');
-                            payload.should.have.ownProperty('state');
-                            payload.state.should.be.an('object');
-                            payload.state.should.have.ownProperty('data');
-                            payload.state.data.should.be.an('object');
-                            payload.state.data.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
-                            payload.state.data.id.should.equal('001');
-                            payload.state.data.name.should.equal('Alice');
-                            payload.state.data.dob.should.equal('1979-01-23');
-                            payload.state.data.glucose.should.equal('75');
-                            payload.state.data.date.should.equal('2012-02-01');
+                            payload.should.be.an('object');
+                            payload.should.have.ownProperty('data');
+                            payload.data.should.be.an('object');
+                            payload.data.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
+                            payload.data.id.should.equal('001');
+                            payload.data.name.should.equal('Alice');
+                            payload.data.dob.should.equal('1979-01-23');
+                            payload.data.glucose.should.equal('75');
+                            payload.data.date.should.equal('2012-02-01');
                             done();
                         });
                         var error = noflo.internalSocket.createSocket();
