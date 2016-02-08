@@ -97,7 +97,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             component.rpf.vni().inputState( 'patient', {
-                                vnid: '001',
+                                vnid: '',
                                 data: {
                                     id: '001', 
                                     name: 'Alice',
@@ -118,7 +118,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             var patientState = {
-                                vnid: '001',
+                                vnid: '',
                                 data: { id: '001', name: 'Alice', dob: '1979-01-23' },
                                 lm: 'LM1328113669.00000000000000001'
                             };
@@ -149,7 +149,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             component.rpf.vni().outputState({
-                                vnid: '001',
+                                vnid: '',
                                 data: { id: '001', 
                                          name: 'Alice', 
                                          dob: '1979-01-23', 
@@ -171,7 +171,7 @@ describe('merge-patient-lab-iips', function() {
 
                             // initialize state
                             var outputState = {
-                                vnid: '001',
+                                vnid: '',
                                 data: {
                                     id: '001',
                                     name: 'Alice',
