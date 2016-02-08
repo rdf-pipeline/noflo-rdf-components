@@ -4,8 +4,8 @@ var _ = require('underscore');
 var Promise = require('promise');
 var rdfstore = require('rdfstore');
 
-var basenode = require('./base-node');
-var promiseComponent = require('./promise-component');
+var basenode = require('../src/base-node');
+var promiseComponent = require('../src/promise-component');
 
 exports.getComponent = promiseComponent({
     description: "Loads data into a RDF JS Interface Graph object",
