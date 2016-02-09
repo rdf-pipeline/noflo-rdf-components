@@ -23,8 +23,9 @@ var noflo = require('noflo');
  */
 module.exports = function(port, vnid, payload, socketIndex){
     if (!isPort(port)) throw Error("First argument must be a port");
-    if (!_.isString(vnid)) throw Error("Second argument must be a string");
-    if (arguments.length == 2) {
+    if (vnid == null) vnid = ''; // treat null/undefined as ''
+    else if (!_.isString(vnid)) throw Error("Second argument must be a string");
+    if (arguments.length < 3) {
         var inPorts = _.pick(port.nodeInstance.inPorts.ports, isPort);
         var outPorts = _.pick(port.nodeInstance.outPorts.ports, isPort);
         return _.defaults(

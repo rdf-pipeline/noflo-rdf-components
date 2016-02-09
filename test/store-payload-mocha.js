@@ -16,14 +16,14 @@ describe('store-payload', function() {
         var handler;
         return Promise.resolve({
             inPorts:{input:{ondata:function(payload) {
-                storePayload(this, payload.vnid || '', payload);
-                var payloads = storePayload(this, payload.vnid || '');
+                storePayload(this, payload.vnid, payload);
+                var payloads = storePayload(this, payload.vnid);
                 handler(payloads);
                 this.nodeInstance.outPorts.output.send(payloads.input);
                 this.nodeInstance.outPorts.output.disconnect();
             }}},
             outPorts:{output:{ondata:function(payload) {
-                storePayload(this, payload.vnid || '', payload);
+                storePayload(this, payload.vnid, payload);
             }}}
         }).then(componentFactory).then(test.createComponent).then(function(component){
             // have the handler call a Promise resolve function to
@@ -42,8 +42,8 @@ describe('store-payload', function() {
     it("should return matched incoming data packets using index key", function() {
         var handler;
         var ondata = function(payload) {
-            storePayload(this, payload.vnid || '', payload);
-            var payloads = storePayload(this, payload.vnid || '');
+            storePayload(this, payload.vnid, payload);
+            var payloads = storePayload(this, payload.vnid);
             if (payloads.b) handler(payloads);
         };
         return Promise.resolve({
@@ -67,8 +67,8 @@ describe('store-payload', function() {
     it("should use empty string as wild card match", function() {
         var handler;
         var ondata = function(payload) {
-            storePayload(this, payload.vnid || '', payload);
-            var payloads = storePayload(this, payload.vnid || '');
+            storePayload(this, payload.vnid, payload);
+            var payloads = storePayload(this, payload.vnid);
             if (payloads.b) handler(payloads);
         };
         return Promise.resolve({
@@ -90,8 +90,8 @@ describe('store-payload', function() {
     it("should use no vnid as wild card match", function() {
         var handler;
         var ondata = function(payload) {
-            storePayload(this, payload.vnid || '', payload);
-            var payloads = storePayload(this, payload.vnid || '');
+            storePayload(this, payload.vnid, payload);
+            var payloads = storePayload(this, payload.vnid);
             if (payloads.b) handler(payloads);
         };
         return Promise.resolve({
@@ -113,8 +113,8 @@ describe('store-payload', function() {
     it("should pass payload from all addressable sockets", function() {
         var handler;
         var ondata = function(payload, socketIndex) {
-            storePayload(this, payload.vnid || '', payload, socketIndex);
-            var payloads = storePayload(this, payload.vnid || '');
+            storePayload(this, payload.vnid, payload, socketIndex);
+            var payloads = storePayload(this, payload.vnid);
             if (payloads.c) handler(payloads);
         };
         return Promise.resolve({
