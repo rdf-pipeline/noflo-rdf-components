@@ -66,6 +66,7 @@ function sendOutput(resolved) {
  */
 function sendError(rejected) {
     if (this.outPorts.error.listAttached().length) {
+        // TODO check error update policy first
         this.outPorts.error.send(rejected);
         this.outPorts.error.disconnect();
     } else {
