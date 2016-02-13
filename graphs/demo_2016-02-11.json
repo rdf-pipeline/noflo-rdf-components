@@ -1,0 +1,209 @@
+{
+    "properties": {
+        "name": "Demo 2016-02-11",
+        "description": "Demo of patient CHCS to FHIR translation on Feb 11, 2016"
+    },
+    "inports": {},
+    "outports": {},
+    "groups": [],
+    "processes": {
+        "Read File": {
+            "component": "filesystem/ReadFile",
+            "metadata": {
+                "label": "Read File",
+                "x": 468,
+                "y": 792,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "Console Log": {
+            "component": "core/Output",
+            "metadata": {
+                "label": "Console Log",
+                "x": 1332,
+                "y": 720,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "Parse JSON": {
+            "component": "strings/ParseJson",
+            "metadata": {
+                "label": "Parse JSON",
+                "x": 612,
+                "y": 684,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "Patient CHCS to FHIR": {
+            "component": "rdf-components/patient-chcs2fhir",
+            "metadata": {
+                "label": "Patient CHCS to FHIR",
+                "x": 1044,
+                "y": 540,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "Extract Patient Data": {
+            "component": "rdf-components/extract-chcs-patients",
+            "metadata": {
+                "label": "Extract Patient Data",
+                "x": 792,
+                "y": 576,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "HTML Comparison": {
+            "component": "rdf-components/html2-objects-compare",
+            "metadata": {
+                "label": "HTML Comparison",
+                "x": 1224,
+                "y": 396,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "connections": [
+        {
+            "src": {
+                "process": "Read File",
+                "port": "out"
+            },
+            "tgt": {
+                "process": "Parse JSON",
+                "port": "in"
+            },
+            "metadata": {
+                "route": 4
+            }
+        },
+        {
+            "src": {
+                "process": "Read File",
+                "port": "error"
+            },
+            "tgt": {
+                "process": "Console Log",
+                "port": "in"
+            },
+            "metadata": {
+                "route": 1
+            }
+        },
+        {
+            "src": {
+                "process": "Patient CHCS to FHIR",
+                "port": "error"
+            },
+            "tgt": {
+                "process": "Console Log",
+                "port": "in"
+            },
+            "metadata": {
+                "route": 1
+            }
+        },
+        {
+            "src": {
+                "process": "Parse JSON",
+                "port": "out"
+            },
+            "tgt": {
+                "process": "Extract Patient Data",
+                "port": "chcs"
+            },
+            "metadata": {
+                "route": 4
+            }
+        },
+        {
+            "src": {
+                "process": "Extract Patient Data",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "Patient CHCS to FHIR",
+                "port": "patient"
+            },
+            "metadata": {
+                "route": 4
+            }
+        },
+        {
+            "src": {
+                "process": "Extract Patient Data",
+                "port": "error"
+            },
+            "tgt": {
+                "process": "Console Log",
+                "port": "in"
+            },
+            "metadata": {
+                "route": 1
+            }
+        },
+        {
+            "src": {
+                "process": "Patient CHCS to FHIR",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "HTML Comparison",
+                "port": "right"
+            },
+            "metadata": {
+                "route": 4
+            }
+        },
+        {
+            "src": {
+                "process": "Extract Patient Data",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "HTML Comparison",
+                "port": "left"
+            },
+            "metadata": {
+                "route": 4
+            }
+        },
+        {
+            "data": "utf-8",
+            "tgt": {
+                "process": "Read File",
+                "port": "encoding"
+            }
+        },
+        {
+            "data": {
+                "title": "CHCS"
+            },
+            "tgt": {
+                "process": "HTML Comparison",
+                "port": "left"
+            }
+        },
+        {
+            "data": {
+                "title": "FHIR"
+            },
+            "tgt": {
+                "process": "HTML Comparison",
+                "port": "right"
+            }
+        },
+        {
+            "data": "test/data/fake-chcs-patient.json",
+            "tgt": {
+                "process": "Read File",
+                "port": "in"
+            }
+        }
+    ]
+}

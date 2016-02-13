@@ -38,6 +38,10 @@ module.exports = function(nodeDef){
         registerListeners(nodeInstance, nodeDef);
         nodeInstance.description = nodeDef.description;
         nodeInstance.setIcon(nodeDef.icon);
+        nodeInstance.rpf = { data: {} };
+        if ( nodeDef.updater ) { 
+            nodeInstance.rpf.updater = nodeDef.updater;
+        }
         return nodeInstance;
     };
 };

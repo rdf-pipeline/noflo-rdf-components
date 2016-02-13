@@ -27,6 +27,7 @@
     "chai-as-promised": "~5.2.0",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
+    "jsonpointer":"~3.0.0",
     "media-typer": "^0.3.0",
     "noflo": "~0.5.14",
     "promise": "^7.0.4",
@@ -49,7 +50,10 @@
       "round-robin": "./components/round-robin.js",
       "file-node": "./components/file-node.js",
       "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "js-node": "./components/js-node.js",
+      "extract-chcs-patients": "./components/extract-chcs-patients.js",
+      "patient-chcs2fhir": "./components/patient-chcs2fhir.js",
+      "html2-objects-compare": "./components/html2-objects-compare.js"
     }
   }
 }
