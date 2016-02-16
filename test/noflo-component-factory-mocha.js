@@ -7,10 +7,10 @@ chai.use(chaiAsPromised);
 
 var _ = require('underscore');
 var noflo = require('noflo');
-var componentFactory = require('../src/event-component-factory.js');
+var componentFactory = require('../src/noflo-component-factory.js');
 var test = require('./common-test');
 
-describe('event-component-factory', function() {
+describe('noflo-component-factory', function() {
     it("should reject undefined definition", function() {
         return Promise.resolve().then(componentFactory).should.be.rejected;
     });
