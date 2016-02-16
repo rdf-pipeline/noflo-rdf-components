@@ -16,7 +16,7 @@ describe('event-component-factory', function() {
     });
     it("should trigger in port ondata function", function() {
         var handler;
-        return Promise.resolve({
+        var component = test.createComponent(componentFactory({
             inPorts:{
                 'input':{
                     ondata: function(payload) {
@@ -24,22 +24,21 @@ describe('event-component-factory', function() {
                     }
                 }
             }
-        }).then(componentFactory).then(test.createComponent).then(function(component){
-            // have the handler call a Promise resolve function to
-            // check that the data sent on the port is passed to the handler
-            return new Promise(function(callback){
-                handler = callback;
-                var socket = noflo.internalSocket.createSocket();
-                component.inPorts.input.attach(socket);
-                socket.send("hello");
-                socket.disconnect();
-                component.inPorts.input.detach(socket);
-            });
+        }));
+        // have the handler call a Promise resolve function to
+        // check that the data sent on the port is passed to the handler
+        return new Promise(function(done){
+            handler = done;
+            var socket = noflo.internalSocket.createSocket();
+            component.inPorts.input.attach(socket);
+            socket.send("hello");
+            socket.disconnect();
+            component.inPorts.input.detach(socket);
         }).should.become("hello");
     });
     it("should trigger out port ondata function", function() {
         var handler;
-        return Promise.resolve({
+        var component = test.createComponent(componentFactory({
             inPorts:{
                 'input':{
                     ondata: function(payload) {
@@ -56,18 +55,17 @@ describe('event-component-factory', function() {
                     }
                 }
             }
-        }).then(componentFactory).then(test.createComponent).then(function(component){
-            return new Promise(function(callback){
-                handler = callback;
-                var output = noflo.internalSocket.createSocket();
-                component.outPorts.output.attach(output);
-                component.outPorts.output.detach(output);
-                var input = noflo.internalSocket.createSocket();
-                component.inPorts.input.attach(input);
-                input.send("hello");
-                input.disconnect();
-                component.inPorts.input.detach(input);
-            });
+        }));
+        return new Promise(function(done){
+            handler = done;
+            var output = noflo.internalSocket.createSocket();
+            component.outPorts.output.attach(output);
+            var input = noflo.internalSocket.createSocket();
+            component.inPorts.input.attach(input);
+            input.send("hello");
+            input.disconnect();
+            component.inPorts.input.detach(input);
+            component.outPorts.output.detach(output);
         }).should.be.fulfilled;
     });
 });
