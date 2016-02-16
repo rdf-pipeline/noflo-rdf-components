@@ -2,10 +2,14 @@
 
 var _ = require('underscore');
 var noflo = require('noflo');
+var access = require('./noflo-component-access');
 
 /**
- * Creates a noflo Component factory function from a component definitation,
- * registers any event handlers on definitation. Triggers ondata events for outPorts.
+ * Creates a noflo Component factory function from a component definition,
+ * registers any event handlers on definition. Triggers ondata events for outPorts.
+ * The context of all registered event handlers is of a Component/Port facade and
+ * not of the EventEmitter itself. This prevents the caller from gaining access
+ * to private areas of noflo internals.
  *
  * Usage:
  *  componentFactory({
@@ -28,17 +32,18 @@ module.exports = function(nodeDef){
     if (!nodeDef) throw Error("No parameter");
     return function() {
         // noflo requires each port and nodeInstance to have its own options object
-        var nodeInstance = new noflo.Component({
+        var component = new noflo.Component({
             outPorts: _.mapObject(nodeDef.outPorts, _.clone),
             inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
-        triggerPortDataEvents(nodeInstance.outPorts);
+        var nodeInstance = access(component);
+        triggerPortDataEvents(component.outPorts);
         registerPorts(nodeInstance.outPorts, nodeDef.outPorts);
         registerPorts(nodeInstance.inPorts, nodeDef.inPorts);
         registerListeners(nodeInstance, nodeDef);
-        nodeInstance.description = nodeDef.description;
-        nodeInstance.setIcon(nodeDef.icon);
-        return nodeInstance;
+        component.description = nodeDef.description;
+        component.setIcon(nodeDef.icon);
+        return component;
     };
 };
 
