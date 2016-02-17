@@ -15,20 +15,16 @@ describe('noflo-component-factory', function() {
         return Promise.resolve().then(componentFactory).should.be.rejected;
     });
     it("should trigger in port ondata function", function() {
-        var handler;
-        var component = test.createComponent(componentFactory({
-            inPorts:{
-                'input':{
-                    ondata: function(payload) {
-                        handler(payload);
+        return new Promise(function(done){
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    'input':{
+                        ondata: function(payload) {
+                            done(payload);
+                        }
                     }
                 }
-            }
-        }));
-        // have the handler call a Promise resolve function to
-        // check that the data sent on the port is passed to the handler
-        return new Promise(function(done){
-            handler = done;
+            }));
             var socket = noflo.internalSocket.createSocket();
             component.inPorts.input.attach(socket);
             socket.send("hello");
@@ -37,27 +33,25 @@ describe('noflo-component-factory', function() {
         }).should.become("hello");
     });
     it("should trigger out port ondata function", function() {
-        var handler;
-        var component = test.createComponent(componentFactory({
-            inPorts:{
-                'input':{
-                    ondata: function(payload) {
-                        this.nodeInstance.outPorts.output.connect();
-                        this.nodeInstance.outPorts.output.send(payload);
-                        this.nodeInstance.outPorts.output.disconnect();
-                    }
-                }
-            },
-            outPorts:{
-                'output':{
-                    ondata: function(payload) {
-                        handler(payload);
-                    }
-                }
-            }
-        }));
         return new Promise(function(done){
-            handler = done;
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    'input':{
+                        ondata: function(payload) {
+                            this.nodeInstance.outPorts.output.connect();
+                            this.nodeInstance.outPorts.output.send(payload);
+                            this.nodeInstance.outPorts.output.disconnect();
+                        }
+                    }
+                },
+                outPorts:{
+                    'output':{
+                        ondata: function(payload) {
+                            done(payload);
+                        }
+                    }
+                }
+            }));
             var output = noflo.internalSocket.createSocket();
             component.outPorts.output.attach(output);
             var input = noflo.internalSocket.createSocket();
@@ -67,5 +61,24 @@ describe('noflo-component-factory', function() {
             component.inPorts.input.detach(input);
             component.outPorts.output.detach(output);
         }).should.be.fulfilled;
+    });
+    it("should include socketIndex in ondata function", function() {
+        return new Promise(function(done){
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    'input':{
+                        addressable: true,
+                        ondata: function(payload, socketIndex) {
+                            done(socketIndex);
+                        }
+                    }
+                }
+            }));
+            var socket = noflo.internalSocket.createSocket();
+            component.inPorts.input.attach(socket);
+            socket.send("zero");
+            socket.disconnect();
+            component.inPorts.input.detach(socket);
+        }).should.become(0);
     });
 });
