@@ -171,4 +171,23 @@ describe('noflo-component-factory', function() {
             component.outPorts.output.detach(output);
         }).should.be.fulfilled;
     });
+    it("should include socketIndex in ondata function", function() {
+        return new Promise(function(done){
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    'input':{
+                        addressable: true,
+                        ondata: function(payload, socketIndex) {
+                            done(socketIndex);
+                        }
+                    }
+                }
+            }));
+            var socket = noflo.internalSocket.createSocket();
+            component.inPorts.input.attach(socket);
+            socket.send("zero");
+            socket.disconnect();
+            component.inPorts.input.detach(socket);
+        }).should.become(0);
+    });
 });
