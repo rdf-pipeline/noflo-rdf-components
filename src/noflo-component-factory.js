@@ -1,4 +1,4 @@
-// component-factory.js
+// noflo-component-factory.js
 
 var _ = require('underscore');
 var noflo = require('noflo');
