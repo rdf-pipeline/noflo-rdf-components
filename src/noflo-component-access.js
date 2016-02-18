@@ -7,7 +7,10 @@ module.exports = facadeComponent;
 
 /**
  * Create a noflo.Component facade from a given component. Access to the component
- * is limited to only select properties and functions.
+ * is limited to only select properties and functions. An rpf hash property is
+ * also present for arbitrary assignments and is shared for all facades of the
+ * same Component instance.
+ * This facade mimic the main usage of http://noflojs.org/api/Component.html
  * Usage:
  *  var component = componentAccess(new noflo.Component());
  */
@@ -31,6 +34,7 @@ function facadeComponent(component) {
 /**
  * Create a noflo Port facade from a given noflo Port that includes only a limited
  * subset of properties and functions.
+ * This facade mimic the main usage of http://noflojs.org/api/OutPort.html
  */
 function facadePort(port) {
     return _.extend({
@@ -65,6 +69,7 @@ function facadePort(port) {
  * EventEmitter, while any provided functions are bound to the original context
  * when they are called. This gives the behaviour of an EventEmitter without
  * actually creating one with a distinct state.
+ * @see https://nodejs.org/dist/latest-v4.x/docs/api/events.html
  */
 function facadeEventEmitter(emitter) {
     return facadeFunctions(emitter,
@@ -85,7 +90,7 @@ function facadeEventEmitter(emitter) {
  * Picks all the given functions from object and returns the set bounded to the
  * original object context. If any argument is passed to those functions that is
  * also a function it is bound to the called context.
- * @param object that contains functions
+ * @param object with functions, i.e. noflo.Component, noflo.InPort/OutPort
  * @param keys explicit names of functions to include in result
  */
 function facadeFunctions(object /* keys */) {
