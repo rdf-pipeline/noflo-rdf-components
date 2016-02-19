@@ -18,7 +18,7 @@ describe('noflo-component-factory', function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         ondata: function(payload) {
                             done(payload);
                         }
@@ -34,30 +34,43 @@ describe('noflo-component-factory', function() {
     });
     it("should behave like an EventEmitter", function() {
         return new Promise(function(done, fail){
+            var handler = function(payload){
+                done(payload + ' ' + this.name);
+            };
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input1:{
                         ondata: function(payload) {
                             this.on('change', fail);
                             this.removeListener('change', fail);
-                            this.on('change', done);
+                            this.on('change', handler);
+                        }
+                    },
+                    input2:{
+                        ondata: function(payload) {
+                            this.on('change', handler);
                             this.emit('change', payload);
                         }
                     }
                 }
             }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("hello");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
-        }).should.become("hello");
+            var input1 = noflo.internalSocket.createSocket();
+            component.inPorts.input1.attach(input1);
+            input1.send("hi");
+            input1.disconnect();
+            component.inPorts.input1.detach(input1);
+            var input2 = noflo.internalSocket.createSocket();
+            component.inPorts.input2.attach(input2);
+            input2.send("hello");
+            input2.disconnect();
+            component.inPorts.input2.detach(input2);
+        }).should.become("hello input2");
     });
     it("should have name property", function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         ondata: function(payload) {
                             done(this.name);
                         }
@@ -75,7 +88,7 @@ describe('noflo-component-factory', function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         description: "World",
                         ondata: function(payload) {
                             done(payload + ' ' + this.isAddressable());
@@ -126,7 +139,7 @@ describe('noflo-component-factory', function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         ondata: function(payload) {
                             this.nodeInstance.outPorts.output.connect();
                             this.nodeInstance.outPorts.output.send(payload);
@@ -156,7 +169,7 @@ describe('noflo-component-factory', function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         addressable: true,
                         ondata: function(payload, socketIndex) {
                             done(socketIndex);

@@ -106,12 +106,14 @@ function applyFacade(fn, context /* arguments */) {
  * @param fn a function to bind
  */
 function facadeFunction(fn) {
-    if (!_.isFunction(fn))
-        return fn;
-    else if (_.isFunction(fn._bind_facade_noflo_access))
-        return fn._bind_facade_noflo_access;
-    else
-        return fn._bind_facade_noflo_access = fn.bind(this);
+    if (!_.isFunction(fn)) return fn;
+    if (!_.isArray(fn._bind_facade_noflo_access)) {
+        fn._bind_facade_noflo_access = [];
+    }
+    var idx = fn._bind_facade_noflo_access.indexOf(this);
+    if (idx >= 0) return fn._bind_facade_noflo_access[idx + 1];
+    fn._bind_facade_noflo_access.push(this, fn.bind(this));
+    return _.last(fn._bind_facade_noflo_access);
 }
 
 /**
