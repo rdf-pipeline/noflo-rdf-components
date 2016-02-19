@@ -15,17 +15,14 @@ module.exports = facadeComponent;
  *  var component = componentAccess(new noflo.Component());
  */
 function facadeComponent(component) {
-    return _.extend({
-        get inPorts() {
-            return _.mapObject(_.pick(component.inPorts, isInPort), facadePort);
-        },
-        get outPorts() {
-            return _.mapObject(_.pick(component.outPorts, isOutPort), facadePort);
-        },
-        get rpf() {
-            return component.rpf = component.rpf || {};
-        }
+    if (component._noflo_access_facade)
+        return component._noflo_access_facade;
+    var facade = {};
+    _.extend(facade, {
+        inPorts: _.mapObject(_.pick(component.inPorts, isInPort), facadePort.bind(this, facade)),
+        outPorts: _.mapObject(_.pick(component.outPorts, isOutPort), facadePort.bind(this, facade))
     }, facadeEventEmitter(component));
+    return component._noflo_access_facade = facade;
 }
 
 /**
@@ -33,15 +30,10 @@ function facadeComponent(component) {
  * subset of properties and functions.
  * This facade mimic the main usage of http://noflojs.org/api/OutPort.html
  */
-function facadePort(port) {
+function facadePort(nodeInstance, port, name) {
     return _.extend({
-        // port.nodeInstance might not be assigned yet
-        get nodeInstance() {
-            return port.nodeInstance && facadeComponent(port.nodeInstance)
-        },
-        get name() {
-            return port.name;
-        }
+        name: name,
+        nodeInstance: nodeInstance
     }, facadeFunctions(port,
         'getDataType',
         'hasDefault',

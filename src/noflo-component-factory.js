@@ -36,8 +36,8 @@ module.exports = function(nodeDef){
             outPorts: _.mapObject(nodeDef.outPorts, _.clone),
             inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
-        var nodeInstance = access(component);
         triggerPortDataEvents(component.outPorts);
+        var nodeInstance = access(component);
         registerPorts(nodeInstance.outPorts, nodeDef.outPorts);
         registerPorts(nodeInstance.inPorts, nodeDef.inPorts);
         registerListeners(nodeInstance, nodeDef);

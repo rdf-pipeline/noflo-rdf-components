@@ -76,6 +76,7 @@ describe('noflo-component-factory', function() {
             var component = test.createComponent(componentFactory({
                 inPorts:{
                     'input':{
+                        description: "World",
                         ondata: function(payload) {
                             done(payload + ' ' + this.isAddressable());
                         }
@@ -89,22 +90,22 @@ describe('noflo-component-factory', function() {
             component.inPorts.input.detach(socket);
         }).should.become("hello false");
     });
-    it("should have stable nodeInstance.rpf property", function() {
+    it("should have stable nodeInstance property", function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
                     'input1':{
                         ondata: function(payload) {
-                            if (this.nodeInstance.rpf.payload)
-                                done(this.nodeInstance.rpf.payload + ' ' + payload);
-                            else this.nodeInstance.rpf.payload = payload;
+                            if (this.nodeInstance.payload)
+                                done(this.nodeInstance.payload + ' ' + payload);
+                            else this.nodeInstance.payload = payload;
                         }
                     },
                     'input2':{
                         ondata: function(payload) {
-                            if (this.nodeInstance.rpf.payload)
-                                done(this.nodeInstance.rpf.payload + ' ' + payload);
-                            else this.nodeInstance.rpf.payload = payload;
+                            if (this.nodeInstance.payload)
+                                done(this.nodeInstance.payload + ' ' + payload);
+                            else this.nodeInstance.payload = payload;
                         }
                     }
                 }
