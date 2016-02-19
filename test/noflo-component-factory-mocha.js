@@ -1,4 +1,4 @@
-// event-component-factory-mocha.js
+// noflo-component-factory-mocha.js
 
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
