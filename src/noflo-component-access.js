@@ -25,10 +25,7 @@ function facadeComponent(component) {
         get rpf() {
             return component.rpf = component.rpf || {};
         }
-    }, facadeFunctions(component,
-        'getDescription',
-        'getIcon'
-    ), facadeEventEmitter(component));
+    }, facadeEventEmitter(component));
 }
 
 /**
@@ -46,14 +43,12 @@ function facadePort(port) {
             return port.name;
         }
     }, facadeFunctions(port,
-        'getDescription',
         'getDataType',
         'hasDefault',
         'isAddressable',
-        'isBuffered',
         'isRequired',
-        'isCaching',
         'isConnected',
+        'listAttached',
         'connect',
         'beginGroup',
         'send',

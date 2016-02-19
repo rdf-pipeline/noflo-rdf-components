@@ -71,14 +71,13 @@ describe('noflo-component-factory', function() {
             component.inPorts.input.detach(socket);
         }).should.become("input");
     });
-    it("should have getDescription() function", function() {
+    it("should have isAddressable() function", function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
                     'input':{
-                        description: "World",
                         ondata: function(payload) {
-                            done(payload + ' ' + this.getDescription());
+                            done(payload + ' ' + this.isAddressable());
                         }
                     }
                 }
@@ -88,26 +87,7 @@ describe('noflo-component-factory', function() {
             socket.send("hello");
             socket.disconnect();
             component.inPorts.input.detach(socket);
-        }).should.become("hello World");
-    });
-    it("should have nodeInstance.getDescription() function", function() {
-        return new Promise(function(done){
-            var component = test.createComponent(componentFactory({
-                description: "World",
-                inPorts:{
-                    'input':{
-                        ondata: function(payload) {
-                            done(payload + ' ' + this.nodeInstance.getDescription());
-                        }
-                    }
-                }
-            }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("hello");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
-        }).should.become("hello World");
+        }).should.become("hello false");
     });
     it("should have stable nodeInstance.rpf property", function() {
         return new Promise(function(done){
