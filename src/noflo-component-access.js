@@ -35,18 +35,12 @@ function facadePort(nodeInstance, port, name) {
         name: name,
         nodeInstance: nodeInstance
     }, facadeFunctions(port,
-        'getDataType',
-        'hasDefault',
         'isAddressable',
         'isRequired',
-        'isConnected',
         'listAttached',
         'connect',
-        'beginGroup',
         'send',
-        'endGroup',
-        'disconnect',
-        'checkRequired'
+        'disconnect'
     ), facadeEventEmitter(port));
 }
 
