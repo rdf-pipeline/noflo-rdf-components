@@ -94,7 +94,8 @@ function facadeEventEmitter(emitter) {
  * @param keys explicit names of functions to include in result
  */
 function facadeFunctions(object /* keys */) {
-    return _.mapObject(_.pick(object, arguments), function(fn) {
+    var keys = _.toArray(arguments).slice(1);
+    return _.mapObject(_.pick(object, keys), function(fn) {
         return _.partial(applyFacade, fn, object)
     });
 }
