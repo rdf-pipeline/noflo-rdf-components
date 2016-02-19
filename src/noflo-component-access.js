@@ -40,6 +40,7 @@ function facadePort(nodeInstance, port, name) {
         'isAddressable',
         'isRequired',
         'isConnected',
+        'isAttached',
         'listAttached',
         'connect',
         'beginGroup',
