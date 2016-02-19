@@ -54,16 +54,10 @@ function facadePort(nodeInstance, port, name) {
  */
 function facadeEventEmitter(emitter) {
     return facadeFunctions(emitter,
-        'addListener',
         'emit',
-        'getMaxListeners',
-        'listenerCount',
-        'listeners',
         'on',
         'once',
-        'removeAllListeners',
-        'removeListener',
-        'setMaxListeners'
+        'removeListener'
     );
 }
 
