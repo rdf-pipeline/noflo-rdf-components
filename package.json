@@ -39,7 +39,6 @@
   },
   "noflo": {
     "components": {
-      "RequestTemplate": "./components/request-template.js",
       "request-template": "./components/request-template.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
