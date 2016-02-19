@@ -4,29 +4,32 @@ var _ = require('underscore');
 var Promise = require('promise');
 var jsonld = require('jsonld').promises;
 
-var basenode = require('../src/base-node');
-var promiseComponent = require('../src/promise-component');
+var promiseOutput = require('../src/promise-output');
+var componentFactory = require('../src/noflo-component-factory');
 
-exports.getComponent = promiseComponent({
+exports.getComponent = componentFactory({
     description: "Converts an RDF JS Interface Graph object into a JSON LD Graph object",
     icon: 'edit',
+    outPorts: promiseOutput.outPorts,
     inPorts: {
         frame: {
             description: "JSON-LD Frame object",
             datatype: 'object',
-            ondata: basenode.assign('frame')
+            ondata: function(frame) {
+                this.nodeInstance.frame = frame;
+            }
         },
-        'in': {
+        input: {
             description: "RDF JS Interface Graph object",
             datatype: 'object',
             required: true,
-            ondata: execute
+            ondata: promiseOutput(execute)
         }
     }
 });
 
 function execute(graph) {
-    var frame = this.frame;
+    var frame = this.nodeInstance.frame;
     return buildJSON(graph).then(function(json) {
         if (frame) return jsonld.frame(json, frame);
         else return json;
