@@ -5,8 +5,8 @@ var Promise = require('promise');
 var Handlebars = require('handlebars');
 var rdfstore = require('rdfstore');
 
-var basenode = require('./base-node');
-var promiseComponent = require('./promise-component');
+var basenode = require('../src/base-node');
+var promiseComponent = require('../src/promise-component');
 
 exports.getComponent = promiseComponent({
     description: "Executes the given SPARQL update on the provided RDF graph and returns it",
