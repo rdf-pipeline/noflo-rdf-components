@@ -35,19 +35,12 @@ function facadePort(nodeInstance, port, name) {
         name: name,
         nodeInstance: nodeInstance
     }, facadeFunctions(port,
-        'getDataType',
-        'hasDefault',
         'isAddressable',
         'isRequired',
-        'isConnected',
-        'isAttached',
         'listAttached',
         'connect',
-        'beginGroup',
         'send',
-        'endGroup',
-        'disconnect',
-        'checkRequired'
+        'disconnect'
     ), facadeEventEmitter(port));
 }
 
@@ -61,16 +54,10 @@ function facadePort(nodeInstance, port, name) {
  */
 function facadeEventEmitter(emitter) {
     return facadeFunctions(emitter,
-        'addListener',
         'emit',
-        'getMaxListeners',
-        'listenerCount',
-        'listeners',
         'on',
         'once',
-        'removeAllListeners',
-        'removeListener',
-        'setMaxListeners'
+        'removeListener'
     );
 }
 
