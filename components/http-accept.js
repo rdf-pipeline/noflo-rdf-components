@@ -57,7 +57,7 @@ function handle(pair){
     var outPorts = this.nodeInstance.outPorts;
     if (contentTypeMatches(self.types, pair.req.headers['content-type'])) {
         if (_.has(pair.req, 'body')) {
-            if (outPorts.accepted.isAttached()) {
+            if (outPorts.accepted.listAttached().length) {
                 pair.res.writeHead(202, "Accepted");
                 pair.res.write("Accepted");
                 outPorts.accepted.send(pair);
@@ -71,7 +71,7 @@ function handle(pair){
                 limit: self.limit || '1mb',
                 encoding: charset || self.encoding || 'utf8'
             }).then(function(body){
-                if (outPorts.accepted.isAttached()) {
+                if (outPorts.accepted.listAttached().length) {
                     pair.res.writeHead(202, "Accepted");
                     pair.res.write("Accepted\n");
                     outPorts.accepted.send(pair);
@@ -79,7 +79,7 @@ function handle(pair){
                 }
                 return body;
             }, function(err){
-                if (outPorts.rejected.isAttached()) {
+                if (outPorts.rejected.listAttached().length) {
                     pair.res.writeHead(413, "Payload Too Large");
                     pair.res.write(err.message);
                     outPorts.rejected.send(pair);
@@ -89,7 +89,7 @@ function handle(pair){
             });
         }
     } else {
-        if (outPorts.rejected.isAttached()) {
+        if (outPorts.rejected.listAttached().length) {
             pair.res.writeHead(415, "Unsupported Media Type");
             pair.res.write("Expected " + self.types + " not " + pair.req.headers['content-type']);
             outPorts.rejected.send(pair);
