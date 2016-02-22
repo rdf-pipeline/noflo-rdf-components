@@ -8,11 +8,12 @@ chai.use(chaiAsPromised);
 var http = require('http');
 var _ = require('underscore');
 var noflo = require('noflo');
+var test = require('./common-test');
 var httpAccept = require('../components/http-accept');
 
 describe('http-accept', function() {
     it("should receive a request", function() {
-        return createNetwork({
+        return test.createNetwork({
             accept: httpAccept
         }).then(function(network){
             network.graph.addNode('webserver', "webserver/Server");
@@ -42,7 +43,7 @@ describe('http-accept', function() {
         }).should.become("Hello World");
     });
     it("should respond with 202", function() {
-        return createNetwork({
+        return test.createNetwork({
             accept: httpAccept
         }).then(function(network){
             network.graph.addNode('webserver', "webserver/Server");
@@ -71,36 +72,3 @@ describe('http-accept', function() {
         }).should.become(202);
     });
 });
-
-/**
- * Creates and starts a noflo.Network with a component for every component module
- * given, however, no edges are present.
- * Usage:
- *  createNetwork({name:require('../components/rdf')}).then(function(network){
- *      network.processes.name.component is the component instance
- *      network.graph.addEdge('name', 'output', 'name', 'input') to add edge
- *      network.graph.addInitial(data, 'name', 'input') to send data
- *  });
- */
-function createNetwork(componentModules) {
-    var graph = new noflo.Graph();
-    _.each(componentModules, function(module, name) {
-        // maps node to factory
-        graph.addNode(name, name);
-    });
-    return new Promise(function(resolve, reject){
-        noflo.createNetwork(graph, function(err, network) {
-            if (err instanceof noflo.Network) network = err;
-            else if (err) return reject(err);
-            _.each(componentModules, function(module, name) {
-                // maps factory to module
-                network.loader.components[name] = module;
-            });
-            network.connect(function(err){
-                if (err) return reject(err);
-                network.start();
-                resolve(network);
-            });
-        }, true);
-    });
-}
