@@ -22,29 +22,33 @@
       "url": "http://opensource.org/licenses/apache2.0.php"
     }
   ],
-  "dependencies": {
+  "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "~5.2.0",
+    "sinon": "^1.17.2",
+    "noflo-webserver": "0.0.4"
+  },
+  "dependencies": {
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
+    "jsonpointer":"~3.0.0",
     "media-typer": "^0.3.0",
     "noflo": "~0.5.14",
+    "open": "~0.0.5",
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.7",
-    "sinon": "^1.17.2",
     "underscore": "~1.8.3",
-    "uri-templates": "~0.1.9",
-    "utils": "^0.3.1"
+    "uri-templates": "~0.1.9"
   },
   "noflo": {
     "components": {
-      "RequestTemplate": "./components/request-template.js",
       "request-template": "./components/request-template.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
+      "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
       "round-robin": "./components/round-robin.js",
       "file-node": "./components/file-node.js",

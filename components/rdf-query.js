@@ -5,55 +5,78 @@ var Promise = require('promise');
 var Handlebars = require('handlebars');
 var rdfstore = require('rdfstore');
 
-var basenode = require('../src/base-node');
-var promiseComponent = require('../src/promise-component');
+var promiseOutput = require('../src/promise-output');
+var componentFactory = require('../src/noflo-component-factory');
 
-exports.getComponent = promiseComponent({
+/**
+ * Executes the given SPARQL query on the provided RDF graph and returns the result
+ */
+exports.getComponent = componentFactory({
     description: "Executes the given SPARQL query on the provided RDF graph and returns the result",
     icon: 'cog',
+    outPorts: promiseOutput.outPorts,
     inPorts: {
         parameters: {
             description: "A map of template parameters",
             datatype: 'object',
-            ondata: basenode.assign('parameters')
+            ondata: function(parameters) {
+                this.nodeInstance.parameters = parameters;
+            }
         },
         query: {
             description: "SPARQL query template string in handlebars syntax",
             datatype: 'string',
             required: true,
-            ondata: basenode.assign('query', Handlebars.compile)
+            ondata: function(query) {
+                this.nodeInstance.query = Handlebars.compile(query);
+            }
         },
         "default": {
             description: "Graph URI for the default dataset",
             datatype: 'string',
-            ondata: basenode.assign('defaultURIs', basenode.push)
+            ondata: function(defaultURI) {
+                this.nodeInstance.defaultURIs = this.nodeInstance.defaultURIs || [];
+                this.nodeInstance.defaultURIs.push(defaultURI);
+            }
         },
         namespaces: {
             description: "Graph URI for the named dataset",
             datatype: 'string',
-            ondata: basenode.assign('namespacesURIs', basenode.push)
+            ondata: function(namespacesURI) {
+                this.nodeInstance.namespacesURIs = this.nodeInstance.namespacesURIs || [];
+                this.nodeInstance.namespacesURIs.push(namespacesURI);
+            }
         },
-        'in': {
+        input: {
             description: "RDF JS Interface Graph object",
             datatype: 'object',
             required: true,
-            ondata: execute
+            ondata: promiseOutput(execute)
         }
     }
 });
 
-
+/**
+ * Executes the given SPARQL query on the provided RDF graph and returns the result
+ * @this a noflo.InPort or facade with templates on the nodeInstance property object
+ * @param graph RDF JS Interface Graph object
+ */
 function execute(graph) {
-    var query = this.query(this.parameters);
+    var self = this.nodeInstance;
+    var query = self.query(self.parameters);
     var graphURI = graph.graphURI;
-    var defaultURIs = _.compact([graphURI].concat(this.defaultURIs));
-    var args = (this.defaultURIs || this.namespaceURIs || graphURI) ?
-        [query, defaultURIs, this.namespaceURIs || []] : [query];
+    var defaultURIs = _.compact([graphURI].concat(self.defaultURIs));
+    var args = (self.defaultURIs || self.namespaceURIs || graphURI) ?
+        [query, defaultURIs, self.namespaceURIs || []] : [query];
     return asRdfStore(graph).then(function(store){
         return Promise.denodeify(store.execute).apply(store, args);
     });
 }
 
+/**
+ * Converts the given graph into an rdfstore object
+ * @param graph RDF JS Interface Graph object
+ */
 function asRdfStore(graph) {
     if (graph.rdfstore) return Promise.resolve(graph.rdfstore);
     else return denodeify(rdfstore, 'create', {}).then(function(store){
@@ -64,6 +87,9 @@ function asRdfStore(graph) {
     });
 }
 
+/**
+ * Converts cb style async functions to promise style functions
+ */
 function denodeify(object, functionName /* arguments */) {
     var args = _.toArray(arguments).slice(2);
     return Promise.denodeify(object[functionName]).apply(object, args);
