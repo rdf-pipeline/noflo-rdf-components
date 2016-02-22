@@ -8,6 +8,7 @@ chai.use(chaiAsPromised);
 var _ = require('underscore');
 var path = require('path');
 var noflo = require('noflo');
+var test = require('./common-test');
 var rdfLoad = require('../components/rdf-load');
 var rdfQuery = require('../components/rdf-query');
 var rdfUpdate = require('../components/rdf-update');
@@ -37,7 +38,7 @@ describe('rdf components', function() {
         }]
     };
     it("should load a json-ld graph", function() {
-        return createNetwork({
+        return test.createNetwork({
             load: rdfLoad
         }).then(function(network){
             var output = noflo.internalSocket.createSocket();
@@ -49,7 +50,7 @@ describe('rdf components', function() {
         }).should.eventually.include.keys('triples');
     });
     it("should query a graph", function() {
-        return createNetwork({
+        return test.createNetwork({
             load: rdfLoad,
             query: rdfQuery
         }).then(function(network){
@@ -65,7 +66,7 @@ describe('rdf components', function() {
         }).should.become(true);
     });
     it("should update a graph", function() {
-        return createNetwork({
+        return test.createNetwork({
             load: rdfLoad,
             update: rdfUpdate,
             query: rdfQuery
@@ -85,7 +86,7 @@ describe('rdf components', function() {
         }).should.become(true);
     });
     it("should serialize a graph", function() {
-        return createNetwork({
+        return test.createNetwork({
             load: rdfLoad,
             update: rdfUpdate,
             jsonld: rdfJsonld
@@ -104,36 +105,3 @@ describe('rdf components', function() {
         }).should.eventually.eql(cynthia);
     });
 });
-
-/**
- * Creates and starts a noflo.Network with a component for every component module
- * given, however, no edges are present.
- * Usage:
- *  createNetwork({name:require('../components/rdf')}).then(function(network){
- *      network.processes.name.component is the component instance
- *      network.graph.addEdge('name', 'output', 'name', 'input') to add edge
- *      network.graph.addInitial(data, 'name', 'input') to send data
- *  });
- */
-function createNetwork(componentModules) {
-    var graph = new noflo.Graph();
-    _.each(componentModules, function(module, name) {
-        // maps node to factory
-        graph.addNode(name, name);
-    });
-    return new Promise(function(resolve, reject){
-        noflo.createNetwork(graph, function(err, network) {
-            if (err instanceof noflo.Network) network = err;
-            else if (err) return reject(err);
-            _.each(componentModules, function(module, name) {
-                // maps factory to module
-                network.loader.components[name] = module;
-            });
-            network.connect(function(err){
-                if (err) return reject(err);
-                network.start();
-                resolve(network);
-            });
-        }, true);
-    });
-}
