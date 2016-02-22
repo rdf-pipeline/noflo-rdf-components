@@ -7,6 +7,9 @@ var rdfstore = require('rdfstore');
 var promiseOutput = require('../src/promise-output');
 var componentFactory = require('../src/noflo-component-factory');
 
+/**
+ * Loads data into a RDF JS Interface Graph object
+ */
 exports.getComponent = componentFactory({
     description: "Loads data into a RDF JS Interface Graph object",
     icon: 'sign-in',
@@ -45,6 +48,10 @@ exports.getComponent = componentFactory({
     }
 });
 
+/**
+ * Loads data into a RDF JS Interface Graph object
+ * @this a InPort or facade with options on the nodeInstance property object
+ */
 function load() {
     var self = this.nodeInstance;
     var graphURI = self.graph ? self.graph :
@@ -74,6 +81,9 @@ function load() {
     });
 }
 
+/**
+ * Converts cb style async functions to promise style functions
+ */
 function denodeify(object, functionName /* arguments */) {
     var args = _.toArray(arguments).slice(2);
     return Promise.denodeify(object[functionName]).apply(object, args);
