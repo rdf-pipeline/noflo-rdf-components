@@ -22,22 +22,40 @@ var noflo = require('noflo');
  *          }
  *      },
  *      onicon: function(icon)
- *   });
+ *   },
+ *    nodeExt);
+ * 
+ * @param nodeDef The noflo component node definition
+ * @param nodeExt Custom extensions to be added to the component node instance that are not part of noflo
+ *
+ * @return a component factory function that will build the specified noflo component as described
+ *         by the nodeDef and nodeExt. 
  */
-module.exports = function(nodeDef){
+module.exports = function(nodeDef, nodeExt){
+
     if (!nodeDef) throw Error("No parameter");
+
     return function() {
+
         // noflo requires each port and nodeInstance to have its own options object
         var nodeInstance = new noflo.Component({
             outPorts: _.mapObject(nodeDef.outPorts, _.clone),
             inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
+
         triggerPortDataEvents(nodeInstance.outPorts);
         registerPorts(nodeInstance.outPorts, nodeDef.outPorts);
         registerPorts(nodeInstance.inPorts, nodeDef.inPorts);
         registerListeners(nodeInstance, nodeDef);
+
         nodeInstance.description = nodeDef.description;
         nodeInstance.setIcon(nodeDef.icon);
+
+        // If a nodeExt object was defined, extend the node instance with it
+        if ( _.isObject( nodeExt ) ) { 
+            nodeInstance = _.extend( nodeInstance, nodeExt );
+        }
+
         return nodeInstance;
     };
 };
