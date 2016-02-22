@@ -19,7 +19,7 @@ exports.getComponent = componentFactory({
             description: "A map of configuration options for the store",
             datatype: 'object',
             ondata: function(options) {
-                this.nodeInstance.options = options;
+                this.nodeInstance.rdfOptions = options;
             }
         },
         media: {
@@ -33,7 +33,7 @@ exports.getComponent = componentFactory({
             description: "Graph URI template where the parsed triples will be inserted. If it is not specified, triples will be loaded in the default graph",
             datatype: 'string',
             ondata: function(graph) {
-                this.nodeInstance.graph = graph;
+                this.nodeInstance.rdfGraph = graph;
             }
         },
         input: {
@@ -54,7 +54,7 @@ exports.getComponent = componentFactory({
  */
 function load() {
     var self = this.nodeInstance;
-    var graphURI = self.graph ? self.graph :
+    var graphURI = self.rdfGraph ? self.rdfGraph :
         _.isString(data) && !data.match(/[^\w%-._~:\/?#\[\]@!$&'()*+,;=]/) ?
         data : undefined;
     var data = self.data;
@@ -62,7 +62,7 @@ function load() {
         _.isString(data) ? 'remote' :
         _.isObject(data) ? 'application/json' : undefined;
     if (self.data) self.data = null;
-    return denodeify(rdfstore, 'create', self.options || {}).then(function(store){
+    return denodeify(rdfstore, 'create', self.rdfOptions || {}).then(function(store){
         return Promise.resolve().then(function(){
             if (media) {
                 return denodeify(store, 'load', media, data, graphURI || {});
