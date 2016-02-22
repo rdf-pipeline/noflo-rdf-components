@@ -12,7 +12,13 @@ var requestTemplate = require('../components/request-template');
 
 describe('request-template', function() {
     var server = http.createServer();
-    server.listen(1337);
+    before(function(){
+        server.listen(1337);
+    });
+    after(function(){
+        console.log("after");
+        server.close();
+    });
     it("should send a request", function() {
         return createNetwork({
             request: requestTemplate
