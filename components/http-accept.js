@@ -4,13 +4,13 @@ var _ = require('underscore');
 var getRawBody = require('raw-body');
 var typer = require('media-typer');
 
-var basenode = require('../src/base-node');
-var promiseComponent = require('../src/promise-component');
+var promiseOutput = require('../src/promise-output');
+var componentFactory = require('../src/noflo-component-factory');
 
-exports.getComponent = promiseComponent({
+exports.getComponent = componentFactory({
     description: "Extracts the request body as a String and produces a 202 Accepted response. Optionally, also filters on request content type.",
     icon: 'sign-in',
-    outPorts: {
+    outPorts: _.defaults({
         rejected: {
             description: "HTTP 415 Unsupported Media Type request/response pair {req, res}",
             datatype: 'object'
@@ -19,35 +19,43 @@ exports.getComponent = promiseComponent({
             description: "HTTP 202 Accepted request/response pair {req, res}",
             datatype: 'object'
         }
-    },
+    }, promiseOutput.outPorts),
     inPorts: {
         limit: {
             description: "Request Content-Length limit",
             datatype: 'int',
-            ondata: basenode.assign('limit')
+            ondata: function(limit) {
+                this.nodeInstance.limit = limit;
+            }
         },
         encoding: {
             description: "Request body character encoding",
             datatype: 'string',
-            ondata: basenode.assign('encoding')
+            ondata: function(encoding) {
+                this.nodeInstance.encoding = encoding;
+            }
         },
         type: {
             description: "Request Content-Type",
             datatype: 'string',
-            ondata: basenode.assign('types', basenode.push)
+            ondata: function(type) {
+                this.nodeInstance.types = this.nodeInstance.types || [];
+                this.nodeInstance.types.push(type);
+            }
         },
-        'in': {
+        input: {
             description: "HTTP request/response pair {req, res}",
             datatype: 'object',
             required: true,
-            ondata: handle
+            ondata: promiseOutput(handle)
         }
     }
 });
 
 function handle(pair){
-    var outPorts = this.outPorts;
-    if (contentTypeMatches(this.types, pair.req.headers['content-type'])) {
+    var self = this.nodeInstance;
+    var outPorts = this.nodeInstance.outPorts;
+    if (contentTypeMatches(self.types, pair.req.headers['content-type'])) {
         if (_.has(pair.req, 'body')) {
             if (outPorts.accepted.isAttached()) {
                 pair.res.writeHead(202, "Accepted");
@@ -57,10 +65,11 @@ function handle(pair){
             }
             return pair.req.body;
         } else {
-            var charset = typer.parse(pair.req.headers['content-type']).parameters.charset;
+            var charset = pair.req.headers['content-type'] &&
+                typer.parse(pair.req.headers['content-type']).parameters.charset;
             return getRawBody(pair.req, {
-                limit: this.limit || '1mb',
-                encoding: charset || this.encoding || 'utf8'
+                limit: self.limit || '1mb',
+                encoding: charset || self.encoding || 'utf8'
             }).then(function(body){
                 if (outPorts.accepted.isAttached()) {
                     pair.res.writeHead(202, "Accepted");
@@ -82,11 +91,11 @@ function handle(pair){
     } else {
         if (outPorts.rejected.isAttached()) {
             pair.res.writeHead(415, "Unsupported Media Type");
-            pair.res.write("Expected " + this.types + " not " + pair.req.headers['content-type']);
+            pair.res.write("Expected " + self.types + " not " + pair.req.headers['content-type']);
             outPorts.rejected.send(pair);
             outPorts.rejected.disconnect();
         }
-        throw Error("Expected " + this.types + " not " + pair.req.headers['content-type']);
+        throw Error("Expected " + self.types + " not " + pair.req.headers['content-type']);
     }
 }
 
