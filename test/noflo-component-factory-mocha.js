@@ -1,4 +1,4 @@
-// event-component-factory-mocha.js
+// noflo-component-factory-mocha.js
 
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
@@ -18,25 +18,100 @@ describe('noflo-component-factory', function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         ondata: function(payload) {
                             done(payload);
                         }
                     }
                 }
             }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("hello");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
+            test.sendData(component, 'input', "hello");
         }).should.become("hello");
+    });
+    it("should behave like an EventEmitter", function() {
+        return new Promise(function(done, fail){
+            var handler = function(payload){
+                done(payload + ' ' + this.name);
+            };
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    input1:{
+                        ondata: function(payload) {
+                            this.on('change', fail);
+                            this.removeListener('change', fail);
+                            this.on('change', handler);
+                        }
+                    },
+                    input2:{
+                        ondata: function(payload) {
+                            this.on('change', handler);
+                            this.emit('change', payload);
+                        }
+                    }
+                }
+            }));
+            test.sendData(component, 'input1', "hi");
+            test.sendData(component, 'input2', "hello");
+        }).should.become("hello input2");
+    });
+    it("should have name property", function() {
+        return new Promise(function(done){
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(this.name);
+                        }
+                    }
+                }
+            }));
+            test.sendData(component, 'input', "hello");
+        }).should.become("input");
+    });
+    it("should have isAddressable() function", function() {
+        return new Promise(function(done){
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        description: "World",
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.isAddressable());
+                        }
+                    }
+                }
+            }));
+            test.sendData(component, 'input', "hello");
+        }).should.become("hello false");
+    });
+    it("should have stable nodeInstance property", function() {
+        return new Promise(function(done){
+            var component = test.createComponent(componentFactory({
+                inPorts:{
+                    'input1':{
+                        ondata: function(payload) {
+                            if (this.nodeInstance.payload)
+                                done(this.nodeInstance.payload + ' ' + payload);
+                            else this.nodeInstance.payload = payload;
+                        }
+                    },
+                    'input2':{
+                        ondata: function(payload) {
+                            if (this.nodeInstance.payload)
+                                done(this.nodeInstance.payload + ' ' + payload);
+                            else this.nodeInstance.payload = payload;
+                        }
+                    }
+                }
+            }));
+            test.sendData(component, 'input1', "hello");
+            test.sendData(component, 'input2', "world");
+        }).should.become("hello world");
     });
     it("should trigger out port ondata function", function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         ondata: function(payload) {
                             this.nodeInstance.outPorts.output.connect();
                             this.nodeInstance.outPorts.output.send(payload);
@@ -54,11 +129,7 @@ describe('noflo-component-factory', function() {
             }));
             var output = noflo.internalSocket.createSocket();
             component.outPorts.output.attach(output);
-            var input = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(input);
-            input.send("hello");
-            input.disconnect();
-            component.inPorts.input.detach(input);
+            test.sendData(component, 'input', "hello");
             component.outPorts.output.detach(output);
         }).should.be.fulfilled;
     });
@@ -66,7 +137,7 @@ describe('noflo-component-factory', function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input':{
+                    input:{
                         addressable: true,
                         ondata: function(payload, socketIndex) {
                             done(socketIndex);
@@ -74,11 +145,7 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("zero");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
+            test.sendData(component, 'input', "zero");
         }).should.become(0);
     });
 });
