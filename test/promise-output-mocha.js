@@ -7,7 +7,7 @@ chai.use(chaiAsPromised);
 
 var _ = require('underscore');
 var noflo = require('noflo');
-var componentFactory = require('../src/event-component-factory');
+var componentFactory = require('../src/noflo-component-factory');
 var promiseOutput = require('../src/promise-output');
 var test = require('./common-test');
 
