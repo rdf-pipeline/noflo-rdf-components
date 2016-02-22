@@ -25,11 +25,7 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("hello");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
+            test.sendData(component, 'input', "hello");
         }).should.become("hello");
     });
     it("should behave like an EventEmitter", function() {
@@ -54,16 +50,8 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var input1 = noflo.internalSocket.createSocket();
-            component.inPorts.input1.attach(input1);
-            input1.send("hi");
-            input1.disconnect();
-            component.inPorts.input1.detach(input1);
-            var input2 = noflo.internalSocket.createSocket();
-            component.inPorts.input2.attach(input2);
-            input2.send("hello");
-            input2.disconnect();
-            component.inPorts.input2.detach(input2);
+            test.sendData(component, 'input1', "hi");
+            test.sendData(component, 'input2', "hello");
         }).should.become("hello input2");
     });
     it("should have name property", function() {
@@ -77,11 +65,7 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("hello");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
+            test.sendData(component, 'input', "hello");
         }).should.become("input");
     });
     it("should have isAddressable() function", function() {
@@ -96,11 +80,7 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("hello");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
+            test.sendData(component, 'input', "hello");
         }).should.become("hello false");
     });
     it("should have stable nodeInstance property", function() {
@@ -123,16 +103,8 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var input1 = noflo.internalSocket.createSocket();
-            var input2 = noflo.internalSocket.createSocket();
-            component.inPorts.input1.attach(input1);
-            component.inPorts.input1.attach(input2);
-            input1.send("hello");
-            input1.disconnect();
-            input2.send("world");
-            input2.disconnect();
-            component.inPorts.input1.detach(input1);
-            component.inPorts.input1.detach(input2);
+            test.sendData(component, 'input1', "hello");
+            test.sendData(component, 'input2', "world");
         }).should.become("hello world");
     });
     it("should trigger out port ondata function", function() {
@@ -157,11 +129,7 @@ describe('noflo-component-factory', function() {
             }));
             var output = noflo.internalSocket.createSocket();
             component.outPorts.output.attach(output);
-            var input = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(input);
-            input.send("hello");
-            input.disconnect();
-            component.inPorts.input.detach(input);
+            test.sendData(component, 'input', "hello");
             component.outPorts.output.detach(output);
         }).should.be.fulfilled;
     });
@@ -177,11 +145,7 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var socket = noflo.internalSocket.createSocket();
-            component.inPorts.input.attach(socket);
-            socket.send("zero");
-            socket.disconnect();
-            component.inPorts.input.detach(socket);
+            test.sendData(component, 'input', "zero");
         }).should.become(0);
     });
 });
