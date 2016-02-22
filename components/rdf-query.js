@@ -8,6 +8,9 @@ var rdfstore = require('rdfstore');
 var promiseOutput = require('../src/promise-output');
 var componentFactory = require('../src/noflo-component-factory');
 
+/**
+ * Executes the given SPARQL query on the provided RDF graph and returns the result
+ */
 exports.getComponent = componentFactory({
     description: "Executes the given SPARQL query on the provided RDF graph and returns the result",
     icon: 'cog',
@@ -53,7 +56,11 @@ exports.getComponent = componentFactory({
     }
 });
 
-
+/**
+ * Executes the given SPARQL query on the provided RDF graph and returns the result
+ * @this a noflo.InPort or facade with templates on the nodeInstance property object
+ * @param graph RDF JS Interface Graph object
+ */
 function execute(graph) {
     var self = this.nodeInstance;
     var query = self.query(self.parameters);
@@ -66,6 +73,10 @@ function execute(graph) {
     });
 }
 
+/**
+ * Converts the given graph into an rdfstore object
+ * @param graph RDF JS Interface Graph object
+ */
 function asRdfStore(graph) {
     if (graph.rdfstore) return Promise.resolve(graph.rdfstore);
     else return denodeify(rdfstore, 'create', {}).then(function(store){
@@ -76,6 +87,9 @@ function asRdfStore(graph) {
     });
 }
 
+/**
+ * Converts cb style async functions to promise style functions
+ */
 function denodeify(object, functionName /* arguments */) {
     var args = _.toArray(arguments).slice(2);
     return Promise.denodeify(object[functionName]).apply(object, args);
