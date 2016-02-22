@@ -33,7 +33,8 @@ function facadeComponent(component) {
 function facadePort(nodeInstance, port, name) {
     return _.extend({
         name: name,
-        nodeInstance: nodeInstance
+        nodeInstance: nodeInstance,
+        isMulti: port.isAddressable.bind(port)
     }, facadeFunctions(port,
         'isAddressable',
         'isRequired',
