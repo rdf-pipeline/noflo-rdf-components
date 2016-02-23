@@ -1,256 +1,289 @@
-/**
- * input-states.js
- * 
- * Manages RDF pipeline input states for a VNI
- * TODO: Add optimization for input states as a sorted array
- */
+// input-states.js
 
 var _ = require('underscore');
 
-var InputType = {
-    IIP: 1,
-    PACKET: 2
-};
-var ALL_PORTINFO_KEYS = [ 'inportName', 'sourceNodeName', 'sourcePortName' ];
-
-var inputStates = [];
+/**
+ * Getter and Setter for InPort states.
+ *
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param inportName name of the input port whose state is being recorded
+ * @param socketIndex (optional) index of the socket
+ * @param sourceNodeName (optional) name of the node that sent the new state data
+ * @param sourcePortName (optional) name of the the source node port that sent the state data.
+ * @param newState a State object containing both a data payload and an lm.
+ *
+ * @return getter returns the current input port state state.
+ *         setter returns the current context
+ *
+ * Usage to retrieve state:
+ *  inputState(component, vnid) : {portName: currentState, addressablePortName: [currentState]}
+ *  inputState(component, vnid, portName) : currentState
+ *  TODO inputState(component, vnid, addressablePortName) : [currentState]
+ *  TODO inputState(component, vnid, addressablePortName, socketIndex) : currentState
+ *  TODO inputState(component, vnid, addressablePortName, sourceNodeName, sourcePortName) : currentState
+ * Usage to store state:
+ *  inputState(component, vnid, {portName: currentState, addressablePortName: [currentState]}) : this
+ *  inputState(component, vnid, portName, state) : this
+ *  TODO inputState(component, vnid, addressablePortName, [state]) : this
+ *  TODO inputState(component, vnid, addressablePortName, socketIndex, state) : this
+ *  TODO inputState(component, vnid, addressablePortName, sourceNodeName, sourcePortName, state) : this
+ */ 
+module.exports = function(component, vnid, inportName, sourceNodeName, sourcePortName, newState) {
+    if (!component.inPorts || !component.outPorts) throw Error("This isn't a Component");
+    else if (!_.isString(vnid)) throw Error("Invalid vnid: " + vnid);
+    else if (_.isString(inportName) && !component.inPorts[inportName])
+        throw Error("Invalid port name: " + inportName);
+    var delegate = chooseForm(arguments);
+    return delegate.apply(this, arguments);
+}
 
 /**
- * Get the index to the state in the input states array if it exists already
- * 
- * @param portInfo an object that describes the port(s) associated with the data
- *
- * @return an integer index into the inputStates array if a state is found or -1 if no state was found.
+ * Higher level function to choose which dispatch function should be called.
+ * @param component a Component or a component facade
+ * @param args the arguments to inputState function call
  */
-function getStateIndex( portInfo ) { 
+function chooseForm(args){
+    var string = _.isString(args[2]);
+    var addressable = string && args[0].inPorts[args[2]].isAddressable();
+    var finite = _.isFinite(args[3]);
+    var array = _.isArray(args[3]);
+    switch (args.length) {
+        case 2: return getAllPortStates;
+        case 3: return addressable ? getPortStateArray :
+            string ? getPortState : setAllPortStates;
+        case 4: return array ? setPortStateArray :
+            finite ? getPortStateIndex : setPortState;
+        case 5: return finite ? setPortStateIndex : getPortStateEntry;
+        case 6: return setPortStateEntry;
+        default: throw Error("Unknown set of " + args.length + " args");
+    }
+}
 
-    var portSourceNodeName = portInfo.sourceNodeName || '';
-    var portSourcePortName = portInfo.sourcePortName || '';
-
-    return _.findIndex( inputStates, function(inputState) { 
-        
-        var stateSourceNodeName = inputState.sourceNodeName || '';
-        var stateSourcePortName = inputState.sourcePortName || '';
-
-        return ( portInfo.inportName === inputState.inportName &&
-                 portSourceNodeName === stateSourceNodeName &&
-                 portSourcePortName === stateSourcePortName );
+/**
+ * Returns a hash of port names to port states or array of states if the port is
+ * addressable. This provides the caller with all portNames, distingishes between
+ * addressable and non-addressable ports, and provides the caller with all their
+ * states that will be useful when calling an updater.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ */
+function getAllPortStates(component, vnid) {
+    var inPorts = _.pick(component.inPorts, isPort);
+    return _.mapObject(inPorts, function(port, portName){
+        return getPortState(component, vnid, portName);
     });
 }
 
-
-function insertAtIndex( portInfo ) { 
-
-    var portSourceNodeName = portInfo.sourceNodeName || '';
-    var portSourcePortName = portInfo.sourcePortName || '';
-
-    for ( var i=0, max=inputStates.length; i < max; i++ ) { 
-  
-        var inputState = inputStates[i];
-        var stateSourceNodeName = inputState.sourceNodeName || '';
-        var stateSourcePortName = inputState.sourcePortName || '';
-
-        if ( portInfo.inportName <= inputState.inportName &&
-             portSourceNodeName <= stateSourceNodeName &&
-             portSourcePortName <= stateSourcePortName ) {
-             
-             return i;
-        }
-    }
-
-    // Never found a greater value so we'll insert onto the end of the inputStates array
-    return inputStates.length;
-}
-
-function isIip( portInputType ) { 
-    return portInputType === InputType.IIP;
-}
-
-function isPacket( portInputType ) { 
-    return portInputType === InputType.PACKET;
+/**
+ * Returns the state of the port or an array of states, if the port is
+ * addressable. When all the port states are not need this is a convient way to
+ * retrieve just the port state that is needed.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName the InPort name on this component 
+ */
+function getPortState(component, vnid, portName) {
+    var port = component.inPorts[portName];
+    if (port.isAddressable()) return getPortStateArray(component, vnid, portName);
+    else if (component.vnis && component.vnis[vnid] && component.vnis[vnid][portName])
+        return component.vnis[vnid][portName];
+    else if (vnid) return getPortState(component, '', portName);
+    else return undefined;
 }
 
 /**
- * Validates we have good portInfo and determines whether portInfo is for an IIP input
- * or a packet input. 
- *
- * @param portInfo a port info object
- * 
- * @return the state type (InputType.IIP or InputType.Packet) depending on which kind of 
- *         portInfo was received.  
- * @throws an error if the portInfo is not valid.
+ * Returns an array of the port states, one item for each attached socket. When
+ * all the port states are not need this is a convient way to
+ * retrieve just the port state that is needed.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName the InPort name on this component 
  */
-function verifyPortInfoType( portInfo ) { 
-
-    if ( _.isEmpty( portInfo ) ) { 
-        throw new Error("Invalid input state information - no input port name found!");
-    }
-
-    var keys = _.keys( portInfo );
-    switch ( keys.length ) { 
-
-        case 1: { 
-            if (keys[0] === 'inportName' ) {
-                return InputType.IIP;
-            }
-            throw new Error("Invalid input state IIP port information specified!");
-        }
-
-        case 3: { 
-            // Make sure we really have the 3 portInfo keys we want, and not 3 other keys 
-            var lookupKeys = _.pick( portInfo, ALL_PORTINFO_KEYS ); 
-            if ( lookupKeys && _.keys( lookupKeys ).length === 3  ) {
-               return InputType.PACKET;
-            }
-            throw new Error("Invalid input state packet port information specified!");
-        }
-
-        default: {
-            throw new Error("Invalid input state port information found!");
-        }
-    }
+function getPortStateArray(component, vnid, portName) {
+    var port = component.inPorts[portName];
+    var state = component.vnis && component.vnis[vnid] && component.vnis[vnid][portName];
+    if (!isAddressablePort(port)) throw Error("This port is not addressable: " + portName);
+    else if (!_.isArray(state)) return [];
+    else return port.listAttached().map(function(socketIndex){
+        return getPortStateIndex(component, vnid, portName, socketIndex);
+    });
 }
 
-module.exports = { 
+/**
+ * Returns the state of this port for an identified socket. This can be used to
+ * look up the last state when checking to see if the state has changed.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName the name of the addressable port for this component
+ * @param sourceNode the upstream component nodeId
+ * @param sourcePort the upstream component port name
+ */
+function getPortStateEntry(component, vnid, portName, sourceNode, sourcePort) {
+    if (!isAddressablePort(component.inPorts[portName]))
+        throw Error("This port is not addressable: " + portName);
+    var socketIndex = findSocketIndex(component, portName, sourceNode, sourcePort);
+    return getPortStateIndex(component, vnid, portName, socketIndex);
+}
 
-    /** 
-     * count the number of input states for the specified port.  This will count
-     * any state associated with the portname - both IIP and packet input states.
-     *
-     * @param portName name of port 
-     *
-     * @return the number of input states associated with that port.
-     */
-    count: function( portName ) { 
-        var states = _.where( inputStates, { inportName: portName } );
-        return ( _.isEmpty( states ) ? 0 : states.length );
-    },
+/**
+ * Returns the state of this port for the given socketIndex. This can be used to
+ * look up the last state when checking to see if the state has changed.
+ * Note that the socketIndex is not neccessarily the same as the array index
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName the name of the addressable port for this component
+ * @param socketIndex the socketIndex (or socketId) provided to a port data event
+ */
+function getPortStateIndex(component, vnid, portName, socketIndex) {
+    if (!isAddressablePort(component.inPorts[portName]))
+        throw Error("This port is not addressable: " + portName);
+    component.vnis = component.vnis || {};
+    component.vnis[vnid] = component.vnis[vnid] || {};
+    component.vnis[vnid][portName] = component.vnis[vnid][portName] || [];
+    if (component.vnis[vnid][portName].length)
+        return component.vnis[vnid][portName][socketIndex];
+    else if (vnid) return getPortStateIndex(component, '', portName, socketIndex);
+    else return undefined;
+}
 
-    /**
-     * Delete all input port states 
-     */
-    deleteAll: function() { 
-        inputStates.splice( 0, inputStates.length );
-    },
+/**
+ * Changes the state of each given port. If a port name is missing it is unmodified.
+ * This can be run in a test environment to reset the state of the ports.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portStates hash of portName to state
+ */
+function setAllPortStates(component, vnid, portStates) {
+    _.each(portStates, function(state, portName) {
+        setPortState(component, vnid, portName, state);
+    });
+    return component;
+}
 
-    /**
-     * Delete the state associated with the specified port.
-     *
-     * @param portInfo the port information for the state to retrieve.  All portInfo objects must
-     *                 have an inportName.  Optionally, if the state is from another component and
-     *                 was therefore received in a packet, the portInfo may include: 
-     *                 <ul> 
-     *                    <li> sourceNodeName (optional) name of the node that sent the new state data </li>
-     *                    <li> sourcePortName (optional) name of the the source node port that sent the state data.</li>
-     *                 </ul>
-     * @throws an error if the portInfo is not valid.
-     */
-    delete: function( portInfo ) { 
-
-        verifyPortInfoType( portInfo );
-        var index = getStateIndex( portInfo ); 
-
-        if ( index !== -1 ) { 
-            inputStates.splice(index, 1);
+/**
+ * Changes the state of a port. When a new state is received on a port this
+ * should be called.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName name of the port on this component
+ * @param state the new state to assign this port to
+ */
+function setPortState(component, vnid, portName, state) {
+    var port = component.inPorts[portName];
+    if (_.isUndefined(state)) {
+        if (component.vnis && component.vnis[vnid]) {
+            delete component.vnis[vnid][portName];
+            if (_.isEmpty(component.vnis[vnid])) {
+                delete component.vnis[vnid];
+            }
         }
- 
-        return this;
-    },
+    } else if (port.isAddressable()) {
+        return setPortStateArray(component, vnid, portName, state);
+    } else {
+        component.vnis = component.vnis || {};
+        component.vnis[vnid] = component.vnis[vnid] || {};
+        component.vnis[vnid][portName] = state;
+    }
+    return component;
+}
 
-    /** 
-     * Get all input data for the specified port.  If there are multiple inputs on this port,
-     * an array of the input data will be returned.
-     *
-     * @param portName name of port for which all state data should be retrieved
-     *
-     * @return all port data associated with the portName
-     */
-    getData: function( portName ) { 
+/**
+ * Changes the states of a port.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName name of the port on this component
+ * @param stateArray a list of states for every attached socket on this port
+ */
+function setPortStateArray(component, vnid, portName, stateArray) {
+    var port = component.inPorts[portName];
+    if (!isAddressablePort(port))
+        throw Error("This port is not addressable: " + portName);
+    port.listAttached().forEach(function(socketIndex, i) {
+        setPortStateIndex(component, vnid, portName, socketIndex, stateArray[i]);
+    }, []);
+    return component;
+}
 
-        var states = _.pluck( _.where( inputStates, { inportName: portName } ), 'state' );
+/**
+ * Changes the state of a addressable port socket. This is useful for testing
+ * as it looks up the socketIndex from the upstream component name and port.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName name of the port on this component
+ * @param sourceNode the upstream component name
+ * @param sourcePort the upstream component port name attached to this port
+ * @param state the new state of this port socket
+ */
+function setPortStateEntry(component, vnid, portName, sourceNode, sourcePort, state) {
+    if (!isAddressablePort(component.inPorts[portName]))
+        throw Error("This port is not addressable: " + portName);
+    var socketIndex = findSocketIndex(component, portName, sourceNode, sourcePort);
+    return setPortStateIndex(component, vnid, portName, socketIndex, state);
+}
 
-        if ( _.isEmpty( states ) ) { 
-            return {};
-        } 
-
-        if ( states.length === 1 ) { 
-            return states[0].data;
+/**
+ * Changes the state of a addressable port socket. When a new state is received
+ * on a port this should be called.
+ * @param component a Component or a component facade
+ * @param vnid an identifier that distinguishes the set of states
+ * @param portName name of the port on this component
+ * @param socketIndex the socketIndex (or socketId) pass to the data event handler
+ * @param state the new state of this port socket
+ */
+function setPortStateIndex(component, vnid, portName, socketIndex, state) {
+    if (!isAddressablePort(component.inPorts[portName]))
+        throw Error("This port is not addressable: " + portName);
+    component.vnis = component.vnis || {};
+    component.vnis[vnid] = component.vnis[vnid] || {};
+    component.vnis[vnid][portName] = component.vnis[vnid][portName] || [];
+    component.vnis[vnid][portName][socketIndex] = state;
+    if (_.isUndefined(state) && !_.compact(component.vnis[vnid][portName]).length) {
+        delete component.vnis[vnid][portName];
+        if (_.isEmpty(component.vnis[vnid])) {
+            delete component.vnis[vnid];
         }
+    }
+    return component;
+}
 
-        return _.pluck( states, 'data' ); 
-    },
+/**
+ * Checks that the given object is an addressable port. This is used to validate
+ * that a given portName is actually addressable to fail fast otherwise.
+ * @param component a Component or a component facade
+ * @param port a noflo.InPort or a facade.
+ */
+function isAddressablePort(port) {
+    return isPort(port) && port.isAddressable();
+}
 
-    /**
-     * Finds and returns the input state associated with the port if it exists.
-     *
-     * @param portInfo the port information for the state to retrieve.  All portInfo objects must
-     *                 have an inportName.  Optionally, if the state is from another component and
-     *                 was therefore received in a packet, the portInfo may include: 
-     *                 <ul> 
-     *                    <li> sourceNodeName (optional) name of the node that sent the new state data </li>
-     *                    <li> sourcePortName (optional) name of the the source node port that sent the state data.</li>
-     *                 </ul>
-     *
-     * @return returns the current input port state state.
-     * @throws an error if the portInfo is not valid.
-     */ 
-   get: function( portInfo ) { 
+/**
+ * Checks that the given object is a port or a port facade. Noflo does not provide
+ * a list of available port in a component and this allows the caller to remove
+ * other properties and functions that are on the inPorts objects.
+ * @param port a noflo.InPort or a facade.
+ */
+function isPort(port) {
+    return _.isFunction(port.isAddressable);
+}
 
-       verifyPortInfoType( portInfo );
-       var index = getStateIndex( portInfo ); 
-
-       if ( index !== -1 ) { 
-           return inputStates[index].state;
-       }
-
-       return;
-   },
-
-
-   /**
-    * Sets the input state for a port.  If the state already exists, it is simply updated.  If the 
-    * state does not yet exist, it will be created.
-    *
-    * @param portInfo the port information for the state to retrieve.  All portInfo objects must
-    *                 have an inportName.  Optionally, if the state is from another component and
-    *                 was therefore received in a packet, the portInfo may include: 
-    *                 <ul> 
-    *                    <li> sourceNodeName (optional) name of the node that sent the new state data </li>
-    *                    <li> sourcePortName (optional) name of the the source node port that sent the state data.</li>
-    *                 </ul>
-    * @param newState a state object 
-    *
-    * @return the current context 
-    */ 
-   set: function( portInfo, newState ) { 
-  
-       var portInputType = verifyPortInfoType( portInfo );
-       var index = getStateIndex( portInfo ); 
-
-       if ( index === -1 ) { 
-           // no state exists - create a new one
-           if ( isIip( portInputType ) ) { 
-               inputStates.splice( insertAtIndex( portInfo ), 0, 
-                                   { inportName: portInfo.inportName,
-                                     state: newState });
-
-           } else if ( isPacket( portInputType ) ) {
-               inputStates.splice( insertAtIndex( portInfo ), 0, 
-                                   { inportName: portInfo.inportName, 
-                                     sourceNodeName: portInfo.sourceNodeName,
-                                     sourcePortName: portInfo.sourcePortName,
-                                     state: newState } );
-           } else {
-               throw new Error('Unknown input port type');
-           }
-
-       } else { 
-          // state exists so just update the state data
-          inputStates[index].state = newState;
-       }
-
-       // console.log('set exiting with inputStates: ',inputStates);
-       return this;
-   }
-
-};
+/**
+ * Given the source Component node name and source OutPort name, returns the
+ * socketIndex (aka socketId) of the addressable InPort with the name portName.
+ * This maps the sourceNode/sourcePort to socketIndex to allow either form to be
+ * used in a seamless way.
+ * @param component a Component or a component facade
+ * @param portName the addressable InPort of this component
+ * @param sourceNode the node name of the upstream component
+ * @param sourcePort the OutPort name of the upstream component's port
+ */
+function findSocketIndex(component, portName, sourceNode, sourcePort) {
+    var port = component.inPorts[portName];
+    var socketIndex = _.find(port.listAttached(), function(socketIndex) {
+        return port.getComponentPortNameOn(socketIndex) == sourcePort &&
+            port.getComponentIdOn(socketIndex) == sourceNode;
+    });
+    if (socketIndex < 0 || socketIndex == null)
+        throw Error("No attached socket for " + sourceNode + "." + sourcePort);
+    return socketIndex;
+}
