@@ -28,32 +28,6 @@ describe('noflo-component-factory', function() {
             test.sendData(component, 'input', "hello");
         }).should.become("hello");
     });
-    it("should behave like an EventEmitter", function() {
-        return new Promise(function(done, fail){
-            var handler = function(payload){
-                done(payload + ' ' + this.name);
-            };
-            var component = test.createComponent(componentFactory({
-                inPorts:{
-                    input1:{
-                        ondata: function(payload) {
-                            this.on('change', fail);
-                            this.removeListener('change', fail);
-                            this.on('change', handler);
-                        }
-                    },
-                    input2:{
-                        ondata: function(payload) {
-                            this.on('change', handler);
-                            this.emit('change', payload);
-                        }
-                    }
-                }
-            }));
-            test.sendData(component, 'input1', "hi");
-            test.sendData(component, 'input2', "hello");
-        }).should.become("hello input2");
-    });
     it("should have name property", function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
@@ -68,14 +42,13 @@ describe('noflo-component-factory', function() {
             test.sendData(component, 'input', "hello");
         }).should.become("input");
     });
-    it("should have isAddressable() function", function() {
+    it("should have isRequired() function", function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
                     input:{
-                        description: "World",
                         ondata: function(payload) {
-                            done(payload + ' ' + this.isAddressable());
+                            done(payload + ' ' + this.isRequired());
                         }
                     }
                 }
