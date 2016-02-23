@@ -34,7 +34,15 @@ function facadePort(nodeInstance, port, name) {
     return _.extend({
         name: name,
         nodeInstance: nodeInstance,
-        isMulti: port.isAddressable.bind(port)
+        isMulti: port.isAddressable.bind(port),
+        getComponentIdOn: function(socketIndex) {
+            if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
+                return port.sockets[socketIndex].from.process.id;
+        },
+        getComponentPortNameOn: function(socketIndex) {
+            if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
+                return port.sockets[socketIndex].from.port;
+        }
     }, facadeFunctions(port,
         'isAddressable',
         'isRequired',
