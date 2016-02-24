@@ -38,6 +38,9 @@ function facadePort(nodeInstance, port, name) {
         isRequired: port.isRequired.bind(port),
         listAttached: port.listAttached.bind(port),
         getComponentIdOn: function(socketIndex) {
+            return this.getComponentNameOn(socketIndex);
+        },
+        getComponentNameOn: function(socketIndex) {
             if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
                 return port.sockets[socketIndex].from.process.id;
         },
