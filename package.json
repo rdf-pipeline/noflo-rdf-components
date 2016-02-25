@@ -29,11 +29,14 @@
     "noflo-webserver": "0.0.4"
   },
   "dependencies": {
+    "bluebird": "~3.3.1",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
     "jsonpointer":"~3.0.0",
+    "jsonpath-plus":"~0.14.0",
     "media-typer": "^0.3.0",
     "noflo": "~0.5.14",
+    "n3": "~0.4.5",
     "open": "~0.0.5",
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
@@ -43,17 +46,23 @@
   },
   "noflo": {
     "components": {
+      "extract-chcs-medications": "./components/extract-chcs-medications.js",
+      "extract-chcs-patients": "./components/extract-chcs-patients.js",
+      "fhir-to-xml": "./components/fhir-to-xml.js",
+      "file-node": "./components/file-node.js",
+      "html-2-objects-compare": "./components/html-2-objects-compare.js",
+      "http-accept": "./components/http-accept.js",
+      "json-file-node": "./components/json-file-node.js",
+      "js-node": "./components/js-node.js",
+      "patient-demographics-chcs2fhir": "./components/patient-demographics-chcs2fhir.js",
+      "patient-medications-chcs2fhir": "./components/patient-medications-chcs2fhir.js",
       "request-template": "./components/request-template.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
-      "html-2-objects-compare": "./components/html-2-objects-compare.js",
-      "http-accept": "./components/http-accept.js",
       "round-robin": "./components/round-robin.js",
-      "file-node": "./components/file-node.js",
-      "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "shex-chcs-to-rdf": "./components/shex-chcs-to-rdf.js"
     }
   }
 }
