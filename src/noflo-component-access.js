@@ -19,6 +19,8 @@ function facadeComponent(component) {
         return component._noflo_access_facade;
     var facade = {};
     _.extend(facade, {
+        name: component.name,
+        nodeId: this.process.id,
         inPorts: _.mapObject(_.pick(component.inPorts, isInPort), facadePort.bind(this, facade)),
         outPorts: _.mapObject(_.pick(component.outPorts, isOutPort), facadePort.bind(this, facade))
     }, facadeEventEmitter(component));
