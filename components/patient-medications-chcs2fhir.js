@@ -22,11 +22,10 @@ exports.getComponent = jswrapper({
 
     updater: function( medications ) {  
 
-       console.log('enter patient-medications-chcs2fhir updater');
        try {
 
            var fhirMedsTranslations = medications.map(translate.translate_medication_fhir);
-           return fhirMedsTranslations;
+           return _.pluck( fhirMedsTranslations, 'fhir');
 
        } catch (e) {
            console.log('Translation exception: '+e.message);
