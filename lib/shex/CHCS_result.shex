@@ -1,0 +1,21 @@
+PREFIX chcs: <http://hokukahu.com/schema/chcss#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX map: <http://shex.io/extensions/Map/#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX fm: <http://hokukahu.com/map/>
+BASE <http://hokukahu.com/shapes/>
+
+start = <result>
+
+<result> { # <11_07-3618_9999999.836399_000007>
+  a                                     [chcs:11_07],
+  ^chcs:result-63_04 {
+    chcs:identifier                     LITERAL  %map:{ fm:order.identifier %},       # "63-000007"
+  },
+  chcs:test-11_07 {
+    rdfs:label                          LITERAL  %map:{ fm:Observation.code %} },     # <77-2345> "INPROCESSING ABO"
+  chcs:lab_method-11_07 {
+    rdfs:label                          LITERAL  %map:{ fm:Observation.code2 %} },    # portable code <8710-2036> "INPROCESSING ABO ONLY"
+  chcs:enter_date_time-11_07            LITERAL  %map:{ fm:diagRpt.issued %}          # "1990-01-01T10:54:04"^^xsd:dateTime
+}
+
