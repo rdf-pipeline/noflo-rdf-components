@@ -16,17 +16,17 @@ exports.getComponent = jswrapper({
     description: "converts CHCS patient data to RDF",
 
     inPorts: { 
-        chcs_path: { 
-            datatype: 'string',
-            description: "a CHCS patient data file",
+        chcs: { 
+            datatype: 'object',
+            description: "a CHCS patient data",
             required: true
         }
     },
 
-    updater: function( chcs_path ) {  
+    updater: function( chcs ) {  
 
-console.log('updater');
-        var chcs = require(chcs_path);
+console.log('\nshex-chcs-to-rdf updater');
+        // var chcs = require(chcs_path);
 	chcs["@context"] = graphContext["@context"];
         duplicateScalars(chcs, ["id", "_id"], "identifier");
 
@@ -48,7 +48,6 @@ console.log('updater');
                 });
             });
         }).then(function (store) {
-
            // Promise to store the patient input graph
            return Promise.all([
                store, // graph,
@@ -72,11 +71,10 @@ console.log('updater');
                })})
 
            ]).spread(function (store, inGraph, outGraph) {
-             
              // Apply ShEx 
              return shexiface.ShExMapPerson(store, inGraph, outGraph).then(function () {
-               // console.log(outGraph.toNT());
-               return "Bonjour!";  // outGraph.toNT();
+               console.log(outGraph.toNT());
+               return outGraph.toNT();
 
              });
            });
