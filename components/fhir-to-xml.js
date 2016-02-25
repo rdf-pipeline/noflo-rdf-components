@@ -5,7 +5,7 @@
 var _ = require('underscore');
 
 var jswrapper = require('../src/javascript-wrapper');
-var fhir2xml = require('../../FHIR-JSON-to-XML-Converter/FHIR JSON to XML Converter/dist/fhir-convert');
+var fhir2xml = require('../../FHIR-JSON-to-XML-Converter/FHIR JSON to XML Converter/dist/node-fhir-convert');
 
 exports.getComponent = jswrapper({
 
@@ -22,12 +22,17 @@ exports.getComponent = jswrapper({
 
     updater: function( fhir ) {  
 
-       console.log('enter fhir-to-xml updater');
-
        var fhirJsonToXml = new fhir2xml.FHIRConverter();
-       var xml = fhirJsonToXml.toXML( fhir );
 
-       console.log('xml: ',xml);
-       return xml;
+       var xml;
+       if ( _.isArray( fhir )) { 
+          xml = _.map( fhir, function( obj ) {
+               return fhirJsonToXml.toXML( obj );
+          });
+       } else { 
+          xml = fhirJsonToXml.toXML( fhir );
+       }
+
+       return xml.toString();
     }
 });
