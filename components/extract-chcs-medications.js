@@ -31,11 +31,9 @@ exports.getComponent = jswrapper({
      */
     updater: function( chcs ) {   
 
-console.log('enter extract-chcs-medications');
         var graph = chcs["@graph"];
         var pattern = chcs_types.chcss_json_pattern;
         var chcss = chcs_types.chcss;
-        var medications = JSONPath(pattern(chcss.Medication), chcs);
-        return medications; 
+        return JSONPath(pattern(chcss.Medication), chcs);
     }  
 });
