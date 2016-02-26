@@ -10,7 +10,7 @@ var noflo = require('noflo');
 var componentFactory = require('../src/noflo-component-factory.js');
 var test = require('./common-test');
 
-describe('noflo-node-factory', function() {
+describe('noflo-component-factory', function() {
     it("should reject undefined definition", function() {
         return Promise.resolve().then(componentFactory).should.be.rejected;
     });
@@ -100,10 +100,8 @@ describe('noflo-node-factory', function() {
                     }
                 }
             }));
-            var output = noflo.internalSocket.createSocket();
-            node.outPorts.output.attach(output);
+            test.onOutPortData(node, 'output', _.noop);
             test.sendData(node, 'input', "hello");
-            node.outPorts.output.detach(output);
         }).should.be.fulfilled;
     });
     it("should include socketIndex in ondata function", function() {
