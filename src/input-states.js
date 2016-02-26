@@ -280,8 +280,8 @@ function isPort(port) {
 function findSocketIndex(component, portName, sourceNode, sourcePort) {
     var port = component.inPorts[portName];
     var socketIndex = _.find(port.listAttached(), function(socketIndex) {
-        return port.getComponentPortNameOn(socketIndex) == sourcePort &&
-            port.getComponentIdOn(socketIndex) == sourceNode;
+        return port.getSourcePortNameOn(socketIndex) == sourcePort &&
+            port.getSourceIdOn(socketIndex) == sourceNode;
     });
     if (socketIndex < 0 || socketIndex == null)
         throw Error("No attached socket for " + sourceNode + "." + sourcePort);

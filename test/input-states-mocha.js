@@ -9,7 +9,6 @@ var should = chai.should();
 
 var _ = require('underscore');
 var componentFactory = require('../src/noflo-component-factory');
-var access = require('../src/noflo-component-access');
 var test = require('./common-test');
 var inputStates = require('../src/input-states');
 var createLm = require('../src/create-lm');
@@ -18,52 +17,50 @@ describe('input-states', function() {
     var component, network;
     var oninput, onoutput;
     beforeEach(function(){
-        var getComponent = function() {
-            var factory = componentFactory({
-                inPorts:{
-                    input:{
-                        ondata: function(payload) {
-                            oninput(payload);
-                        }
-                    },
-                    input1:{
-                        ondata: function(payload) {
-                            oninput(payload);
-                        }
-                    },
-                    input2:{
-                        ondata: function(payload) {
-                            oninput(payload);
-                        }
-                    },
-                    input3:{
-                        ondata: function(payload) {
-                            oninput(payload);
-                        }
-                    },
-                    inputa:{
-                        addressable: true,
-                        ondata: function(payload) {
-                            oninput(payload);
-                        }
-                    },
-                    inputb:{
-                        addressable: true,
-                        ondata: function(payload) {
-                            oninput(payload);
-                        }
+        var getComponent = componentFactory({
+            inPorts:{
+                input:{
+                    ondata: function(payload) {
+                        oninput(payload);
                     }
                 },
-                outPorts:{
-                    output:{
-                        ondata: function(payload) {
-                            onoutput(payload);
-                        }
+                input1:{
+                    ondata: function(payload) {
+                        oninput(payload);
+                    }
+                },
+                input2:{
+                    ondata: function(payload) {
+                        oninput(payload);
+                    }
+                },
+                input3:{
+                    ondata: function(payload) {
+                        oninput(payload);
+                    }
+                },
+                inputa:{
+                    addressable: true,
+                    ondata: function(payload) {
+                        oninput(payload);
+                    }
+                },
+                inputb:{
+                    addressable: true,
+                    ondata: function(payload) {
+                        oninput(payload);
                     }
                 }
-            });
-            var component = factory();
-            var facade = access(component);
+            },
+            outPorts:{
+                output:{
+                    ondata: function(payload) {
+                        onoutput(payload);
+                    }
+                }
+            }
+        }, function(facade){
+            component = facade;
             _.extend(facade, {
                 vni: function(vnid) {
                     return {
@@ -71,8 +68,7 @@ describe('input-states', function() {
                     };
                 }
             });
-            return component;
-        };
+        });
         oninput = onoutput = _.noop;
         return test.createNetwork({
             upstream1: {
@@ -102,7 +98,6 @@ describe('input-states', function() {
             return network;
         }).then(function(nw){
             network = nw;
-            component = access(nw.processes.test.component);
         });
     });
     afterEach(function(){
