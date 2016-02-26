@@ -30,7 +30,7 @@ var access = require('./noflo-component-access');
  */
 module.exports = function(nodeDef, callback){
     if (!nodeDef) throw Error("No parameter");
-    return function() {
+    return function(metadata) {
         // noflo requires each port and nodeInstance to have its own options object
         var node = new noflo.Component({
             outPorts: _.mapObject(nodeDef.outPorts, _.clone),
@@ -44,7 +44,10 @@ module.exports = function(nodeDef, callback){
         node.description = nodeDef.description;
         node.setIcon(nodeDef.icon);
         if (_.isFunction(callback)) {
-            callback(facade, node);
+            callback.call(node, facade);
+        }
+        if (metadata && _.isFunction(metadata.facade)) {
+            metadata.facade.call(node, facade);
         }
         return node;
     };

@@ -43,9 +43,20 @@ module.exports = {
         });
     },
 
-    createComponent: function(getComponent) {
+    createComponent: function(factory) {
 
-        var component = getComponent();
+        var node;
+        var metadata = {
+            facade: function(facade) {
+                node = facade;
+            }
+        };
+        var getComponent = _.isFunction(factory) ? factory : factory.getComponent;
+        var component = getComponent(metadata);
+
+        if (node) {
+            node._component_under_test = component;
+        }
 
         _.forEach(component.inPorts, function(port, name) {
             port.nodeInstance = component;
@@ -57,10 +68,11 @@ module.exports = {
             port.name = name;
         });
 
-        return component;
+        return node ? node : component;
     },
 
-    sendData: function(component, port, payload) {
+    sendData: function(node, port, payload) {
+        var component = node._component_under_test ? node._component_under_test : node;
 
         var socket = noflo.internalSocket.createSocket();
         component.inPorts[port].attach(socket);
@@ -69,5 +81,12 @@ module.exports = {
         socket.disconnect();
 
         component.inPorts[port].detach(socket);
-   }
+   },
+
+    onOutPortData: function(node, portName, handler) {
+        var component = node._component_under_test ? node._component_under_test : node;
+        var socket = noflo.internalSocket.createSocket();
+        component.outPorts[portName].attach(socket);
+        socket.on('data', handler.bind(node.outPorts[portName]));
+    }
 };
