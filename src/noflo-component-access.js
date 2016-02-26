@@ -7,22 +7,24 @@ module.exports = facadeComponent;
 
 /**
  * Create a noflo.Component facade from a given component. Access to the component
- * is limited to only select properties and functions. An rpf hash property is
- * also present for arbitrary assignments and is shared for all facades of the
- * same Component instance.
- * This facade mimic the main usage of http://noflojs.org/api/Component.html
+ * is limited to only select properties and functions.
+ * This facade mimic some of the main usage of http://noflojs.org/api/Component.html
  * Usage:
  *  var component = componentAccess(new noflo.Component());
  */
 function facadeComponent(component) {
-    if (component._noflo_access_facade)
-        return component._noflo_access_facade;
-    var facade = {};
-    _.extend(facade, {
+    var facade = {
+        get nodeId() {
+            return component.nodeId;
+        },
+        get componentName() {
+            return component.componentName;
+        }
+    };
+    return _.extend(facade, {
         inPorts: _.mapObject(_.pick(component.inPorts, isInPort), facadePort.bind(this, facade)),
         outPorts: _.mapObject(_.pick(component.outPorts, isOutPort), facadePort.bind(this, facade))
     });
-    return component._noflo_access_facade = facade;
 }
 
 /**
@@ -37,14 +39,11 @@ function facadePort(nodeInstance, port, name) {
         isMulti: port.isAddressable.bind(port),
         isRequired: port.isRequired.bind(port),
         listAttached: port.listAttached.bind(port),
-        getComponentIdOn: function(socketIndex) {
-            return this.getComponentNameOn(socketIndex);
-        },
-        getComponentNameOn: function(socketIndex) {
+        getSourceIdOn: function(socketIndex) {
             if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
                 return port.sockets[socketIndex].from.process.id;
         },
-        getComponentPortNameOn: function(socketIndex) {
+        getSourcePortNameOn: function(socketIndex) {
             if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
                 return port.sockets[socketIndex].from.port;
         }

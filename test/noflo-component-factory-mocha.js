@@ -60,14 +60,14 @@ describe('noflo-component-factory', function() {
         return new Promise(function(done){
             var component = test.createComponent(componentFactory({
                 inPorts:{
-                    'input1':{
+                    input1:{
                         ondata: function(payload) {
                             if (this.nodeInstance.payload)
                                 done(this.nodeInstance.payload + ' ' + payload);
                             else this.nodeInstance.payload = payload;
                         }
                     },
-                    'input2':{
+                    input2:{
                         ondata: function(payload) {
                             if (this.nodeInstance.payload)
                                 done(this.nodeInstance.payload + ' ' + payload);
@@ -93,7 +93,7 @@ describe('noflo-component-factory', function() {
                     }
                 },
                 outPorts:{
-                    'output':{
+                    output:{
                         ondata: function(payload) {
                             done(payload);
                         }
@@ -120,5 +120,53 @@ describe('noflo-component-factory', function() {
             }));
             test.sendData(component, 'input', "zero");
         }).should.become(0);
+    });
+    it("should has a nodeId", function() {
+        var component;
+        var instanceId = "testinstance";
+        var factoryId = "testfactory";
+        var factory = componentFactory({}, function(facade, comp){
+            component = facade;
+        });
+        var graph = new noflo.Graph();
+        graph.addNode(instanceId, factoryId);
+        return new Promise(function(resolve, reject){
+            noflo.createNetwork(graph, function(err, network) {
+                if (err instanceof noflo.Network) network = err;
+                else if (err) return reject(err);
+                network.loader.components[factoryId] = factory;
+                network.connect(function(err){
+                    if (err) return reject(err);
+                    network.start();
+                    resolve(network);
+                });
+            }, true);
+        }).then(function(network){
+            return component.nodeId;
+        }).should.eventually.eql(instanceId);
+    });
+    it("should has a componentName", function() {
+        var component;
+        var instanceId = "testinstance";
+        var factoryId = "testfactory";
+        var factory = componentFactory({}, function(facade, comp){
+            component = facade;
+        });
+        var graph = new noflo.Graph();
+        graph.addNode(instanceId, factoryId);
+        return new Promise(function(resolve, reject){
+            noflo.createNetwork(graph, function(err, network) {
+                if (err instanceof noflo.Network) network = err;
+                else if (err) return reject(err);
+                network.loader.components[factoryId] = factory;
+                network.connect(function(err){
+                    if (err) return reject(err);
+                    network.start();
+                    resolve(network);
+                });
+            }, true);
+        }).then(function(network){
+            return component.componentName;
+        }).should.eventually.eql(factoryId);
     });
 });
