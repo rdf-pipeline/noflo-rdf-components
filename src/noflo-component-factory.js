@@ -32,21 +32,21 @@ module.exports = function(nodeDef, callback){
     if (!nodeDef) throw Error("No parameter");
     return function() {
         // noflo requires each port and nodeInstance to have its own options object
-        var component = new noflo.Component({
+        var node = new noflo.Component({
             outPorts: _.mapObject(nodeDef.outPorts, _.clone),
             inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
-        triggerPortDataEvents(component.outPorts);
-        var facade = access(component);
-        registerPorts(component.outPorts, facade.outPorts, nodeDef.outPorts);
-        registerPorts(component.inPorts, facade.inPorts, nodeDef.inPorts);
-        registerListeners(component, facade, nodeDef);
-        component.description = nodeDef.description;
-        component.setIcon(nodeDef.icon);
+        triggerPortDataEvents(node.outPorts);
+        var facade = access(node);
+        registerPorts(node.outPorts, facade.outPorts, nodeDef.outPorts);
+        registerPorts(node.inPorts, facade.inPorts, nodeDef.inPorts);
+        registerListeners(node, facade, nodeDef);
+        node.description = nodeDef.description;
+        node.setIcon(nodeDef.icon);
         if (_.isFunction(callback)) {
-            callback(facade, component);
+            callback(facade, node);
         }
-        return component;
+        return node;
     };
 };
 
