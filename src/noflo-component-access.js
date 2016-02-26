@@ -14,7 +14,7 @@ module.exports = facadeComponent;
  */
 function facadeComponent(component) {
     var facade = {
-        get nodeId() {
+        get nodeName() {
             return component.nodeId;
         },
         get componentName() {
@@ -38,15 +38,7 @@ function facadePort(nodeInstance, port, name) {
         nodeInstance: nodeInstance,
         isMulti: port.isAddressable.bind(port),
         isRequired: port.isRequired.bind(port),
-        listAttached: port.listAttached.bind(port),
-        getSourceIdOn: function(socketIndex) {
-            if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
-                return port.sockets[socketIndex].from.process.id;
-        },
-        getSourcePortNameOn: function(socketIndex) {
-            if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
-                return port.sockets[socketIndex].from.port;
-        }
+        listAttached: port.listAttached.bind(port)
     }, isOutPort(port) ? {
         connect: port.connect.bind(port),
         send: port.send.bind(port),
