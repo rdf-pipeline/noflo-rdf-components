@@ -6,9 +6,9 @@ var _ = require('underscore');
  * Getter and Setter for InPort states.
  *
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param inportName name of the input port whose state is being recorded
- * @param socketIndex (optional) index of the socket
+ * @param socketId (optional) index of the socket
  * @param sourceNodeName (optional) name of the node that sent the new state data
  * @param sourcePortName (optional) name of the the source node port that sent the state data.
  * @param newState a State object containing both a data payload and an lm.
@@ -19,15 +19,15 @@ var _ = require('underscore');
  * Usage to retrieve state:
  *  inputState(component, vnid) : {portName: currentState, addressablePortName: [currentState]}
  *  inputState(component, vnid, portName) : currentState
- *  TODO inputState(component, vnid, addressablePortName) : [currentState]
- *  TODO inputState(component, vnid, addressablePortName, socketIndex) : currentState
- *  TODO inputState(component, vnid, addressablePortName, sourceNodeName, sourcePortName) : currentState
+ *  inputState(component, vnid, addressablePortName) : [currentState]
+ *  inputState(component, vnid, addressablePortName, socketId) : currentState
+ *  inputState(component, vnid, addressablePortName, sourceNodeName, sourcePortName) : currentState
  * Usage to store state:
  *  inputState(component, vnid, {portName: currentState, addressablePortName: [currentState]}) : this
  *  inputState(component, vnid, portName, state) : this
- *  TODO inputState(component, vnid, addressablePortName, [state]) : this
- *  TODO inputState(component, vnid, addressablePortName, socketIndex, state) : this
- *  TODO inputState(component, vnid, addressablePortName, sourceNodeName, sourcePortName, state) : this
+ *  inputState(component, vnid, addressablePortName, [state]) : this
+ *  inputState(component, vnid, addressablePortName, socketId, state) : this
+ *  inputState(component, vnid, addressablePortName, sourceNodeName, sourcePortName, state) : this
  */ 
 module.exports = function(component, vnid, inportName, sourceNodeName, sourcePortName, newState) {
     if (!component.inPorts || !component.outPorts) throw Error("This isn't a Component");
@@ -53,8 +53,8 @@ function chooseForm(args){
         case 3: return addressable ? getPortStateArray :
             string ? getPortState : setAllPortStates;
         case 4: return array ? setPortStateArray :
-            finite ? getPortStateIndex : setPortState;
-        case 5: return finite ? setPortStateIndex : getPortStateEntry;
+            finite ? getPortStateBysocketId : setPortState;
+        case 5: return finite ? setPortStateBysocketId : getPortStateEntry;
         case 6: return setPortStateEntry;
         default: throw Error("Unknown set of " + args.length + " args");
     }
@@ -66,7 +66,7 @@ function chooseForm(args){
  * addressable/multi and non-addressable/multi ports, and provides the caller with all their
  * states that will be useful when calling an updater.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  */
 function getAllPortStates(component, vnid) {
     var inPorts = _.pick(component.inPorts, isPort);
@@ -80,14 +80,15 @@ function getAllPortStates(component, vnid) {
  * addressable/multi. When all the port states are not need this is a convient way to
  * retrieve just the port state that is needed.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName the InPort name on this component 
  */
 function getPortState(component, vnid, portName) {
     var port = component.inPorts[portName];
     if (port.isMulti()) return getPortStateArray(component, vnid, portName);
-    else if (component.vnis && component.vnis[vnid] && component.vnis[vnid][portName])
-        return component.vnis[vnid][portName];
+    else if (ensureVniStateExists(component, vnid, portName))
+        return component.vnis[vnid].inputStates[portName];
+    // By default states that come in on vnid '' apply to all VNIs
     else if (vnid) return getPortState(component, '', portName);
     else return undefined;
 }
@@ -97,16 +98,14 @@ function getPortState(component, vnid, portName) {
  * all the port states are not need this is a convient way to
  * retrieve just the port state that is needed.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName the InPort name on this component 
  */
 function getPortStateArray(component, vnid, portName) {
     var port = component.inPorts[portName];
-    var state = component.vnis && component.vnis[vnid] && component.vnis[vnid][portName];
     if (!isMultiPort(port)) throw Error("This port is not addressable/multi: " + portName);
-    else if (!_.isArray(state)) return [];
-    else return port.listAttached().map(function(socketIndex){
-        return getPortStateIndex(component, vnid, portName, socketIndex);
+    else return port.listAttached().map(function(socketId){
+        return getPortStateBysocketId(component, vnid, portName, socketId);
     });
 }
 
@@ -114,7 +113,7 @@ function getPortStateArray(component, vnid, portName) {
  * Returns the state of this port for an identified socket. This can be used to
  * look up the last state when checking to see if the state has changed.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName the name of the addressable/multi port for this component
  * @param sourceNode the upstream component nodeId
  * @param sourcePort the upstream component port name
@@ -122,28 +121,27 @@ function getPortStateArray(component, vnid, portName) {
 function getPortStateEntry(component, vnid, portName, sourceNode, sourcePort) {
     if (!isMultiPort(component.inPorts[portName]))
         throw Error("This port is not addressable/multi: " + portName);
-    var socketIndex = findSocketIndex(component, portName, sourceNode, sourcePort);
-    return getPortStateIndex(component, vnid, portName, socketIndex);
+    var socketId = findsocketId(component, portName, sourceNode, sourcePort);
+    return getPortStateBysocketId(component, vnid, portName, socketId);
 }
 
 /**
- * Returns the state of this port for the given socketIndex. This can be used to
+ * Returns the state of this port for the given socketId. This can be used to
  * look up the last state when checking to see if the state has changed.
- * Note that the socketIndex is not neccessarily the same as the array index
+ * Note that the socketId is not neccessarily the same as the array index
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName the name of the addressable/multi port for this component
- * @param socketIndex the socketIndex (or socketId) provided to a port data event
+ * @param socketId the socketId provided to a port data event
  */
-function getPortStateIndex(component, vnid, portName, socketIndex) {
+function getPortStateBysocketId(component, vnid, portName, socketId) {
     if (!isMultiPort(component.inPorts[portName]))
         throw Error("This port is not addressable/multi: " + portName);
-    component.vnis = component.vnis || {};
-    component.vnis[vnid] = component.vnis[vnid] || {};
-    component.vnis[vnid][portName] = component.vnis[vnid][portName] || [];
-    if (component.vnis[vnid][portName].length)
-        return component.vnis[vnid][portName][socketIndex];
-    else if (vnid) return getPortStateIndex(component, '', portName, socketIndex);
+    if (ensureVniStateExists(component, vnid, portName) &&
+            component.vnis[vnid].inputStates[portName][socketId])
+        return component.vnis[vnid].inputStates[portName][socketId];
+    // By default states that come in on vnid '' apply to all VNIs
+    else if (vnid) return getPortStateBysocketId(component, '', portName, socketId);
     else return undefined;
 }
 
@@ -151,7 +149,7 @@ function getPortStateIndex(component, vnid, portName, socketIndex) {
  * Changes the state of each given port. If a port name is missing it is unmodified.
  * This can be run in a test environment to reset the state of the ports.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portStates hash of portName to state
  */
 function setAllPortStates(component, vnid, portStates) {
@@ -165,25 +163,31 @@ function setAllPortStates(component, vnid, portStates) {
  * Changes the state of a port. When a new state is received on a port this
  * should be called.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this component
- * @param state the new state to assign this port to
+ * @param state the new state (or array of states if the port is multi/addressable) to assign to this port
  */
 function setPortState(component, vnid, portName, state) {
     var port = component.inPorts[portName];
     if (_.isUndefined(state)) {
-        if (component.vnis && component.vnis[vnid]) {
-            delete component.vnis[vnid][portName];
-            if (_.isEmpty(component.vnis[vnid])) {
-                delete component.vnis[vnid];
+        if (ensureVniStateExists(component, vnid, portName)) {
+            delete component.vnis[vnid].inputStates[portName];
+            if (_.isEmpty(component.vnis[vnid].inputStates)) {
+                delete component.vnis[vnid].inputStates;
+                if (_.isEmpty(component.vnis[vnid])) {
+                    delete component.vnis[vnid];
+                }
             }
         }
     } else if (port.isMulti()) {
         return setPortStateArray(component, vnid, portName, state);
     } else {
-        component.vnis = component.vnis || {};
-        component.vnis[vnid] = component.vnis[vnid] || {};
-        component.vnis[vnid][portName] = state;
+        if (!ensureVniStateExists(component, vnid, portName)) {
+            component.vnis = component.vnis || {};
+            component.vnis[vnid] = component.vnis[vnid] || {};
+            component.vnis[vnid].inputStates = component.vnis[vnid].inputStates || {};
+        }
+        component.vnis[vnid].inputStates[portName] = state;
     }
     return component;
 }
@@ -191,7 +195,7 @@ function setPortState(component, vnid, portName, state) {
 /**
  * Changes the states of a port.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this component
  * @param stateArray a list of states for every attached socket on this port
  */
@@ -199,17 +203,17 @@ function setPortStateArray(component, vnid, portName, stateArray) {
     var port = component.inPorts[portName];
     if (!isMultiPort(port))
         throw Error("This port is not addressable/multi: " + portName);
-    port.listAttached().forEach(function(socketIndex, i) {
-        setPortStateIndex(component, vnid, portName, socketIndex, stateArray[i]);
+    port.listAttached().forEach(function(socketId, i) {
+        setPortStateBysocketId(component, vnid, portName, socketId, stateArray[i]);
     }, []);
     return component;
 }
 
 /**
  * Changes the state of a addressable/multi port socket. This is useful for testing
- * as it looks up the socketIndex from the upstream component name and port.
+ * as it looks up the socketId from the upstream component name and port.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this component
  * @param sourceNode the upstream component name
  * @param sourcePort the upstream component port name attached to this port
@@ -218,31 +222,43 @@ function setPortStateArray(component, vnid, portName, stateArray) {
 function setPortStateEntry(component, vnid, portName, sourceNode, sourcePort, state) {
     if (!isMultiPort(component.inPorts[portName]))
         throw Error("This port is not addressable/multi: " + portName);
-    var socketIndex = findSocketIndex(component, portName, sourceNode, sourcePort);
-    return setPortStateIndex(component, vnid, portName, socketIndex, state);
+    var socketId = findsocketId(component, portName, sourceNode, sourcePort);
+    return setPortStateBysocketId(component, vnid, portName, socketId, state);
 }
 
 /**
  * Changes the state of a addressable/multi port socket. When a new state is received
  * on a port this should be called.
  * @param component a component facade
- * @param vnid an identifier that distinguishes the set of states
+ * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this component
- * @param socketIndex the socketIndex (or socketId) pass to the data event handler
+ * @param socketId the socketId pass to the data event handler
  * @param state the new state of this port socket
  */
-function setPortStateIndex(component, vnid, portName, socketIndex, state) {
+function setPortStateBysocketId(component, vnid, portName, socketId, state) {
     if (!isMultiPort(component.inPorts[portName]))
         throw Error("This port is not addressable/multi: " + portName);
-    component.vnis = component.vnis || {};
-    component.vnis[vnid] = component.vnis[vnid] || {};
-    component.vnis[vnid][portName] = component.vnis[vnid][portName] || [];
-    component.vnis[vnid][portName][socketIndex] = state;
-    if (_.isUndefined(state) && !_.compact(component.vnis[vnid][portName]).length) {
-        delete component.vnis[vnid][portName];
-        if (_.isEmpty(component.vnis[vnid])) {
-            delete component.vnis[vnid];
+    if (_.isUndefined(state)) {
+        if (ensureVniStateExists(component, vnid, portName)) {
+            component.vnis[vnid].inputStates[portName][socketId] = state;
+            if (!_.compact(component.vnis[vnid].inputStates[portName]).length) {
+                delete component.vnis[vnid].inputStates[portName];
+                if (_.isEmpty(component.vnis[vnid].inputStates)) {
+                    delete component.vnis[vnid].inputStates;
+                    if (_.isEmpty(component.vnis[vnid])) {
+                        delete component.vnis[vnid];
+                    }
+                }
+            }
         }
+    } else {
+        if (!ensureVniStateExists(component, vnid, portName)) {
+            component.vnis = component.vnis || {};
+            component.vnis[vnid] = component.vnis[vnid] || {};
+            component.vnis[vnid].inputStates = component.vnis[vnid].inputStates || {};
+            component.vnis[vnid].inputStates[portName] = component.vnis[vnid].inputStates[portName] || [];
+        }
+        component.vnis[vnid].inputStates[portName][socketId] = state;
     }
     return component;
 }
@@ -269,21 +285,27 @@ function isPort(port) {
 
 /**
  * Given the source Component node name and source OutPort name, returns the
- * socketIndex (aka socketId) of the addressable/multi InPort with the name portName.
- * This maps the sourceNode/sourcePort to socketIndex to allow either form to be
+ * socketId (aka socketId) of the addressable/multi InPort with the name portName.
+ * This maps the sourceNode/sourcePort to socketId to allow either form to be
  * used in a seamless way.
  * @param component a component facade
  * @param portName the addressable/multi InPort of this component
  * @param sourceNode the node name of the upstream component
  * @param sourcePort the OutPort name of the upstream component's port
  */
-function findSocketIndex(component, portName, sourceNode, sourcePort) {
+function findsocketId(component, portName, sourceNode, sourcePort) {
     var port = component.inPorts[portName];
-    var socketIndex = _.find(port.listAttached(), function(socketIndex) {
-        return port.getSourcePortNameOn(socketIndex) == sourcePort &&
-            port.getSourceIdOn(socketIndex) == sourceNode;
+    var socketId = _.find(port.listAttached(), function(socketId) {
+        return port.getSourcePortNameOn(socketId) == sourcePort &&
+            port.getSourceIdOn(socketId) == sourceNode;
     });
-    if (socketIndex < 0 || socketIndex == null)
+    if (socketId < 0 || socketId == null)
         throw Error("No attached socket for " + sourceNode + "." + sourcePort);
-    return socketIndex;
+    return socketId;
+}
+
+function ensureVniStateExists(component, vnid, portName) {
+    return component.vnis && component.vnis[vnid] &&
+        component.vnis[vnid].inputStates &&
+        component.vnis[vnid].inputStates[portName];
 }

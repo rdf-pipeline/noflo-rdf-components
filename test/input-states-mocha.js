@@ -15,49 +15,22 @@ var createLm = require('../src/create-lm');
 
 describe('input-states', function() {
     var component, network;
-    var oninput, onoutput;
     beforeEach(function(){
         var getComponent = componentFactory({
             inPorts:{
-                input:{
-                    ondata: function(payload) {
-                        oninput(payload);
-                    }
-                },
-                input1:{
-                    ondata: function(payload) {
-                        oninput(payload);
-                    }
-                },
-                input2:{
-                    ondata: function(payload) {
-                        oninput(payload);
-                    }
-                },
-                input3:{
-                    ondata: function(payload) {
-                        oninput(payload);
-                    }
-                },
+                input:{},
+                input1:{},
+                input2:{},
+                input3:{},
                 inputa:{
-                    addressable: true,
-                    ondata: function(payload) {
-                        oninput(payload);
-                    }
+                    addressable: true
                 },
                 inputb:{
-                    addressable: true,
-                    ondata: function(payload) {
-                        oninput(payload);
-                    }
+                    addressable: true
                 }
             },
             outPorts:{
-                output:{
-                    ondata: function(payload) {
-                        onoutput(payload);
-                    }
-                }
+                output:{}
             }
         }, function(facade){
             component = facade;
@@ -69,7 +42,6 @@ describe('input-states', function() {
                 }
             });
         });
-        oninput = onoutput = _.noop;
         return test.createNetwork({
             upstream1: {
                 getComponent: componentFactory({
@@ -91,10 +63,8 @@ describe('input-states', function() {
         }).then(function(network){
             network.graph.addEdge('upstream1', 'output', 'test', 'input');
             network.graph.addEdge('upstream1', 'output', 'test', 'inputa');
-            network.graph.addEdge('upstream1', 'output', 'test', 'inputb');
             network.graph.addEdge('upstream2', 'output', 'test', 'input');
             network.graph.addEdge('upstream2', 'output', 'test', 'inputa');
-            network.graph.addEdge('upstream2', 'output', 'test', 'inputb');
             return network;
         }).then(function(nw){
             network = nw;
@@ -131,6 +101,12 @@ describe('input-states', function() {
     });
     it('should list all ports', function() {
         component.vni().inputStates().should.have.all.keys(_.keys(component.inPorts));
+    });
+    it('should return an undefined state when an optional port that is not attached to anything', function() {
+        expect(component.vni().inputStates('input2')).to.be.undefined;
+    });
+    it('should return [] when a multi port with nothing attached', function() {
+        expect(component.vni().inputStates('inputb')).to.eql([]);
     });
     it('should set and get a new IIP input state', function() {
         var state = { vnid: '001',
@@ -324,6 +300,24 @@ describe('input-states', function() {
 
          var result2 = component.vni().inputStates('input'); 
          expect( result2 ).to.be.undefined;
+    });
+    it("should get the states from a multi port with both an IIP and an edge attached, with a vnid of '' coming on the edge attachment.", function() {
+        network.graph.addInitial({data:'IIP'}, 'test', 'inputa');
+        component.vni().inputStates('inputa', 0, {data:'upstream1'});
+        component.vni().inputStates('inputa', 1, {data:'upstream2'});
+        component.vni().inputStates('inputa', 2, {data:'IIP'});
+        component.vni().inputStates('inputa').should.eql(
+            [{data:'upstream1'}, {data:'upstream2'}, {data:'IIP'}]
+        );
+    });
+    it("should get the states from a multi port with both an IIP and an edge attached, with a non-empty-string vnid coming on the edge attachment.", function() {
+        network.graph.addInitial({data:'IIP'}, 'test', 'inputa');
+        component.vni('0010').inputStates('inputa', 0, {data:'upstream1'});
+        component.vni('0010').inputStates('inputa', 1, {data:'upstream2'});
+        component.vni().inputStates('inputa', 2, {data:'IIP'});
+        component.vni('0010').inputStates('inputa').should.eql(
+            [{data:'upstream1'}, {data:'upstream2'}, {data:'IIP'}]
+        );
     });
 });
 
