@@ -28,7 +28,7 @@ var access = require('./noflo-component-access');
  *      onicon: function(icon)
  *   });
  */
-module.exports = function(nodeDef){
+module.exports = function(nodeDef, callback){
     if (!nodeDef) throw Error("No parameter");
     return function() {
         // noflo requires each port and nodeInstance to have its own options object
@@ -37,12 +37,15 @@ module.exports = function(nodeDef){
             inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
         triggerPortDataEvents(component.outPorts);
-        var nodeInstance = access(component);
-        registerPorts(component.outPorts, nodeInstance.outPorts, nodeDef.outPorts);
-        registerPorts(component.inPorts, nodeInstance.inPorts, nodeDef.inPorts);
-        registerListeners(component, nodeInstance, nodeDef);
+        var facade = access(component);
+        registerPorts(component.outPorts, facade.outPorts, nodeDef.outPorts);
+        registerPorts(component.inPorts, facade.inPorts, nodeDef.inPorts);
+        registerListeners(component, facade, nodeDef);
         component.description = nodeDef.description;
         component.setIcon(nodeDef.icon);
+        if (_.isFunction(callback)) {
+            callback(facade, component);
+        }
         return component;
     };
 };
