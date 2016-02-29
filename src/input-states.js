@@ -45,8 +45,7 @@ module.exports = function(node, vnid, portName, socketId, state) {
  * @param vnid an identifier that distinguishes the set of VNI states
  */
 function getAllPortStates(node, vnid) {
-    var inPorts = _.pick(node.inPorts, isPort);
-    return _.mapObject(inPorts, function(port, portName){
+    return _.mapObject(node.inPorts, function(port, portName){
         return getPortState(node, vnid, portName);
     });
 }
@@ -79,7 +78,7 @@ function getPortState(node, vnid, portName) {
  */
 function getPortStateArray(node, vnid, portName) {
     var port = node.inPorts[portName];
-    if (!isMultiPort(port)) throw Error("This port is not addressable/multi: " + portName);
+    if (!port.isMulti()) throw Error("This port is not addressable/multi: " + portName);
     else return port.listAttached().map(function(socketId){
         return getPortStateBySocketId(node, vnid, portName, socketId);
     });
@@ -97,7 +96,7 @@ function getPortStateArray(node, vnid, portName) {
 function getPortStateBySocketId(node, vnid, portName, socketId) {
     if (socketId == null)
         return getPortState(node, vnid, portName);
-    else if (!isMultiPort(node.inPorts[portName]))
+    else if (!node.inPorts[portName].isMulti())
         throw Error("This port is not addressable/multi: " + portName);
     else if (vniStateExists(node, vnid, portName) &&
             node.vnis[vnid].inputStates[portName][socketId])
@@ -160,7 +159,7 @@ function setPortState(node, vnid, portName, state) {
  */
 function setPortStateArray(node, vnid, portName, stateArray) {
     var port = node.inPorts[portName];
-    if (!isMultiPort(port))
+    if (!port.isMulti())
         throw Error("This port is not addressable/multi: " + portName);
     port.listAttached().forEach(function(socketId, i) {
         setPortStateBySocketId(node, vnid, portName, socketId, stateArray[i]);
@@ -181,7 +180,7 @@ function setPortStateArray(node, vnid, portName, stateArray) {
 function setPortStateBySocketId(node, vnid, portName, socketId, state) {
     if (socketId == null)
         return setPortState(node, vnid, portName, state);
-    else if (!isMultiPort(node.inPorts[portName]))
+    else if (!node.inPorts[portName].isMulti())
         throw Error("This port is not addressable/multi: " + portName);
     else if (_.isUndefined(state)) {
         if (vniStateExists(node, vnid, portName)) {
@@ -201,26 +200,6 @@ function setPortStateBySocketId(node, vnid, portName, socketId, state) {
         node.vnis[vnid].inputStates[portName][socketId] = state;
     }
     return node;
-}
-
-/**
- * Checks that the given object is an addressable/multi port. This is used to validate
- * that a given portName is actually addressable/multi to fail fast otherwise.
- * @param node a node facade
- * @param port a port facade.
- */
-function isMultiPort(port) {
-    return isPort(port) && port.isMulti();
-}
-
-/**
- * Checks that the given object is a port or a port facade. Noflo does not provide
- * a list of available port in a node and this allows the caller to remove
- * other properties and functions that are on the inPorts objects.
- * @param port a port facade.
- */
-function isPort(port) {
-    return _.isFunction(port.isMulti);
 }
 
 /**
