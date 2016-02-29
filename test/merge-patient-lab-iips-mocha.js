@@ -100,8 +100,8 @@ describe('merge-patient-lab-iips', function() {
 
                 var currentState = node.vni().inputStates('patient');
                 currentState.should.be.an('object');
-		        currentState.data.should.eql( patientState.data );
-		        currentState.lm.should.eql( patientState.lm );
+                currentState.data.should.eql( patientState.data );
+                currentState.lm.should.eql( patientState.lm );
             });
         });
 
