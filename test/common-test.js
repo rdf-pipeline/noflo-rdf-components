@@ -68,6 +68,7 @@ module.exports = {
             port.name = name;
         });
 
+        // return facade if created, otherwise return the noflo.Component instance
         return node ? node : component;
     },
 

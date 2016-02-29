@@ -1,4 +1,4 @@
-// noflo-node-access.js
+// noflo-component-access.js
 
 var _ = require('underscore');
 var noflo = require('noflo');
@@ -8,7 +8,9 @@ module.exports = facadeComponent;
 /**
  * Create a noflo.Component facade from a given node. Access to the node
  * is limited to only select properties and functions.
- * This facade mimic some of the main usage of http://noflojs.org/api/Component.html
+ * This facade mimics some of the main usage of http://noflojs.org/api/Component.html
+ * @this is not used
+ * @param node a Component instance
  * Usage:
  *  var node = componentAccess(new noflo.Component());
  */
@@ -30,11 +32,11 @@ function facadeComponent(node) {
 /**
  * Create a noflo Port facade from a given noflo Port that includes only a limited
  * subset of properties and functions.
- * This facade mimic the main usage of http://noflojs.org/api/OutPort.html
+ * This facade mimics some of the main usage of http://noflojs.org/api/OutPort.html
  */
-function facadePort(nodeInstance, port, name) {
+function facadePort(nodeInstance, port, portName) {
     return _.extend({
-        name: name,
+        name: portName,
         nodeInstance: nodeInstance,
         isMulti: port.isAddressable.bind(port),
         isRequired: port.isRequired.bind(port),

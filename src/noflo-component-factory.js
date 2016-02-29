@@ -46,6 +46,7 @@ module.exports = function(nodeDef, callback){
         if (_.isFunction(callback)) {
             callback.call(node, facade);
         }
+        // Used by common-test.js#createComponent to gain access to the facade
         if (metadata && _.isFunction(metadata.facade)) {
             metadata.facade.call(node, facade);
         }
