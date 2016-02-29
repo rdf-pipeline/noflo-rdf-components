@@ -28,22 +28,29 @@ var access = require('./noflo-component-access');
  *      onicon: function(icon)
  *   });
  */
-module.exports = function(nodeDef){
+module.exports = function(nodeDef, callback){
     if (!nodeDef) throw Error("No parameter");
-    return function() {
+    return function(metadata) {
         // noflo requires each port and nodeInstance to have its own options object
-        var component = new noflo.Component({
+        var node = new noflo.Component({
             outPorts: _.mapObject(nodeDef.outPorts, _.clone),
             inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
-        triggerPortDataEvents(component.outPorts);
-        var nodeInstance = access(component);
-        registerPorts(nodeInstance.outPorts, nodeDef.outPorts);
-        registerPorts(nodeInstance.inPorts, nodeDef.inPorts);
-        registerListeners(nodeInstance, nodeDef);
-        component.description = nodeDef.description;
-        component.setIcon(nodeDef.icon);
-        return component;
+        triggerPortDataEvents(node.outPorts);
+        var facade = access(node);
+        registerPorts(node.outPorts, facade.outPorts, nodeDef.outPorts);
+        registerPorts(node.inPorts, facade.inPorts, nodeDef.inPorts);
+        registerListeners(node, facade, nodeDef);
+        node.description = nodeDef.description;
+        node.setIcon(nodeDef.icon);
+        if (_.isFunction(callback)) {
+            callback.call(node, facade);
+        }
+        // Used by common-test.js#createComponent to gain access to the facade
+        if (metadata && _.isFunction(metadata.facade)) {
+            metadata.facade.call(node, facade);
+        }
+        return node;
     };
 };
 
@@ -75,27 +82,32 @@ function thenTrigger(fn, event /* arguments to fn and event */) {
  * Register listeners of the set of port definitions with this actual noflo Ports set.
  *
  * Usage:
- *  registerPorts({portName: new Port()}, {
+ *  registerPorts({portName: new Port()}, {portName: new PortFacade()}, {
  *      portName: {
  *          ondata: function(payload, socketIndex)
  *      }
  *  });
  */
-function registerPorts(ports, portDefs) {
-    _.each(portDefs, function(port, name) {
-        _.each(_.pick(port, isListener), register.bind(ports[name]));
+function registerPorts(ports, facades, portDefs) {
+    _.each(portDefs, function(portDef, name) {
+        registerListeners(ports[name], facades[name], portDef);
     });
 }
 
 /**
- * Registers listers by their event type to this EventEmitter.
+ * Registers listeners by their event type to this EventEmitter.
+ * @param eventEmitter a noflo.Component/Port
+ * @param context the facade that the listeners should be bound to
+ * @param listeners a hash of event types (prefixed with 'on') to handlers
  * Usage:
- *  registerListeners(new EventEmitter(), {
+ *  registerListeners(new EventEmitter(), facade, {
  *      ondata: function(payload, socketIndex)
  *  });
  */
-function registerListeners(eventEmitter, listeners) {
-    _.each(_.pick(listeners, isListener), register.bind(eventEmitter));
+function registerListeners(eventEmitter, context, listeners) {
+    var handlers = _.pick(listeners, isListener);
+    var boundHandlers = _.mapObject(handlers, bindThis, context);
+    _.each(boundHandlers, register, eventEmitter);
 }
 
 /**
@@ -105,6 +117,17 @@ function registerListeners(eventEmitter, listeners) {
  */
 function isListener(fn, name) {
     return _.isFunction(fn) && name.indexOf('on') === 0;
+}
+
+/**
+ * Returns the given function with the context bound to this context.
+ * This is needed to ensure that the event handlers are always bound to the facade
+ * and not to the underlying noflo Component/Port.
+ * @this The component/port facade
+ * @param fn the event handler function
+ */
+function bindThis(fn) {
+    return fn.bind(this);
 }
 
 /**
