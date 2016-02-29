@@ -1,11 +1,11 @@
 /**
- * File:  vni-manager.js
+ * File: vni-manager.js
  */
 var _ = require('underscore');
 
 var inputStates = require('./input-states');
 
-var IIP_VNID = '';
+var DEFAULT_VNID = '';
 
 /**
  * Manage the node's vni's by vnid.  If no vnid is provided the IIP VNID will be used.
@@ -16,18 +16,21 @@ var IIP_VNID = '';
  * @return the component facade, extended to include the vni interface
  * 
  * Usage examples: 
- *     var vni = this.nodeInstance.vni(); // retrieve an IIP vni 
+ *     var vni = this.nodeInstance.vni(); // retrieve the default VNI 
  *     var vni = this.nodeInstance.vni(vnid); // retrieve the vni associated with the vnid
- *     var context = component.deleteVnis();
- *     var context = component.deleteVni( vnid );
- *     var context = nodeInstance.vni.delete();
- *     var context = nodeInstance.vni().errorState( state );
+ *
+ *     component.deleteAllVnis();
+ *     component.deleteVni( vnid );
+ *     nodeInstance.vni(vnid).delete();
+ *
+ *     nodeInstance.vni().errorState( state );
  *     var state = nodeInstance.vni().errorState();
- *     var context = nodeInstance.vni().inputStates( {input: state} );
+ *
+ *     nodeInstance.vni().inputStates( {input: state} );
  *     var inputStates = nodeInstance.vni().inputStates();
- *     var context = nodeInstance.vni().outputState( state );
+ *
+ *     nodeInstance.vni().outputState( state );
  *     var state = nodeInstance.vni().outputState();
- *     var context = nodeInstance.vni.delete();
  */
 module.exports = function( facade ) { 
 
@@ -35,12 +38,12 @@ module.exports = function( facade ) {
         {
 
           /**
-           * Delete all vnis assiciated with the component node instance.
+           * Delete all vnis assiciated with the node instance.
            *
-           * @this component context
-           * @return component node instance context for easy chaining
+           * @this node instance
+           * @return node instance nodeInstance for easy chaining
            */ 
-          deleteVnis: function() { 
+          deleteAllVnis: function() { 
               // reassign vnis array to an empty array and let garbage collection clean up
               this.vnis = {};
               return this;
@@ -51,8 +54,8 @@ module.exports = function( facade ) {
            * 
            * @param vnid vnid identifying which vni to delete
            *
-           * @this component context
-           * @return component node instance context for easy chaining
+           * @this node instance
+           * @return node instance nodeInstance for easy chaining
            */ 
           deleteVni: function( vnid ) {
 
@@ -68,14 +71,14 @@ module.exports = function( facade ) {
            * the IIP VNID will be used.  If the VNI does not yet exist, a new VNI will be
            * created.
            * 
-           * @this component context
+           * @this node instance
            * @param vnid vnid identifying which vni to delete
            *
-           * @return component node instance context for easy chaining
+           * @return node instance nodeInstance for easy chaining
            */ 
           vni: function( vnid ) { 
 
-              vnid = vnid || IIP_VNID;
+              vnid = vnid || DEFAULT_VNID;
 
               if ( _.isUndefined( this.vnis[vnid] )  ) {
 

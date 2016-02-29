@@ -34,7 +34,7 @@ describe('vni-manager', function() {
 
     afterEach(function() {
         // clean up
-        component.deleteVnis();
+        component.deleteAllVnis();
     });
 
     it('should exist as a function', function() {
@@ -276,7 +276,7 @@ describe('vni-manager', function() {
 
     });
    
-    describe('#deleteVnis', function() {
+    describe('#deleteAllVnis', function() {
 
         it('should delete all VNIs associated with this component', function() {
 
@@ -297,7 +297,7 @@ describe('vni-manager', function() {
             Object.keys( component.vnis ).should.have.length( numberOfVnis );
 
             // Delete the VNIs and verify they are all gone 
-            var context = component.deleteVnis();
+            var context = component.deleteAllVnis();
             context.should.equal(component);
             Object.keys( component.vnis ).should.have.length( 0 );
         });
