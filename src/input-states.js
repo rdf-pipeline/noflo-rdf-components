@@ -62,7 +62,7 @@ function getAllPortStates(node, vnid) {
 function getPortState(node, vnid, portName) {
     var port = node.inPorts[portName];
     if (port.isMulti()) return getPortStateArray(node, vnid, portName);
-    else if (ensureVniStateExists(node, vnid, portName))
+    else if (vniStateExists(node, vnid, portName))
         return node.vnis[vnid].inputStates[portName];
     // By default states that come in on vnid '' apply to all VNIs
     else if (vnid) return getPortState(node, '', portName);
@@ -99,7 +99,7 @@ function getPortStateBySocketId(node, vnid, portName, socketId) {
         return getPortState(node, vnid, portName);
     else if (!isMultiPort(node.inPorts[portName]))
         throw Error("This port is not addressable/multi: " + portName);
-    else if (ensureVniStateExists(node, vnid, portName) &&
+    else if (vniStateExists(node, vnid, portName) &&
             node.vnis[vnid].inputStates[portName][socketId])
         return node.vnis[vnid].inputStates[portName][socketId];
     // By default states that come in on vnid '' apply to all VNIs
@@ -133,21 +133,16 @@ function setAllPortStates(node, vnid, portStates) {
 function setPortState(node, vnid, portName, state) {
     var port = node.inPorts[portName];
     if (_.isUndefined(state)) {
-        if (ensureVniStateExists(node, vnid, portName)) {
+        if (vniStateExists(node, vnid, portName)) {
             delete node.vnis[vnid].inputStates[portName];
             if (_.isEmpty(node.vnis[vnid].inputStates)) {
                 delete node.vnis[vnid].inputStates;
-                if (_.isEmpty(node.vnis[vnid])) {
-                    delete node.vnis[vnid];
-                }
             }
         }
     } else if (port.isMulti()) {
         return setPortStateArray(node, vnid, portName, state);
     } else {
-        if (!ensureVniStateExists(node, vnid, portName)) {
-            node.vnis = node.vnis || {};
-            node.vnis[vnid] = node.vnis[vnid] || {};
+        if (!vniStateExists(node, vnid, portName)) {
             node.vnis[vnid].inputStates = node.vnis[vnid].inputStates || {};
         }
         node.vnis[vnid].inputStates[portName] = state;
@@ -188,22 +183,17 @@ function setPortStateBySocketId(node, vnid, portName, socketId, state) {
     else if (!isMultiPort(node.inPorts[portName]))
         throw Error("This port is not addressable/multi: " + portName);
     else if (_.isUndefined(state)) {
-        if (ensureVniStateExists(node, vnid, portName)) {
+        if (vniStateExists(node, vnid, portName)) {
             node.vnis[vnid].inputStates[portName][socketId] = state;
             if (!_.compact(node.vnis[vnid].inputStates[portName]).length) {
                 delete node.vnis[vnid].inputStates[portName];
                 if (_.isEmpty(node.vnis[vnid].inputStates)) {
                     delete node.vnis[vnid].inputStates;
-                    if (_.isEmpty(node.vnis[vnid])) {
-                        delete node.vnis[vnid];
-                    }
                 }
             }
         }
     } else {
-        if (!ensureVniStateExists(node, vnid, portName)) {
-            node.vnis = node.vnis || {};
-            node.vnis[vnid] = node.vnis[vnid] || {};
+        if (!vniStateExists(node, vnid, portName)) {
             node.vnis[vnid].inputStates = node.vnis[vnid].inputStates || {};
             node.vnis[vnid].inputStates[portName] = node.vnis[vnid].inputStates[portName] || [];
         }
@@ -238,7 +228,7 @@ function isPort(port) {
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this node
  */
-function ensureVniStateExists(node, vnid, portName) {
+function vniStateExists(node, vnid, portName) {
     return node.vnis && node.vnis[vnid] &&
         node.vnis[vnid].inputStates &&
         node.vnis[vnid].inputStates[portName];

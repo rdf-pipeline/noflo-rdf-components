@@ -36,6 +36,8 @@ describe('input-states', function() {
             node = facade;
             _.extend(facade, {
                 vni: function(vnid) {
+                    this.vnis = this.vnis || {};
+                    this.vnis[vnid || ''] = this.vnis[vnid || ''] || {};
                     return {
                         inputStates: _.partial(inputStates, facade, vnid || '')
                     };
