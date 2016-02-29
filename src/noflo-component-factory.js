@@ -30,23 +30,27 @@ var access = require('./noflo-component-access');
  */
 module.exports = function(nodeDef, callback){
     if (!nodeDef) throw Error("No parameter");
-    return function() {
+    return function(metadata) {
         // noflo requires each port and nodeInstance to have its own options object
-        var component = new noflo.Component({
+        var node = new noflo.Component({
             outPorts: _.mapObject(nodeDef.outPorts, _.clone),
             inPorts: _.mapObject(nodeDef.inPorts, _.clone)
         });
-        triggerPortDataEvents(component.outPorts);
-        var facade = access(component);
-        registerPorts(component.outPorts, facade.outPorts, nodeDef.outPorts);
-        registerPorts(component.inPorts, facade.inPorts, nodeDef.inPorts);
-        registerListeners(component, facade, nodeDef);
-        component.description = nodeDef.description;
-        component.setIcon(nodeDef.icon);
+        triggerPortDataEvents(node.outPorts);
+        var facade = access(node);
+        registerPorts(node.outPorts, facade.outPorts, nodeDef.outPorts);
+        registerPorts(node.inPorts, facade.inPorts, nodeDef.inPorts);
+        registerListeners(node, facade, nodeDef);
+        node.description = nodeDef.description;
+        node.setIcon(nodeDef.icon);
         if (_.isFunction(callback)) {
-            callback(facade, component);
+            callback.call(node, facade);
         }
-        return component;
+        // Used by common-test.js#createComponent to gain access to the facade
+        if (metadata && _.isFunction(metadata.facade)) {
+            metadata.facade.call(node, facade);
+        }
+        return node;
     };
 };
 
@@ -91,7 +95,7 @@ function registerPorts(ports, facades, portDefs) {
 }
 
 /**
- * Registers listers by their event type to this EventEmitter.
+ * Registers listeners by their event type to this EventEmitter.
  * @param eventEmitter a noflo.Component/Port
  * @param context the facade that the listeners should be bound to
  * @param listeners a hash of event types (prefixed with 'on') to handlers

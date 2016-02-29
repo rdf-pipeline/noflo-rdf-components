@@ -6,47 +6,41 @@ var noflo = require('noflo');
 module.exports = facadeComponent;
 
 /**
- * Create a noflo.Component facade from a given component. Access to the component
+ * Create a noflo.Component facade from a given node. Access to the node
  * is limited to only select properties and functions.
- * This facade mimic some of the main usage of http://noflojs.org/api/Component.html
+ * This facade mimics some of the main usage of http://noflojs.org/api/Component.html
+ * @this is not used
+ * @param node a Component instance
  * Usage:
- *  var component = componentAccess(new noflo.Component());
+ *  var node = componentAccess(new noflo.Component());
  */
-function facadeComponent(component) {
+function facadeComponent(node) {
     var facade = {
-        get nodeId() {
-            return component.nodeId;
+        get nodeName() {
+            return node.nodeId;
         },
         get componentName() {
-            return component.componentName;
+            return node.componentName;
         }
     };
     return _.extend(facade, {
-        inPorts: _.mapObject(_.pick(component.inPorts, isInPort), facadePort.bind(this, facade)),
-        outPorts: _.mapObject(_.pick(component.outPorts, isOutPort), facadePort.bind(this, facade))
+        inPorts: _.mapObject(_.pick(node.inPorts, isInPort), facadePort.bind(this, facade)),
+        outPorts: _.mapObject(_.pick(node.outPorts, isOutPort), facadePort.bind(this, facade))
     });
 }
 
 /**
  * Create a noflo Port facade from a given noflo Port that includes only a limited
  * subset of properties and functions.
- * This facade mimic the main usage of http://noflojs.org/api/OutPort.html
+ * This facade mimics some of the main usage of http://noflojs.org/api/OutPort.html
  */
-function facadePort(nodeInstance, port, name) {
+function facadePort(nodeInstance, port, portName) {
     return _.extend({
-        name: name,
+        name: portName,
         nodeInstance: nodeInstance,
         isMulti: port.isAddressable.bind(port),
         isRequired: port.isRequired.bind(port),
-        listAttached: port.listAttached.bind(port),
-        getSourceIdOn: function(socketIndex) {
-            if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
-                return port.sockets[socketIndex].from.process.id;
-        },
-        getSourcePortNameOn: function(socketIndex) {
-            if (port.sockets[socketIndex] && port.sockets[socketIndex].from)
-                return port.sockets[socketIndex].from.port;
-        }
+        listAttached: port.listAttached.bind(port)
     }, isOutPort(port) ? {
         connect: port.connect.bind(port),
         send: port.send.bind(port),

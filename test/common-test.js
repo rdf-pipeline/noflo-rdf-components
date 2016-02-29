@@ -43,9 +43,28 @@ module.exports = {
         });
     },
 
-    createComponent: function(getComponent) {
+    /**
+     * Create a component instance from a factory function or module.
+     * @this is not used
+     * @param factory a function that creates a Component instance or a module with a getComponent function
+     * @usage:
+     *  var node = test.createComponent(require('noflo/console'))
+     *  var node = test.createComponent(componentFactory({}))
+     */
+    createComponent: function(factory) {
 
-        var component = getComponent();
+        var node;
+        var metadata = {
+            facade: function(facade) {
+                node = facade;
+            }
+        };
+        var getComponent = _.isFunction(factory) ? factory : factory.getComponent;
+        var component = getComponent(metadata);
+
+        if (node) { // using a facade
+            node._component_under_test = component;
+        }
 
         _.forEach(component.inPorts, function(port, name) {
             port.nodeInstance = component;
@@ -57,10 +76,12 @@ module.exports = {
             port.name = name;
         });
 
-        return component;
+        // return facade if created, otherwise return the noflo.Component instance
+        return node ? node : component;
     },
 
-    sendData: function(component, port, payload) {
+    sendData: function(node, port, payload) {
+        var component = node._component_under_test ? node._component_under_test : node;
 
         var socket = noflo.internalSocket.createSocket();
         component.inPorts[port].attach(socket);
@@ -69,5 +90,12 @@ module.exports = {
         socket.disconnect();
 
         component.inPorts[port].detach(socket);
-   }
+   },
+
+    onOutPortData: function(node, portName, handler) {
+        var component = node._component_under_test ? node._component_under_test : node;
+        var socket = noflo.internalSocket.createSocket();
+        component.outPorts[portName].attach(socket);
+        socket.on('data', handler.bind(node.outPorts[portName]));
+    }
 };

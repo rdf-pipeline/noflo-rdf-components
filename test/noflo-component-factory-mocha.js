@@ -16,7 +16,7 @@ describe('noflo-component-factory', function() {
     });
     it("should trigger in port ondata function", function() {
         return new Promise(function(done){
-            var component = test.createComponent(componentFactory({
+            var node = test.createComponent(componentFactory({
                 inPorts:{
                     input:{
                         ondata: function(payload) {
@@ -25,12 +25,12 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            test.sendData(component, 'input', "hello");
+            test.sendData(node, 'input', "hello");
         }).should.become("hello");
     });
     it("should have name property", function() {
         return new Promise(function(done){
-            var component = test.createComponent(componentFactory({
+            var node = test.createComponent(componentFactory({
                 inPorts:{
                     input:{
                         ondata: function(payload) {
@@ -39,12 +39,12 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            test.sendData(component, 'input', "hello");
+            test.sendData(node, 'input', "hello");
         }).should.become("input");
     });
     it("should have isRequired() function", function() {
         return new Promise(function(done){
-            var component = test.createComponent(componentFactory({
+            var node = test.createComponent(componentFactory({
                 inPorts:{
                     input:{
                         ondata: function(payload) {
@@ -53,12 +53,12 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            test.sendData(component, 'input', "hello");
+            test.sendData(node, 'input', "hello");
         }).should.become("hello false");
     });
     it("should have stable nodeInstance property", function() {
         return new Promise(function(done){
-            var component = test.createComponent(componentFactory({
+            var node = test.createComponent(componentFactory({
                 inPorts:{
                     input1:{
                         ondata: function(payload) {
@@ -76,13 +76,13 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            test.sendData(component, 'input1', "hello");
-            test.sendData(component, 'input2', "world");
+            test.sendData(node, 'input1', "hello");
+            test.sendData(node, 'input2', "world");
         }).should.become("hello world");
     });
     it("should trigger out port ondata function", function() {
         return new Promise(function(done){
-            var component = test.createComponent(componentFactory({
+            var node = test.createComponent(componentFactory({
                 inPorts:{
                     input:{
                         ondata: function(payload) {
@@ -100,15 +100,13 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            var output = noflo.internalSocket.createSocket();
-            component.outPorts.output.attach(output);
-            test.sendData(component, 'input', "hello");
-            component.outPorts.output.detach(output);
+            test.onOutPortData(node, 'output', _.noop);
+            test.sendData(node, 'input', "hello");
         }).should.be.fulfilled;
     });
     it("should include socketIndex in ondata function", function() {
         return new Promise(function(done){
-            var component = test.createComponent(componentFactory({
+            var node = test.createComponent(componentFactory({
                 inPorts:{
                     input:{
                         addressable: true,
@@ -118,15 +116,15 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
-            test.sendData(component, 'input', "zero");
+            test.sendData(node, 'input', "zero");
         }).should.become(0);
     });
-    it("should has a nodeId", function() {
-        var component;
+    it("should have a nodeName", function() {
+        var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
         var factory = componentFactory({}, function(facade, comp){
-            component = facade;
+            node = facade;
         });
         var graph = new noflo.Graph();
         graph.addNode(instanceId, factoryId);
@@ -142,15 +140,15 @@ describe('noflo-component-factory', function() {
                 });
             }, true);
         }).then(function(network){
-            return component.nodeId;
+            return node.nodeName;
         }).should.eventually.eql(instanceId);
     });
-    it("should has a componentName", function() {
-        var component;
+    it("should have a componentName", function() {
+        var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
         var factory = componentFactory({}, function(facade, comp){
-            component = facade;
+            node = facade;
         });
         var graph = new noflo.Graph();
         graph.addNode(instanceId, factoryId);
@@ -166,7 +164,7 @@ describe('noflo-component-factory', function() {
                 });
             }, true);
         }).then(function(network){
-            return component.componentName;
+            return node.componentName;
         }).should.eventually.eql(factoryId);
     });
 });
