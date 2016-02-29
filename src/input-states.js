@@ -124,6 +124,7 @@ function setAllPortStates(node, vnid, portStates) {
 /**
  * Changes the state of a port. When a new state is received on a port this
  * should be called.
+ * setPortStateBySocketId should be used to set the state on a multi/addressable port.
  * @param node a node facade
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this node
@@ -156,6 +157,7 @@ function setPortState(node, vnid, portName, state) {
 
 /**
  * Changes the states of a port.
+ * This can be run in a test environment to reset the state of the port.
  * @param node a node facade
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this node
