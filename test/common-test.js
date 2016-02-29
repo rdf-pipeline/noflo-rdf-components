@@ -62,7 +62,7 @@ module.exports = {
         var getComponent = _.isFunction(factory) ? factory : factory.getComponent;
         var component = getComponent(metadata);
 
-        if (node) {
+        if (node) { // using a facade
             node._component_under_test = component;
         }
 
