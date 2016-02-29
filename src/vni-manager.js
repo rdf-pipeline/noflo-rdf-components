@@ -11,37 +11,38 @@ var DEFAULT_VNID = '';
  * Manage the node's vni's by vnid.  If no vnid is provided the IIP VNID will be used.
  * If the vni for the specified vnid does not exist, a new one will be created.
  *
- * @this the component node instance unless otherwise specified on an API
- * @param facade a component facade
+ * @this node unless otherwise specified on an API
+ * @param componentFacade a component facade
+ *
  * @return the component facade, extended to include the vni interface
  * 
  * Usage examples: 
- *     var vni = this.nodeInstance.vni(); // retrieve the default VNI 
- *     var vni = this.nodeInstance.vni(vnid); // retrieve the vni associated with the vnid
+ *     var vni = node.vni(); // retrieve the default VNI 
+ *     var vni = node.vni(vnid); // retrieve the vni associated with the vnid
  *
- *     component.deleteAllVnis();
- *     component.deleteVni( vnid );
- *     nodeInstance.vni(vnid).delete();
+ *     node.deleteAllVnis();
+ *     node.deleteVni( vnid );
+ *     node.vni(vnid).delete();
  *
- *     nodeInstance.vni().errorState( state );
- *     var state = nodeInstance.vni().errorState();
+ *     node.vni().errorState( state );
+ *     var state = node.vni().errorState();
  *
- *     nodeInstance.vni().inputStates( {input: state} );
- *     var inputStates = nodeInstance.vni().inputStates();
+ *     node.vni().inputStates( {input: state} );
+ *     var inputStates = node.vni().inputStates();
  *
- *     nodeInstance.vni().outputState( state );
- *     var state = nodeInstance.vni().outputState();
+ *     node.vni().outputState( state );
+ *     var state = node.vni().outputState();
  */
-module.exports = function( facade ) { 
+module.exports = function( componentFacade ) { 
 
-    _.extend( facade, 
+    _.extend( componentFacade, 
         {
 
           /**
            * Delete all vnis assiciated with the node instance.
            *
            * @this node instance
-           * @return node instance nodeInstance for easy chaining
+           * @return node instance node for easy chaining
            */ 
           deleteAllVnis: function() { 
               // reassign vnis array to an empty array and let garbage collection clean up
@@ -55,7 +56,7 @@ module.exports = function( facade ) {
            * @param vnid vnid identifying which vni to delete
            *
            * @this node instance
-           * @return node instance nodeInstance for easy chaining
+           * @return node instance node for easy chaining
            */ 
           deleteVni: function( vnid ) {
 
@@ -71,10 +72,10 @@ module.exports = function( facade ) {
            * the IIP VNID will be used.  If the VNI does not yet exist, a new VNI will be
            * created.
            * 
-           * @this node instance
+           * @this node 
            * @param vnid vnid identifying which vni to delete
            *
-           * @return node instance nodeInstance for easy chaining
+           * @return node for easy chaining
            */ 
           vni: function( vnid ) { 
 
