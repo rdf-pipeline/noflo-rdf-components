@@ -12,7 +12,7 @@ var noflo = require('noflo');
 var compFactory = require('../components/merge-patient-lab-iips');
 
 var test = require('./common-test');
-var commonStubs = require('./common-stubs');
+var stubs = require('./common-stubs');
 
 describe('merge-patient-lab-iips', function() {
  
@@ -160,7 +160,7 @@ describe('merge-patient-lab-iips', function() {
             var node = test.createComponent(compFactory);
             test.sendData( node, 'patient',
                                          {id: '001',  name: 'Alice', dob: '1979-01-23' });
-            commonStubs.promiseLater().then(function(){
+            stubs.promiseLater().then(function(){
                 return node.vni().inputStates('patient');
             }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
         });
@@ -169,7 +169,7 @@ describe('merge-patient-lab-iips', function() {
             var node = test.createComponent(compFactory);
             test.sendData( node, 'patient',
                                          {id: '001',  name: 'Alice', dob: '1979-01-23' });
-            commonStubs.promiseLater().then(function(){
+            stubs.promiseLater().then(function(){
                 return node.vni().inputStates('patient');
             }).then(_.property('data')).should.become({id: '001',  name: 'Alice', dob: '1979-01-23' });
         });
@@ -178,7 +178,7 @@ describe('merge-patient-lab-iips', function() {
             var node = test.createComponent(compFactory);
             test.sendData( node, 'labwork',
                                          {id: '001',  glucose: '75',  date: '2012-02-01'});
-            commonStubs.promiseLater().then(function(){
+            stubs.promiseLater().then(function(){
                 return node.vni().inputStates('labwork');
             }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
         });
@@ -187,7 +187,7 @@ describe('merge-patient-lab-iips', function() {
             var node = test.createComponent(compFactory);
             test.sendData( node, 'labwork',
                                          {id: '001',  glucose: '75',  date: '2012-02-01'});
-            commonStubs.promiseLater().then(function(){
+            stubs.promiseLater().then(function(){
                 return node.vni().inputStates('labwork');
             }).then(_.property('data')).should.become({id: '001',  glucose: '75',  date: '2012-02-01'});
         });
