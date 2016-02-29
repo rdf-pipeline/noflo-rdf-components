@@ -23,8 +23,10 @@ var _ = require('underscore');
  *  inputState(node, vnid, portName, socketId, state) : this
  */ 
 module.exports = function(node, vnid, portName, socketId, state) {
-    if (!node.inPorts || !node.outPorts) throw Error("This isn't a Component node");
-    else if (!_.isString(vnid)) throw Error("Invalid vnid: " + vnid);
+    if (!node.inPorts || !node.outPorts)
+        throw Error("This isn't a Component node");
+    else if (!_.isString(vnid))
+        throw Error("Invalid vnid: " + vnid);
     else if (_.isString(portName) && !node.inPorts[portName])
         throw Error("Invalid portName: " + portName);
     else if (arguments.length > 4)
@@ -33,7 +35,8 @@ module.exports = function(node, vnid, portName, socketId, state) {
         return getPortStateBySocketId(node, vnid, portName, socketId);
     else if (_.isObject(arguments[2]))
         return setAllPortStates(node, vnid, arguments[2]);
-    else return getAllPortStates(node, vnid);
+    else
+        return getAllPortStates(node, vnid);
 }
 
 /**
@@ -60,12 +63,14 @@ function getAllPortStates(node, vnid) {
  */
 function getPortState(node, vnid, portName) {
     var port = node.inPorts[portName];
-    if (port.isMulti()) return getPortStateArray(node, vnid, portName);
+    if (port.isMulti())
+        return getPortStateArray(node, vnid, portName);
     else if (vniStateExists(node, vnid, portName))
         return node.vnis[vnid].inputStates[portName];
-    // By default states that come in on vnid '' apply to all VNIs
-    else if (vnid) return getPortState(node, '', portName);
-    else return undefined;
+    else if (vnid) // By default states that come in on vnid '' apply to all
+        return getPortState(node, '', portName);
+    else
+        return undefined;
 }
 
 /**
@@ -102,8 +107,10 @@ function getPortStateBySocketId(node, vnid, portName, socketId) {
             node.vnis[vnid].inputStates[portName][socketId])
         return node.vnis[vnid].inputStates[portName][socketId];
     // By default states that come in on vnid '' apply to all VNIs
-    else if (vnid) return getPortStateBySocketId(node, '', portName, socketId);
-    else return undefined;
+    else if (vnid)
+        return getPortStateBySocketId(node, '', portName, socketId);
+    else
+        return undefined;
 }
 
 /**
@@ -123,7 +130,8 @@ function setAllPortStates(node, vnid, portStates) {
 /**
  * Changes the state of a port. When a new state is received on a port this
  * should be called.
- * setPortStateBySocketId should be used to set the state on a multi/addressable port.
+ * Used as a helper for setPortStateBySocketId and for testing. Normally at
+ * runtime setPortStateBySocketId would be used to set the state of a port.
  * @param node a node facade
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this node
