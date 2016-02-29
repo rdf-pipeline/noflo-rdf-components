@@ -171,6 +171,7 @@ function setPortStateArray(node, vnid, portName, stateArray) {
 /**
  * Changes the state of a addressable/multi port socket. When a new state is received
  * on a port this should be called.
+ * setPortState should be called instead if the port is non-multi (non-addressable).
  * @param node a node facade
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the port on this node
