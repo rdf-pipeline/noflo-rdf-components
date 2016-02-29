@@ -95,7 +95,7 @@ function registerPorts(ports, facades, portDefs) {
 }
 
 /**
- * Registers listers by their event type to this EventEmitter.
+ * Registers listeners by their event type to this EventEmitter.
  * @param eventEmitter a noflo.Component/Port
  * @param context the facade that the listeners should be bound to
  * @param listeners a hash of event types (prefixed with 'on') to handlers
