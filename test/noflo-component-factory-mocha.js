@@ -1,4 +1,4 @@
-// noflo-node-factory-mocha.js
+// noflo-component-factory-mocha.js
 
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
@@ -10,7 +10,7 @@ var noflo = require('noflo');
 var componentFactory = require('../src/noflo-component-factory.js');
 var test = require('./common-test');
 
-describe('noflo-node-factory', function() {
+describe('noflo-component-factory', function() {
     it("should reject undefined definition", function() {
         return Promise.resolve().then(componentFactory).should.be.rejected;
     });
@@ -100,10 +100,8 @@ describe('noflo-node-factory', function() {
                     }
                 }
             }));
-            var output = noflo.internalSocket.createSocket();
-            node.outPorts.output.attach(output);
+            test.onOutPortData(node, 'output', _.noop);
             test.sendData(node, 'input', "hello");
-            node.outPorts.output.detach(output);
         }).should.be.fulfilled;
     });
     it("should include socketIndex in ondata function", function() {
@@ -121,7 +119,7 @@ describe('noflo-node-factory', function() {
             test.sendData(node, 'input', "zero");
         }).should.become(0);
     });
-    it("should has a nodeName", function() {
+    it("should have a nodeName", function() {
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
@@ -145,7 +143,7 @@ describe('noflo-node-factory', function() {
             return node.nodeName;
         }).should.eventually.eql(instanceId);
     });
-    it("should has a componentName", function() {
+    it("should have a componentName", function() {
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
