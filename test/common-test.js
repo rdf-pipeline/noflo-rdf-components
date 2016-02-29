@@ -43,6 +43,14 @@ module.exports = {
         });
     },
 
+    /**
+     * Create a component instance from a factory function or module.
+     * @this is not used
+     * @param factory a function that creates a Component instance or a module with a getComponent function
+     * @usage:
+     *  var node = test.createComponent(require('noflo/console'))
+     *  var node = test.createComponent(componentFactory({}))
+     */
     createComponent: function(factory) {
 
         var node;

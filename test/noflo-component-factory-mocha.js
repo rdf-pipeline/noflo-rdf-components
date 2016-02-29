@@ -119,7 +119,7 @@ describe('noflo-component-factory', function() {
             test.sendData(node, 'input', "zero");
         }).should.become(0);
     });
-    it("should has a nodeName", function() {
+    it("should have a nodeName", function() {
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
@@ -143,7 +143,7 @@ describe('noflo-component-factory', function() {
             return node.nodeName;
         }).should.eventually.eql(instanceId);
     });
-    it("should has a componentName", function() {
+    it("should have a componentName", function() {
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
