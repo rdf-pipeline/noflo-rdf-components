@@ -5,7 +5,7 @@ var _ = require('underscore');
 /**
  * Getter and Setter for InPort states.
  *
- * @this is not used
+ * @this is not used, but may be returned
  * @param node a node facade
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the input port whose state is being recorded
@@ -23,20 +23,23 @@ var _ = require('underscore');
  *  inputState(node, vnid, portName, socketId, state) : this
  */ 
 module.exports = function(node, vnid, portName, socketId, state) {
-    if (!node.inPorts || !node.outPorts)
-        throw Error("This isn't a Component node");
-    else if (!_.isString(vnid))
+    if (!node.inPorts || !node.outPorts) {
+        throw Error("This isn't a component facade node");
+    } else if (!_.isString(vnid)) {
         throw Error("Invalid vnid: " + vnid);
-    else if (_.isString(portName) && !node.inPorts[portName])
+    } else if (_.isString(portName) && !node.inPorts[portName]) {
         throw Error("Invalid portName: " + portName);
-    else if (arguments.length > 4)
-        return setPortStateBySocketId(node, vnid, portName, socketId, state);
-    else if (_.isString(portName))
+    } else if (arguments.length > 4) {
+        setPortStateBySocketId(node, vnid, portName, socketId, state);
+        return this;
+    } else if (_.isString(portName)) {
         return getPortStateBySocketId(node, vnid, portName, socketId);
-    else if (_.isObject(arguments[2]))
-        return setAllPortStates(node, vnid, arguments[2]);
-    else
+    } else if (_.isObject(arguments[2])) {
+        setAllPortStates(node, vnid, arguments[2]);
+        return this;
+    } else {
         return getAllPortStates(node, vnid);
+    }
 }
 
 /**
@@ -124,7 +127,6 @@ function setAllPortStates(node, vnid, portStates) {
     _.each(portStates, function(state, portName) {
         setPortState(node, vnid, portName, state);
     });
-    return node;
 }
 
 /**
@@ -147,14 +149,13 @@ function setPortState(node, vnid, portName, state) {
             }
         }
     } else if (port.isMulti()) {
-        return setPortStateArray(node, vnid, portName, state);
+        setPortStateArray(node, vnid, portName, state);
     } else {
         if (!vniStateExists(node, vnid, portName)) {
             node.vnis[vnid].inputStates = node.vnis[vnid].inputStates || {};
         }
         node.vnis[vnid].inputStates[portName] = state;
     }
-    return node;
 }
 
 /**
@@ -172,7 +173,6 @@ function setPortStateArray(node, vnid, portName, stateArray) {
     port.listAttached().forEach(function(socketId, i) {
         setPortStateBySocketId(node, vnid, portName, socketId, stateArray[i]);
     }, []);
-    return node;
 }
 
 /**
@@ -186,11 +186,11 @@ function setPortStateArray(node, vnid, portName, stateArray) {
  * @param state the new state of this port socket
  */
 function setPortStateBySocketId(node, vnid, portName, socketId, state) {
-    if (socketId == null)
-        return setPortState(node, vnid, portName, state);
-    else if (!node.inPorts[portName].isMulti())
+    if (socketId == null) {
+        setPortState(node, vnid, portName, state);
+    } else if (!node.inPorts[portName].isMulti()) {
         throw Error("This port is not addressable/multi: " + portName);
-    else if (_.isUndefined(state)) {
+    } else if (_.isUndefined(state)) {
         if (vniStateExists(node, vnid, portName)) {
             node.vnis[vnid].inputStates[portName][socketId] = state;
             if (!_.compact(node.vnis[vnid].inputStates[portName]).length) {
@@ -207,7 +207,6 @@ function setPortStateBySocketId(node, vnid, portName, socketId, state) {
         }
         node.vnis[vnid].inputStates[portName][socketId] = state;
     }
-    return node;
 }
 
 /**
