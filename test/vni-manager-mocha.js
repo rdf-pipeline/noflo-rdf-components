@@ -16,11 +16,11 @@ var test = require('./common-test');
 
 var vniManager = require('../src/vni-manager');
 
-describe('vni-manager', function() {
+describe("vni-manager", function() {
 
     beforeEach(function() {
 
-        component = test.createComponent(componentFactory({
+        node = test.createComponent(componentFactory({
             inPorts:{input:{
                 ondata: promiseOutput(function(payload){
                     return payload + " world";
@@ -34,27 +34,87 @@ describe('vni-manager', function() {
 
     afterEach(function() {
         // clean up
-        component.deleteAllVnis();
+        node.deleteAllVnis();
     });
 
-    it('should exist as a function', function() {
-      vniManager.should.exist;
-      vniManager.should.be.a('function');
+    it("should exist as a function", function() {
+        vniManager.should.exist;
+        vniManager.should.be.a('function');
     });
 
-    describe('#vnis', function() {
-        it('should exist as an object in the component instance', function() {
-            component.vnis.should.exist;
-            component.vnis.should.be.a('object');
-            Object.keys( component.vnis ).should.have.length( 0 );
+    it("should return a component facade", function() {
+        node.should.exist;
+        node.should.be.an('object');
+        node.should.include.keys( 'nodeName', 'componentName', 'inPorts', 'outPorts',
+                                   'deleteAllVnis', 'deleteVni', 'vni', 'vnis' );
+    });
+
+    describe("#vnis", function() {
+        it("should exist as an object in the node.instance", function() {
+            node.vnis.should.exist;
+            node.vnis.should.be.a('object');
+            Object.keys( node.vnis ).should.have.length( 0 );
+        });
+
+        it("should write to the vnis of the node, with no cross-node interference", function() {
+
+            // Create two test nodes 
+            var node1 = test.createComponent(componentFactory({
+                inPorts:{input:{
+                    ondata: promiseOutput(function(payload){
+                        return payload + " world";
+                    })
+                }},
+                outPorts: promiseOutput.outPorts
+              }, vniManager )
+            );
+
+            var node2 = test.createComponent(componentFactory({
+                inPorts:{input:{
+                    ondata: promiseOutput(function(payload){
+                        return payload + " world2";
+                    })
+                }},
+                outPorts: promiseOutput.outPorts
+              }, vniManager )
+            );
+ 
+            node1.should.not.equal(node2);
+            node1.vnis.should.not.equal(node2.vnis);
+
+            // Set a vni with vnid 1
+            var testVni1 = node1.vni('1');
+
+            // Verify that node1 now has a length of one with 
+            // the vni that has vnid 1
+            testVni1.should.be.an('object');
+	    testVni1.inputStates.should.exist;
+            Object.keys( node1.vnis ).should.have.length( 1 );
+            node1.vnis.should.have.all.keys('1');
+            
+            // Verify that node2 has no vnis
+            Object.keys( node2.vnis ).should.have.length( 0 );
+
+            // Set node 2 with a vni with vnid 2
+            var testVni2 = node2.vni('2');
+            testVni2.should.be.an('object');
+            testVni2.inputStates.should.exist;
+
+            // Verify that node1 is unchanged - still has 1 vni with vnid 1
+            Object.keys( node1.vnis ).should.have.length( 1 );
+            node1.vnis.should.have.all.keys('1');
+
+            // verify node2 now has one vni with vnid 2
+            Object.keys( node2.vnis ).should.have.length( 1 );
+            node2.vnis.should.have.all.keys('2');
         });
     });
 
-    describe('#vni', function() {
+    describe("#vni", function() {
 
-        it('should create and return a new IIP vni if no vnid is specified and no vni exists', function() {
+        it("should create and return a new default vni if no vnid is specified and no vni exists", function() {
 
-            var testVni = component.vni();
+            var testVni = node.vni();
 
             testVni.should.be.an('object');
             testVni.inputStates.should.exist;
@@ -65,87 +125,95 @@ describe('vni-manager', function() {
             testVni.outputState.should.be.a('function');
 
             expect( testVni.parentVni ).to.be.undefined;
-            expect( testVni.previousLms ).to.be.undefined;
+            expect( testVni.errorState.previousLms ).to.be.undefined;
+            expect( testVni.outputState.previousLms ).to.be.undefined;
         });
 
-    it('should create and return a new IIP vni if an empty vnid is specified and no vni exists', function() {
+    it("should create and return a new default vni if an empty vnid is specified and no vni exists", function() {
   
             var testVnid = '';
-            var testVni = component.vni( testVnid );
+            var testVni = node.vni( testVnid );
 
             testVni.should.be.an('object');
             testVni.inputStates.should.exist;
             testVni.inputStates.should.be.a('function');
+
             testVni.errorState.should.exist;
             testVni.errorState.should.be.a('function');
+
             testVni.outputState.should.exist;
             testVni.outputState.should.be.a('function');
 
             expect( testVni.parentVni ).to.be.undefined;
-            expect( testVni.previousLms ).to.be.undefined;
+            expect( testVni.errorState.previousLms ).to.be.undefined;
+            expect( testVni.outputState.previousLms ).to.be.undefined;
         });
 
-        describe('#delete', function() {
-            it('should delete the VNI', function() {
+        describe("#delete", function() {
+            it("should delete the VNI", function() {
 
-                Object.keys( component.vnis ).should.have.length( 0 );
+                Object.keys( node.vnis ).should.have.length( 0 );
 
                 var testVnid = '';
-                var testVni = component.vni( testVnid );
+                var testVni = node.vni( testVnid );
                 testVni.should.be.an('object');
-                Object.keys( component.vnis ).should.have.length( 1 );
+                Object.keys( node.vnis ).should.have.length( 1 );
 
-                var context = testVni.delete();
-                context.should.equal(component);
-                Object.keys( component.vnis ).should.have.length( 0 );
+                var result = testVni.delete();
+                result.should.equal(node);
+                Object.keys( node.vnis ).should.have.length( 0 );
 
                 // verify we get a different VNI instance back
-                var testVni2 = component.vni( testVnid );
+                var testVni2 = node.vni( testVnid );
                 testVni2.should.be.an('object');
-                Object.keys( component.vnis ).should.have.length( 1 );
+                Object.keys( node.vnis ).should.have.length( 1 );
             });
         });
    
-        describe('#errorState', function() {
-            it('should set and get errorState', function() {
+        describe("#errorState", function() {
+            it("should set and get errorState", function() {
     
+                // create a vni
                 var testVnid = '';
-                var testVni = component.vni( testVnid );
+                var testVni = node.vni( testVnid );
 
                 // Set up a test state
-                var testLm =  'LM1328113669.00000000000000001';
-                var testString = "Some error data";
-                var state = createState( testVnid, testString, testLm );
+                var state = createState( testVnid,
+                                         "Some error data",
+                                        'LM1328113669.00000000000000001' );
 
-                // Test set state
-                var context = testVni.errorState( state );
-                context.should.be.an('object');
+                // set error state
+                var result = testVni.errorState( state );
+                result.should.equal(node);
 
-                // Test get state
-                var outState = testVni.errorState();
-                outState.should.be.an('object');
-                outState.should.have.all.keys('vnid', 'lm','data');
-                outState.data.should.equal( testString );
-                outState.lm.should.equal( testLm );
+                // get error state
+                var errState = testVni.errorState();
+
+                // verify error state is as expected
+                errState.should.be.an('object');
+                errState.should.have.all.keys('vnid', 'lm','data');
+                errState.vnid.should.equal( testVnid );
+                errState.data.should.equal( state.data );
+                errState.lm.should.equal( state.lm );
             });
 
-            it('should clear error state', function() {
+            it("should clear error state", function() {
     
                 var testVnid = '';
-                var testVni = component.vni( testVnid );
+                var testVni = node.vni( testVnid );
 
                 // Set up a test state
-                var testLm =  'LM1328113669.00000000000000001';
-                var testString = "Some error data";
-                var state = createState( testVnid, testString, testLm );
+                var state = createState( testVnid,
+                                         "Some error data",
+                                        'LM1328113669.00000000000000001' );
 
                 // Test set state
-                var context = testVni.errorState( state );
-                context.should.be.an('object');
+                var result = testVni.errorState( state );
+                result.should.equal(node);
 
                 // Test clear state 
-                var clearContext = testVni.errorState( undefined );
-                clearContext.should.be.an('object');
+                var clearResult = testVni.errorState( undefined );
+                clearResult.should.equal(node);
 
                 // Test get of cleared state 
                 var clearedState = testVni.errorState();
@@ -153,9 +221,9 @@ describe('vni-manager', function() {
             });
         });
 
-        describe('#inputState', function() {
+        describe("#inputState", function() {
 
-            it('should set and get an inputState', function() {
+            it("should set and get an inputState", function() {
 
                 // Set up a test state
                 var testVnid = '';
@@ -164,11 +232,11 @@ describe('vni-manager', function() {
                 var state = createState( testVnid, testString, testLm );
 
                 // Set state on the input port
-                var context = component.vni().inputStates( {input: state} );
-                context.should.be.an('object');
+                var result = node.vni().inputStates( {input: state} );
+                result.should.equal(node);
 
                 // Get the input states and verify they are as we expect
-                var inputStates = component.vni().inputStates();
+                var inputStates = node.vni().inputStates();
                 inputStates.should.be.an('object');
                 Object.keys( inputStates ).should.have.length( 1 );
                 inputStates.should.have.all.keys( 'input' );
@@ -178,7 +246,7 @@ describe('vni-manager', function() {
                 inputStates.input.lm.should.equal( testLm ); 
             });
 
-            it('should delete an inputState', function() {
+            it("should delete an inputState", function() {
                 // Set up a test state
                 var testVnid = '';
                 var testLm =  'LM1328113669.00000000000000001';
@@ -186,62 +254,64 @@ describe('vni-manager', function() {
                 var state = createState( testVnid, testString, testLm );
 
                 // Set state on the input port
-                var context = component.vni().inputStates( {input: state} );
-                context.should.be.an('object');
+                var testVni = node.vni();
+                var result = testVni.inputStates( {input: state} );
+                result.should.equal(node);
 
                 // Verify that we have an input state set now
-                var inputStates = component.vni().inputStates();
+                var inputStates = node.vni().inputStates();
                 inputStates.should.be.an('object');
                 
                 // Now clear it
-                var deleteContext = component.vni().inputStates( {'input': undefined} ); 
+                var deleteContext = node.vni().inputStates( {'input': undefined} ); 
                 deleteContext.should.be.an('object');
-                var inputStates2 = component.vni().inputStates();
+                var inputStates2 = node.vni().inputStates();
                 inputStates.should.be.an('object');
                 expect( inputStates2.input ).to.be.an('undefined');
             });
         });
 
-        describe('#outputState', function() {
+        describe("#outputState", function() {
 
-            it('should set and get outputState', function() {
+            it("should set and get outputState", function() {
 
                 var testVnid = '';
-                var testVni = component.vni( testVnid );
+                var testVni = node.vni( testVnid );
 
                 // Set up a test state
-                var testLm =  'LM1328113669.00000000000000001';
-                var testString = "Some test data";
-                var state = createState( testVnid, testString, testLm );
+                var state = createState( testVnid, 
+                                         "Some test data",
+                                         'LM1328113669.00000000000000001');
 
                 // Test set state
-                var context = testVni.outputState( state );
-                context.should.be.an('object');
+                var result = testVni.outputState( state );
+                result.should.equal(node);
 
                 // Test get state finds the expected output state
                 var outState = testVni.outputState();
                 outState.should.be.an('object');
                 outState.should.have.all.keys('vnid', 'lm','data');
-                outState.data.should.equal( testString );
-                outState.lm.should.equal( testLm );
+                outState.vnid.should.equal( testVnid );
+                outState.data.should.equal( state.data );
+                outState.lm.should.equal( state.lm );
             });
 
-            it('should clear outputState', function() {
+            it("should clear outputState", function() {
                 var testVnid = '';
-                var testVni = component.vni( testVnid );
+                var testVni = node.vni( testVnid );
 
                 // Set up a test state
-                var testLm =  'LM1328113669.00000000000000001';
-                var testString = "Some test data";
-                var state = createState( testVnid, testString, testLm );
+                var state = createState( testVnid, 
+                                         "Some test data",
+                                         'LM1328113669.00000000000000001');
 
                 // Test set state
-                var context = testVni.outputState( state );
-                context.should.be.an('object');
+                var result = testVni.outputState( state );
+                result.should.equal(node);
 
                 // Test clearing the state 
-                var clearContext = testVni.outputState( undefined );
-                clearContext.should.be.an('object');
+                var clearResult = testVni.outputState( undefined );
+                clearResult.should.equal(node);
 
                 // Test get of cleared state 
                 var clearedState = testVni.outputState();
@@ -251,56 +321,57 @@ describe('vni-manager', function() {
 
     });
 
-    describe('#deleteVni', function() {
+    describe("#deleteVni", function() {
 
-        it('should delete the VNI by vnid', function() {
+        it("should delete the VNI by vnid", function() {
 
-            Object.keys( component.vnis ).should.have.length( 0 );
+            Object.keys( node.vnis ).should.have.length( 0 );
 
             // Create a VNI
             var testVnid = '';
-            var testVni = component.vni( testVnid );
+            var testVni = node.vni( testVnid );
             testVni.should.be.an('object');
-            Object.keys( component.vnis ).should.have.length( 1 );
+            Object.keys( node.vnis ).should.have.length( 1 );
 
             // Delete it and verify it's gone
-            var context = component.deleteVni( testVnid );
-            context.should.equal(component);
-            Object.keys( component.vnis ).should.have.length( 0 );
+            var result = node.deleteVni( testVnid );
+            result.should.equal(node);  
+            Object.keys( node.vnis ).should.have.length( 0 );
 
             // Create another VNI and verify it shows up
-            var testVni3 = component.vni( testVnid );
+            var testVni3 = node.vni( testVnid );
             testVni3.should.be.an('object');
-            Object.keys( component.vnis ).should.have.length( 1 );
+            Object.keys( node.vnis ).should.have.length( 1 );
         });
 
     });
    
-    describe('#deleteAllVnis', function() {
+    describe("#deleteAllVnis", function() {
 
-        it('should delete all VNIs associated with this component', function() {
+        it("should delete all VNIs associated with this node", function() {
 
-            Object.keys( component.vnis ).should.have.length( 0 );
+            Object.keys( node.vnis ).should.have.length( 0 );
 
             // Create 10 VNIs
             var myVnis = [];
             var numberOfVnis = 10;
             for ( var i=0; i < numberOfVnis; i++ ) { 
 
-                myVnis[i] = component.vni( i );
+                myVnis[i] = node.vni( i );
                 myVnis[i].should.be.an('object');
 
-                Object.keys( component.vnis ).should.have.length( myVnis.length );
+                Object.keys( node.vnis ).should.have.length( myVnis.length );
             }
 
             // Verify we got all 10
-            Object.keys( component.vnis ).should.have.length( numberOfVnis );
+            Object.keys( node.vnis ).should.have.length( numberOfVnis );
 
             // Delete the VNIs and verify they are all gone 
-            var context = component.deleteAllVnis();
-            context.should.equal(component);
-            Object.keys( component.vnis ).should.have.length( 0 );
+            var result = node.deleteAllVnis();
+            result.should.equal(node);
+            Object.keys( node.vnis ).should.have.length( 0 );
         });
 
     });
+
 });
