@@ -23,10 +23,10 @@ describe('input-states', function() {
                 input2:{},
                 input3:{},
                 inputa:{
-                    addressable: true
+                    multi: true
                 },
                 inputb:{
-                    addressable: true
+                    multi: true
                 }
             },
             outPorts:{
