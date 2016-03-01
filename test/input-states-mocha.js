@@ -109,13 +109,15 @@ describe('input-states', function() {
         var context = node.vni().inputStates({'input': state});
         context.should.exist;
 
-        var result = node.vni().inputStates('input'); 
+        var result = node.vni().inputStates('input');
         verifyInputState( result, state );
     });
     it('should treat undefined socketIndex the same as without it', function() {
-        var state = { vnid: '001',
-                   data: 'hello world',
-                   lm: createLm() }
+        var state = {
+            vnid: '001',
+            data: 'hello world',
+            lm: createLm()
+        };
 
         var context = node.vni().inputStates('input', undefined, state );
         context.should.exist;
@@ -125,46 +127,54 @@ describe('input-states', function() {
         verifyInputState( node.vni().inputStates('input'), state );
     });
     it('should fallback to no vnid', function() {
-        var state = { vnid: '001',
-                   data: 'hello world',
-                   lm: createLm() }
+        var state = {
+            vnid: '001',
+            data: 'hello world',
+            lm: createLm()
+        };
 
         var context = node.vni().inputStates({'input': state});
         context.should.exist;
 
-        var result = node.vni('001').inputStates('input'); 
+        var result = node.vni('001').inputStates('input');
         verifyInputState( result, state );
     });
     it('should set and get a new IIP input state hash', function() {
-        var state = { vnid: '001',
-                   data: 'hello world',
-                   lm: createLm() }
+        var state = {
+            vnid: '001',
+            data: 'hello world',
+            lm: createLm()
+        };
 
         var context = node.vni().inputStates({input: state});
         context.should.exist;
 
-        var result = node.vni().inputStates('input'); 
+        var result = node.vni().inputStates('input');
         verifyInputState( result, state );
     });
     it('should update an IIP input state', function() {
-         var state = { vnid: '002',
-                       data: 'Hola Mundo',
-                       lm: createLm() };
+        var state = {
+            vnid: '002',
+            data: 'Hola Mundo',
+            lm: createLm()
+        };
 
-         var context = node.vni().inputStates({'input': state});
-         context.should.exist;
+        var context = node.vni().inputStates({'input': state});
+        context.should.exist;
 
-         var result = node.vni().inputStates('input'); 
-         verifyInputState( result, state );
+        var result = node.vni().inputStates('input');
+        verifyInputState( result, state );
 
-         var state2 = { vnid: '003',
-                        data: 'Bonjour le monde',
-                        lm: createLm() };
-         var context2 = node.vni().inputStates({'input': state2});
-         context2.should.exist;
+        var state2 = {
+            vnid: '003',
+            data: 'Bonjour le monde',
+            lm: createLm()
+        };
+        var context2 = node.vni().inputStates({'input': state2});
+        context2.should.exist;
 
-         var result2 = node.vni().inputStates('input'); 
-         verifyInputState( result2, state2 );
+        var result2 = node.vni().inputStates('input');
+        verifyInputState( result2, state2 );
     });
     it('should set many IIP input states', function() {
           var inStates = [];
@@ -177,27 +187,27 @@ describe('input-states', function() {
                            data: 'data' + i,
                            lm: createLm() };
                node.vni().inputStates('input'+i, undefined, inState);
-               inStates.push( { portInfo: inPortInfo, state: inState } ); 
-          } 
+               inStates.push( { portInfo: inPortInfo, state: inState } );
+          }
 
-          // Tack one onto the front 
+          // Tack one onto the front
           inPortInfo = { inportName: 'input' };
           inState = { vnid: 99,
                       data: 'alpha data',
                       lm: createLm() };
           node.vni().inputStates({'input': inState});
-          inStates.push( { portInfo: inPortInfo, state: inState } ); 
+          inStates.push( { portInfo: inPortInfo, state: inState } );
 
-          // Insert one in the middle 
+          // Insert one in the middle
           inPortInfo = { inportName: 'input1' };
           inState = { vnid: 22,
                       data: 'middle data',
                       lm: createLm() };
           node.vni().inputStates({'input1': inState});
-          inStates.push( { portInfo: inPortInfo, state: inState } ); 
+          inStates.push( { portInfo: inPortInfo, state: inState } );
 
-          // Verify that we have all of them 
-          inStates.forEach( function(inState) { 
+          // Verify that we have all of them
+          inStates.forEach( function(inState) {
               var actualState = node.vni().inputStates(inState.portInfo.inportName);
               actualState.should.deep.equal( inState.state );
           });
@@ -210,9 +220,9 @@ describe('input-states', function() {
          var context = node.vni().inputStates('inputa', 0, state);
          context.should.exist;
 
-         var result = node.vni('010').inputStates('inputa', 0); 
+         var result = node.vni('010').inputStates('inputa', 0);
          verifyInputState( result, state );
-    }); 
+    });
     it('should set and get a new packet input state', function() {
          var state = { vnid: '010',
                        data: 'hello world from originating node',
@@ -221,9 +231,9 @@ describe('input-states', function() {
          var context = node.vni().inputStates('inputa', 0, state);
          context.should.exist;
 
-         var result = node.vni().inputStates('inputa', 0); 
+         var result = node.vni().inputStates('inputa', 0);
          verifyInputState( result, state );
-    }); 
+    });
     it('should set and get a new packet input state by socketIndex', function() {
          var state = { vnid: '010',
                        data: 'hello world from originating node',
@@ -235,37 +245,47 @@ describe('input-states', function() {
          verifyInputState(node.vni().inputStates('inputa', 0), state);
          node.vni().inputStates('inputa', 0, undefined);
          expect(node.vni().inputStates('inputa', 0)).to.be.undefined;
-    }); 
+    });
     it('should set and get array of input states', function() {
-         var one = { vnid: '010',
-                       data: 'hello world from node one',
-                       lm: createLm() }
-         var two = { vnid: '010',
-                       data: 'hello world from node two',
-                       lm: createLm() }
+        var one = {
+            vnid: '',
+            data: 'hello world from node one',
+            lm: createLm()
+        };
+        var two = {
+            vnid: '',
+            data: 'hello world from node two',
+            lm: createLm()
+        };
 
-         var context = node.vni().inputStates({'inputa': [one, two]});
-         context.should.exist;
+        // Set the states of two different upstream states: socketId 0 and 1
+        var context = node.vni().inputStates({'inputa': [one, two]});
+        context.should.exist;
 
-         node.vni().inputStates('inputa').should.eql([one, two]);
-         verifyInputState( node.vni().inputStates('inputa', 0), one );
-         verifyInputState( node.vni().inputStates('inputa', 1), two );
-    }); 
+        node.vni().inputStates('inputa').should.eql([one, two]);
+        verifyInputState( node.vni().inputStates('inputa', 0), one );
+        verifyInputState( node.vni().inputStates('inputa', 1), two );
+    });
     it('should set and get hash of array of input states', function() {
-         var one = { vnid: '010',
-                       data: 'hello world from node one',
-                       lm: createLm() }
-         var two = { vnid: '010',
-                       data: 'hello world from node two',
-                       lm: createLm() }
+        var one = {
+            vnid: '010',
+            data: 'hello world from node one',
+            lm: createLm()
+        };
+        var two = {
+            vnid: '010',
+            data: 'hello world from node two',
+            lm: createLm()
+        };
 
-         var context = node.vni().inputStates({inputa: [one, two]});
-         context.should.exist;
+        // inputa is setup as an addressable/multi port, so an array is used
+        var context = node.vni().inputStates({inputa: [one, two]});
+        context.should.exist;
 
-         node.vni().inputStates('inputa').should.eql([one, two]);
-         verifyInputState( node.vni().inputStates('inputa', 0), one );
-         verifyInputState( node.vni().inputStates('inputa', 1), two );
-    }); 
+        node.vni().inputStates('inputa').should.eql([one, two]);
+        verifyInputState( node.vni().inputStates('inputa', 0), one );
+        verifyInputState( node.vni().inputStates('inputa', 1), two );
+    });
     it('should update a packet input state', function() {
          var state = { vnid: '015',
                        data: 'hola mundo from originating node',
@@ -274,7 +294,7 @@ describe('input-states', function() {
          var context = node.vni().inputStates('inputa', 0, state );
          context.should.exist;
 
-         var result = node.vni().inputStates('inputa', 0); 
+         var result = node.vni().inputStates('inputa', 0);
          verifyInputState( result, state );
 
          var state2 = { vnid: '016',
@@ -283,7 +303,7 @@ describe('input-states', function() {
          var context2 = node.vni().inputStates('inputa', 0, state2 );
          context2.should.exist;
 
-         var result2 = node.vni().inputStates('inputa', 0); 
+         var result2 = node.vni().inputStates('inputa', 0);
          verifyInputState( result2, state2 );
     });
     it('should delete an IIP input state', function() {
@@ -295,13 +315,13 @@ describe('input-states', function() {
          var context = node.vni().inputStates({'input': state});
          context.should.exist;
 
-         var result = node.vni().inputStates('input'); 
+         var result = node.vni().inputStates('input');
          verifyInputState( result, state );
 
-         var deleteContext = node.vni().inputStates({'input': undefined}); 
+         var deleteContext = node.vni().inputStates({'input': undefined});
          deleteContext.should.exist;
 
-         var result2 = node.vni().inputStates('input'); 
+         var result2 = node.vni().inputStates('input');
          expect( result2 ).to.be.undefined;
     });
     it("should get the states from a multi port with both an IIP and an edge attached, with a vnid of '' coming on the edge attachment.", function() {
