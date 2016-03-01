@@ -56,6 +56,36 @@ describe('noflo-component-factory', function() {
             test.sendData(node, 'input', "hello");
         }).should.become("hello false");
     });
+    it("should map multi: true to addressable: true", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        multi: true,
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.isMulti());
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "isMulti?");
+        }).should.become("isMulti? true");
+    });
+    it("should map multi: false to addressable: false", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        multi: false,
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.isMulti());
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "isMulti?");
+        }).should.become("isMulti? false");
+    });
     it("should have stable nodeInstance property", function() {
         return new Promise(function(done){
             var node = test.createComponent(componentFactory({

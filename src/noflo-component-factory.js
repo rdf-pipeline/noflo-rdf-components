@@ -5,7 +5,7 @@ var noflo = require('noflo');
 var access = require('./noflo-component-access');
 
 /**
- * Creates a noflo Component factory function from a component definition,
+ * Creates a noflo Component (aka node factory function) from a node definition,
  * registers any event handlers on definition. Triggers ondata events for outPorts.
  * The context of all registered event handlers is of a Component/Port facade and
  * not of the EventEmitter itself. This prevents the caller from gaining access
@@ -33,8 +33,8 @@ module.exports = function(nodeDef, callback){
     return function(metadata) {
         // noflo requires each port and nodeInstance to have its own options object
         var node = new noflo.Component({
-            outPorts: _.mapObject(nodeDef.outPorts, _.clone),
-            inPorts: _.mapObject(nodeDef.inPorts, _.clone)
+            outPorts: _.mapObject(nodeDef.outPorts, changeMulti2Addressable),
+            inPorts: _.mapObject(nodeDef.inPorts, changeMulti2Addressable)
         });
         triggerPortDataEvents(node.outPorts);
         var facade = access(node);
@@ -53,6 +53,18 @@ module.exports = function(nodeDef, callback){
         return node;
     };
 };
+
+/**
+ * Changes the port definition to use the noflo addressable property.
+ * This allows the caller to use multi or addressable in their port definition.
+ * @param portDef the port definition (or options)
+ * @return a copy of portDef with the addressable property populated
+ */
+function changeMulti2Addressable(portDef) {
+    return _.extend({
+        addressable: portDef.multi || portDef.addressable
+    }, portDef);
+}
 
 /**
  * Fires data event when OutPort send function is called on port.
