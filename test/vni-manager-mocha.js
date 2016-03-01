@@ -184,7 +184,7 @@ describe("vni-manager", function() {
 
                 // set error state
                 var result = testVni.errorState( state );
-                result.should.equal(node);
+                result.should.equal(testVni);
 
                 // get error state
                 var errState = testVni.errorState();
@@ -209,11 +209,11 @@ describe("vni-manager", function() {
 
                 // Test set state
                 var result = testVni.errorState( state );
-                result.should.equal(node);
+                result.should.equal(testVni);
 
                 // Test clear state 
                 var clearResult = testVni.errorState( undefined );
-                clearResult.should.equal(node);
+                clearResult.should.equal(testVni);
 
                 // Test get of cleared state 
                 var clearedState = testVni.errorState();
@@ -285,7 +285,7 @@ describe("vni-manager", function() {
 
                 // Test set state
                 var result = testVni.outputState( state );
-                result.should.equal(node);
+                result.should.equal(testVni);
 
                 // Test get state finds the expected output state
                 var outState = testVni.outputState();
@@ -307,11 +307,11 @@ describe("vni-manager", function() {
 
                 // Test set state
                 var result = testVni.outputState( state );
-                result.should.equal(node);
+                result.should.equal(testVni);
 
                 // Test clearing the state 
                 var clearResult = testVni.outputState( undefined );
-                clearResult.should.equal(node);
+                clearResult.should.equal(testVni);
 
                 // Test get of cleared state 
                 var clearedState = testVni.outputState();

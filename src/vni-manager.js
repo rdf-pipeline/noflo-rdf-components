@@ -93,8 +93,8 @@ module.exports = function( componentFacade ) {
               return {
                   delete: _.bind( this.deleteVni, this, vnid ),
                   inputStates: _.partial( inputStates, this, vnid ), 
-                  errorState: _.partial( errorState, this, this.vnis[vnid] ), 
-                  outputState: _.partial( outputState, this, this.vnis[vnid] ) 
+                  errorState: _.partial( errorState, this.vnis[vnid] ), 
+                  outputState: _.partial( outputState, this.vnis[vnid] ) 
               };
           },
 
@@ -108,14 +108,15 @@ module.exports = function( componentFacade ) {
  * 
  * @this vni context 
  *
- * @param node current node instance
- * @param vni vni whose state should be set
+ * @param vni vni whose state should be set or retrieved
  * @param state error state to be set
+ *
+ * @return the requested state or the current VNI context
  */
-function errorState( node, vni, state ) {
+function errorState( vni, state ) {
 
     // Do we have a state to be set ?
-    if ( arguments.length > 2 ) {
+    if ( arguments.length > 1 ) {
 
         if ( _.isUndefined(state) ) { 
             // Clear state
@@ -125,7 +126,7 @@ function errorState( node, vni, state ) {
             vni.errorState = state;
         }
 
-        return node;
+        return this;
     }
 
     // Get the state 
@@ -136,12 +137,16 @@ function errorState( node, vni, state ) {
  * Get/Set output state on the vni 
  * 
  * @this vni context 
+ * 
+ * @param vni vni whose state should be set or retrieved
  * @param state output state to be set
+ *
+ * @return the requested state or the current VNI context
  */
-function outputState( node, vni, state ) {
+function outputState( vni, state ) {
 
     // Do we have a state to be set ?
-    if ( arguments.length > 2 ) {
+    if ( arguments.length > 1 ) {
         if ( _.isUndefined(state) ) { 
             // Clear state
             delete vni.outputState;
@@ -150,7 +155,7 @@ function outputState( node, vni, state ) {
             vni.outputState = state;
         }
 
-        return node;
+        return this;
     }
 
     // Get the state
