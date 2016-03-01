@@ -87,7 +87,6 @@ module.exports = function( componentFacade ) {
                   this.vnis[vnid] = {}; 
 
                   // TODO: Add parentVni setting here
-                  // TODO: Add previousLms here
               }
 
               return {
