@@ -7,7 +7,8 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var nodeFactory = require('../src/noflo-component-factory');
+var componentFactory = require('../src/noflo-component-factory');
+
 var createState = require('../src/create-state');
 var inputStates = require('../src/input-states');
 var promiseOutput = require('../src/promise-output');
@@ -20,7 +21,7 @@ describe("vni-manager", function() {
 
     beforeEach(function() {
 
-        node = test.createComponent(nodeFactory({
+        node = test.createComponent(componentFactory({
             inPorts:{input:{
                 ondata: promiseOutput(function(payload){
                     return payload + " world";
@@ -59,7 +60,7 @@ describe("vni-manager", function() {
         it("should write to the vnis of the node, with no cross-node interference", function() {
 
             // Create two test nodes 
-            var node1 = test.createComponent(nodeFactory({
+            var node1 = test.createComponent(componentFactory({
                 inPorts:{input:{
                     ondata: promiseOutput(function(payload){
                         return payload + " world";
@@ -69,7 +70,7 @@ describe("vni-manager", function() {
               }, vniManager )
             );
 
-            var node2 = test.createComponent(nodeFactory({
+            var node2 = test.createComponent(componentFactory({
                 inPorts:{input:{
                     ondata: promiseOutput(function(payload){
                         return payload + " world2";
