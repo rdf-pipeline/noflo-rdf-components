@@ -96,6 +96,9 @@ function getPortStateArray(node, vnid, portName) {
  * Returns the state of this port for the given socketId. This can be used to
  * look up the last state when checking to see if the state has changed.
  * Note that the socketId is not neccessarily the same as the array index
+ * If a socket is detached, for example, its socketId is not reused, but the
+ * array index used by listAttached() is. listAttached() maps *attached* sockets
+ * to socketIds.
  * @param node a node facade
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName the name of the addressable/multi port for this node
@@ -172,7 +175,7 @@ function setPortStateArray(node, vnid, portName, stateArray) {
         throw Error("This port is not addressable/multi: " + portName);
     port.listAttached().forEach(function(socketId, i) {
         setPortStateBySocketId(node, vnid, portName, socketId, stateArray[i]);
-    }, []);
+    });
 }
 
 /**
