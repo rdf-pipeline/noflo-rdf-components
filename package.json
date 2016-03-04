@@ -31,9 +31,14 @@
   "dependencies": {
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
-    "jsonpointer":"~3.0.0",
+    "jsonpointer": "~3.0.0",
     "media-typer": "^0.3.0",
     "noflo": "~0.5.14",
+    "noflo-adapters": "^0.1.3",
+    "noflo-core": "^0.1.14",
+    "noflo-groups": "^0.1.7",
+    "noflo-objects": "^0.1.12",
+    "noflo-strings": "^0.1.11",
     "open": "~0.0.5",
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
@@ -42,12 +47,16 @@
     "uri-templates": "~0.1.9"
   },
   "noflo": {
+    "graphs": {
+      "rdf-insert": "./graphs/rdf-insert.fbp"
+    },
     "components": {
       "request-template": "./components/request-template.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
+      "rdf-ntriples": "./components/rdf-ntriples.js",
       "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
       "round-robin": "./components/round-robin.js",
