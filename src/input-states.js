@@ -5,7 +5,7 @@ var _ = require('underscore');
 /**
  * Getter and Setter for InPort states.
  *
- * @this is not used, but may be returned
+ * @this a vni.  Not used, but may be returned
  * @param node a node facade
  * @param vnid an identifier that distinguishes the set of VNI states
  * @param portName name of the input port whose state is being recorded
@@ -16,11 +16,11 @@ var _ = require('underscore');
  *         setter returns the current context
  *
  * Usage to retrieve state:
- *  inputState(node, vnid) : {portName: currentState, multiPortName: [currentState]}
- *  inputState(node, vnid, portName, socketId) : currentState
+ *  vni.inputState(node, vnid) : {portName: currentState, multiPortName: [currentState]}
+ *  vni.inputState(node, vnid, portName, socketId) : currentState
  * Usage to store state:
- *  inputState(node, vnid, {portName: currentState, multiPortName: [currentState]}) : this
- *  inputState(node, vnid, portName, socketId, state) : this
+ *  vni.inputState(node, vnid, {portName: currentState, multiPortName: [currentState]}) : this
+ *  vni.inputState(node, vnid, portName, socketId, state) : this
  */ 
 module.exports = function(node, vnid, portName, socketId, state) {
     if (!node.inPorts || !node.outPorts) {
