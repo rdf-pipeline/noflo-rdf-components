@@ -10,7 +10,8 @@ var access = require('./noflo-component-access');
  * The context of all registered event handlers is of a Component/Port facade and
  * not of the EventEmitter itself. This prevents the caller from gaining access
  * to private areas of noflo internals.
- *
+ * @param nodeDef hash of inPorts and outPorts
+ * @param callback used to gain access to the facade and possibly extend it
  * Usage:
  *  componentFactory({
  *      description: "text",
