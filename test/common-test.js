@@ -24,7 +24,7 @@ module.exports = {
         var graph = new noflo.Graph();
         _.each(componentModules, function(module, name) {
             // maps node to factory
-            graph.addNode(name, name);
+            graph.addNode(name, _.isString(module) ? module : name);
         });
         return new Promise(function(resolve, reject){
             noflo.createNetwork(graph, function(err, network) {
@@ -32,7 +32,9 @@ module.exports = {
                 else if (err) return reject(err);
                 _.each(componentModules, function(module, name) {
                     // maps factory to module
-                    network.loader.components[name] = module;
+                    if (_.isObject(module)) {
+                        network.loader.components[name] = module;
+                    }
                 });
                 network.connect(function(err){
                     if (err) return reject(err);

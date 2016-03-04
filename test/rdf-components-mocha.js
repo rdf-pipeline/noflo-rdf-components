@@ -13,6 +13,7 @@ var rdfLoad = require('../components/rdf-load');
 var rdfQuery = require('../components/rdf-query');
 var rdfUpdate = require('../components/rdf-update');
 var rdfJsonld = require('../components/rdf-jsonld');
+var rdfNtriples = require('../components/rdf-ntriples');
 
 describe('rdf components', function() {
     var prefix = 'PREFIX dbpedia:<http://dbpedia.org/resource/>\n' +
@@ -20,10 +21,12 @@ describe('rdf components', function() {
         'PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n';
     var john = {
         "@context": "http://json-ld.org/contexts/person.jsonld",
-        "@id": "http://dbpedia.org/resource/John_Lennon",
-        "name": "John Lennon",
-        "born": "1940-10-09",
-        "spouse": "http://dbpedia.org/resource/Cynthia_Lennon"
+        "@graph": [{
+            "@id": "http://dbpedia.org/resource/John_Lennon",
+            "name": "John Lennon",
+            "born": "1940-10-09",
+            "spouse": "http://dbpedia.org/resource/Cynthia_Lennon"
+        }]
     };
     var cynthia = {
         "@context": "http://json-ld.org/contexts/person.jsonld",
@@ -48,6 +51,21 @@ describe('rdf components', function() {
                 network.graph.addInitial(john, 'load', 'input');
             });
         }).should.eventually.include.keys('triples');
+    });
+    it("should round trip a graph", function() {
+        return test.createNetwork({
+            load: rdfLoad,
+            jsonld: rdfJsonld
+        }).then(function(network){
+            network.graph.addEdge('load', 'output', 'jsonld', 'input');
+            network.graph.addInitial(john, 'jsonld', 'frame');
+            var output = noflo.internalSocket.createSocket();
+            network.processes.jsonld.component.outPorts.output.attach(output);
+            return new Promise(function(done) {
+                output.on('data', done);
+                network.graph.addInitial(john, 'load', 'input');
+            });
+        }).should.eventually.eql(john);
     });
     it("should query a graph", function() {
         return test.createNetwork({
@@ -103,5 +121,31 @@ describe('rdf components', function() {
                 network.graph.addInitial(john, 'load', 'input');
             });
         }).should.eventually.eql(cynthia);
+    });
+    it("should round trip a graph through ntriples", function() {
+        return test.createNetwork({
+            loadJson: rdfLoad,
+            ntriples: rdfNtriples,
+            extractProperty: "objects/ExtractProperty",
+            join: "objects/Join",
+            loadNtriples: rdfLoad,
+            jsonld: rdfJsonld
+        }).then(function(network){
+            network.graph.addEdge('loadJson', 'output', 'ntriples', 'input');
+            network.graph.addEdge('ntriples', 'output', 'extractProperty', 'in');
+            network.graph.addEdge('extractProperty', 'out', 'join', 'in');
+            network.graph.addEdge('join', 'out', 'loadNtriples', 'input');
+            network.graph.addEdge('loadNtriples', 'output', 'jsonld', 'input');
+            network.graph.addInitial('text/turtle', 'loadNtriples', 'media');
+            network.graph.addInitial('tokens', 'extractProperty', 'key');
+            network.graph.addInitial('', 'join', 'delimiter');
+            network.graph.addInitial(john, 'jsonld', 'frame');
+            var output = noflo.internalSocket.createSocket();
+            network.processes.jsonld.component.outPorts.output.attach(output);
+            return new Promise(function(done, fail) {
+                output.on('data', done);
+                network.graph.addInitial(john, 'loadJson', 'input');
+            });
+        }).should.eventually.eql(john);
     });
 });
