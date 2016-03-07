@@ -1,5 +1,7 @@
 # rdf-insert.fbp
 
+# Takes parsed JSON-LD and inserts it into the target-graph (IRI) at the sparql-endpoint.
+
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
 INPORT=regroup.IN:TARGET_GRAPH
