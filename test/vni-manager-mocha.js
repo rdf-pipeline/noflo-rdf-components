@@ -118,6 +118,12 @@ describe("vni-manager", function() {
             var testVni = node.vni();
 
             testVni.should.be.an('object');
+           
+            testVni.node.should.exist;
+            testVni.node.should.be.an('object');
+            node.should.include.keys('nodeName', 'componentName', 'inPorts', 'outPorts',
+                                     'vnis', 'deleteAllVnis', 'deleteVni', 'vni' );
+
             testVni.inputStates.should.exist;
             testVni.inputStates.should.be.a('function');
             testVni.errorState.should.exist;
@@ -134,6 +140,11 @@ describe("vni-manager", function() {
   
             var testVnid = '';
             var testVni = node.vni( testVnid );
+
+            testVni.node.should.exist;
+            testVni.node.should.be.an('object');
+            node.should.include.keys('nodeName', 'componentName', 'inPorts', 'outPorts',
+                                     'vnis', 'deleteAllVnis', 'deleteVni', 'vni' );
 
             testVni.should.be.an('object');
             testVni.inputStates.should.exist;
@@ -234,7 +245,10 @@ describe("vni-manager", function() {
 
                 // Set state on the input port
                 var result = node.vni().inputStates( {input: state} );
-                result.should.equal(node);
+
+                // Verify we got a vni facade back
+                result.should.be.an('object');
+                result.should.include.keys( 'errorState', 'inputStates', 'outputState', 'node' );
 
                 // Get the input states and verify they are as we expect
                 var inputStates = node.vni().inputStates();
@@ -257,7 +271,10 @@ describe("vni-manager", function() {
                 // Set state on the input port
                 var testVni = node.vni();
                 var result = testVni.inputStates( {input: state} );
-                result.should.equal(node);
+
+                // Verify we got a vni facade back
+                result.should.be.an('object');
+                result.should.include.keys( 'errorState', 'inputStates', 'outputState', 'node' );
 
                 // Verify that we have an input state set now
                 var inputStates = node.vni().inputStates();
