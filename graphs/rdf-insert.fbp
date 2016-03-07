@@ -9,7 +9,7 @@ OUTPORT=request.OUTPUT:OUTPUT
 # Initial Information Packets (IIP)
 'graph' -> GROUP regroup(groups/Regroup) OUT -> PROPERTY insertGraph(objects/InsertProperty)
 'POST' -> METHOD request
-'Content-Type=text/turtle' -> IN propStringToObject(adapters/PropStringToObject) OUT -> HEADERS request
+'Content-Type=application/sparql-update' -> IN propStringToObject(adapters/PropStringToObject) OUT -> HEADERS request
 '"INSERT DATA {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n{{#each tokens}}{{{this}}}{{/each}}\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
 
 # Node Edges
