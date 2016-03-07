@@ -89,11 +89,13 @@ module.exports = function( componentFacade ) {
                   // TODO: Add parentVni setting here
               }
 
+              var that = this; // save current node context to reference in facade
               return {
                   delete: _.bind( this.deleteVni, this, vnid ),
                   inputStates: _.partial( inputStates, this, vnid ), 
                   errorState: _.partial( errorState, this.vnis[vnid] ), 
-                  outputState: _.partial( outputState, this.vnis[vnid] ) 
+                  outputState: _.partial( outputState, this.vnis[vnid] ),
+                  node: that
               };
           },
 
