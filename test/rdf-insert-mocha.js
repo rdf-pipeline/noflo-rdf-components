@@ -75,7 +75,7 @@ describe('rdf-insert subgraph', function() {
             network.processes.insert.component.outPorts.output.attach(output);
             return new Promise(function(done) {
                 output.on('data', done);
-                network.graph.addInitial("http://localhost:1337/", 'insert', 'endpoint');
+                network.graph.addInitial("http://localhost:1337/", 'insert', 'sparql_endpoint');
                 network.graph.addInitial(john, 'insert', 'jsonld');
             }).then(function(sparql){
                 return _.isString(sparql) ? sparql.replace(/\s+/g,'\n').trim() : sparql;
