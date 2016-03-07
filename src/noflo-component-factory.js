@@ -5,13 +5,12 @@ var noflo = require('noflo');
 var access = require('./noflo-component-access');
 
 /**
- * Creates a noflo Component (aka node factory function) from a node definition,
+ * Creates a noflo Component factory function from a component definition,
  * registers any event handlers on definition. Triggers ondata events for outPorts.
  * The context of all registered event handlers is of a Component/Port facade and
  * not of the EventEmitter itself. This prevents the caller from gaining access
  * to private areas of noflo internals.
- * @param nodeDef hash of inPorts and outPorts
- * @param callback used to gain access to the facade and possibly extend it
+ *
  * Usage:
  *  componentFactory({
  *      description: "text",
@@ -28,9 +27,19 @@ var access = require('./noflo-component-access');
  *      },
  *      onicon: function(icon)
  *   });
+ * 
+ * @param nodeDef the node definition that describes the component to be built
+ * @param nodeInitCb optional function to be called after the node and facade are instantiated to 
+ *        enable additional customization to these objects.
+ * @param eventHandlers an array of {event, port, handler} tuples to be registered for callback.  The ondata 
+ *        handler is one of the most common use cases.
  */
-module.exports = function(nodeDef, callback){
+module.exports = function(nodeDef, nodeInitCb, eventHandlers){
     if (!nodeDef) throw Error("No parameter");
+
+    // Update the nodeDef with the specified event handlers
+    applyEventHandlers( nodeDef, eventHandlers );
+
     return function(metadata) {
         // noflo requires each port and nodeInstance to have its own options object
         var node = new noflo.Component({
@@ -44,8 +53,8 @@ module.exports = function(nodeDef, callback){
         registerListeners(node, facade, nodeDef);
         node.description = nodeDef.description;
         node.setIcon(nodeDef.icon);
-        if (_.isFunction(callback)) {
-            callback.call(node, facade);
+        if (_.isFunction(nodeInitCb)) {
+            nodeInitCb.call(node, facade);
         }
         // Used by common-test.js#createComponent to gain access to the facade
         if (metadata && _.isFunction(metadata.facade)) {
@@ -54,6 +63,20 @@ module.exports = function(nodeDef, callback){
         return node;
     };
 };
+
+function applyEventHandlers( nodeDef, eventHandlers ) {
+
+    if ( _.isUndefined( eventHandlers ) || _.isEmpty( eventHandlers ) ) { 
+       return;
+    }
+
+    // Walk the handler list and extend the specified ports with the event and callback given for it
+    eventHandlers.forEach( 
+        function( handler ) {  
+             _.extend( nodeDef.inPorts[handler.portName],
+                       { [handler.event]: handler.callback } );
+    });
+}
 
 /**
  * Changes the port definition to use the noflo addressable property.
