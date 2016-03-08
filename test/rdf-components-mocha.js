@@ -53,10 +53,12 @@ describe('rdf components', function() {
         }).should.eventually.include.keys('triples');
     });
     it("should round trip a graph", function() {
+        // creating 2 node graph (rdfLoad & rdfJsonld components)
         return test.createNetwork({
             load: rdfLoad,
             jsonld: rdfJsonld
         }).then(function(network){
+            // attach load and jsonld nodes together
             network.graph.addEdge('load', 'output', 'jsonld', 'input');
             network.graph.addInitial(john, 'jsonld', 'frame');
             var output = noflo.internalSocket.createSocket();
@@ -122,7 +124,7 @@ describe('rdf components', function() {
             });
         }).should.eventually.eql(cynthia);
     });
-    it("should round trip a graph through ntriples", function() {
+    it("should round trip a graph through rdf-ntriples component", function() {
         return test.createNetwork({
             loadJson: rdfLoad,
             ntriples: rdfNtriples,

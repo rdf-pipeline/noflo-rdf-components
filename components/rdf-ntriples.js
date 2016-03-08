@@ -27,6 +27,7 @@ exports.getComponent = componentFactory({
  * Promise of N-Triples array of tokens for the given graph.
  * @this a noflo.InPort or facade
  * @param graph RDF JS Interface Graph object
+ * @see https://www.w3.org/TR/rdf-interfaces/#graphs
  */
 function execute(graph) {
     var tokens = [];
@@ -43,7 +44,8 @@ function execute(graph) {
 
 /**
  * Converts the RDF term into a array of tokens
- * @param object an RDF term implementing RDF JS Interface
+ * @param term an RDF term implementing RDF JS Interface
+ * @see https://www.w3.org/TR/rdf-interfaces/#basic-node-types
  */
 function valueTokens(term) {
     var value = term.nominalValue;
@@ -73,9 +75,9 @@ function valueTokens(term) {
 /**
  * Checks if the string includes any special characters.
  */
-function encodingNeededFor(st) {
-    return st.indexOf('\\') >= 0 || st.indexOf('\"') >= 0 ||
-        st.indexOf('\n') >= 0 || st.indexOf('\r') >= 0 || st.indexOf('\t') >= 0;
+function encodingNeededFor(string) {
+    return string.indexOf('\\') >= 0 || string.indexOf('\"') >= 0 ||
+        string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0 || string.indexOf('\t') >= 0;
 }
 
 /**
