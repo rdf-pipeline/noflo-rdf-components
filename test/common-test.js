@@ -97,5 +97,21 @@ module.exports = {
         var socket = noflo.internalSocket.createSocket();
         component.outPorts[portName].attach(socket);
         socket.on('data', handler.bind(node.outPorts[portName]));
+    },
+
+    /**
+     * Verifies that the state has the expected vnid & data and the lm is
+     * structured as an lm should be.
+     */
+    verifyState: function( state, expectedVnid, expectedData ) { 
+        state.should.be.an('object');
+        state.should.have.all.keys('vnid', 'lm','data');
+        state.vnid.should.equal( expectedVnid );
+        state.data.should.equal( expectedData );
+        state.lm.should.be.a( 'string' );
+        state.lm.should.not.be.empty;
+        var lmComponents = state.lm.match(/^LM(\d+)\.(\d+)$/);
+        lmComponents.should.have.length(3);
     }
+
 };
