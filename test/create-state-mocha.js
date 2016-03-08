@@ -9,7 +9,7 @@ var expect = chai.expect;
 
 var createState = require('../src/create-state');
 
-describe("State", function() {
+describe("create-state", function() {
 
     it("should exist as a function", function() {
         createState.should.exist;

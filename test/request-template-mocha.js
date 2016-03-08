@@ -17,7 +17,6 @@ describe('request-template', function() {
         server.listen(1337);
     });
     after(function(){
-        console.log("after");
         server.close();
     });
     it("should send a request", function() {

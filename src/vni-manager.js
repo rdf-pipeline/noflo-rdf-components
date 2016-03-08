@@ -12,7 +12,7 @@ var DEFAULT_VNID = '';
  * If the vni for the specified vnid does not exist, a new one will be created.
  *
  * @this node unless otherwise specified on an API
- * @param componentFacade a component facade
+ * @param node a component node instance (facade)
  *
  * @return the component facade, extended to include the vni interface
  * 
@@ -33,9 +33,9 @@ var DEFAULT_VNID = '';
  *     node.vni().outputState( state );
  *     var state = node.vni().outputState();
  */
-module.exports = function( componentFacade ) { 
+module.exports = function( node ) { 
 
-    _.extend( componentFacade, 
+    _.extend( node, 
         {
 
           /**
