@@ -80,6 +80,24 @@ module.exports = {
         return node ? node : component;
     },
 
+    detachAllInputSockets: function( node ) {
+
+        var component = node._component_under_test ? node._component_under_test : node;
+        var portNames = Object.keys( node.inPorts );
+
+        if ( portNames ) {
+             portNames.forEach( function( portName ) {
+                 var port = component.inPorts[portName];
+                 var sockets = port.listAttached();
+                 if ( _.isArray( sockets ) && sockets.length > 0 ) {
+                    sockets.forEach( function( socket ) {
+                        port.detach(socket);
+                    });
+                 }
+             });
+        }
+    },
+
     sendData: function(node, port, payload) {
         var component = node._component_under_test ? node._component_under_test : node;
 
