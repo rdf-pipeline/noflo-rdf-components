@@ -20,19 +20,24 @@ module.exports = {
      *      network.graph.addInitial(data, 'name', 'input') to send data
      *  });
      */
-    createNetwork: function(componentModules) {
+    createNetwork: function(nodes) {
+        var components = _.pick(nodes, _.isObject);
         var graph = new noflo.Graph();
-        _.each(componentModules, function(module, name) {
-            // maps node to factory
+        _.each(_.pick(nodes, _.isString), function(componentName, nodeId) {
+            // maps nodeId to componentName
+            graph.addNode(nodeId, componentName);
+        });
+        _.each(components, function(module, name) {
+            // use the same name for both nodeId and componentName
             graph.addNode(name, name);
         });
         return new Promise(function(resolve, reject){
             noflo.createNetwork(graph, function(err, network) {
                 if (err instanceof noflo.Network) network = err;
                 else if (err) return reject(err);
-                _.each(componentModules, function(module, name) {
-                    // maps factory to module
-                    network.loader.components[name] = module;
+                _.each(components, function(module, componentName) {
+                    // maps componentName to module
+                    network.loader.components[componentName] = module;
                 });
                 network.connect(function(err){
                     if (err) return reject(err);
