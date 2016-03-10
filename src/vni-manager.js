@@ -4,6 +4,7 @@
 var _ = require('underscore');
 
 var inputStates = require('./input-states');
+var stateFactory = require('./create-state');
 
 var DEFAULT_VNID = '';
 
@@ -83,8 +84,11 @@ module.exports = function( node ) {
 
               if ( _.isUndefined( this.vnis[vnid] )  ) {
 
-                  // have no vni so create one
-                  this.vnis[vnid] = {}; 
+                  // have no vni so create one with empty error & output state
+                  this.vnis[vnid] = { 
+                      errorState: stateFactory( vnid, '' ), 
+                      outputState: stateFactory( vnid, '' ),
+                  }; 
 
                   // TODO: Add parentVni setting here
               }

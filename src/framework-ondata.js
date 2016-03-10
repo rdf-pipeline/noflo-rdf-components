@@ -27,11 +27,12 @@ module.exports = function( payload, socketIndex ) {
      var vnid = payload.vnid || '';
      var vni = this.nodeInstance.vni(vnid);
 
-     // Set the input states
-     vni.inputStates( portName, socketIndex, stateFactory( vnid, payload ) );
+     // Update the input state
+     var inputState = (payload.vnid) ? payload : stateFactory( vnid, payload );
+     vni.inputStates( portName, socketIndex, inputState );
 
      // check if should run updater & run if necessary
-     if ( shouldRunUpdater( this.nodeInstance, vni ) ) { 
+     if ( shouldRunUpdater( vni ) ) { 
           
         // Save vars we will need in the promise where the context is different
         var outputPorts = this.nodeInstance.outPorts;
@@ -43,32 +44,84 @@ module.exports = function( payload, socketIndex ) {
              throw Error( 'No wrapper fRunUpdater function found!  Cannot run updater.' );
 
         } else { 
-            var promise = this.nodeInstance.wrapper.fRunUpdater.call( vni );
-            Promise.resolve( promise ).then( function( data ) { 
 
-                // Set output state and send it on over the output port
-                if (data) {
-                    var outputState = stateFactory( vnid, data );
-                    vni.outputState( outputState );
-    
-                    // Should this be in access or output layer? 
-                    outputPorts.output.send( outputState );
-                    outputPorts.output.disconnect();
-                }
-            }, function( error ) { 
-    
-                // Set error state and send it on over the error port
-                var errorState = stateFactory( vnid, error );
-                vni.errorState( errorState );
+            // save current error & output state LMs to compare after updater runs
+            var lastOutputLm = vni.outputState().lm;
+            var lastErrorLm = vni.errorState().lm;
+            var wrapper = this.nodeInstance.wrapper;
 
-                outputPorts.error.output.send( errorState );
-                outputPorts.error.disconnect();
-            }); 
+            new Promise(function( resolve ) { 
+                resolve( wrapper.fRunUpdater.call( vni ) );
+
+            }).then( function() { 
+                // If not new output or error state data, send it downstream or log it to the console
+                handlePortOutput( outputPorts.output, lastOutputLm, vni.outputState() );
+                handlePortOutput( outputPorts.error,  lastErrorLm, vni.errorState() );
+
+            }, function( rejected ) { 
+    
+                // fRunUpdater failed - is this a new error? 
+                var errorState = vni.errorState();
+
+                if ( lastErrorLm !== errorState.lm  ) { 
+
+                    // fRunUpdater or updater recorded a new lm (i.e., new error) - send it on
+                    handlePortOutput( outputPorts.error, lastErrorLm, errorState );
+
+                 } else if ( rejected !== errorState.data ) { 
+
+                    // Same LM as before we called fRunUpdater, but new error data was detected
+                    // TODO: vni.error.setPreviousLmsFromInputStates(vni);
+                    vni.errorState( stateFactory( vnid, rejected ) );
+                    handlePortOutput( outputPorts.error, lastErrorLm, vni.errorState() );
+                 }
+                 // NB: not currently forwarding errors if same LM and same data - should we be? 
+
+            }).catch( function() { 
+               console.error( "framework-ondata unable to process fRunUpdater results!" );
+               reject();
+            } ); 
+            
         }
      } 
-
-     return;
 };
+
+/** 
+ * Retrieve all attached input ports for the noflo component associated with this
+ * node instance. 
+ *
+ * @this node instance context
+ *
+ * @return an array with the attached noflo port objects
+ */
+function attachedInputPorts() { 
+
+    return _.filter( this.inPorts, 
+                     function( port) { return  port.listAttached().length > 0; });
+}
+
+/**
+ * Checks if state is new or not.  If it is new, it sends it down stream to any attached 
+ * nodes; if there are no attached nodes, the state data will be logged.
+ *
+ * @param port an output port, which may or may not be attached to something down stream
+ * @param lastLm last recorded state lm
+ * @param state an error or output state to be sent down stream or logged
+ */
+function handlePortOutput( port, lastLm, state ) {
+
+    // Do we have a new state? 
+    if ( lastLm !== state.lm ) { 
+
+        // Got any edges out of this port? 
+        if (port.listAttached().length) {
+            port.send( state );
+            port.disconnect();
+        } else {
+            console.error( state.data );
+        }
+    } 
+}
 
 /** 
  * Check the input to see if we have all data required to run the updater or not. 
@@ -79,25 +132,24 @@ module.exports = function( payload, socketIndex ) {
  *
  * @return true if we have received data on all required input port edges
  */
-function shouldRunUpdater( node, vni ) { 
+function shouldRunUpdater( vni ) { 
 
-    var requiredInPorts = requiredInputPorts.call( node );
+    var attachedInPorts = attachedInputPorts.call( vni.node );
 
-    if ( ! _.isEmpty( requiredInPorts ) ) { 
+    if ( ! _.isEmpty( attachedInPorts ) ) { 
 
-        // Check if we have input on all the required input ports and their edges
-        for ( var i=0, max=requiredInPorts.length; i < max; i++ ) { 
+        // Check if we have input on all input ports and their edges
+        for ( var i=0, max=attachedInPorts.length; i < max; i++ ) { 
 
-            var port = requiredInPorts[i];
+            var port = attachedInPorts[i];
             var states = vni.inputStates( port.name );
             
             // figure out how many input states we have received
             var numberOfStates = 0;
             if ( _.isArray( states ) ) { 
                // filter out any undefined states and then count what we really have
-               var flattenedStates = _.filter( states, function(state) { 
-                   return ! _.isUndefined(state);
-               });
+               var flattenedStates = _.filter( states, 
+                                               function(state) { return ! _.isUndefined(state); });
                numberOfStates = flattenedStates.length;
             } else if ( _.isObject( states ) ) {
                 numberOfStates = 1;
@@ -110,20 +162,4 @@ function shouldRunUpdater( node, vni ) {
     }
  
     return true;
-}
-
-/** 
- * Retrieve the required input ports for the noflo component associated with this
- * node instance. 
- *
- * @this node instance context
- *
- * @return an array with the noflo port details for required input ports.
- */
-function requiredInputPorts() { 
-
-    return _.filter( this.inPorts, 
-                     function( port) { 
-                         return ( port.isRequired() || port.listAttached().length > 0  );
-                     })
 }
