@@ -5,6 +5,7 @@ var _ = require('underscore');
 var util = require('util');
 
 var stateFactory = require('./create-state');
+var createLm = require('./create-lm');
 var vniManager = require('./vni-manager');
 
 /** 
@@ -60,6 +61,8 @@ module.exports = function( payload, socketIndex ) {
 
             }, function( rejected ) { 
     
+                console.error( rejected );
+
                 // fRunUpdater failed - is this a new error? 
                 var errorState = vni.errorState();
 
@@ -72,10 +75,11 @@ module.exports = function( payload, socketIndex ) {
 
                     // Same LM as before we called fRunUpdater, but new error data was detected
                     // TODO: vni.error.setPreviousLmsFromInputStates(vni);
-                    vni.errorState( stateFactory( vnid, rejected ) );
+                    errorState.lm = createLm();
+                    errorState.data = rejected;
+                    vni.errorState( errorState );
                     handlePortOutput( outputPorts.error, lastErrorLm, vni.errorState() );
-                 }
-                 // NB: not currently forwarding errors if same LM and same data - should we be? 
+                 } 
 
             }).catch( function() { 
                console.error( "framework-ondata unable to process fRunUpdater results!" );
@@ -117,47 +121,42 @@ function handlePortOutput( port, lastLm, state ) {
         if (port.listAttached().length) {
             port.send( state );
             port.disconnect();
-        } else {
-            console.error( state.data );
-        }
+        } 
     } 
 }
 
 /** 
- * Check the input to see if we have all data required to run the updater or not. 
+ * Check the input to see if we have all data attached to run the updater or not. 
  * This is simply a default updater policy - we may have other policies in the future.
  * 
  * @param node node instance of the RDF pipeline component
  * @param vni virtual node instance whose input states are to be checked.
  *
- * @return true if we have received data on all required input port edges
+ * @return true if we have received data on all attached input port edges
  */
 function shouldRunUpdater( vni ) { 
 
     var attachedInPorts = attachedInputPorts.call( vni.node );
 
-    if ( ! _.isEmpty( attachedInPorts ) ) { 
+    // Check if we have input on all input ports and their edges
+    for ( var i=0, max=attachedInPorts.length; i < max; i++ ) { 
 
-        // Check if we have input on all input ports and their edges
-        for ( var i=0, max=attachedInPorts.length; i < max; i++ ) { 
-
-            var port = attachedInPorts[i];
-            var states = vni.inputStates( port.name );
+        var port = attachedInPorts[i];
+        var states = vni.inputStates( port.name );
             
-            // figure out how many input states we have received
-            var numberOfStates = 0;
-            if ( _.isArray( states ) ) { 
-               // filter out any undefined states and then count what we really have
-               var flattenedStates = _.filter( states, 
-                                               function(state) { return ! _.isUndefined(state); });
-               numberOfStates = flattenedStates.length;
-            } else if ( _.isObject( states ) ) {
-                numberOfStates = 1;
-            }
+        // figure out how many input states we have received
+        var numberOfStates = 0;
+        if ( _.isArray( states ) ) { 
+           // filter out any undefined states and then count what we really have
+           var flattenedStates = _.filter( states, 
+                                           function(state) { return ! _.isUndefined(state); });
+           numberOfStates = flattenedStates.length;
+        } else if ( _.isObject( states ) ) {
+            numberOfStates = 1;
+        }
 
-            if (( numberOfStates === 0 ) || ( port.listAttached().length != numberOfStates )) {
-                return false;
-            }
+        if (( numberOfStates === 0 ) || ( port.listAttached().length != numberOfStates )) {
+            return false;
         }
     }
  

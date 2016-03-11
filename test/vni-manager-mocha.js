@@ -134,16 +134,17 @@ describe("vni-manager", function() {
             testVni.errorState.should.exist;
             testVni.errorState.should.be.a('function');
             var errorState = testVni.errorState();
+            errorState.should.have.all.keys( 'vnid', 'data', 'lm' );
             errorState.vnid.should.equal('');
-            errorState.data.should.equal('');
-            errorState.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+            expect( errorState.data ).to.be.undefined;
+            expect( errorState.lm).to.be.undefined;
 
             testVni.outputState.should.exist;
             testVni.outputState.should.be.a('function');
             var outputState = testVni.outputState();
             outputState.vnid.should.equal('');
-            outputState.data.should.equal('');
-            outputState.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+            expect( outputState.data ).to.be.undefined;
+            expect( outputState.lm).to.be.undefined;
 
             expect( testVni.parentVni ).to.be.undefined;
             expect( testVni.errorState.previousLms ).to.be.undefined;

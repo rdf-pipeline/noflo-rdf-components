@@ -86,8 +86,8 @@ module.exports = function( node ) {
 
                   // have no vni so create one with empty error & output state
                   this.vnis[vnid] = { 
-                      errorState: stateFactory( vnid, '' ), 
-                      outputState: stateFactory( vnid, '' ),
+                      errorState: stateFactory( vnid ), 
+                      outputState: stateFactory( vnid ),
                   }; 
 
                   // TODO: Add parentVni setting here

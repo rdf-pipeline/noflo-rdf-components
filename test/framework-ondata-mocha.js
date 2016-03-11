@@ -431,6 +431,12 @@ describe("framework-ondata", function() {
                         wrapper )
             );
 
+            var logBuffer = '';
+            // Hide expected console error message from test output
+            sinon.stub( console, 'error', function (message) {
+                logBuffer += message;
+            }); 
+
             // Send data to the input port and verify that the fRunUpdater function is called.
             // We use a promise here because this section is asynchronous
             return new Promise( function(done, fail) { 
@@ -441,10 +447,12 @@ describe("framework-ondata", function() {
 
             }).then( function( done ) { 
                // Should NOT succeed here since fRunUpdater threw an exception
+               console.error.restore();
                assert.isNotOk( done );
 
             }, function( fail ) { 
                // Expect a clean failure here since fRunUpdater threw an exception
+               console.error.restore();
                fail.should.not.be.empty;
                fail.data.toString().should.equal('Error: '+executedFRunUpdater);
             });

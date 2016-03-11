@@ -38,10 +38,7 @@ describe("create-state", function() {
        // Check the content
        state.vnid.should.equal( testVnid );
        expect( state.data ).to.be.undefined;
-
-       // Check the LM
-       var components = state.lm.match(/^LM(\d+)\.(\d+)$/);
-       components.should.have.length(3);
+       expect( state.lm ).to.be.undefined;
     });
 
     it("should create a new state if given an empty vnid & data parameter", function() {

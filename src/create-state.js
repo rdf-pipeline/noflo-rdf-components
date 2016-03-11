@@ -23,7 +23,14 @@ module.exports = function( vnid, data, lm ) {
            throw new Error("Unable to create state because no vnid was provided");
        }
 
-       var stateLm = lm || createLm();
+       var stateLm;
+       if ( _.isUndefined( data ) && _.isUndefined( lm ) ) { 
+           // If both data & lm are undefined, we are initializing - accept an undefined lm
+           stateLm = lm;
+       } else {
+           // Either data or LM is not undefined - so use the lm or create a new one if we do not have an lm
+           stateLm = lm || createLm();
+       }
        return { vnid: vnid,
                 data: data, 
                 lm: stateLm };
