@@ -21,9 +21,12 @@ Add the noflo-server to the local path:
 
     noflo-server$ npm link
 
-Then run the noflo-server
+Then run the noflo-server, choosing whatever unused port you want
+instead of 8097:
 
-    $ noflo-server
+    $ noflo-server --port 8097
+
+NoFlo UI is then available in your browser at http://localhost:8097/
 
 ## Testing 
 

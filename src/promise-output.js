@@ -70,6 +70,9 @@ function sendError(rejected) {
         this.outPorts.error.send(rejected);
         this.outPorts.error.disconnect();
     } else {
-        console.error(rejected);
+        if (rejected && rejected.stack)
+            console.error(rejected.stack);
+        else if (rejected)
+            console.error(rejected);
     }
 }
