@@ -17,7 +17,7 @@ var createLm = require('./create-lm');
  *
  * @return the newly created state object.
  */ 
-module.exports = function( vnid, data, lm ) { 
+module.exports = function( vnid, data, lm, error ) { 
 
        if ( _.isUndefined( vnid) ) {
            throw new Error("Unable to create state because no vnid was provided");
@@ -26,12 +26,17 @@ module.exports = function( vnid, data, lm ) {
        var stateLm;
        if ( _.isUndefined( data ) && _.isUndefined( lm ) ) { 
            // If both data & lm are undefined, we are initializing - accept an undefined lm
-           stateLm = lm;
-       } else {
-           // Either data or LM is not undefined - so use the lm or create a new one if we do not have an lm
-           stateLm = lm || createLm();
-       }
+           return { vnid: vnid,
+                    data: undefined, 
+                    error: undefined,
+                    lm: undefined };
+
+       } 
+
+       // Either data or LM is not undefined - so use the lm or create a new one if we do 
+       // not have an lm
        return { vnid: vnid,
                 data: data, 
-                lm: stateLm };
+                error: error,
+                lm: lm || createLm() };
 };

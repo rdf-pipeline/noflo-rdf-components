@@ -134,10 +134,11 @@ describe("vni-manager", function() {
             testVni.errorState.should.exist;
             testVni.errorState.should.be.a('function');
             var errorState = testVni.errorState();
-            errorState.should.have.all.keys( 'vnid', 'data', 'lm' );
+            errorState.should.have.all.keys( 'vnid', 'data', 'lm', 'error' );
             errorState.vnid.should.equal('');
             expect( errorState.data ).to.be.undefined;
             expect( errorState.lm).to.be.undefined;
+            expect( errorState.error).to.be.undefined;
 
             testVni.outputState.should.exist;
             testVni.outputState.should.be.a('function');
@@ -218,10 +219,11 @@ describe("vni-manager", function() {
 
                 // verify error state is as expected
                 errState.should.be.an('object');
-                errState.should.have.all.keys('vnid', 'lm','data');
+                errState.should.have.all.keys('vnid', 'lm','data', 'error');
                 errState.vnid.should.equal( testVnid );
                 errState.data.should.equal( state.data );
                 errState.lm.should.equal( state.lm );
+                expect( errState.error).to.be.undefined;
             });
 
             it("should clear error state", function() {
@@ -270,10 +272,11 @@ describe("vni-manager", function() {
                 inputStates.should.be.an('object');
                 Object.keys( inputStates ).should.have.length( 1 );
                 inputStates.should.have.all.keys( 'input' );
-                inputStates.input.should.have.all.keys( 'vnid', 'data', 'lm' );
+                inputStates.input.should.have.all.keys( 'vnid', 'data', 'lm', 'error' );
                 inputStates.input.vnid.should.equal( testVnid );
                 inputStates.input.data.should.equal( testString );
                 inputStates.input.lm.should.equal( testLm ); 
+                expect( inputStates.input.error ).to.be.undefined;
             });
 
             it("should delete an inputState", function() {
@@ -323,10 +326,11 @@ describe("vni-manager", function() {
                 // Test get state finds the expected output state
                 var outState = testVni.outputState();
                 outState.should.be.an('object');
-                outState.should.have.all.keys('vnid', 'lm','data');
+                outState.should.have.all.keys('vnid', 'lm','data', 'error');
                 outState.vnid.should.equal( testVnid );
                 outState.data.should.equal( state.data );
                 outState.lm.should.equal( state.lm );
+                expect( outState.error ).to.be.undefined;
             });
 
             it("should clear outputState", function() {

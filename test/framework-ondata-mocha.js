@@ -21,7 +21,7 @@ var createLm = require('../src/create-lm');
 
 describe("framework-ondata", function() {
 
-    it("should exist as a function", function() {
+    it( "should exist as a function", function() {
       framework_ondata.should.exist;
       framework_ondata.should.be.a('function');
     });
@@ -32,7 +32,7 @@ describe("framework-ondata", function() {
 
             var inData = "A bit of input data";
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var node = test.createComponent(
                 factory({
                           description: "Test Description",
@@ -46,9 +46,9 @@ describe("framework-ondata", function() {
                         })
             );
 
-            // Send data to the input port and verify that the fRunUpdater function is called.
             // We use a promise here because this section is asynchronous
             return new Promise( function(done, fail) {
+                // Send some data to the input port
                 test.onOutPortData(node, 'output', done);
                 test.onOutPortData(node, 'error', fail);
                 test.sendData(node, 'input', inData);
@@ -70,7 +70,7 @@ describe("framework-ondata", function() {
                 this.outputState( state );
             }
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
             var node = test.createComponent( 
                 factory({
@@ -105,6 +105,215 @@ describe("framework-ondata", function() {
             });
         });
 
+        it( "should handle two input/output state changes", function() {
+
+            var inData1 = "A bit of input data";
+            var inData2 = "Another bit of input data";
+
+            // Define the fRunUpdater that framework should invoke
+            var fRunUpdater = function() { 
+
+                // update state
+                var state = this.outputState();
+                state.data = this.inputStates( 'input' ).data;
+                state.lm = createLm();
+                this.outputState( state );
+            }
+
+            // Create a pipeline component and get the node instance for it
+            var wrapper = { fRunUpdater: fRunUpdater };
+            var node = test.createComponent( 
+                factory({
+                          description: "Test Description",
+                          inPorts: {
+                              input: {
+                                  datatype: 'string',
+                                  description: "a string port",
+                                  required: true
+                              }
+                          }
+                        }, 
+                        wrapper )
+            );
+
+            // Send data to the input port and verify that the fRunUpdater function is called.
+            // We use a promise here because this section is asynchronous
+            return new Promise( function(done, fail) { 
+
+                test.onOutPortData(node, 'output', done);
+                test.onOutPortData(node, 'error', fail);
+                test.sendData(node, 'input', inData1);
+
+            }).then( function( done ) { 
+               // Success - verify we got what we expect
+               done.vnid.should.equal( '' ); 
+               done.data.should.equal( inData1 ); 
+
+               return new Promise( function(done2, fail2) { 
+                  test.onOutPortData(node, 'output', done2);
+                  test.onOutPortData(node, 'error', fail2);
+                  test.sendData(node, 'input', inData2);
+               }).then( function( done2 ) { 
+
+                  done2.vnid.should.equal( '' ); 
+                  done2.data.should.equal( inData2 ); 
+
+               }, function( fail2 ) { 
+                   assert.isNotOk( fail2 );
+               });
+
+            }, function( fail ) { 
+               assert.isNotOk( fail );
+            });
+        });
+
+        it( "should handle two updater set error state changes", function() {
+
+            var inData1 = "A bit of input data";
+            var inData2 = "Another bit of input data";
+            var count = 0;
+            var errors = [ "Error 1", "Error 2" ];
+            var outData = [ "Data 1", "Data 2" ];
+
+            // Define the fRunUpdater that framework should invoke
+            var fRunUpdater = function() { 
+
+                // update error state
+                var errState = this.errorState();
+                errState.data = errors[count];
+                errState.lm = createLm();
+                this.errorState( errState );
+
+                var outState = this.outputState();
+                outState.data = outData[count++];
+                outState.lm = createLm();
+                this.outputState( outState ); 
+            }
+
+            // Create a pipeline component and get the node instance for it
+            var wrapper = { fRunUpdater: fRunUpdater };
+            var node = test.createComponent( 
+                factory({
+                          description: "Test Description",
+                          inPorts: {
+                              input: {
+                                  datatype: 'string',
+                                  description: "a string port",
+                                  required: true
+                              }
+                          }
+                        }, 
+                        wrapper )
+            );
+
+            // Send data to the input port and verify that the fRunUpdater function is called.
+            // We use a promise here because this section is asynchronous
+            return new Promise( function(done, fail) { 
+
+                test.onOutPortData(node, 'output', done);
+                test.onOutPortData(node, 'error', fail);
+                test.sendData(node, 'input', inData1);
+
+            }).then( function( done ) { 
+               // Success - verify we got what we expect
+               done.vnid.should.equal( '' ); 
+               done.data.should.equal( outData[0] ); 
+               done.error.should.be.true;
+
+               return new Promise( function(done2, fail2) { 
+                  // test.onOutPortData(node, 'output', done2);
+                  test.onOutPortData(node, 'error', fail2);
+                  test.sendData(node, 'input', inData2);
+               }).then( function( done2 ) { 
+                  // Not listening for done - should go through fail path so we can verify it
+                  assert.isNotOk( done2 );
+
+               }, function( fail2 ) { 
+                  fail2.vnid.should.equal( '' ); 
+                  fail2.data.should.equal( errors[1] ); 
+               });
+
+            }, function( fail ) { 
+               assert.isNotOk( fail );
+            });
+        });
+
+        it( "should handle two updater failures", function() {
+
+            var inData = ["A bit of input data",
+                          "Another bit of input data",
+                          "A last bit of input data"];
+            var updaterErr = "Updater failure";
+
+            var count = 0;
+ 
+            // Define the fRunUpdater that framework should invoke
+            var fRunUpdater = function() { 
+                if ( count < 2 ) { 
+                    count++;
+                    throw Error( updaterErr );
+                }
+            }
+
+            // Create a pipeline component and get the node instance for it
+            var wrapper = { fRunUpdater: fRunUpdater };
+            var node = test.createComponent( 
+                factory({
+                          description: "Test Description",
+                          inPorts: {
+                              input: {
+                                  datatype: 'string',
+                                  description: "a string port",
+                                  required: true
+                              }
+                          }
+                        }, 
+                        wrapper )
+            );
+
+            // Send data to the input port and verify that the fRunUpdater function is called.
+            // We use a promise here because this section is asynchronous
+            return new Promise( function(done, fail) { 
+
+                test.onOutPortData(node, 'error', fail);
+                test.sendData(node, 'input', inData[0]);
+
+            }).then( function( done ) { 
+               // Should not succeed
+               assert.isNotOk( done );
+
+            }, function( fail ) { 
+               fail.vnid.should.equal( '' ); 
+               fail.data.toString().should.equal( 'Error: '+ updaterErr ); 
+ 
+               return new Promise( function(done2, fail2) { 
+
+                   test.onOutPortData(node, 'error', fail2);
+                   test.sendData(node, 'input', inData[1]);
+               }).then( function( done2 ) { 
+                   // Should not succeed
+                   assert.isNotOk( done2 );
+
+               }, function( fail2 ) { 
+                   fail2.vnid.should.equal( '' ); 
+                   fail2.data.toString().should.equal( 'Error: '+ updaterErr ); 
+                   return new Promise( function(done3, fail3) { 
+
+                       test.onOutPortData(node, 'error', fail3);
+                       test.sendData(node, 'input', inData[2]);
+                   }).then( function( done3 ) { 
+                       // Should not succeed
+                       assert.isNotOk( done3 );
+    
+                   }, function( fail3 ) { 
+                       // Should be clear now 
+                       fail3.vnid.should.equal('');
+                       expect( fail3.data ).to.be.undefined; 
+                   });
+               });
+           });
+        });
+
         it( "should manage multiple port node vni state, fRunUpdater invocation, & output state", function() {
 
             var input1 = 'Uno';
@@ -127,60 +336,55 @@ describe("framework-ondata", function() {
                 this.outputState( state );
             }
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
-            var node = test.createComponent( 
-                factory({
-                          description: "Test Description",
-                          inPorts: {
-                              input1: {
-                                  datatype: 'string',
-                                  description: "a string port",
-                                  required: true
-                              },
-                              input2: {
-                                  datatype: 'string',
-                                  description: "a string port",
-                                  required: true
-                              }
-                          }
-                        }, 
-                        wrapper )
-            );
+              
+            return test.createNetwork( { node1: 'core/Repeat', // input node to test node 3
+                                         node2: 'core/Repeat', // input node to test node 3
+                                         node3: { 
+                                             getComponent: factory({ 
+                                                 description: "Test Description",
+                                                 inPorts: {
+                                                     input1: {
+                                                         datatype: 'string',
+                                                         description: "a string port",
+                                                         required: true
+                                                     },
+                                                     input2: {
+                                                         datatype: 'string',
+                                                         description: "a string port",
+                                                         required: true
+                                                     }
+                                                 }
+                                               }, 
+                                               wrapper )
+                                         }
+            }).then( function( network ) {
+                return new Promise( function(done, fail) { 
 
-            node.vnis.should.be.an( 'object' );
-            Object.keys( node.vnis ).should.have.length(0);
+                    // True noflo component - not facade
+                    var node = network.processes.node3.component;
 
-            // Send data to the input port and verify that the fRunUpdater function is called.
-            // We use a promise here because this section is asynchronous
-            var socket1;
-            var socket2;
-            return new Promise( function(done, fail) { 
+                    test.onOutPortData(node, 'output', done);
+                    test.onOutPortData(node, 'error', fail);
 
-                test.onOutPortData(node, 'output', done);
-                test.onOutPortData(node, 'error', fail);
+                    network.graph.addEdge( 'node1', 'out', 'node3', 'input1' );
+                    network.graph.addEdge( 'node2', 'out', 'node3', 'input2' );
 
-                // Attach both ports up front 
-                var socket1 = noflo.internalSocket.createSocket();
-                node._component_under_test.inPorts['input1'].attach(socket1);
-                var socket2 = noflo.internalSocket.createSocket();
-                node._component_under_test.inPorts['input2'].attach(socket2);
+                    network.graph.addInitial( input1, 'node1', 'in' );
+                    network.graph.addInitial( input2, 'node2', 'in' );
 
-                socket1.send(input1);
-                socket2.send(input2);
+                }).then( function( done ) { 
 
-                socket1.disconnect();
-                socket2.disconnect();
+                   // Stop network & verify we got the output state we expect
+                   network.stop();
+                   done.vnid.should.equal( '' ); 
+                   done.data.should.equal( executedFRunUpdater ); 
 
-            }).then( function( done ) { 
-               // Verify we got the output state we expect
-               done.vnid.should.equal( '' ); 
-               done.data.should.equal( executedFRunUpdater ); 
-
-               // Cleanup 
-               test.detachAllInputSockets( node );
-            }, function( fail ) { 
-               assert.isNotOk( fail );
+                }, function( fail ) { 
+                   network.stop();
+                   assert.isNotOk( fail );
+                });
             });
         });
 
@@ -209,125 +413,122 @@ describe("framework-ondata", function() {
                 this.outputState( state );
             }
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
-            var node = test.createComponent( 
-                factory({
-                          description: "Test Description",
-                          inPorts: {
-                              optport: {
-                                  datatype: 'string',
-                                  description: "an optional string port",
-                                  required: false
-                              },
-                              reqport: {
-                                  datatype: 'string',
-                                  description: "a required string port",
-                                  required: true
-                              }
-                          }
-                        }, 
-                        wrapper )
-            );
+            return test.createNetwork( { node1: 'core/Repeat', // input node to test node 3
+                                         node2: { 
+                                             getComponent: factory({ 
+                                                 description: "Test Description",
+                                                 inPorts: {
+                                                     optport: {
+                                                         datatype: 'string',
+                                                         description: "an optional string port",
+                                                         required: false
+                                                     },
+                                                     reqport: {
+                                                         datatype: 'string',
+                                                         description: "a required string port",
+                                                         required: true
+                                                     }
+                                                 }
+                                               }, 
+                                               wrapper )
+                                         }
+            }).then( function( network ) {
+                return new Promise( function(done, fail) { 
 
-            node.vnis.should.be.an( 'object' );
-            Object.keys( node.vnis ).should.have.length(0);
+                    // True noflo component - not facade
+                    var node = network.processes.node2.component;
 
-            // Send data to the input port and verify that the fRunUpdater function is called.
-            // We use a promise here because this section is asynchronous
-            var socket;
-            return new Promise( function(done, fail) { 
+                    test.onOutPortData(node, 'output', done);
+                    test.onOutPortData(node, 'error', fail);
 
-                test.onOutPortData(node, 'output', done);
-                test.onOutPortData(node, 'error', fail);
+                    // Add one edge between repeater component to required port
+                    // Note that we will have no edge tothe optional port
+                    network.graph.addEdge( 'node1', 'out', 'node2', 'reqport' );
 
-                // Send data to just the required port.  Be careful NOT to detach
-                // Framework needs the socket attachment to know how many input 
-                // edges there are.  Send nothing to the optional port.  The 
-                // fRunUpdater should run even though optional port has nothing.
-                var socket = noflo.internalSocket.createSocket();
-                node._component_under_test.inPorts['reqport'].attach(socket);
+                    // Send data to the required port through the repeater node
+                    // We'll send nothing to the optional port thru node1
+                    network.graph.addInitial( requiredPortData, 'node1', 'in' );
+                }).then( function( done ) { 
 
-                socket.send( requiredPortData );
-                socket.disconnect();
-
-            }).then( function( done ) { 
-
-               // Verify we got the output state we expect
-               done.vnid.should.equal( '' ); 
-               done.data.should.equal( executedFRunUpdater ); 
-
-               // Cleanup 
-               test.detachAllInputSockets( node );
-            }, function( fail ) { 
-               assert.isNotOk( fail );
+                   // Stop network & verify we got the output state we expect
+                   network.stop();
+                   done.vnid.should.equal( '' ); 
+                   done.data.should.equal( executedFRunUpdater ); 
+    
+                }, function( fail ) { 
+                   network.stop();
+                   assert.isNotOk( fail );
+                });
             });
         });
 
-        it( "should not invoke fRunUpdater with missing attached port data", function(done) {
+        it( "should not invoke fRunUpdater with missing attached port data", function() {
 
-            var optionalPortData = 'Optional Port Data';
+            var portData = 'Some Port Data';
 
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function() { 
                // Should not call fRunUpdater when only optional data has been sent
                // and required port data is still missing
+console.log('in fRunUpdater');
                assert.isNotOk( "fRunUpdater should not be called when missing attached port data!" );
             }
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
-            var node = test.createComponent( 
-                factory({
-                          description: "Test Description",
-                          inPorts: {
-                              optport: {
-                                  datatype: 'string',
-                                  description: "an optional string port",
-                                  required: false
-                              },
-                              reqport: {
-                                  datatype: 'string',
-                                  description: "a required string port",
-                                  required: true
-                              }
-                          }
-                        }, 
-                        wrapper )
-            );
 
-            node.vnis.should.be.an( 'object' );
-            Object.keys( node.vnis ).should.have.length(0);
+            return test.createNetwork( { node1: 'core/Repeat', // input node to test node 3
+                                         node2: 'core/Repeat', // input node to test node 3
+                                         node3: { 
+                                             getComponent: factory({ 
+                                                 description: "Test Description",
+                                                 inPorts: {
+                                                     input1: {
+                                                         datatype: 'string',
+                                                         description: "a string port",
+                                                         required: true
+                                                     },
+                                                     input2: {
+                                                         datatype: 'string',
+                                                         description: "a string port",
+                                                         required: true
+                                                     }
+                                                 }
+                                               },
+                                               wrapper )
+                                         }
+            }).then( function( network ) {
+                return new Promise( function(done, fail) {
 
-            // Send data to the input port and verify that the fRunUpdater function is called.
-            // We use a promise here because this section is asynchronous
-            var socket;
-            var fail = function() {
-                assert.fail('should not send output data without required data');
-            };
-            test.onOutPortData(node, 'output', fail);
-            test.onOutPortData(node, 'error', fail);
+                    // True noflo component - not facade
+                    var node = network.processes.node3.component;
 
-            // Send data to just the optional port.  Be careful NOT to detach
-            // Framework needs the socket attachment to know how many input 
-            // edges there are.  Send nothing to the required port.  The 
-            // fRunUpdater should NOT run.
+                    test.onOutPortData(node, 'output', done);
+                    test.onOutPortData(node, 'error', fail);
 
-            var socket1 = noflo.internalSocket.createSocket();
-            node._component_under_test.inPorts['reqport'].attach(socket1);
+                    // Attach both repeater nodes - one to each input port 
+                    network.graph.addEdge( 'node1', 'out', 'node3', 'input1' );
+                    network.graph.addEdge( 'node2', 'out', 'node3', 'input2' );
 
-            var socket2 = noflo.internalSocket.createSocket();
-            node._component_under_test.inPorts['optport'].attach(socket2);
+                    // send data to only one of the two attached ports
+                    network.graph.addInitial( portData, 'node1', 'in' );
 
-            socket2.send( optionalPortData );
+                    // wait and verify we don't hit the fRunUpdater
+                    setTimeout( function() { 
+                                    done();
+                                }, 
+                                1000); 
 
-            // wait and verify we don't hit the fRunUpdater
-            setTimeout( function() { 
-                            socket1.disconnect();
-                            socket2.disconnect();
-                            done() 
-                        }, 
-                        1900);
+                }).then( function( done ) { 
+                   network.stop();
+
+                }, function( fail ) { 
+                   network.stop();
+                   assert.isNotOk( fail );
+                });
+            });
         });
 
         it("should call fRunUpdater on addressable ports", function() {
@@ -358,52 +559,53 @@ describe("framework-ondata", function() {
                 this.outputState( state );
             }
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
-            var node = test.createComponent( 
-                factory({
-                          description: "Test Description",
-                          inPorts: {
-                              input: {
-                                  datatype: 'string',
-                                  description: "a string port",
-                                  addressable: true,
-                                  required: true
-                              }
-                          }
-                        }, 
-                        wrapper )
-            );
+            return test.createNetwork( { node1: 'core/Repeat', // input node to test node 3
+                                         node2: 'core/Repeat', // input node to test node 3
+                                         node3: { 
+                                             getComponent: factory({ 
+                                                 description: "Test Description",
+                                                 inPorts: {
+                                                     input: {
+                                                         datatype: 'string',
+                                                         description: "a string port",
+                                                         addressable: true,
+                                                         required: true
+                                                     }
+                                                 }
+                                               }, 
+                                               wrapper )
+                                         }
+            }).then( function( network ) {
+                return new Promise( function(done, fail) { 
 
-            // Attach 2 sockets to the same port and send each some data
-            return new Promise( function(done, fail) { 
+                    // True noflo component - not facade
+                    var node = network.processes.node3.component;
 
-                // Monitor output and error port to see resulting status
-                test.onOutPortData(node, 'output', done);
-                test.onOutPortData(node, 'error', fail);
+                    test.onOutPortData(node, 'output', done);
+                    test.onOutPortData(node, 'error', fail);
 
-                var socket1 = noflo.internalSocket.createSocket();
-                node._component_under_test.inPorts['input'].attach( socket1 );
+                    // Add two edges feeding data to input port 
+                    network.graph.addEdge( 'node1', 'out', 'node3', 'input' );
+                    network.graph.addEdge( 'node2', 'out', 'node3', 'input' );
 
-                var socket2 = noflo.internalSocket.createSocket();
-                node._component_under_test.inPorts['input'].attach( socket2 );
+                    network.graph.addInitial( inputEdge1, 'node1', 'in' );
+                    network.graph.addInitial( inputEdge2, 'node2', 'in' );
 
-                socket1.send( inputEdge1 );
-                socket2.send( inputEdge2 );
+                }).then( function( done ) { 
 
-            }).then( function( done ) { 
+                   // Verify we got the output state we expect
+                   network.stop();
+                   done.vnid.should.equal( '' ); 
+                   done.data.should.equal( executedFRunUpdater ); 
 
-               // Verify we got the output state we expect
-               done.vnid.should.equal( '' ); 
-               done.data.should.equal( executedFRunUpdater ); 
-
-               // Cleanup 
-               test.detachAllInputSockets( node );
-            }, function( fail ) { 
-               assert.isNotOk( fail );
+                }, function( fail ) { 
+                    network.stop();
+                    assert.isNotOk( fail );
+                });
             });
         });
-
 
         it( "should fail gracefully when fRunUpdater throws an exception.", function() {
 
@@ -415,7 +617,7 @@ describe("framework-ondata", function() {
                 throw new Error( executedFRunUpdater );
             }
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
             var node = test.createComponent( 
                 factory({
@@ -434,7 +636,7 @@ describe("framework-ondata", function() {
             var logBuffer = '';
             // Hide expected console error message from test output
             sinon.stub( console, 'error', function (message) {
-                logBuffer += message;
+                 logBuffer += message;
             }); 
 
             // Send data to the input port and verify that the fRunUpdater function is called.
@@ -443,17 +645,21 @@ describe("framework-ondata", function() {
     
                 test.onOutPortData(node, 'output', done);
                 test.onOutPortData(node, 'error', fail);
+
                 test.sendData(node, 'input', inData);
 
             }).then( function( done ) { 
-               // Should NOT succeed here since fRunUpdater threw an exception
+               // Should have sent an output state with error flag sent
                console.error.restore();
-               assert.isNotOk( done );
+               done.should.be.an('object'); 
+               done.should.have.all.keys('vnid', 'data', 'error', 'lm' );
+               done.error.should.be.true;
 
             }, function( fail ) { 
-               // Expect a clean failure here since fRunUpdater threw an exception
+               // Not currently executed since we get the output port data before the error data
                console.error.restore();
-               fail.should.not.be.empty;
+               fail.should.be.an('object'); 
+               fail.should.have.all.keys('vnid', 'data', 'error', 'lm' );
                fail.data.toString().should.equal('Error: '+executedFRunUpdater);
             });
         });
@@ -465,11 +671,11 @@ describe("framework-ondata", function() {
     
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function() { 
-                // update state
+                // Make the output state undefind - this should cause the framework processing to fail
                 this.outputState( undefined );
             }
 
-            // Create a noflo component and get the node instance for it
+            // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
             var node = test.createComponent( 
                 factory({
@@ -491,29 +697,21 @@ describe("framework-ondata", function() {
                 logBuffer += message;
             }); 
 
-            // Send data to the input port and verify that the fRunUpdater function is called.
-            // We use a promise here because this section is asynchronous
             return new Promise( function(done, fail) { 
 
                 test.onOutPortData(node, 'output', done);
                 test.onOutPortData(node, 'error', fail);
 
-                var socket = noflo.internalSocket.createSocket();
-                node._component_under_test.inPorts['input'].attach(socket);
-
-                socket.send( inData );
-
+                test.sendData(node, 'input', inData);
                 setTimeout( function() { 
-                                logBuffer.should.equal('framework-ondata unable to process fRunUpdater results!');
-                                socket.disconnect();
-                                console.error.restore();
                                 done() 
                             }, 
-                            1900);
+                            1000);
 
             }).then( function( done ) { 
                // Should go through here after the timeout
-               logBuffer.should.equal('framework-ondata unable to process fRunUpdater results!');
+               console.error.restore();
+               logBuffer.startsWith('framework-ondata unable to process fRunUpdater results!').should.be.true;
 
             }, function( fail ) { 
                // Should not go through here right now 
