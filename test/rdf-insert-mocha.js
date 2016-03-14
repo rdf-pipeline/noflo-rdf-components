@@ -7,6 +7,8 @@ chai.use(chaiAsPromised);
 
 var http = require('http');
 var _ = require('underscore');
+var os = require('os');
+var fs = require('fs');
 var path = require('path');
 var noflo = require('noflo');
 var test = require('./common-test');
@@ -16,22 +18,6 @@ var requestTemplate = require('../components/request-template');
 
 describe('rdf-insert subgraph', function() {
     var port = 1337;
-    var server = http.createServer();
-    server.on('request', function(req, res) {
-        var body = [];
-        req.on('data', function(chunk) {
-            body.push(chunk);
-        }).on('end', function() {
-            body = Buffer.concat(body).toString();
-            res.end(body);
-        });
-    });
-    before(function(){
-        server.listen(port);
-    });
-    after(function(){
-        server.close();
-    });
     var john = {
         "@context": "http://json-ld.org/contexts/person.jsonld",
         "@graph": [{
@@ -47,6 +33,17 @@ describe('rdf-insert subgraph', function() {
         '<http://dbpedia.org/resource/John_Lennon> <http://xmlns.com/foaf/0.1/name> "John Lennon" .\n' +
         '}\n';
     it("should POST jsonld as SPARQL INSERT", function() {
+        var server = http.createServer();
+        server.on('request', function(req, res) {
+            var body = [];
+            req.on('data', function(chunk) {
+                body.push(chunk);
+            }).on('end', function() {
+                body = Buffer.concat(body).toString();
+                res.end(body);
+            });
+        });
+        server.listen(port);
         return test.createNetwork({
             loadJson: rdfLoad,
             ntriples: rdfNtriples,
@@ -66,9 +63,20 @@ describe('rdf-insert subgraph', function() {
             }).then(function(sparql){
                 return sparql.replace(/\s+/g,'\n').trim();
             });
-        }).should.become(sparql.replace(/\s+/g,'\n').trim());
+        }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
     });
     it("should POST jsonld as SPARQL INSERT using the default graph", function() {
+        var server = http.createServer();
+        server.on('request', function(req, res) {
+            var body = [];
+            req.on('data', function(chunk) {
+                body.push(chunk);
+            }).on('end', function() {
+                body = Buffer.concat(body).toString();
+                res.end(body);
+            });
+        });
+        server.listen(port);
         return test.createNetwork({
             insert: "rdf-components/rdf-insert"
         }).then(function(network){
@@ -81,6 +89,30 @@ describe('rdf-insert subgraph', function() {
             }).then(function(sparql){
                 return _.isString(sparql) ? sparql.replace(/\s+/g,'\n').trim() : sparql;
             });
-        }).should.become(sparql.replace(/\s+/g,'\n').trim());
+        }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
+    });
+    it("should POST jsonld using the provided credentials", function() {
+        var server = http.createServer();
+        server.on('request', function(req, res) {
+            res.end(req.headers.authorization);
+        });
+        server.listen(port);
+        var authFileName = path.join(os.tmpdir(), 'temp-rdf-insert-auth');
+        return test.createNetwork({
+            insert: "rdf-components/rdf-insert"
+        }).then(function(network){
+            return new Promise(function(done) {
+                test.onOutPortData(network.processes.insert.component, 'output', done);
+                process.env['rdf-insert-auth-file'] = authFileName;
+                fs.writeFile(authFileName, 'QWxhZGRpbjpPcGVuU2VzYW1l', function(){
+                    network.graph.addInitial('rdf-insert-auth-file', 'insert', 'auth_file_env');
+                    network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
+                    network.graph.addInitial(john, 'insert', 'jsonld');
+                });
+            });
+        }).should.become('Basic QWxhZGRpbjpPcGVuU2VzYW1l').notify(function(){
+            server.close();
+            fs.unlink(authFileName);
+        });
     });
 });

@@ -6,18 +6,25 @@
 INPORT=request.URL:SPARQL_ENDPOINT
 INPORT=regroup.IN:TARGET_GRAPH
 INPORT=load.INPUT:JSONLD
+INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=request.OUTPUT:OUTPUT
 
 # Initial Information Packets (IIP)
-## 'graph' -> {graph: 'GRAPH'}
+'^\s*(\S*)\s*$' -> PATTERN basic(strings/Replace)
+'{"Authorization":"Basic $1","Content-Type":"application/sparql-update"}' -> REPLACEMENT basic
+
+# 'graph' -> {graph: 'GRAPH'}
 'graph' -> GROUP regroup(groups/Regroup) OUT -> PROPERTY insertGraph(objects/InsertProperty)
 'POST' -> METHOD request
-## 'Content-Type=application/sparql-update' -> {"Content-Type": "application/sparql-update"}
-'Content-Type=application/sparql-update' -> IN propStringToObject(adapters/PropStringToObject) OUT -> HEADERS request
+
+# 'Content-Type=application/sparql-update' -> {"Content-Type": "application/sparql-update"}
+'{"Content-Type":"application/sparql-update"}' -> IN parseHeaders(strings/ParseJson) OUT -> HEADERS request
 '"INSERT DATA {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n{{#each tokens}}{{{this}}}{{/each}}\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
 
-# Node Edges
-## JSON-LD -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
+# 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-update' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-update"}
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
+
+# JSON-LD -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
 load OUTPUT -> INPUT ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
 
 # Error Handling echos errors to console.log
