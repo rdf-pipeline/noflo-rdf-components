@@ -36,6 +36,7 @@
     "noflo": "~0.5.14",
     "noflo-adapters": "^0.1.3",
     "noflo-core": "^0.1.14",
+    "noflo-filesystem": "^1.0.6",
     "noflo-groups": "^0.1.7",
     "noflo-objects": "^0.1.12",
     "noflo-strings": "^0.1.11",
@@ -49,6 +50,8 @@
   "noflo": {
     "graphs": {
       "rdf-insert": "./graphs/rdf-insert.fbp",
+      "rdf-clear-insert": "./graphs/rdf-clear-insert.fbp",
+      "rdf-construct": "./graphs/rdf-construct.fbp",
       "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp"
     },
     "components": {
