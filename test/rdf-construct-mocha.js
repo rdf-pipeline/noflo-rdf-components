@@ -18,7 +18,7 @@ var requestTemplate = require('../components/request-template');
 
 describe('rdf-insert subgraph', function() {
     var port = 1337;
-    var endpoint = "http://10.255.241.10:10035/repositories/test-james";
+    var endpoint = "http://10.255.241.10:10035/repositories/rdf-construct-mocha";
     var john = {
         "@context": "http://json-ld.org/contexts/person.jsonld",
         "@graph": [{
