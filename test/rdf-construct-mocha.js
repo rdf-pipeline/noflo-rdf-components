@@ -39,7 +39,30 @@ describe('rdf-insert subgraph', function() {
         });
         server.listen(port);
         return test.createNetwork({
-            construct: "rdf-components/rdf-construct"
+            construct: "rdf-components/rdf-construct",
+            jsonld: "rdf-components/rdf-jsonld"
+        }).then(function(network){
+            network.graph.addEdge('construct', 'output', 'jsonld', 'input');
+            network.graph.addInitial("http://localhost:" + port + "/", 'construct', 'sparql_endpoint');
+            return new Promise(function(done) {
+                test.onOutPortData(network.processes.jsonld.component, 'output', done);
+                network.graph.addInitial("urn:test:graph", 'construct', 'source_graph');
+            });
+        }).should.eventually.have.property('@id', "http://dbpedia.org/resource/John_Lennon").notify(server.close.bind(server));
+    });
+    it("should parse text/turtle into JSON LD", function() {
+        var server = http.createServer();
+        server.on('request', function(req, res) {
+            res.end([
+                '@prefix foaf: <http://xmlns.com/foaf/0.1/> .',
+                '@prefix schema: <http://schema.org/> .',
+                '<http://dbpedia.org/resource/John_Lennon>foaf:name "John Lennon" ; ',
+                '    schema:spouse <http://dbpedia.org/resource/Cynthia_Lennon> . ',
+            ].join('\n'));
+        });
+        server.listen(port);
+        return test.createNetwork({
+            construct: "rdf-components/rdf-construct-jsonld"
         }).then(function(network){
             network.graph.addInitial("http://localhost:" + port + "/", 'construct', 'sparql_endpoint');
             return new Promise(function(done) {

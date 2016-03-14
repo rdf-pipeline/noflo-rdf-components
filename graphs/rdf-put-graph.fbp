@@ -1,0 +1,49 @@
+# rdf-put-graph.fbp
+
+# Takes parsed JSON-LD and POSTs it to the authority as text/turtle with the target-graph (IRI) as a context parameter.
+
+# Exports
+INPORT=authority.IN:AUTHORITY
+INPORT=repository.IN:REPOSITORY
+INPORT=regroup.IN:TARGET_GRAPH
+INPORT=load.INPUT:JSONLD
+INPORT=authFile.KEY:AUTH_FILE_ENV
+OUTPORT=request.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'authority' -> PROPERTY setAuthority(objects/SetPropertyValue)
+'repository' -> PROPERTY setRepository(objects/SetPropertyValue)
+'PUT' -> METHOD request
+'http://{+authority}/repositories/{+repository}/statements?context={graph}' -> URL request
+'^\s*(\S*)\s*$' -> PATTERN basic(strings/Replace)
+'{"Authorization":"Basic $1","Content-Type":"text/turtle"}' -> REPLACEMENT basic
+
+# 'graph' -> {graph: 'GRAPH'}
+'graph' -> GROUP regroup(groups/Regroup) OUT -> PROPERTY insertGraph(objects/InsertProperty)
+
+# 'Content-Type=application/sparql-update' -> {"Content-Type": "application/sparql-update"}
+'{"Content-Type":"text/turtle"}' -> IN parseHeaders(strings/ParseJson) OUT -> HEADERS request
+'{{#each tokens}}{{{this}}}{{/each}}' -> BODY request
+
+# 'authority=10.255.241.10:10035,dataset=chcs-ab,datatype=all' -> {authority:'10.255.241.10:10035',dataset:'chcs-ab',datatype:'all'}
+'authority=10.255.241.10:10035,dataset=chcs-ab,datatype=all' -> IN parameters(adapters/PropStringToObject) OUT -> PARAMETERS request
+
+# REPOSITORY -> {} -> {repository: REPOSITORY}
+repository(core/Repeat) OUT -> VALUE setRepository
+repository OUT -> START auth(objects/CreateObject) OUT -> IN setRepository OUT -> PARAMETERS request
+
+# AUTHORITY -> {} -> {authority: AUTHORITY}
+authority(core/Repeat) OUT -> VALUE setAuthority
+authority OUT -> START auth(objects/CreateObject) OUT -> IN setAuthority OUT -> PARAMETERS request
+
+# 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-update' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-update"}
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
+
+# JSON-LD -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
+load OUTPUT -> INPUT ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
+
+# Error Handling echos errors to console.log
+repeat(core/Repeat) OUT -> IN output(core/Output)
+load(rdf-components/rdf-load) ERROR -> IN repeat
+ntriples(rdf-components/rdf-ntriples) ERROR -> IN repeat
+request(rdf-components/request-template) ERROR -> IN repeat

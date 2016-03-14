@@ -1,11 +1,11 @@
-# rdf-insert.fbp
+# rdf-clear-insert-jsonld.fbp
 
-# Takes RDF JS Interface Graph object and inserts it into the target-graph (IRI) at the sparql-endpoint.
+# Takes parsed JSON-LD and clears and inserts it into the target-graph (IRI) at the sparql-endpoint.
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
 INPORT=regroup.IN:TARGET_GRAPH
-INPORT=ntriples.INPUT:RDF_GRAPH
+INPORT=load.INPUT:JSONLD
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=request.OUTPUT:OUTPUT
 
@@ -19,15 +19,16 @@ OUTPORT=request.OUTPUT:OUTPUT
 
 # 'Content-Type=application/sparql-update' -> {"Content-Type": "application/sparql-update"}
 '{"Content-Type":"application/sparql-update"}' -> IN parseHeaders(strings/ParseJson) OUT -> HEADERS request
-'"INSERT DATA {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n{{#each tokens}}{{{this}}}{{/each}}\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
+'"CLEAR {{#if graph}}GRAPH <{{{graph}}}>{{else}}DEFAULT{{/if}};\nINSERT DATA {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n{{#each tokens}}{{{this}}}{{/each}}\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
 
 # 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-update' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-update"}
 authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
 
 # JSON-LD -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
-ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
+load OUTPUT -> INPUT ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
 
 # Error Handling echos errors to console.log
 repeat(core/Repeat) OUT -> IN output(core/Output)
+load(rdf-components/rdf-load) ERROR -> IN repeat
 ntriples(rdf-components/rdf-ntriples) ERROR -> IN repeat
 request(rdf-components/request-template) ERROR -> IN repeat

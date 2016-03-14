@@ -65,6 +65,34 @@ describe('rdf-insert subgraph', function() {
             });
         }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
     });
+    it("should POST RDF Graph as SPARQL INSERT using the default graph", function() {
+        var server = http.createServer();
+        server.on('request', function(req, res) {
+            var body = [];
+            req.on('data', function(chunk) {
+                body.push(chunk);
+            }).on('end', function() {
+                body = Buffer.concat(body).toString();
+                res.end(body);
+            });
+        });
+        server.listen(port);
+        return test.createNetwork({
+            load: "rdf-components/rdf-load",
+            insert: "rdf-components/rdf-insert"
+        }).then(function(network){
+            var output = noflo.internalSocket.createSocket();
+            network.processes.insert.component.outPorts.output.attach(output);
+            return new Promise(function(done) {
+                output.on('data', done);
+                network.graph.addEdge('load', 'output', 'insert', 'rdf_graph');
+                network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
+                network.graph.addInitial(john, 'load', 'input');
+            }).then(function(sparql){
+                return _.isString(sparql) ? sparql.replace(/\s+/g,'\n').trim() : sparql;
+            });
+        }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
+    });
     it("should POST jsonld as SPARQL INSERT using the default graph", function() {
         var server = http.createServer();
         server.on('request', function(req, res) {
@@ -78,7 +106,7 @@ describe('rdf-insert subgraph', function() {
         });
         server.listen(port);
         return test.createNetwork({
-            insert: "rdf-components/rdf-insert"
+            insert: "rdf-components/rdf-insert-jsonld"
         }).then(function(network){
             var output = noflo.internalSocket.createSocket();
             network.processes.insert.component.outPorts.output.attach(output);
@@ -91,6 +119,32 @@ describe('rdf-insert subgraph', function() {
             });
         }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
     });
+    it("should POST RDF Graph using the provided credentials", function() {
+        var server = http.createServer();
+        server.on('request', function(req, res) {
+            res.end(req.headers.authorization);
+        });
+        server.listen(port);
+        var authFileName = path.join(os.tmpdir(), 'temp-rdf-insert-auth');
+        return test.createNetwork({
+            load: "rdf-components/rdf-load",
+            insert: "rdf-components/rdf-insert"
+        }).then(function(network){
+            return new Promise(function(done) {
+                test.onOutPortData(network.processes.insert.component, 'output', done);
+                process.env['rdf-insert-auth-file'] = authFileName;
+                fs.writeFile(authFileName, 'QWxhZGRpbjpPcGVuU2VzYW1l', function(){
+                    network.graph.addEdge('load', 'output', 'insert', 'rdf_graph');
+                    network.graph.addInitial('rdf-insert-auth-file', 'insert', 'auth_file_env');
+                    network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
+                    network.graph.addInitial(john, 'load', 'input');
+                });
+            });
+        }).should.become('Basic QWxhZGRpbjpPcGVuU2VzYW1l').notify(function(){
+            server.close();
+            fs.unlink(authFileName);
+        });
+    });
     it("should POST jsonld using the provided credentials", function() {
         var server = http.createServer();
         server.on('request', function(req, res) {
@@ -99,7 +153,7 @@ describe('rdf-insert subgraph', function() {
         server.listen(port);
         var authFileName = path.join(os.tmpdir(), 'temp-rdf-insert-auth');
         return test.createNetwork({
-            insert: "rdf-components/rdf-insert"
+            insert: "rdf-components/rdf-insert-jsonld"
         }).then(function(network){
             return new Promise(function(done) {
                 test.onOutPortData(network.processes.insert.component, 'output', done);

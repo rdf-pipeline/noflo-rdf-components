@@ -1,12 +1,12 @@
-# rdf-construct.fbp
+# rdf-construct-jsonld.fbp
 
-# Retrieves the source-graph (IRI) from the sparql-endpoint and returns an RDF JS Interface Graph object
+# Retrieves the source-graph (IRI) from the sparql-endpoint and returns parsed JSON-LD
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
 INPORT=iriGraph.IN:SOURCE_GRAPH
 INPORT=authFile.KEY:AUTH_FILE_ENV
-OUTPORT=rdfLoad.OUTPUT:OUTPUT
+OUTPORT=rdfJsonld.OUTPUT:OUTPUT
 
 # Initial Information Packets (IIP)
 'POST' -> METHOD request
@@ -23,9 +23,9 @@ OUTPORT=rdfLoad.OUTPUT:OUTPUT
 # 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-query' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-query"}
 authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
 
-# 'SOURCE_GRAPH' -> {} -> {graph:'SOURCE_GRAPH'} -> text/turtle -> object
+# 'SOURCE_GRAPH' -> {} -> {graph:'SOURCE_GRAPH'} -> text/turtle -> object -> json-ld
 iriGraph(core/RepeatAsync) OUT -> VALUE setGraph
-iriGraph OUT -> START object(objects/CreateObject) OUT -> IN setGraph OUT -> INPUT request OUTPUT -> INPUT rdfLoad
+iriGraph OUT -> START object(objects/CreateObject) OUT -> IN setGraph OUT -> INPUT request OUTPUT -> INPUT rdfLoad OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
 
 # Error Handling echos errors to console.log
 error(core/Repeat) OUT -> IN stack OUT -> IN output(core/Output)

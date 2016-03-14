@@ -52,6 +52,9 @@
       "rdf-insert": "./graphs/rdf-insert.fbp",
       "rdf-clear-insert": "./graphs/rdf-clear-insert.fbp",
       "rdf-construct": "./graphs/rdf-construct.fbp",
+      "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
+      "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
+      "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
       "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp"
     },
     "components": {
