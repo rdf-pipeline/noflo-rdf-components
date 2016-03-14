@@ -48,7 +48,8 @@
   },
   "noflo": {
     "graphs": {
-      "rdf-insert": "./graphs/rdf-insert.fbp"
+      "rdf-insert": "./graphs/rdf-insert.fbp",
+      "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp"
     },
     "components": {
       "request-template": "./components/request-template.js",
