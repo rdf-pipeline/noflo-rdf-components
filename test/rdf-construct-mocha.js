@@ -16,7 +16,7 @@ var rdfLoad = require('../components/rdf-load');
 var rdfNtriples = require('../components/rdf-ntriples');
 var requestTemplate = require('../components/request-template');
 
-describe('rdf-insert subgraph', function() {
+describe('rdf-construct subgraph', function() {
     var port = 1337;
     var endpoint = "http://10.255.241.10:10035/repositories/rdf-construct-mocha";
     var john = {
@@ -46,7 +46,7 @@ describe('rdf-insert subgraph', function() {
             network.graph.addInitial("http://localhost:" + port + "/", 'construct', 'sparql_endpoint');
             return new Promise(function(done) {
                 test.onOutPortData(network.processes.jsonld.component, 'output', done);
-                network.graph.addInitial("urn:test:graph", 'construct', 'source_graph');
+                network.graph.addInitial("urn:test:graph", 'construct', 'source_graph_uri');
             });
         }).should.eventually.have.property('@id', "http://dbpedia.org/resource/John_Lennon").notify(server.close.bind(server));
     });
@@ -67,7 +67,7 @@ describe('rdf-insert subgraph', function() {
             network.graph.addInitial("http://localhost:" + port + "/", 'construct', 'sparql_endpoint');
             return new Promise(function(done) {
                 test.onOutPortData(network.processes.construct.component, 'output', done);
-                network.graph.addInitial("urn:test:graph", 'construct', 'source_graph');
+                network.graph.addInitial("urn:test:graph", 'construct', 'source_graph_uri');
             });
         }).should.eventually.have.property('@id', "http://dbpedia.org/resource/John_Lennon").notify(server.close.bind(server));
     });
@@ -76,8 +76,8 @@ describe('rdf-insert subgraph', function() {
             process.env['rdf-auth-file'] = path.join(os.tmpdir(), 'rdf-auth');
         }
         return test.createNetwork({
-            insert: "rdf-components/rdf-clear-insert",
-            construct: "rdf-components/rdf-construct"
+            insert: "rdf-components/rdf-clear-insert-jsonld",
+            construct: "rdf-components/rdf-construct-jsonld"
         }).then(function(network){
             network.graph.addInitial('rdf-auth-file', 'insert', 'auth_file_env');
             network.graph.addInitial('rdf-auth-file', 'construct', 'auth_file_env');
@@ -86,13 +86,13 @@ describe('rdf-insert subgraph', function() {
             return stubs.promiseLater().then(function(){
                 return new Promise(function(done) {
                     test.onOutPortData(network.processes.insert.component, 'output', done);
-                    network.graph.addInitial("urn:test:graph", 'insert', 'target_graph');
-                    network.graph.addInitial(john, 'insert', 'jsonld');
+                    network.graph.addInitial("urn:test:graph", 'insert', 'target_graph_uri');
+                    network.graph.addInitial(john, 'insert', 'parsed_jsonld');
                 });
             }).then(stubs.promiseLater).then(function(){
                 return new Promise(function(done) {
                     test.onOutPortData(network.processes.construct.component, 'output', done);
-                    network.graph.addInitial("urn:test:graph", 'construct', 'source_graph');
+                    network.graph.addInitial("urn:test:graph", 'construct', 'source_graph_uri');
                 });
             });
         }).should.eventually.have.property('@id', "http://dbpedia.org/resource/John_Lennon");

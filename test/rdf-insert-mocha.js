@@ -113,7 +113,7 @@ describe('rdf-insert subgraph', function() {
             return new Promise(function(done) {
                 output.on('data', done);
                 network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
-                network.graph.addInitial(john, 'insert', 'jsonld');
+                network.graph.addInitial(john, 'insert', 'parsed_jsonld');
             }).then(function(sparql){
                 return _.isString(sparql) ? sparql.replace(/\s+/g,'\n').trim() : sparql;
             });
@@ -161,7 +161,7 @@ describe('rdf-insert subgraph', function() {
                 fs.writeFile(authFileName, 'QWxhZGRpbjpPcGVuU2VzYW1l', function(){
                     network.graph.addInitial('rdf-insert-auth-file', 'insert', 'auth_file_env');
                     network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
-                    network.graph.addInitial(john, 'insert', 'jsonld');
+                    network.graph.addInitial(john, 'insert', 'parsed_jsonld');
                 });
             });
         }).should.become('Basic QWxhZGRpbjpPcGVuU2VzYW1l').notify(function(){

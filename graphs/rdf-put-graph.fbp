@@ -1,12 +1,13 @@
 # rdf-put-graph.fbp
 
 # Takes parsed JSON-LD and POSTs it to the authority as text/turtle with the target-graph (IRI) as a context parameter.
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
 
 # Exports
 INPORT=authority.IN:AUTHORITY
 INPORT=repository.IN:REPOSITORY
-INPORT=regroup.IN:TARGET_GRAPH
-INPORT=load.INPUT:JSONLD
+INPORT=regroup.IN:TARGET_GRAPH_URI
+INPORT=load.INPUT:PARSED_JSONLD
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=request.OUTPUT:OUTPUT
 

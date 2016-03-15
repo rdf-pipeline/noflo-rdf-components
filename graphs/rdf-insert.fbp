@@ -1,10 +1,11 @@
 # rdf-insert.fbp
 
 # Takes RDF JS Interface Graph object and inserts it into the target-graph (IRI) at the sparql-endpoint.
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
-INPORT=regroup.IN:TARGET_GRAPH
+INPORT=regroup.IN:TARGET_GRAPH_URI
 INPORT=ntriples.INPUT:RDF_GRAPH
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=request.OUTPUT:OUTPUT

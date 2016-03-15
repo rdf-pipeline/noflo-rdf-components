@@ -1,10 +1,11 @@
 # rdf-construct.fbp
 
 # Retrieves the source-graph (IRI) from the sparql-endpoint and returns an RDF JS Interface Graph object
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
-INPORT=iriGraph.IN:SOURCE_GRAPH
+INPORT=iriGraph.IN:SOURCE_GRAPH_URI
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=rdfLoad.OUTPUT:OUTPUT
 
