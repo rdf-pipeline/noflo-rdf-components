@@ -30,6 +30,4 @@ patientID(core/Repeat) OUT -> START object(objects/CreateObject) OUT -> IN setPa
 
 ## Error Handling echos errors to console.log
 error(core/Repeat) OUT -> IN output(core/Output)
-load(rdf-components/rdf-load) ERROR -> IN error
-ntriples(rdf-components/rdf-ntriples) ERROR -> IN error
 request(rdf-components/request-template) ERROR -> IN error
