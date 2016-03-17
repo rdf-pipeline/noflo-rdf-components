@@ -1,0 +1,33 @@
+# rdf-construct-jsonld.fbp
+
+# Retrieves the source-graph (IRI) from the sparql-endpoint and returns parsed JSON-LD
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
+
+# Exports
+INPORT=request.URL:SPARQL_ENDPOINT
+INPORT=iriGraph.IN:SOURCE_GRAPH_URI
+INPORT=authFile.KEY:AUTH_FILE_ENV
+OUTPORT=rdfJsonld.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'POST' -> METHOD request
+'graph' -> PROPERTY setGraph(objects/SetPropertyValue)
+'stack' -> KEY stack(objects/ExtractProperty)
+'text/turtle' -> MEDIA rdfLoad(rdf-components/rdf-load)
+'^\s*(\S*)\s*$' -> PATTERN basic(strings/Replace)
+'{"Authorization":"Basic $1","Content-Type":"application/sparql-query","Accept":"text/turtle"}' -> REPLACEMENT basic
+
+# 'Content-Type=application/sparql-query' -> {"Content-Type": "application/sparql-query"}
+'{"Content-Type":"application/sparql-query","Accept":"text/turtle"}' -> IN parseHeaders(strings/ParseJson) OUT -> HEADERS request
+'"CONSTRUCT {?s ?p ?o} WHERE {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n?s ?p ?o\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
+
+# 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-query' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-query"}
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
+
+# 'SOURCE_GRAPH' -> {} -> {graph:'SOURCE_GRAPH'} -> text/turtle -> object -> json-ld
+iriGraph(core/RepeatAsync) OUT -> VALUE setGraph
+iriGraph OUT -> START object(objects/CreateObject) OUT -> IN setGraph OUT -> INPUT request OUTPUT -> INPUT rdfLoad OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
+
+# Error Handling echos errors to console.log
+error(core/Repeat) OUT -> IN stack OUT -> IN output(core/Output)
+request(rdf-components/request-template) ERROR -> IN error

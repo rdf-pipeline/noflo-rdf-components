@@ -1,6 +1,6 @@
-# rdf-insert.fbp
+# rdf-clear-insert.fbp
 
-# Takes RDF JS Interface Graph object and inserts it into the target-graph (IRI) at the sparql-endpoint.
+# Takes RDF JS Interface Graph object and clears and inserts it into the target-graph (IRI) at the sparql-endpoint.
 # The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
 
 # Exports
@@ -20,12 +20,12 @@ OUTPORT=request.OUTPUT:OUTPUT
 
 # 'Content-Type=application/sparql-update' -> {"Content-Type": "application/sparql-update"}
 '{"Content-Type":"application/sparql-update"}' -> IN parseHeaders(strings/ParseJson) OUT -> HEADERS request
-'"INSERT DATA {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n{{#each tokens}}{{{this}}}{{/each}}\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
+'"CLEAR {{#if graph}}GRAPH <{{{graph}}}>{{else}}DEFAULT{{/if}};\nINSERT DATA {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n{{#each tokens}}{{{this}}}{{/each}}\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
 
 # 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-update' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-update"}
 authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
 
-# JSON-LD -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
+# RDF Graph -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
 ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
 
 # Error Handling echos errors to console.log

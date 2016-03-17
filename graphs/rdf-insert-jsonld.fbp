@@ -1,12 +1,12 @@
-# rdf-insert.fbp
+# rdf-insert-jsonld.fbp
 
-# Takes RDF JS Interface Graph object and inserts it into the target-graph (IRI) at the sparql-endpoint.
+# Takes parsed JSON-LD and inserts it into the target-graph (IRI) at the sparql-endpoint.
 # The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
 INPORT=regroup.IN:TARGET_GRAPH_URI
-INPORT=ntriples.INPUT:RDF_GRAPH
+INPORT=load.INPUT:PARSED_JSONLD
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=request.OUTPUT:OUTPUT
 
@@ -26,9 +26,10 @@ OUTPORT=request.OUTPUT:OUTPUT
 authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
 
 # JSON-LD -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
-ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
+load OUTPUT -> INPUT ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
 
 # Error Handling echos errors to console.log
 repeat(core/Repeat) OUT -> IN output(core/Output)
+load(rdf-components/rdf-load) ERROR -> IN repeat
 ntriples(rdf-components/rdf-ntriples) ERROR -> IN repeat
 request(rdf-components/request-template) ERROR -> IN repeat
