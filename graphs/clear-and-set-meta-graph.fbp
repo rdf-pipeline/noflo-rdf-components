@@ -1,0 +1,46 @@
+# clear-and-set-meta-graph.fbp
+
+# Clears and sets a metadata graph that
+# describes the patient data graphs present in the database.
+
+# Exports
+INPORT=request.URL:SPARQL_ENDPOINT
+INPORT=setGraph.VALUE:TARGET_GRAPH_URI
+INPORT=authFile.KEY:AUTH_FILE_ENV
+OUTPORT=request.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'POST'          -> METHOD request(rdf-components/request-template)
+'Authorization' -> KEY setAuthorization(rdf-components/object)
+'^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
+'Basic $1'      -> REPLACEMENT basic
+'Content-Type'  -> KEY setContentType(rdf-components/object)
+'application/sparql-update' -> VALUE setContentType OUTPUT -> BASE setHeaders(objects/Extend)
+'updates/clear-and-set-meta-graph.ru' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
+
+# Set the default headers in the request
+'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
+
+# Read AUTH_FILE_ENV file content to set the Basic Authorization header
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders
+
+# Use graph as a sparql update parameter in the request body
+'graph' -> KEY setGraph(rdf-components/object) OUTPUT -> DATA kick(core/Kick)
+
+# Wait until the content is read before executing the request
+'2'                     -> COUNT ready(flow/CountDown)
+ru OUTPUT               -> IN ready
+setGraph OUTPUT         -> IN ready
+ready OUT               -> IN kick OUT -> INPUT request
+
+# Wait to read authorization file if provided
+'3' -> DATA wait(core/Kick)
+authFile OUT -> IN wait OUT -> COUNT ready
+setAuthorization OUTPUT -> IN ready
+
+# Error handling echos errors to console.log
+ru ERROR -> IN error
+request ERROR -> IN error
+setContentType ERROR -> IN error
+setAuthorization ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)
