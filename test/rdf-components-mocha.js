@@ -143,18 +143,15 @@ describe('rdf components', function() {
         return test.createNetwork({
             loadJson: rdfLoad,
             ntriples: rdfNtriples,
-            extractProperty: "objects/ExtractProperty",
             join: "objects/Join",
             loadNtriples: rdfLoad,
             jsonld: rdfJsonld
         }).then(function(network){
             network.graph.addEdge('loadJson', 'output', 'ntriples', 'input');
-            network.graph.addEdge('ntriples', 'output', 'extractProperty', 'in');
-            network.graph.addEdge('extractProperty', 'out', 'join', 'in');
+            network.graph.addEdge('ntriples', 'output', 'join', 'in');
             network.graph.addEdge('join', 'out', 'loadNtriples', 'input');
             network.graph.addEdge('loadNtriples', 'output', 'jsonld', 'input');
             network.graph.addInitial('text/turtle', 'loadNtriples', 'media');
-            network.graph.addInitial('tokens', 'extractProperty', 'key');
             network.graph.addInitial('', 'join', 'delimiter');
             network.graph.addInitial(frame, 'jsonld', 'frame');
             var output = noflo.internalSocket.createSocket();

@@ -1,0 +1,13 @@
+# construct-graph.rq
+
+CONSTRUCT {
+    ?s ?p ?o
+} WHERE {
+    {{#if graph~}}
+        GRAPH <{{{graph}}}>{
+    {{~/if}}
+        ?s ?p ?o
+    {{#if graph~}}
+        }
+    {{~/if}}
+}

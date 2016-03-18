@@ -39,7 +39,7 @@ function execute(graph) {
         tokens.push.apply(tokens, valueTokens(triple.object));
         tokens.push(' .', '\n');
     });
-    return {tokens: tokens};
+    return [tokens];
 }
 
 /**

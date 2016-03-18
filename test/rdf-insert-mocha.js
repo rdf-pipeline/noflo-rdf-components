@@ -14,6 +14,7 @@ var noflo = require('noflo');
 var test = require('./common-test');
 var rdfLoad = require('../components/rdf-load');
 var rdfNtriples = require('../components/rdf-ntriples');
+var object = require('../components/object');
 var requestTemplate = require('../components/request-template');
 
 describe('rdf-insert subgraph', function() {
@@ -47,6 +48,7 @@ describe('rdf-insert subgraph', function() {
         return test.createNetwork({
             loadJson: rdfLoad,
             ntriples: rdfNtriples,
+            object: object,
             request: requestTemplate
         }).then(function(network){
             var output = noflo.internalSocket.createSocket();
@@ -54,10 +56,12 @@ describe('rdf-insert subgraph', function() {
             return new Promise(function(done) {
                 output.on('data', done);
                 network.graph.addEdge('loadJson', 'output', 'ntriples', 'input');
-                network.graph.addEdge('ntriples', 'output', 'request', 'input');
+                network.graph.addEdge('ntriples', 'output', 'object', 'value');
+                network.graph.addEdge('object', 'output', 'request', 'input');
                 network.graph.addInitial('POST', 'request', 'method');
                 network.graph.addInitial("http://localhost:" + port + "/", 'request', 'url');
                 network.graph.addInitial({'Content-Type': 'text/turtle'}, 'request', 'headers');
+                network.graph.addInitial('tokens', 'object', 'key');
                 network.graph.addInitial('INSERT DATA {\n{{#each tokens}}{{{this}}}{{/each}}\n}', 'request', 'body');
                 network.graph.addInitial(john, 'loadJson', 'input');
             }).then(function(sparql){
@@ -89,9 +93,9 @@ describe('rdf-insert subgraph', function() {
                 network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
                 network.graph.addInitial(john, 'load', 'input');
             }).then(function(sparql){
-                return _.isString(sparql) ? sparql.replace(/\s+/g,'\n').trim() : sparql;
+                return _.isString(sparql) ? sparql.replace(/#.*|\s+/g,'\n').trim() : sparql;
             });
-        }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
+        }).should.become(sparql.replace(/#.*|\s+/g,'\n').trim()).notify(server.close.bind(server));
     });
     it("should POST jsonld as SPARQL INSERT using the default graph", function() {
         var server = http.createServer();
@@ -115,9 +119,9 @@ describe('rdf-insert subgraph', function() {
                 network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
                 network.graph.addInitial(john, 'insert', 'parsed_jsonld');
             }).then(function(sparql){
-                return _.isString(sparql) ? sparql.replace(/\s+/g,'\n').trim() : sparql;
+                return _.isString(sparql) ? sparql.replace(/#.*|\s+/g,'\n').trim() : sparql;
             });
-        }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
+        }).should.become(sparql.replace(/#.*|\s+/g,'\n').trim()).notify(server.close.bind(server));
     });
     it("should POST RDF Graph using the provided credentials", function() {
         var server = http.createServer();

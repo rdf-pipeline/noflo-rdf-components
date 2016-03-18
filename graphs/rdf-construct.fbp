@@ -5,29 +5,43 @@
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
-INPORT=iriGraph.IN:SOURCE_GRAPH_URI
+INPORT=setGraph.VALUE:SOURCE_GRAPH_URI
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=rdfLoad.OUTPUT:OUTPUT
 
 # Initial Information Packets (IIP)
-'POST' -> METHOD request
-'graph' -> PROPERTY setGraph(objects/SetPropertyValue)
-'stack' -> KEY stack(objects/ExtractProperty)
+'POST' -> METHOD request(rdf-components/request-template)
+'Authorization' -> KEY setAuthorization(rdf-components/object)
+'^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
+'Basic $1'      -> REPLACEMENT basic
+'Content-Type'  -> KEY setContentType(rdf-components/object)
+'application/sparql-query' -> VALUE setContentType OUTPUT -> BASE setHeaders
+'Accept'  -> KEY setAccept(rdf-components/object)
+'text/turtle' -> VALUE setAccept OUTPUT -> BASE setHeaders
 'text/turtle' -> MEDIA rdfLoad(rdf-components/rdf-load)
-'^\s*(\S*)\s*$' -> PATTERN basic(strings/Replace)
-'{"Authorization":"Basic $1","Content-Type":"application/sparql-query","Accept":"text/turtle"}' -> REPLACEMENT basic
+'queries/construct-graph.rq' -> FILENAME rq(rdf-components/read-content) OUTPUT -> BODY request
 
-# 'Content-Type=application/sparql-query' -> {"Content-Type": "application/sparql-query"}
-'{"Content-Type":"application/sparql-query","Accept":"text/turtle"}' -> IN parseHeaders(strings/ParseJson) OUT -> HEADERS request
-'"CONSTRUCT {?s ?p ?o} WHERE {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n?s ?p ?o\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
+# Set the default headers in the request
+'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
 
-# 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-query' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-query"}
-authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
+# Read AUTH_FILE_ENV file content to set the Basic Authorization header
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
+basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders(objects/Extend)
 
-# 'SOURCE_GRAPH' -> {} -> {graph:'SOURCE_GRAPH'} -> text/turtle -> object
-iriGraph(core/RepeatAsync) OUT -> VALUE setGraph
-iriGraph OUT -> START object(objects/CreateObject) OUT -> IN setGraph OUT -> INPUT request OUTPUT -> INPUT rdfLoad
+# Wait until the everything is read before executing the request
+'rq'                    -> REGISTER phaser
+authFile OUT            -> REGISTER phaser
+rq OUTPUT               -> ARRIVE phaser
+setAuthorization OUTPUT -> ARRIVE phaser
+
+# Use graph as a sparql update parameter in the request body and parse the result
+'graph' -> KEY setGraph(rdf-components/object) OUTPUT -> INPUT request OUTPUT -> INPUT rdfLoad
 
 # Error Handling echos errors to console.log
-error(core/Repeat) OUT -> IN stack OUT -> IN output(core/Output)
-request(rdf-components/request-template) ERROR -> IN error
+rq ERROR -> IN error
+request ERROR -> IN error
+setContentType ERROR -> IN error
+setAuthorization ERROR -> IN error
+setAccept ERROR -> IN error
+phaser ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)

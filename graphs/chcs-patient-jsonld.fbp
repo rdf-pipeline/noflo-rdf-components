@@ -1,33 +1,26 @@
 # chcs-patient-jsonld.fbp
 
-### Takes a patient ID and returns JSON-LD.
+# Takes a patient ID and returns JSON-LD.
 
-## Exports
-INPORT=patientID.IN:PATIENT_ID
-INPORT=authority.IN:AUTHORITY
+# Exports
+INPORT=setPatientID.VALUE:PATIENT_ID
+INPORT=setAuthority.VALUE:AUTHORITY
 OUTPORT=parseJson.OUT:OUTPUT
 
-## Initial Information Packets (IIP)
-'patientid' -> PROPERTY setPatientID(objects/SetPropertyValue)
-'authority' -> PROPERTY setAuthority(objects/SetPropertyValue)
+# Initial Information Packets (IIP)
+'patientid' -> KEY setPatientID(rdf-components/object)
+'authority' -> KEY setAuthority(rdf-components/object) OUTPUT -> PARAMETERS request
 'http://{+authority}/patient_graph{?dataset,datatype,patientid}' -> URL request
 
-# 'authority=10.255.241.50:8080,dataset=chcs-ab,datatype=all' -> {authority:'10.255.241.50:8080',dataset:'chcs-ab',datatype:'all'}
+# Default request URL parameters
 'authority=10.255.241.50:8080,dataset=chcs-ab,datatype=all' -> IN parameters(adapters/PropStringToObject) OUT -> PARAMETERS request
 
-# 'Accept=application/json' -> {"Accept": "application/json"}
+# Request Headers
 'Accept=application/json' -> IN propStringToObject(adapters/PropStringToObject) OUT -> HEADERS request
 
-## Node Edges
+# With patientID execute request and parse the result as JSON
+setPatientID OUTPUT -> INPUT request OUTPUT -> IN parseJson(strings/ParseJson)
 
-# AUTHORITY -> {} -> {authority: AUTHORITY}
-authority(core/Repeat) OUT -> VALUE setAuthority
-authority(core/Repeat) OUT -> START auth(objects/CreateObject) OUT -> IN setAuthority OUT -> PARAMETERS request
-
-# PATIENT_ID -> {} -> {patientid: PATIENT_ID} -> GET http:
-patientID(core/Repeat) OUT -> VALUE setPatientID
-patientID(core/Repeat) OUT -> START object(objects/CreateObject) OUT -> IN setPatientID OUT -> INPUT request OUTPUT -> IN parseJson(strings/ParseJson)
-
-## Error Handling echos errors to console.log
+# Error Handling echos errors to console.log
 error(core/Repeat) OUT -> IN output(core/Output)
 request(rdf-components/request-template) ERROR -> IN error

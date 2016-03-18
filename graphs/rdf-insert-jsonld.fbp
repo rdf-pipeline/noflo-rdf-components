@@ -5,31 +5,46 @@
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
-INPORT=regroup.IN:TARGET_GRAPH_URI
+INPORT=setGraph.VALUE:TARGET_GRAPH_URI
 INPORT=load.INPUT:PARSED_JSONLD
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=request.OUTPUT:OUTPUT
 
 # Initial Information Packets (IIP)
-'^\s*(\S*)\s*$' -> PATTERN basic(strings/Replace)
-'{"Authorization":"Basic $1","Content-Type":"application/sparql-update"}' -> REPLACEMENT basic
+'POST'          -> METHOD request(rdf-components/request-template)
+'Authorization' -> KEY setAuthorization(rdf-components/object)
+'^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
+'Basic $1'      -> REPLACEMENT basic
+'Content-Type'  -> KEY setContentType(rdf-components/object)
+'application/sparql-update' -> VALUE setContentType OUTPUT -> BASE setHeaders(objects/Extend)
+'updates/insert-graph-tokens.ru' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
 
-# 'graph' -> {graph: 'GRAPH'}
-'graph' -> GROUP regroup(groups/Regroup) OUT -> PROPERTY insertGraph(objects/InsertProperty)
-'POST' -> METHOD request
+# Set the default headers in the request
+'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
 
-# 'Content-Type=application/sparql-update' -> {"Content-Type": "application/sparql-update"}
-'{"Content-Type":"application/sparql-update"}' -> IN parseHeaders(strings/ParseJson) OUT -> HEADERS request
-'"INSERT DATA {\n{{#if graph}}GRAPH <{{{graph}}}>{\n{{/if}}\n{{#each tokens}}{{{this}}}{{/each}}\n{{#if graph}}\n}\n{{/if}}\n}"' -> IN parse(strings/ParseJson) OUT -> BODY request
+# Read AUTH_FILE_ENV file content to set the Basic Authorization header
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
+basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders
 
-# 'AUTH_FILE_ENV' -> 'username:password' -> 'Authorization=Basic username:password' -> 'Authorization=Basic username:password,Content-Type=application/sparql-update' -> {"Authorization":"Basic username:password","Content-Type":"application/sparql-update"}
-authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> IN parseHeaders
+# Use graph as a sparql update parameter in the request body
+'graph' -> KEY setGraph(rdf-components/object) OUTPUT -> PARAMETERS request
 
-# JSON-LD -> {tokens: ['']} -> {graph:'', tokens:['']} -> No Content
-load OUTPUT -> INPUT ntriples OUTPUT -> IN insertGraph OUT -> INPUT request
+# Wait until the everything is read before executing the request
+'ru'                    -> REGISTER phaser
+authFile OUT            -> REGISTER phaser
+ru OUTPUT               -> ARRIVE phaser
+setAuthorization OUTPUT -> ARRIVE phaser
 
-# Error Handling echos errors to console.log
-repeat(core/Repeat) OUT -> IN output(core/Output)
-load(rdf-components/rdf-load) ERROR -> IN repeat
-ntriples(rdf-components/rdf-ntriples) ERROR -> IN repeat
-request(rdf-components/request-template) ERROR -> IN repeat
+# Convert the json-ld to ntriples and use as tokens in the request
+'tokens' -> KEY setTokens(rdf-components/object)
+load(rdf-components/rdf-load) OUTPUT -> INPUT ntriples(rdf-components/rdf-ntriples) OUTPUT -> VALUE setTokens
+setTokens OUTPUT -> INPUT phaser(rdf-components/phaser) OUTPUT -> INPUT request
+
+# Error handling echos errors to console.log
+ru ERROR -> IN error
+request ERROR -> IN error
+setContentType ERROR -> IN error
+setAuthorization ERROR -> IN error
+load ERROR -> IN error
+ntriples ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)
