@@ -19,7 +19,7 @@ OUTPORT=rdfLoad.OUTPUT:OUTPUT
 'Accept'  -> KEY setAccept(rdf-components/object)
 'text/turtle' -> VALUE setAccept OUTPUT -> BASE setHeaders
 'text/turtle' -> MEDIA rdfLoad(rdf-components/rdf-load)
-'queries/construct-graph.rq' -> FILENAME rq(rdf-components/read-content) OUTPUT -> BODY request
+'sparql/construct-graph.rq.hbs' -> FILENAME rq(rdf-components/read-content) OUTPUT -> BODY request
 
 # Set the default headers in the request
 '{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request

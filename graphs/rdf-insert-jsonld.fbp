@@ -17,7 +17,7 @@ OUTPORT=request.OUTPUT:OUTPUT
 'Basic $1'      -> REPLACEMENT basic
 'Content-Type'  -> KEY setContentType(rdf-components/object)
 'application/sparql-update' -> VALUE setContentType OUTPUT -> BASE setHeaders(objects/Extend)
-'updates/insert-graph-tokens.ru' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
+'sparql/insert-graph-tokens.ru.hbs' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
 
 # Set the default headers in the request
 '{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request

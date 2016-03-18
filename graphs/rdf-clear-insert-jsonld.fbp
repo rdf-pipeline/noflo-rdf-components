@@ -6,7 +6,7 @@
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT
 INPORT=setGraph.VALUE:TARGET_GRAPH_URI
-INPORT=load.INPUT:RDF_GRAPH
+INPORT=load.INPUT:PARSED_JSONLD
 INPORT=authFile.KEY:AUTH_FILE_ENV
 OUTPORT=request.OUTPUT:OUTPUT
 
@@ -17,7 +17,7 @@ OUTPORT=request.OUTPUT:OUTPUT
 'Basic $1'      -> REPLACEMENT basic
 'Content-Type'  -> KEY setContentType(rdf-components/object)
 'application/sparql-update' -> VALUE setContentType OUTPUT -> BASE setHeaders
-'updates/clear-graph-insert-tokens.ru' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
+'sparql/clear-graph-insert-tokens.ru.hbs' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
 
 # Set the default headers in the request
 '{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
