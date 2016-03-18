@@ -192,6 +192,20 @@ describe('merge-patient-lab-iips', function() {
             }).then(_.property('data')).should.become({id: '001',  glucose: '75',  date: '2012-02-01'});
         });
 
+        it( "should be able to call updater without sockets", function() {
+            var data = compFactory.updater(
+                {id: '001',  name: 'Alice', dob: '1979-01-23' },
+                {id: '001',  glucose: '75',  date: '2012-02-01'}
+            );
+            data.should.be.an('object');
+            data.should.have.all.keys( 'id', 'name', 'dob', 'glucose', 'date' );
+            data.id.should.equal('001');
+            data.name.should.equal('Alice');
+            data.dob.should.equal('1979-01-23');
+            data.glucose.should.equal('75');
+            data.date.should.equal('2012-02-01');
+        });
+
         it( "should have patient and labwork output state after input ports processing", function() {
             var node = test.createComponent(compFactory);
             return new Promise(function(done, fail){

@@ -22,16 +22,16 @@ module.exports = {
      */
     createNetwork: function(nodes) {
         var components = _.pick(nodes, _.isObject);
-        var graph = new noflo.Graph();
-        _.each(_.pick(nodes, _.isString), function(componentName, nodeId) {
-            // maps nodeId to componentName
-            graph.addNode(nodeId, componentName);
-        });
-        _.each(components, function(module, name) {
-            // use the same name for both nodeId and componentName
-            graph.addNode(name, name);
-        });
         return new Promise(function(resolve, reject){
+            var graph = new noflo.Graph();
+            _.each(_.pick(nodes, _.isString), function(componentName, nodeId) {
+                // maps nodeId to componentName
+                graph.addNode(nodeId, componentName);
+            });
+            _.each(components, function(module, name) {
+                // use the same name for both nodeId and componentName
+                graph.addNode(name, name);
+            });
             noflo.createNetwork(graph, function(err, network) {
                 if (err instanceof noflo.Network) network = err;
                 else if (err) return reject(err);
