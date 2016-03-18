@@ -27,7 +27,7 @@ authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
 basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders
 
 # Use graph as a sparql update parameter in the request body
-'graph' -> KEY setGraph(rdf-components/object) OUTPUT -> PARAMETERS request
+'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> PARAMETERS request
 
 # Wait until the everything is read before executing the request
 'ru'                    -> REGISTER phaser

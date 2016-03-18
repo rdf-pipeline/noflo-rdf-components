@@ -35,7 +35,7 @@ rq OUTPUT               -> ARRIVE phaser
 setAuthorization OUTPUT -> ARRIVE phaser
 
 # Use graph as a sparql update parameter in the request body and parse the result into jsonld
-'graph' -> KEY setGraph(rdf-components/object) OUTPUT -> INPUT request OUTPUT -> INPUT rdfLoad OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
+'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> INPUT request OUTPUT -> INPUT rdfLoad OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
 
 # Error Handling echos errors to console.log
 rq ERROR -> IN error

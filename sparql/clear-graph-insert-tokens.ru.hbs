@@ -1,17 +1,18 @@
-# clear-graph-insert-tokens.ru
+# clear-graph-insert-tokens.ru.hbs
 
 # Clears a graph and inserts the tokens as the data
+# This file uses http://handlebarsjs.com/
 
-CLEAR {{#if graph}}GRAPH <{{{graph}}}>{{else}}DEFAULT{{/if}};
+CLEAR {{#if graph-uri}}GRAPH <{{{graph-uri}}}>{{else}}DEFAULT{{/if}};
 
 INSERT DATA {
-    {{#if graph~}}
-        GRAPH <{{{graph}}}>{
+    {{#if graph-uri~}}
+        GRAPH <{{{graph-uri}}}>{
     {{~/if}}
     {{#each tokens~}}
         {{{this}}}
     {{~/each}}
-    {{#if graph~}}
+    {{#if graph-uri~}}
         }
     {{~/if}}
 }
