@@ -1,0 +1,16 @@
+# insert-graph-tokens.ru.hbs
+
+# Inserts the tokens as the data into an optional graph
+# This file uses http://handlebarsjs.com/
+
+INSERT DATA {
+    {{#if graph-uri~}}
+        GRAPH <{{{graph-uri}}}>{
+    {{~/if}}
+    {{#each tokens~}}
+        {{{this}}}
+    {{~/each}}
+    {{#if graph-uri~}}
+        }
+    {{~/if}}
+}

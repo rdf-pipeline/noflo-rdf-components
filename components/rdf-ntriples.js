@@ -39,7 +39,7 @@ function execute(graph) {
         tokens.push.apply(tokens, valueTokens(triple.object));
         tokens.push(' .', '\n');
     });
-    return {tokens: tokens};
+    return [tokens];
 }
 
 /**
@@ -55,9 +55,7 @@ function valueTokens(term) {
             throw Error("Invalid NamedNode: " + value);
         return ['<', encoded, '>'];
     } else if (term.interfaceName === 'BlankNode') {
-        if (encoded != value || value.indexOf(' ') >= 0)
-            throw Error("Invalid BlankNode: " + value);
-        return ['_:', encoded];
+        return [term.toString()];
     } else if (term.language) {
         if (encodingNeededFor(term.language))
             throw Error("Invalid Language: " + value);

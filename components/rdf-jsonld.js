@@ -75,7 +75,7 @@ function indexedSubject(subjects, jsonGraph, subject) {
     if (typeof subjects[value] === 'undefined') {
         if (subject.interfaceName === 'BlankNode') {
             jsonGraph.push({
-                '@id': '_:' + value
+                '@id': subject.toString()
             });
         } else {
             jsonGraph.push({
@@ -99,7 +99,7 @@ function objectValue(object) {
         };
     } else if (object.interfaceName === 'BlankNode') {
         return {
-            '@id': '_:' + value
+            '@id': object.toString()
         };
     } else if (object.language) {
         return {
