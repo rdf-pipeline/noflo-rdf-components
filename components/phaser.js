@@ -20,12 +20,12 @@ module.exports = componentFactory({
         arrive: {
             description: "Decrement the count value",
             datatype: 'bang',
-            ondata: arrive
+            ondata: promiseOutput(arrive)
         },
         input: {
             description: "Data to be repeated in the output",
             datatype: 'all',
-            ondata: promiseOutput(advance)
+            ondata: promiseOutput(await)
         }
     }
 });
@@ -36,18 +36,24 @@ function register() {
 
 function arrive() {
     this.nodeInstance.count = (this.nodeInstance.count || 0) - 1;
+    return advance(this.nodeInstance);
 }
 
-function advance(value) {
+function await(value) {
     if (!this.nodeInstance.queue) {
         this.nodeInstance.queue = [];
     }
     this.nodeInstance.queue.push(value);
-    if (!(this.nodeInstance.count > 0)) { // all parties have arrived
-        try {
-            return this.nodeInstance.queue;
-        } finally {
-            this.nodeInstance.queue = [];
-        }
+    return advance(this.nodeInstance);
+}
+
+function advance(nodeInstance) {
+    if (_.isEmpty(nodeInstance.queue) || nodeInstance.count > 0)
+        return; // nothing to do
+    // all parties have arrived
+    try {
+        return nodeInstance.queue;
+    } finally {
+        nodeInstance.queue = [];
     }
 }
