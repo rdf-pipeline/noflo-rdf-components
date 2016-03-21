@@ -1,0 +1,15 @@
+# construct-graph.rq.hbs
+
+# This file uses http://handlebarsjs.com/
+
+CONSTRUCT {
+    ?s ?p ?o
+} WHERE {
+    {{#if graph-uri~}}
+        GRAPH <{{{graph-uri}}}>{
+    {{~/if}}
+        ?s ?p ?o
+    {{#if graph-uri~}}
+        }
+    {{~/if}}
+}

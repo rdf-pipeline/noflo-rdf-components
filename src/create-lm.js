@@ -1,5 +1,5 @@
 /**
- * LmFactory.js
+ * create-lm.js
  *
  * This file contains the factory code used to create a high resolution last modified (LM) string 
  * that will be unique to the current node instance (not globally unique). 
