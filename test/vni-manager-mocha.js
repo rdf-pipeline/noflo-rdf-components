@@ -89,6 +89,8 @@ describe("vni-manager", function() {
             // Verify that node1 now has a length of one with 
             // the vni that has vnid 1
             testVni1.should.be.an('object');
+	    testVni1.vnid.should.exist;
+            testVni1.vnid.should.equal('1');
 	    testVni1.errorState.should.exist;
 	    testVni1.inputStates.should.exist;
 	    testVni1.outputState.should.exist;
@@ -101,6 +103,8 @@ describe("vni-manager", function() {
             // Set node 2 with a vni with vnid 2
             var testVni2 = node2.vni('2');
             testVni2.should.be.an('object');
+            testVni2.vnid.should.exist;
+            testVni2.vnid.should.equal('2');
             testVni2.errorState.should.exist;
             testVni2.inputStates.should.exist;
             testVni2.outputState.should.exist;
@@ -127,6 +131,9 @@ describe("vni-manager", function() {
             testVni.node.should.be.an('object');
             node.should.include.keys('nodeName', 'componentName', 'inPorts', 'outPorts',
                                      'vnis', 'deleteAllVnis', 'deleteVni', 'vni' );
+
+            testVni.vnid.should.exist;
+            testVni.vnid.should.equal( '' );
 
             testVni.inputStates.should.exist;
             testVni.inputStates.should.be.a('function');
@@ -163,6 +170,10 @@ describe("vni-manager", function() {
                                      'vnis', 'deleteAllVnis', 'deleteVni', 'vni' );
 
             testVni.should.be.an('object');
+
+            testVni.vnid.should.exist;
+            testVni.vnid.should.equal( '' );
+
             testVni.inputStates.should.exist;
             testVni.inputStates.should.be.a('function');
 

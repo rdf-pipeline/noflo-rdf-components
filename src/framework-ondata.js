@@ -4,7 +4,7 @@
 var _ = require('underscore');
 var util = require('util');
 
-var stateFactory = require('./create-state');
+var createState = require('./create-state');
 var createLm = require('./create-lm');
 var vniManager = require('./vni-manager');
 
@@ -28,7 +28,7 @@ module.exports = function( payload, socketIndex ) {
      var vnid = payload.vnid || '';
      var vni = this.nodeInstance.vni(vnid);
 
-     var inputState = (payload.vnid) ? payload : stateFactory( vnid, payload );
+     var inputState = (_.isUndefined( payload.vnid )) ? createState( vnid, payload ) : payload;
      vni.inputStates( portName, socketIndex, inputState );
 
      if ( shouldRunUpdater( vni ) ) { 
@@ -55,9 +55,8 @@ module.exports = function( payload, socketIndex ) {
              var wrapper = this.nodeInstance.wrapper;
 
              new Promise(function( resolve ) { 
- 
                  // Execute fRunUpdater which will also execute the updater
-                 resolve( wrapper.fRunUpdater.call( vni ) );
+                 resolve( wrapper.fRunUpdater( vni ) );
 
              }).then( function() { 
                  // fRunUpdater/Updater success path
@@ -68,9 +67,8 @@ module.exports = function( payload, socketIndex ) {
                     lastOutputLm = undefined;  // got a new error so we will force sending output
                  }
 
-                 // If not new output or error state data, send it downstream or log it to the console
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
-                 handleError( outputPorts.error,  lastErrorState.lm, vni.errorState() );
+                 handleError( vni, outputPorts.error,  lastErrorState.lm );
 
              }, function( rejected ) { 
                  // fRunUpdater/updater failed 
@@ -85,7 +83,8 @@ module.exports = function( payload, socketIndex ) {
                  stateChange( vni.errorState, lastErrorState );
 
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
-                 handleError( outputPorts.error, lastErrorState.lm, vni.errorState() );
+                 handleError( vni, outputPorts.error, lastErrorState.lm );
+                  
 
                  // If we haven't already processed the rejected error, do it now
                  if ( rejected !== vni.errorState().data ) { 
@@ -94,13 +93,13 @@ module.exports = function( payload, socketIndex ) {
                      if ( changeStateData( vni.errorState, lastErrorState ) ) { 
                          lastErrorState.lm = undefined; 
                      } 
-                     handleError( outputPorts.error, lastErrorState.lm, vni.errorState() );
+                     handleError( vni, outputPorts.error, lastErrorState.lm );
                  }
 
              }).catch( function( e ) { 
-                 // fRunUpdater or Updater threw an error
                  console.error( "framework-ondata unable to process fRunUpdater results!" );
                  var err = ( e.stack ) ? e.stack : e;
+                 console.error( err );
              }); 
          } // have an fRunUpdater
      } // not ready for fRunUpdater yet
@@ -143,17 +142,21 @@ function clearStateData( stateFacade ) {
  *
  * @param port the error port, which may or may not be attached to something down stream
  * @param lastLm last recorded state lm
- * @param state an error or output state to be sent down stream or logged
  */
-function handleError( port, lastLm, state ) { 
+function handleError( vni, port, lastLm  ) { 
 
-    if ( (! handleOutput( port, lastLm, state )) && state.data )  { 
-        // State was not sent on to an attached port, and we do have error data
-        // so go ahead and log it for debugging/support use.
-        if ( state.data.stack ) { 
-            console.error( state.data.stack );
-        } else { 
-            console.error( state.data );
+    if ( haveError( vni ) )  {
+
+        var state = vni.errorState();
+
+        if ( (! handleOutput( port, lastLm, state )) && state.data )  { 
+            // State was not sent on to an attached port, and we do have error data
+            // so go ahead and log it for debugging/support use.
+            if ( state.data.stack ) { 
+                console.error( state.data.stack );
+            } else { 
+                console.error( state.data );
+            }
         }
     }
 }
@@ -269,7 +272,7 @@ function haveAllInputs( vni ) {
     return ! _.some( attachedInPorts, function( port ) { 
 
         var states = vni.inputStates( port.name );
-        return ( _.isUndefined( states ) ||  haveError( vni ) ||
+        return ( _.isUndefined( states ) ||  
                ( _.isArray( states ) &&  _.some( states, _.isUndefined ))); 
     });
 }

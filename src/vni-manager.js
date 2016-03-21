@@ -95,6 +95,7 @@ module.exports = function( node ) {
 
               var that = this; // save current node context to reference in facade
               return {
+                  vnid: vnid,
                   delete: _.bind( this.deleteVni, this, vnid ),
                   inputStates: _.partial( inputStates, this, vnid ), 
                   errorState: _.partial( errorState, this.vnis[vnid] ), 
