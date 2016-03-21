@@ -5,6 +5,9 @@
  * implementation of the RDF Pipeline.
  */
 
+var chai = require('chai');
+var expect = chai.expect;
+
 var noflo = require('noflo');
 var _ = require('underscore');
 
@@ -85,6 +88,24 @@ module.exports = {
         return node ? node : component;
     },
 
+    detachAllInputSockets: function( node ) {
+
+        var component = node._component_under_test ? node._component_under_test : node;
+        var portNames = Object.keys( node.inPorts );
+
+        if ( portNames ) {
+             portNames.forEach( function( portName ) {
+                 var port = component.inPorts[portName];
+                 var sockets = port.listAttached();
+                 if ( _.isArray( sockets ) && sockets.length > 0 ) {
+                    sockets.forEach( function( socket ) {
+                        port.detach(socket);
+                    });
+                 }
+             });
+        }
+    },
+
     sendData: function(node, port, payload) {
         var component = node._component_under_test ? node._component_under_test : node;
 
@@ -108,13 +129,14 @@ module.exports = {
      * Verifies that the state has the expected vnid & data and the lm is
      * structured as an lm should be.
      */
-    verifyState: function( state, expectedVnid, expectedData ) { 
+    verifyState: function( state, expectedVnid, expectedData, expectedError ) { 
         state.should.be.an('object');
-        state.should.have.all.keys('vnid', 'lm','data');
+        state.should.have.all.keys('vnid', 'lm','data','error');
         state.vnid.should.equal( expectedVnid );
         state.data.should.equal( expectedData );
         state.lm.should.be.a( 'string' );
         state.lm.should.not.be.empty;
+        expect( state.error ).to.equal( expectedError );
         var lmComponents = state.lm.match(/^LM(\d+)\.(\d+)$/);
         lmComponents.should.have.length(3);
     }

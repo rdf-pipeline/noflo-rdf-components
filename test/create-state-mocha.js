@@ -33,15 +33,13 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data');
+       state.should.have.all.keys('vnid', 'lm','data', 'error');
 
        // Check the content
        state.vnid.should.equal( testVnid );
        expect( state.data ).to.be.undefined;
-
-       // Check the LM
-       var components = state.lm.match(/^LM(\d+)\.(\d+)$/);
-       components.should.have.length(3);
+       expect( state.lm ).to.be.undefined;
+       expect( state.error ).to.be.undefined;
     });
 
     it("should create a new state if given an empty vnid & data parameter", function() {
@@ -53,7 +51,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data');
+       state.should.have.all.keys('vnid', 'lm','data', 'error');
 
        // Check the content
        state.vnid.should.equal( testVnid );
@@ -62,6 +60,8 @@ describe("create-state", function() {
        // Check the LM
        var components = state.lm.match(/^LM(\d+)\.(\d+)$/);
        components.should.have.length(3);
+
+       expect( state.error ).to.be.undefined;
     });
 
     it("should create a new state if given an non-empty vnid & data parameter", function() {
@@ -73,7 +73,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data');
+       state.should.have.all.keys('vnid', 'lm','data', 'error');
 
        // Check the content
        state.vnid.should.equal( testVnid );
@@ -82,6 +82,8 @@ describe("create-state", function() {
        // Check the LM
        var components = state.lm.match(/^LM(\d+)\.(\d+)$/);
        components.should.have.length(3);
+
+       expect( state.error ).to.be.undefined;
     });
 
     it("should use the lm parameter if it is defined", function() {
@@ -94,12 +96,36 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data');
+       state.should.have.all.keys('vnid', 'lm','data', 'error');
 
        // Check the data content
        state.data.should.equal( testString );
 
        // Check the LM
        state.lm.should.equal( testLm );
+
+       expect( state.error ).to.be.undefined;
+    });
+
+    it("should use the error parameter if it is defined", function() {
+
+       // Set up a test state
+       var testVnid = '1';
+       var testLm =  'LM1328113669.00000000000000001';
+       var testString = "Some test data";
+       var error = true;
+       var state = createState( testVnid, testString, testLm, error );
+
+        // Verify we got an object with the right keys
+       state.should.be.an('object');
+       state.should.have.all.keys('vnid', 'lm','data', 'error');
+
+       // Check the data content
+       state.data.should.equal( testString );
+
+       // Check the LM
+       state.lm.should.equal( testLm );
+
+       state.error.should.be.true;
     });
 });
