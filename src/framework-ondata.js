@@ -36,8 +36,7 @@ module.exports = function( payload, socketIndex ) {
          // Save vars we will need in the promise where the context is different
          var outputPorts = this.nodeInstance.outPorts;
 
-         if ( _.isUndefined( this.nodeInstance.wrapper.fRunUpdater ) || 
-             ! _.isFunction( this.nodeInstance.wrapper.fRunUpdater ) ) { 
+         if ( ! _.isFunction( this.nodeInstance.wrapper.fRunUpdater ) ) { 
 
              // Don't have a wrapper fRunUpdater 
              throw Error( 'No wrapper fRunUpdater function found!  Cannot run updater.' );
@@ -62,9 +61,10 @@ module.exports = function( payload, socketIndex ) {
                  // fRunUpdater/Updater success path
              
                  // Returned OK, but updater could have set an error - check for that
-                 if ( stateChange( vni.errorState, lastErrorState ) ) {
+                 // and update the LM if the state has changed
+                 if ( stateChange( vni.errorState, lastErrorState, true ) ) {
                     setOutputErrorFlag( vni );   
-                    lastOutputLm = undefined;  // got a new error so we will force sending output
+                    lastOutputLm = undefined;  // got a new error so force sending output
                  }
 
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
@@ -79,8 +79,8 @@ module.exports = function( payload, socketIndex ) {
 
                  setOutputErrorFlag( vni, true ); 
 
-                 stateChange( vni.outputState, lastOutputLm );
-                 stateChange( vni.errorState, lastErrorState );
+                 stateChange( vni.outputState, lastOutputLm, false );
+                 stateChange( vni.errorState, lastErrorState, true );
 
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
                  handleError( vni, outputPorts.error, lastErrorState.lm );
@@ -90,9 +90,15 @@ module.exports = function( payload, socketIndex ) {
                  if ( rejected !== vni.errorState().data ) { 
                      lastErrorState = _.clone( vni.errorState() );   
                      changeStateData( vni.errorState, rejected );
-                     if ( changeStateData( vni.errorState, lastErrorState ) ) { 
+                     if ( stateChange( vni.errorState, lastErrorState, true ) ) { 
                          lastErrorState.lm = undefined; 
                      } 
+                     handleError( vni, outputPorts.error, lastErrorState.lm );
+                 }
+
+                 if ( rejected !== vni.errorState().data ) { 
+                     lastErrorState = _.clone( vni.errorState() );   
+                     changeStateData( vni.errorState, rejected );
                      handleError( vni, outputPorts.error, lastErrorState.lm );
                  }
 
@@ -114,12 +120,10 @@ module.exports = function( payload, socketIndex ) {
  *
  * @param stateFacade a getter/setterfunction for the current state
  */ 
-function changeStateData( stateFacade, newData, newLm ) { 
+function changeStateData( stateFacade, newData ) { 
     var currentState = stateFacade();
     currentState.data = newData;
-    if ( newLm ) { 
-        currentState.lm = createLm();
-    }
+    currentState.lm = createLm();
     stateFacade( currentState );
 }
 
@@ -220,19 +224,22 @@ function setOutputErrorFlag( vni, errorFlag ) {
  *
  * @param stateFacade a getter/setterfunction for the current state
  * @param lastState a saved clone of the last state 
+ * @param if true, the LM will be updated to ensure the change is propagated
  *
  * @return returns true if state was updated, false if not.
  */
-function stateChange( stateFacade, lastState ) { 
+function stateChange( stateFacade, lastState, updateLm ) { 
 
     var currentState = stateFacade();
 
-    // If got new data or an error state
-    var lastData = (lastState &&  _.isObject( lastState )  ) ? lastState.data : lastState;
+    var lastData = ( _.isObject( lastState )  ) ? lastState.data : lastState;
     if ( currentState.data  !== lastData ) { 
 
-        currentState.lm = createLm();
-        stateFacade( currentState );
+        if ( updateLm ) { 
+            currentState.lm = createLm();
+            stateFacade( currentState );
+        } 
+
         return true;
     }
 
