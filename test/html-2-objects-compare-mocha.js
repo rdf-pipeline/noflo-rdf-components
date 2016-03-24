@@ -1,120 +1,186 @@
 // html-2-objects-compare-mocha.js
 
 var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
+
+var assert = chai.asert;
 var expect = chai.expect;
 chai.should();
+
+var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 
 var _ = require('underscore');
 var fs = require('fs');
-var noflo = require('noflo');
 
-var componentFactory = require('../components/html-2-objects-compare');
-var getComponent = componentFactory.getComponent;
+var createState = require('../src/create-state');
+var factory = require('../components/html-2-objects-compare');
+var getComponent = factory.getComponent;
 
 var commonTest = require('./common-test');
 
 describe('html-2-objects-compare', function() {
 
-    it("should have a component definition with expected input & output ports", function() {
-        return Promise.resolve(componentFactory.getComponent )
-            .then(commonTest.createComponent).then(function(component){
+    it("should have have the expected node facade", function() {
+        var node = commonTest.createComponent(factory);
 
-                 component.should.be.an.instanceof(noflo.Component);
+        node.should.be.an('object');
+        node.should.include.keys( 'nodeName', 'componentName', 'inPorts', 'outPorts',
+                                   'deleteAllVnis', 'deleteVni', 'vni', 'vnis' );
 
-                 // Verify we have a good inPorts object with our 3 input ports: file, left, & right
-                 component.inPorts.should.exist;
-                 component.inPorts.should.be.an('object');
-                 component.inPorts.ports.should.exist;
-                 component.inPorts.ports.should.be.an('object');
-                 component.inPorts.ports.file.should.exist;
-                 component.inPorts.ports.file.should.be.an('object');
-                 component.inPorts.ports.left.should.exist;
-                 component.inPorts.ports.left.should.be.an('object');
-                 component.inPorts.ports.right.should.exist;
-                 component.inPorts.ports.right.should.be.an('object');
+        node.inPorts.should.be.an('object');
+        node.outPorts.should.be.an('object');
 
-                 // Verify we have a good outPorts with 2 output ports: output & error
-                 component.outPorts.should.exist;
-                 component.outPorts.should.be.an('object');
-                 component.outPorts.ports.should.exist;
-                 component.outPorts.ports.should.be.an('object');
-                 component.outPorts.ports.output.should.exist;
-                 component.outPorts.ports.output.should.be.an('object');
-                 component.outPorts.ports.error.should.exist;
-                 component.outPorts.ports.error.should.be.an('object');
-        });
+        node.deleteAllVnis.should.be.a('function');
+        node.deleteVni.should.be.a('function');
+        node.vni.should.be.a('function');
+        node.vnis.should.be.an('object');
+    });
+
+    it( "should have have expected input & output ports", function() {
+        var node = commonTest.createComponent(factory);
+
+        node.inPorts.should.be.an('object');
+        node.inPorts.should.have.all.keys( 'file', 'left', 'right' );
+        node.inPorts.file.should.be.an('object');
+        node.inPorts.left.should.be.an('object');
+        node.inPorts.right.should.be.an('object');
+
+        node.outPorts.should.be.an('object');
+        node.outPorts.should.have.all.keys( 'output', 'error' );
+        node.outPorts.output.should.be.an('object');
+        node.outPorts.error.should.be.an('object');
     });
 
     it("should  generate the correct comparison file when called with good input data", function() {
-        return Promise.resolve(componentFactory.getComponent )
-            .then(commonTest.createComponent).then(function(component){
 
-               var filePath = 'test/data/comparison.html';
-               var expectedFilePath = 'test/data/expected-comparison.html';
+        var filePath = 'test/data/comparison.html';
+        var expectedFilePath = 'test/data/expected-comparison.html';
 
-               // remove the target file if it exists so we create it again clean
-               try { fs.unlinkSync(filePath); 
-               } catch (e) { /* do nothing - will fail if file does not exist */ }
+        // remove the target file if it exists so we create it again clean
+        try { fs.unlinkSync(filePath); 
+        } catch (e) { /* do nothing - will fail if file does not exist */ }
 
-               commonTest.sendData( component, 'file',
-                                    filePath);
-               commonTest.sendData( component,'left',
-                                    {title:"Left Column"});
-               commonTest.sendData( component,'left',
-                                    {id: '001',  glucose: '75',  date: '2012-02-01'});
-               commonTest.sendData( component,'right',
-                                    {title:"Right Column"});
-               commonTest.sendData( component,'right',
-                                    {patientId: '001', 'fasting-glucose': '75', date: '2012-02-01'});
+        return commonTest.createNetwork(
+            { node1: 'core/Repeat', 
+              node2: 'core/Repeat', 
+              node3: 'core/Repeat', 
+              node4: 'core/Repeat', 
+              node5: 'core/Repeat', 
+              node6: { getComponent: factory }
+        }).then( function( network ) {
 
-               // Now verify that we got the expected file output.  We'll do 
-               // this by comparing the expected file against the file we actually got
-               var expectedStats = fs.stat(expectedFilePath); 
-               fs.stat(filePath, function(error, stats) {
+            return new Promise( function(done, fail) {
 
-                   stats.should.not.be.empty;
-                   stats.should.deep.equal( expectedStats );
+                // True noflo component - not facade
+                var node = network.processes.node6.component;
 
-                   var expected_fd = fs.open(expectedfilePath, 'r');
-                   fs.open(filePath, 'r', function(error, fd) {
+                commonTest.onOutPortData(node, 'output', done);
+                commonTest.onOutPortData(node, 'error', fail);
 
-                       var buf = new Buffer(stats.size);
-                       var expectedBuf = new Buffer(stats.size);
-                  
-                       fs.read(fd, expectedBuf, 0, expectedBuf.length);
-                       fs.read(fd, buf, 0, buf.length, null, function(error, bytesRead, buf) {
-                           var data = buf.toString('utf8', 0, buf.length).replace(/\r?\n|\r/,'');
-                           var expectedData = expectedBuf.toString('utf8', 0, expectedBuf.length).replace(/\r?\n|\r/,'');
-                           data.should.equal( expectedData );
-                       });
+                network.graph.addEdge( 'node1', 'out', 'node6', 'file' );
+                network.graph.addEdge( 'node2', 'out', 'node6', 'left' );
+                network.graph.addEdge( 'node3', 'out', 'node6', 'left' );
+                network.graph.addEdge( 'node4', 'out', 'node6', 'right' );
+                network.graph.addEdge( 'node5', 'out', 'node6', 'right' );
 
-                       fs.close(fd);
-                   });
-               });
+                network.graph.addInitial( filePath, 'node1', 'in' );
+
+                network.graph.addInitial( {title:"Left Column"}, 'node2', 'in' );
+                network.graph.addInitial( createState( '001', {id: '001',  glucose: '75',  date: '2012-02-01'}), 
+                                          'node3', 'in' );
+
+                network.graph.addInitial( {title:"Right Column"}, 'node4', 'in' );
+                network.graph.addInitial( createState( '001', {patientId: '001', 'fasting-glucose': '75', date: '2012-02-01'}),
+                                          'node5', 'in' );
+
+            }).then( function( done ) {
+
+                // Stop network & verify we got the output state we expect
+                network.stop();
+
+                done.vnid.should.equal('001');
+                expect( done.error ).to.be.undefined;
+
+                // Now verify that we got the expected file output.  We'll do 
+                // this by comparing the expected file against the file we actually got
+                var expectedStats = fs.stat(expectedFilePath); 
+                fs.stat(filePath, function(error, stats) {
+
+                    stats.should.not.be.empty;
+                    stats.should.deep.equal( expectedStats );
+
+                    var expected_fd = fs.open(expectedfilePath, 'r');
+                    fs.open(filePath, 'r', function(error, fd) {
+    
+                        var buf = new Buffer(stats.size);
+                        var expectedBuf = new Buffer(stats.size);
+                   
+                        fs.read(fd, expectedBuf, 0, expectedBuf.length);
+                        fs.read(fd, buf, 0, buf.length, null, function(error, bytesRead, buf) {
+                            var data = buf.toString('utf8', 0, buf.length).replace(/\r?\n|\r/,'');
+                            var expectedData = expectedBuf.toString('utf8', 0, expectedBuf.length).replace(/\r?\n|\r/,'');
+                            data.should.equal( expectedData );
+                        });
+
+                        fs.close(fd);
+                    });
+                });
+            }, function( fail ) {
+               network.stop();
+               assert.fail( fail );
+            });  
         }); 
+
     });
 
     it("should fail when called with no title", function() {
-        return Promise.resolve(componentFactory.getComponent )
-            .then(commonTest.createComponent).then( function(component){
 
-               var filePath = 'test/data/comparison.html';
+        return commonTest.createNetwork(
+            { node1: 'core/Repeat', 
+              node2: 'core/Repeat', 
+              node3: 'core/Repeat', 
+              node4: 'core/Repeat', 
+              node5: 'core/Repeat', 
+              node6: { getComponent: factory }
+        }).then( function( network ) {
 
-               // Send data, but with no title 
-               commonTest.sendData( component, 'file',
-                                    filePath);
-               commonTest.sendData( component,'left',
-                                    "Left Column With No Title");
-               commonTest.sendData( component,'left',
-                                    {id: '001',  glucose: '75',  date: '2012-02-01'});
-               commonTest.sendData( component,'right',
-                                    {title:"Right Column"});
-               commonTest.sendData( component,'right',
-                                    {patientId: '001', 'fasting-glucose': '75', date: '2012-02-01'});
-            }).should.be.rejectedWith(Error, /Invalid input.  Missing the title setting on port left./);
+            return new Promise( function(done, fail) {
+
+                // True noflo component - not facade
+                var node = network.processes.node6.component;
+
+                commonTest.onOutPortData(node, 'output', done);
+                commonTest.onOutPortData(node, 'error', fail);
+
+                network.graph.addEdge( 'node1', 'out', 'node6', 'file' );
+                network.graph.addEdge( 'node2', 'out', 'node6', 'left' );
+                network.graph.addEdge( 'node3', 'out', 'node6', 'left' );
+                network.graph.addEdge( 'node4', 'out', 'node6', 'right' );
+                network.graph.addEdge( 'node5', 'out', 'node6', 'right' );
+
+                network.graph.addInitial( 'test/data/comparison.html', 'node1', 'in' );
+
+                network.graph.addInitial( "Left Column No Title", 'node2', 'in' );
+                network.graph.addInitial( createState( '001', {id: '001',  glucose: '75',  date: '2012-02-01'}), 
+                                          'node3', 'in' );
+
+                network.graph.addInitial( {title:"Right Column"}, 'node4', 'in' );
+                network.graph.addInitial( createState( '001', {patientId: '001', 'fasting-glucose': '75', date: '2012-02-01'}),
+                                          'node5', 'in' );
+
+            }).then( function( done ) {
+
+               // Stop network & verify we got the output state we expect
+               network.stop();
+               done.vnid.should.equal('001');
+               done.data.should.equal('Error: Invalid input.  Missing the title setting on port left.');
+               done.error.should.be.true;
+
+            }, function( fail ) {
+               network.stop();
+               assert.fail( fail );
+            });  
+        }); 
     });
-
 
 });
