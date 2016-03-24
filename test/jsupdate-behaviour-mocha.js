@@ -17,33 +17,33 @@ describe("framework-state", function() {
     it("should fire updater when it has valid input states on all of its attached inputs", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
-                input1: "core/Repeat",
-                input2: "core/Repeat",
+                node1: "core/Repeat",
+                node2: "core/Repeat",
                 sut: jswrapper(function(input1, input2) {
                     return "Hello " + input1 + " and " + input2;
                 })
             }).then(function(network){
-                network.graph.addEdge('input1', 'out', 'sut', 'input1');
-                network.graph.addEdge('input2', 'out', 'sut', 'input2');
+                network.graph.addEdge('node1', 'out', 'sut', 'input1');
+                network.graph.addEdge('node2', 'out', 'sut', 'input2');
                 test.onOutPortData(network.processes.sut.component, 'error', fail);
                 test.onOutPortData(network.processes.sut.component, 'output', done);
-                test.sendData(network.processes.input1.component, 'in', "from input1");
-                test.sendData(network.processes.input2.component, 'in', "from input2");
+                test.sendData(network.processes.node1.component, 'in', "from node1");
+                test.sendData(network.processes.node2.component, 'in', "from node2");
             });
-        }).should.eventually.have.property('data', "Hello from input1 and from input2");
+        }).should.eventually.have.property('data', "Hello from node1 and from node2");
     });
     it("should not fire updater if not all of its attached inputs have valid states", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
-                input1: "core/Repeat",
-                input2: "core/Repeat",
+                node1: "core/Repeat",
+                node2: "core/Repeat",
                 sut: jswrapper(function(input1, input2) {
                     fail("Hello " + input1 + " and " + input2);
                 })
             }).then(function(network){
-                network.graph.addEdge('input1', 'out', 'sut', 'input1');
-                network.graph.addEdge('input2', 'out', 'sut', 'input2');
-                test.sendData(network.processes.input1.component, 'in', "From input1");
+                network.graph.addEdge('node1', 'out', 'sut', 'input1');
+                network.graph.addEdge('node2', 'out', 'sut', 'input2');
+                test.sendData(network.processes.node1.component, 'in', "from node1");
                 setTimeout(done.bind(this, "nothing happened"), 100);
             });
         }).should.become("nothing happened");
