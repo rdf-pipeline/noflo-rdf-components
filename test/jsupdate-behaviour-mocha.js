@@ -129,7 +129,7 @@ describe("framework-state", function() {
                 test.onOutPortData(network.processes.sut.component, 'output', function(output){
                     if (first) {
                         first = false;
-                        test.sendData(network.processes.broken.component, 'input', output);
+                        test.sendData(network.processes.broken.component, 'input', "from broken");
                         setTimeout(done.bind(this, "nothing happened"), 100);
                     } else {
                         fail(output);
