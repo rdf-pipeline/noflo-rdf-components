@@ -53,10 +53,9 @@ var fRunUpdater = function( updater, updaterArgs, vni ) {
          var outputState = vni.outputState();
          if ( _.isUndefined( outputState.error ) || ! outputState.error  ) { 
              outputState.error = true;
-             outputState.data = e.toString();
-             outputState.lm = createLm();
              vni.outputState( outputState );
          } 
+         vni.errorState( createState( vni.vnid, e.toString() ) );
     });
 
 };
@@ -67,8 +66,6 @@ var fRunUpdater = function( updater, updaterArgs, vni ) {
  * the component and setting up the vni and state metadata.
  *
  * @param nodeDefOrUpdater 
- *
- * @this the context for this wrapper is the node instance.
  * @return a promise to create the noflo rdf component
  */
 module.exports = function( nodeDefOrUpdater ) { 
@@ -134,7 +131,7 @@ module.exports = function( nodeDefOrUpdater ) {
     }
 
     // TODO: Add additional wrapper functions to this object
-    var wrapper = {fRunUpdater: fRunUpdater.bind(this, updater, updaterArgs)};
+    var wrapper = {fRunUpdater: _.partial( fRunUpdater, updater, updaterArgs)};
     return _.defaults(factory(nodeDef, wrapper), nodeDef);
 
 }; // module.exports

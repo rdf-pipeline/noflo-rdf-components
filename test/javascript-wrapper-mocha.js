@@ -57,17 +57,19 @@ describe('javascript-wrapper', function() {
         it("should accept object with one inPort definition", function() {
             return Promise.resolve({
                 inPorts: { 
-                    input: { datatype: 'string', 
-                             description: "input description",
-                             required: true }
+                    myinput: { datatype: 'string', 
+                               description: "my input description",
+                               required: true }
+                },
+                updater: function( myinput ) {
+                             handler('success');
                 }
             }).then(jswrapper).then(commonTest.createComponent).then(function(component){
                 return _.keys(component.inPorts);
-            }).should.eventually.become([ 'input' ]);
+            }).should.eventually.become([ 'myinput' ]);
         });
     
     });
-
 
     describe('#fRunUpdater', function() {
 
