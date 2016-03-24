@@ -63,8 +63,3 @@ function jsObject( parameter ) {
        throw Error( msg );
     }
 } 
-
-// If running in test mode, mocha will execute internal unit testing
-if (process.env.NODE_ENV === 'test') {
-  module.exports._private = { updater: updater };
-}

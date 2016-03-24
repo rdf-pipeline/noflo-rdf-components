@@ -133,14 +133,9 @@ module.exports = function( nodeDefOrUpdater ) {
 					       }, {}));
     }
 
-    return factory( nodeDef,
-                    { 
-                      fRunUpdater: fRunUpdater.bind( this, 
-                                                     updater, 
-                                                     updaterArgs ) 
-                      // TODO: Add other Wrapper API's here
-                    } 
-           );
+    // TODO: Add additional wrapper functions to this object
+    var wrapper = {fRunUpdater: fRunUpdater.bind(this, updater, updaterArgs)};
+    return _.defaults(factory(nodeDef, wrapper), nodeDef);
 
 }; // module.exports
 
