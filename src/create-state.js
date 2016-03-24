@@ -33,7 +33,7 @@ module.exports = function( vnid, data, lm, error ) {
 
        } 
 
-       // Either data or LM is not undefined - so use the lm or create a new one if we do 
+       // Data and/or LM is not undefined - so use the lm or create a new one if we do 
        // not have an lm
        return { vnid: vnid,
                 data: data, 
