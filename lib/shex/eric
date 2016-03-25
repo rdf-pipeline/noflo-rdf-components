@@ -1,0 +1,545 @@
+<http://hokukahu.com/systems/chcs-1/107-66037> <http://hokukahu.com/schema/chcss#identifier> "107-66037"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63-1000919> <http://hokukahu.com/schema/chcss#identifier> "63-1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/10-1> <http://www.w3.org/2000/01/rdf-schema#label> "WHITE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://www.w3.org/2000/01/rdf-schema#label> "140418-16996"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://www.w3.org/2000/01/rdf-schema#label> "BENDER,GRADY J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#administration_times-101> "1500"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#display_text-101> "C-REACTIVE PROTEIN~SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#hcp_sig_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#meprs_code-101> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#patient-101> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#quantity-101> "120"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#stop_expiration_date-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Order-101> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Result-63_07> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#specimen_site-101> <http://hokukahu.com/systems/chcs-1/61-72> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#dob-2> "1988-06-09"^^<http://www.w3.org/2001/XMLSchema#date> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#patient_category-2> <http://hokukahu.com/systems/chcs-1/8156-4335> . 
+<http://hokukahu.com/systems/chcs-1/2_4-1_1000919> <http://hokukahu.com/schema/chcss#user_altering_patient_record-2_4> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#clinic-44_2> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#provider-44_2> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/63-1000919> <http://hokukahu.com/schema/chcss#clinical_chemistry-63> <http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#login_date_time-63_04> "2011-05-24T12:02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#certify_date_time-63_07> "2013-07-31T17:49:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#initial_viewer_date_time-63_07> "2013-07-31T17:49:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#result-63_07> "0.2"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#exam_no-70_5> "14000582"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#procedure_start_date_time-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#recorders_division-74> <http://hokukahu.com/systems/chcs-1/40_8-1> . 
+<http://hokukahu.com/systems/chcs-1/10-1> <http://hokukahu.com/schema/chcss#identifier> "10-1"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#identifier> "101-59369"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/6-1000004> <http://hokukahu.com/schema/chcss#identifier> "6-1000004"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/50-451> <http://hokukahu.com/schema/chcss#identifier> "50-451"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#identifier> "8810_3-12891"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8119-382> <http://hokukahu.com/schema/chcss#identifier> "8119-382"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102-9> <http://hokukahu.com/schema/chcss#identifier> "102-9"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#identifier> "2-1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44-36> <http://hokukahu.com/schema/chcss#identifier> "44-36"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102_3-9> <http://hokukahu.com/schema/chcss#identifier> "102_3-9"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/3-1> <http://hokukahu.com/schema/chcss#identifier> "3-1"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#identifier> "101-60838"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/60-1812> <http://hokukahu.com/schema/chcss#identifier> "60-1812"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102-4> <http://hokukahu.com/schema/chcss#identifier> "102-4"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/61-72> <http://hokukahu.com/schema/chcss#identifier> "61-72"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#identifier> "101-60848"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/60-1862> <http://hokukahu.com/schema/chcss#identifier> "60-1862"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#identifier> "101-66037"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#identifier> "101-75610"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#identifier> "101-78801"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102-5> <http://hokukahu.com/schema/chcss#identifier> "102-5"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/79_1-209> <http://hokukahu.com/schema/chcss#identifier> "79_1-209"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/71-1044> <http://hokukahu.com/schema/chcss#identifier> "71-1044"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/107-60838> <http://hokukahu.com/schema/chcss#identifier> "107-60838"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/107-60848> <http://hokukahu.com/schema/chcss#identifier> "107-60848"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/107-75610> <http://hokukahu.com/schema/chcss#identifier> "107-75610"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/11-5> <http://hokukahu.com/schema/chcss#identifier> "11-5"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000138> <http://hokukahu.com/schema/chcss#identifier> "2-1000138"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8140-1> <http://hokukahu.com/schema/chcss#identifier> "8140-1"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8191-6> <http://hokukahu.com/schema/chcss#identifier> "8191-6"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8110-30> <http://hokukahu.com/schema/chcss#identifier> "8110-30"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8156-4335> <http://hokukahu.com/schema/chcss#identifier> "8156-4335"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/5-17> <http://hokukahu.com/schema/chcss#identifier> "5-17"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2_4-1_1000919> <http://hokukahu.com/schema/chcss#identifier> "2_4-1_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/40_8-1> <http://hokukahu.com/schema/chcss#identifier> "40_8-1"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/42_1-62> <http://hokukahu.com/schema/chcss#identifier> "42_1-62"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44-13> <http://hokukahu.com/schema/chcss#identifier> "44-13"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#identifier> "44_2-6049"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8514-5> <http://hokukahu.com/schema/chcss#identifier> "8514-5"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_5-507> <http://hokukahu.com/schema/chcss#identifier> "44_5-507"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#identifier> "44_2-6165"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#identifier> "44_2-6602"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#identifier> "44_2-6606"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/6-1000046> <http://hokukahu.com/schema/chcss#identifier> "6-1000046"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#identifier> "63_04-6869267.8649_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#identifier> "63_04-6889474.8889_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#identifier> "63_04-6899676.877_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#identifier> "63_07-1862_6869267.8649_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#identifier> "63_07-1862_6889474.8889_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#identifier> "63_07-1812_6899676.877_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#identifier> "63_07-1862_6899676.877_1000919"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8710-4498> <http://hokukahu.com/schema/chcss#identifier> "8710-4498"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8710-3423> <http://hokukahu.com/schema/chcss#identifier> "8710-3423"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#identifier> "70_5-7995"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/72-5> <http://hokukahu.com/schema/chcss#identifier> "72-5"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/72-2> <http://hokukahu.com/schema/chcss#identifier> "72-2"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/79_2-1> <http://hokukahu.com/schema/chcss#identifier> "79_2-1"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/79_1-207> <http://hokukahu.com/schema/chcss#identifier> "79_1-207"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#identifier> "74-7995"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/78_3-9> <http://hokukahu.com/schema/chcss#identifier> "78_3-9"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#identifier> "8810_3-3777"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#identifier> "8810_3-8335"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://www.w3.org/2000/01/rdf-schema#label> "140418-99679"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/6-1000004> <http://www.w3.org/2000/01/rdf-schema#label> "ROSS,ALBERT J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/50-451> <http://www.w3.org/2000/01/rdf-schema#label> "PSEUDOEPHEDRINE 30MG @$.03_TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://www.w3.org/2000/01/rdf-schema#label> "PSEUDOEPHEDRINE 30MG @$.03_TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8119-382> <http://www.w3.org/2000/01/rdf-schema#label> "BHAF"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102-9> <http://www.w3.org/2000/01/rdf-schema#label> "RX"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://www.w3.org/2000/01/rdf-schema#label> "BENDER,GRADY J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44-36> <http://www.w3.org/2000/01/rdf-schema#label> "PRIMARY CARE CLINIC 200-H"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102_3-9> <http://www.w3.org/2000/01/rdf-schema#label> "ROUTINE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/3-1> <http://www.w3.org/2000/01/rdf-schema#label> "MANAGER,SCM"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://www.w3.org/2000/01/rdf-schema#label> "100318-12666"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/60-1812> <http://www.w3.org/2000/01/rdf-schema#label> "G-GLUTAMYL TRANSFERASE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102-4> <http://www.w3.org/2000/01/rdf-schema#label> "LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/61-72> <http://www.w3.org/2000/01/rdf-schema#label> "SERUM"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://www.w3.org/2000/01/rdf-schema#label> "100318-49664"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/60-1862> <http://www.w3.org/2000/01/rdf-schema#label> "C-REACTIVE PROTEIN"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://www.w3.org/2000/01/rdf-schema#label> "110520-35334"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://www.w3.org/2000/01/rdf-schema#label> "130723-28565"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/102-5> <http://www.w3.org/2000/01/rdf-schema#label> "RAD"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/79_1-209> <http://www.w3.org/2000/01/rdf-schema#label> "209"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/71-1044> <http://www.w3.org/2000/01/rdf-schema#label> "CHEST PA_LAT, WITH LT OBL"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/107-60838> <http://www.w3.org/2000/01/rdf-schema#label> "2010-03-18T15:00:00Z"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/107-60848> <http://www.w3.org/2000/01/rdf-schema#label> "2010-03-18T15:00:00Z"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/107-66037> <http://www.w3.org/2000/01/rdf-schema#label> "2011-05-20T15:15:00Z"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/107-75610> <http://www.w3.org/2000/01/rdf-schema#label> "2013-07-23T14:00:00Z"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/11-5> <http://www.w3.org/2000/01/rdf-schema#label> "MARRIED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000138> <http://www.w3.org/2000/01/rdf-schema#label> "BENDER,FREYA O"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8140-1> <http://www.w3.org/2000/01/rdf-schema#label> "WIFE OF PATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8191-6> <http://www.w3.org/2000/01/rdf-schema#label> "Z"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8110-30> <http://www.w3.org/2000/01/rdf-schema#label> "30"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8156-4335> <http://www.w3.org/2000/01/rdf-schema#label> "USA TRICARE RES SEL_RET RES-FAM MBR"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/5-17> <http://www.w3.org/2000/01/rdf-schema#label> "ILLINOIS"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/40_8-1> <http://www.w3.org/2000/01/rdf-schema#label> "NH GREAT LAKES, 200H"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/42_1-62> <http://www.w3.org/2000/01/rdf-schema#label> "AMBULATORY PATIENT NOT IN SAME-DAY SURGERY PROGRAM (AMB)"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44-13> <http://www.w3.org/2000/01/rdf-schema#label> "LABORATORY 200H"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://www.w3.org/2000/01/rdf-schema#label> "BENDER,GRADY J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8514-5> <http://www.w3.org/2000/01/rdf-schema#label> "WALK-IN"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_5-507> <http://www.w3.org/2000/01/rdf-schema#label> "OPAC"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://www.w3.org/2000/01/rdf-schema#label> "BENDER,GRADY J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://www.w3.org/2000/01/rdf-schema#label> "BENDER,GRADY J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/6-1000046> <http://www.w3.org/2000/01/rdf-schema#label> "CANTRELL,MERRITT M"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63-1000919> <http://www.w3.org/2000/01/rdf-schema#label> "BENDER,GRADY J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8710-4498> <http://www.w3.org/2000/01/rdf-schema#label> "GGT, DADE (17DEC09~KEL)"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8710-3423> <http://www.w3.org/2000/01/rdf-schema#label> "C-REACTIVE PROTEIN QUEST (14JAN05~RTM)"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://www.w3.org/2000/01/rdf-schema#label> "14000582"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/72-5> <http://www.w3.org/2000/01/rdf-schema#label> "EXAMINED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/72-2> <http://www.w3.org/2000/01/rdf-schema#label> "COMPLETE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/79_2-1> <http://www.w3.org/2000/01/rdf-schema#label> "RADIOLOGY"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/79_1-207> <http://www.w3.org/2000/01/rdf-schema#label> "207"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://www.w3.org/2000/01/rdf-schema#label> "2014-04-21T10:56:00Z"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/78_3-9> <http://www.w3.org/2000/01/rdf-schema#label> "SEE RADIOLOGIST'S REPORT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://www.w3.org/2000/01/rdf-schema#label> "PSEUDOEPHEDRINE 30MG @$.03_TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://www.w3.org/2000/01/rdf-schema#label> "PSEUDOEPHEDRINE 30MG @$.03_TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#_refills-101> "0"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#active_status-101> "SIGNED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#active_status-101> "SIGNED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#active_status-101> "SIGNED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#active_status-101> "SIGNED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#active_status-101> "SIGNED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#active_status-101> "SIGNED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#activity-101> "ACTIVE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#activity-101> "ACTIVE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#activity-101> "ACTIVE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#activity-101> "ACTIVE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#activity-101> "ACTIVE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#activity-101> "ACTIVE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#administration_times-101> "1045"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#administration_times-101> "1500"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#administration_times-101> "1515"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#administration_times-101> "1400"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#administration_times-101> "1045"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#batch_id_number-101> "140418-99679"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#batch_id_number-101> "100318-12666"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#batch_id_number-101> "100318-49664"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#batch_id_number-101> "110520-35334"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#batch_id_number-101> "130723-28565"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#batch_id_number-101> "140418-16996"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#child_resistant_container-101> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#display_text-101> "PSEUDOEPHEDRINE 30MG @$.03/TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#display_text-101> "G-GLUTAMYL TRANSFERASE~SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#display_text-101> "C-REACTIVE PROTEIN~SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#display_text-101> "C-REACTIVE PROTEIN~SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#display_text-101> "CHEST PA/LAT, WITH LT OBL~Routine Exam"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#drug_dose-101> "30"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#drug_unit-101> "mg"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#earliest_task_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#earliest_task_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#earliest_task_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#earliest_task_date_time-101> "2011-05-20T15:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#earliest_task_date_time-101> "2013-07-23T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#earliest_task_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#hcp_sig-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#hcp_sig-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#hcp_sig-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#hcp_sig-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#hcp_sig-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#hcp_sig-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#hcp_sig_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#hcp_sig_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#hcp_sig_date_time-101> "2011-05-20T15:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#hcp_sig_date_time-101> "2013-07-23T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#hcp_sig_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#id_number-101> "140418-99679"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#id_number-101> "100318-12666"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#id_number-101> "100318-49664"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#id_number-101> "110520-35334"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#id_number-101> "130723-28565"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#id_number-101> "140418-16996"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#in_outpatient-101> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#in_outpatient-101> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#in_outpatient-101> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#in_outpatient-101> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#in_outpatient-101> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#in_outpatient-101> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#medication-101> <http://hokukahu.com/systems/chcs-1/50-451> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#medication_profile-101> <http://hokukahu.com/systems/chcs-1/8810_3-12891> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#meprs_code-101> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#meprs_code-101> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#meprs_code-101> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#meprs_code-101> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#meprs_code-101> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#order_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#order_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#order_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#order_date_time-101> "2011-05-20T15:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#order_date_time-101> "2013-07-23T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#order_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#order_type-101> <http://hokukahu.com/systems/chcs-1/102-9> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#order_type-101> <http://hokukahu.com/systems/chcs-1/102-4> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#order_type-101> <http://hokukahu.com/systems/chcs-1/102-4> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#order_type-101> <http://hokukahu.com/systems/chcs-1/102-4> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#order_type-101> <http://hokukahu.com/systems/chcs-1/102-4> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#order_type-101> <http://hokukahu.com/systems/chcs-1/102-5> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#ordering_hcp-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#ordering_hcp-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#ordering_hcp-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#ordering_hcp-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#ordering_hcp-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#ordering_hcp-101> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#origin_of_order-101> "HCP"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#origin_of_order-101> "HCP"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#origin_of_order-101> "HCP"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#origin_of_order-101> "HCP"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#origin_of_order-101> "HCP"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#origin_of_order-101> "HCP"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#outpat_med_comments-101> "60 MG PO Q 6 HOURS PRN CONGESTIONS/SYMPTOMS"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#outpat_med_order_date-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#patient-101> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#patient-101> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#patient-101> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#patient-101> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#patient-101> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#patient_location-101> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#patient_location-101> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#patient_location-101> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#patient_location-101> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#patient_location-101> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#patient_location-101> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#resulted_task_flag-101> "0"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#resulted_task_flag-101> "0"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#resulted_task_flag-101> "0"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#resulted_task_flag-101> "0"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#resulted_task_flag-101> "0"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#resulted_task_flag-101> "0"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#schedule_type-101> "NOW"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#schedule_type-101> "NOW"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#schedule_type-101> "NOW"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#schedule_type-101> "NOW"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#schedule_type-101> "NOW"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#schedule_type-101> "NOW"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#start_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#start_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#start_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#start_date_time-101> "2011-05-20T15:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#start_date_time-101> "2013-07-23T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#start_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#stop_expiration_date-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#stop_expiration_date-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#stop_expiration_date-101> "2011-05-20T15:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#stop_expiration_date-101> "2013-07-23T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#stop_expiration_date-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#unit_doses-101> "120"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#user_sig-101> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#user_sig-101> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#user_sig-101> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#user_sig-101> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#user_sig-101> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#user_sig-101> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://hokukahu.com/schema/chcss#user_sig_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#user_sig_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#user_sig_date_time-101> "2010-03-18T15:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#user_sig_date_time-101> "2011-05-20T15:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#user_sig_date_time-101> "2013-07-23T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#user_sig_date_time-101> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/101-59369> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Order-101> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Medication_Profile-8810_3> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Patient-2> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Order-101> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Order-101> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Order-101> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Order-101> . 
+<http://hokukahu.com/systems/chcs-1/2_4-1_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#User_Altering_Patient_Record-2_4> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Patient_Appointment-44_2> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Patient_Appointment-44_2> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Patient_Appointment-44_2> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Patient_Appointment-44_2> . 
+<http://hokukahu.com/systems/chcs-1/63-1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Lab_Result-63> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Clinical_Chemistry-63_04> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Clinical_Chemistry-63_04> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Clinical_Chemistry-63_04> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Result-63_07> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Result-63_07> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Result-63_07> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Radiology_Exam-70_5> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Radiology_Reports-74> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Medication_Profile-8810_3> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Medication_Profile-8810_3> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#collection_method-101> "SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#collection_method-101> "SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#collection_method-101> "SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#collection_method-101> "SEND PATIENT TO LAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#lab_processing_priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#lab_processing_priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#lab_processing_priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#lab_processing_priority-101> <http://hokukahu.com/systems/chcs-1/102_3-9> . 
+<http://hokukahu.com/systems/chcs-1/101-60838> <http://hokukahu.com/schema/chcss#lab_test-101> <http://hokukahu.com/systems/chcs-1/60-1812> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#lab_test-101> <http://hokukahu.com/systems/chcs-1/60-1862> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#lab_test-101> <http://hokukahu.com/systems/chcs-1/60-1862> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#lab_test-101> <http://hokukahu.com/systems/chcs-1/60-1862> . 
+<http://hokukahu.com/systems/chcs-1/101-60848> <http://hokukahu.com/schema/chcss#specimen_site-101> <http://hokukahu.com/systems/chcs-1/61-72> . 
+<http://hokukahu.com/systems/chcs-1/101-66037> <http://hokukahu.com/schema/chcss#specimen_site-101> <http://hokukahu.com/systems/chcs-1/61-72> . 
+<http://hokukahu.com/systems/chcs-1/101-75610> <http://hokukahu.com/schema/chcss#specimen_site-101> <http://hokukahu.com/systems/chcs-1/61-72> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#clinical_impression_brief-101> "Routine Exam"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#immediate_reading-101> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#mobility_status-101> "AMBULATORY"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#portable-101> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#radiology_location-101> <http://hokukahu.com/systems/chcs-1/79_1-209> . 
+<http://hokukahu.com/systems/chcs-1/101-78801> <http://hokukahu.com/schema/chcss#radiology_procedure-101> <http://hokukahu.com/systems/chcs-1/71-1044> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#active_duty-2> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#address_update_date-2> "2015-06-24"^^<http://www.w3.org/2001/XMLSchema#date> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#blood_type-2> "O+"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#city-2> "WINTHROP HARBOR"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#date_entered_into_file-2> "2015-06-24T20:23:04"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#dod_id_-2> "6796908552"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#emergency_contact-2> "FREYA ORLA BENDER"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#ephone-2> "314.218.9298"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#erelationship-2> <http://hokukahu.com/systems/chcs-1/8140-1> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#ethnic_background-2> <http://hokukahu.com/systems/chcs-1/8191-6> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#fmp-2> <http://hokukahu.com/systems/chcs-1/8110-30> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#fmp_ssn-2> "30/000086711"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#last_appt-2> "2015-06-24T20:23:04"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#marital_status-2> <http://hokukahu.com/systems/chcs-1/11-5> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#name-2> "BENDER,GRADY J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#occupation-2> "CHIEF FINANCIAL OF"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#office_phone-2> "262.236.0589"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#organ_donor-2> "NO"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#organ_donor_date-2> "2015-06-24T15:04:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#patient_ssn-2> "180002862"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#phone-2> "314.218.9298"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#race-2> <http://hokukahu.com/systems/chcs-1/10-1> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#registration_incomplete-2> "REGISTRATION IS COMPLETE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#registration_type-2> "FULL"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#sex-2> "MALE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#sponsor_name-2> <http://hokukahu.com/systems/chcs-1/2-1000138> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#state-2> <http://hokukahu.com/systems/chcs-1/5-17> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#street_address-2> "7214 TRAIL DRIVE"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#user_altering_patient_record-2> <http://hokukahu.com/systems/chcs-1/2_4-1_1000919> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#who_entered_patient-2> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/2-1000919> <http://hokukahu.com/schema/chcss#zip_code-2> "60096"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/2_4-1_1000919> <http://hokukahu.com/schema/chcss#division_modified_at-2_4> <http://hokukahu.com/systems/chcs-1/40_8-1> . 
+<http://hokukahu.com/systems/chcs-1/2_4-1_1000919> <http://hokukahu.com/schema/chcss#modified_date_time-2_4> "2015-06-24T20:23:04"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#appointment_date_time-44_2> "2010-03-18T14:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#appointment_date_time-44_2> "2011-05-20T14:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#appointment_date_time-44_2> "2013-07-23T13:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#appointment_date_time-44_2> "2014-04-18T10:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#appointment_status-44_2> <http://hokukahu.com/systems/chcs-1/8514-5> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#appointment_status-44_2> <http://hokukahu.com/systems/chcs-1/8514-5> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#appointment_status-44_2> <http://hokukahu.com/systems/chcs-1/8514-5> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#appointment_status-44_2> <http://hokukahu.com/systems/chcs-1/8514-5> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#appointment_type-44_2> <http://hokukahu.com/systems/chcs-1/44_5-507> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#appointment_type-44_2> <http://hokukahu.com/systems/chcs-1/44_5-507> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#appointment_type-44_2> <http://hokukahu.com/systems/chcs-1/44_5-507> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#appointment_type-44_2> <http://hokukahu.com/systems/chcs-1/44_5-507> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#checkedin-44_2> "2010-03-18T14:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#checkedin-44_2> "2011-05-20T14:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#checkedin-44_2> "2013-07-23T13:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#checkedin-44_2> "2014-04-18T10:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#clinic-44_2> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#clinic-44_2> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#clinic-44_2> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#date_appointment_made-44_2> "2010-03-18T14:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#date_appointment_made-44_2> "2011-05-20T14:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#date_appointment_made-44_2> "2013-07-23T13:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#date_appointment_made-44_2> "2014-04-18T10:15:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#meprs_code-44_2> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#meprs_code-44_2> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#meprs_code-44_2> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#meprs_code-44_2> <http://hokukahu.com/systems/chcs-1/8119-382> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#name-44_2> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#name-44_2> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#name-44_2> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#name-44_2> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#provider-44_2> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#provider-44_2> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#provider-44_2> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#reason_for_appointment-44_2> "Wellness"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#reason_for_appointment-44_2> "Wellness"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#reason_for_appointment-44_2> "Wellness"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#reason_for_appointment-44_2> "ChiefComplaint"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6049> <http://hokukahu.com/schema/chcss#source_of_admission-44_2> <http://hokukahu.com/systems/chcs-1/42_1-62> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6165> <http://hokukahu.com/schema/chcss#source_of_admission-44_2> <http://hokukahu.com/systems/chcs-1/42_1-62> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6602> <http://hokukahu.com/schema/chcss#source_of_admission-44_2> <http://hokukahu.com/systems/chcs-1/42_1-62> . 
+<http://hokukahu.com/systems/chcs-1/44_2-6606> <http://hokukahu.com/schema/chcss#source_of_admission-44_2> <http://hokukahu.com/systems/chcs-1/42_1-62> . 
+<http://hokukahu.com/systems/chcs-1/50-451> <http://datasets.caregraf.org/fms/sameAsLabel> "SUDOGEST 30 MG TABLET"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/50-451> <http://www.w3.org/2002/07/owl#sameAs> <http://hokukahu.com/schema/nddf#cdc005089> . 
+<http://hokukahu.com/systems/chcs-1/63-1000919> <http://hokukahu.com/schema/chcss#clinical_chemistry-63> <http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> . 
+<http://hokukahu.com/systems/chcs-1/63-1000919> <http://hokukahu.com/schema/chcss#clinical_chemistry-63> <http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> . 
+<http://hokukahu.com/systems/chcs-1/63-1000919> <http://hokukahu.com/schema/chcss#patient-63> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#accession-63_04> "130731 CH 03030658"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#accession-63_04> "110524 CH 06987893"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#accession-63_04> "100322 CH 62802009"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#date_time_specimen_taken-63_04> "2013-07-31T13:51:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#date_time_specimen_taken-63_04> "2011-05-24T11:11:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#date_time_specimen_taken-63_04> "2010-03-22T12:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#hcp-63_04> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#hcp-63_04> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#hcp-63_04> <http://hokukahu.com/systems/chcs-1/6-1000004> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#lab_work_element-63_04> <http://hokukahu.com/systems/chcs-1/44-13> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#lab_work_element-63_04> <http://hokukahu.com/systems/chcs-1/44-13> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#lab_work_element-63_04> <http://hokukahu.com/systems/chcs-1/44-13> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#login_date_time-63_04> "2013-07-31T17:49:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#login_date_time-63_04> "2010-03-22T16:26:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#origin_of_result-63_04> "PERFORMING LABORATORY"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#origin_of_result-63_04> "PERFORMING LABORATORY"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#origin_of_result-63_04> "PERFORMING LABORATORY"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#requesting_location-63_04> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#requesting_location-63_04> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#requesting_location-63_04> <http://hokukahu.com/systems/chcs-1/44-36> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#result-63_04> <http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#result-63_04> <http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#result-63_04> <http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#result-63_04> <http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6869267.8649_1000919> <http://hokukahu.com/schema/chcss#specimen-63_04> <http://hokukahu.com/systems/chcs-1/61-72> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6889474.8889_1000919> <http://hokukahu.com/schema/chcss#specimen-63_04> <http://hokukahu.com/systems/chcs-1/61-72> . 
+<http://hokukahu.com/systems/chcs-1/63_04-6899676.877_1000919> <http://hokukahu.com/schema/chcss#specimen-63_04> <http://hokukahu.com/systems/chcs-1/61-72> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#certify_date_time-63_07> "2011-05-24T12:02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#certify_date_time-63_07> "2010-03-22T13:34:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#certify_date_time-63_07> "2010-03-22T16:26:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#certify_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#certify_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#certify_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#certify_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#enter_date_time-63_07> "2013-07-31T17:49:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#enter_date_time-63_07> "2011-05-24T12:02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#enter_date_time-63_07> "2010-03-22T13:34:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#enter_date_time-63_07> "2010-03-22T16:26:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#enter_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#enter_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#enter_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#enter_person-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#initial_viewer-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#initial_viewer-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#initial_viewer-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#initial_viewer-63_07> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#initial_viewer_date_time-63_07> "2011-05-24T12:02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#initial_viewer_date_time-63_07> "2010-03-22T13:34:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#initial_viewer_date_time-63_07> "2010-03-22T16:26:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#lab_method-63_07> <http://hokukahu.com/systems/chcs-1/8710-3423> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#lab_method-63_07> <http://hokukahu.com/systems/chcs-1/8710-3423> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#lab_method-63_07> <http://hokukahu.com/systems/chcs-1/8710-4498> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#lab_method-63_07> <http://hokukahu.com/systems/chcs-1/8710-3423> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#order_task-63_07> <http://hokukahu.com/systems/chcs-1/107-75610> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#order_task-63_07> <http://hokukahu.com/systems/chcs-1/107-66037> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#order_task-63_07> <http://hokukahu.com/systems/chcs-1/107-60838> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#order_task-63_07> <http://hokukahu.com/systems/chcs-1/107-60848> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#result-63_07> "0.2"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#result-63_07> "0.2"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#result-63_07> "20"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#test-63_07> <http://hokukahu.com/systems/chcs-1/60-1862> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#test-63_07> <http://hokukahu.com/systems/chcs-1/60-1862> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#test-63_07> <http://hokukahu.com/systems/chcs-1/60-1812> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#test-63_07> <http://hokukahu.com/systems/chcs-1/60-1862> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6869267.8649_1000919> <http://hokukahu.com/schema/chcss#units-63_07> "mg/dL"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6889474.8889_1000919> <http://hokukahu.com/schema/chcss#units-63_07> "mg/dL"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1812_6899676.877_1000919> <http://hokukahu.com/schema/chcss#units-63_07> "[IU]/L"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/63_07-1862_6899676.877_1000919> <http://hokukahu.com/schema/chcss#units-63_07> "mg/dL"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#accept_procedure_defaults-70_5> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#arrival_date_time-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#date_exam_place_in_file-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#departure_date_time-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#departure_status-70_5> <http://hokukahu.com/systems/chcs-1/72-5> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#exam_date_time-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#exam_status-70_5> <http://hokukahu.com/systems/chcs-1/72-2> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#imaging_type-70_5> <http://hokukahu.com/systems/chcs-1/79_2-1> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#intravascular_contrast-70_5> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#name-70_5> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#order_date_time-70_5> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#order_id-70_5> "140418-16996"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#order_ien-70_5> <http://hokukahu.com/systems/chcs-1/101-78801> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#patient_category-70_5> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#patient_mobility_status-70_5> "AMBULATORY"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#performing_technician-70_5> <http://hokukahu.com/systems/chcs-1/6-1000046> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#portable-70_5> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#pregnant_at_arrival-70_5> "UNKNOWN"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#pregnant_at_exam_schedule-70_5> "UNKNOWN"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#procedure-70_5> <http://hokukahu.com/systems/chcs-1/71-1044> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#procedure_stop_date_time-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#radiology_location-70_5> <http://hokukahu.com/systems/chcs-1/79_1-207> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#report_text-70_5> <http://hokukahu.com/systems/chcs-1/74-7995> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#requested_exam_date_time-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#scheduled_date_time-70_5> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#was_barium_used-70_5> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/70_5-7995> <http://hokukahu.com/schema/chcss#workload_completed-70_5> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#approving_radiologist-74> <http://hokukahu.com/systems/chcs-1/6-1000046> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#date_report_entered-74> "2014-04-21T10:56:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#date_time_created-74> "2014-04-21T10:56:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#exam_date_time-74> "2014-04-21T10:39:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#interpreting_radiologist-74> <http://hokukahu.com/systems/chcs-1/6-1000046> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#patient_name-74> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#recorded_by-74> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#report_status-74> "VERIFIED"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#report_text-74> "shows multifocal consolidation"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#result_code-74> <http://hokukahu.com/systems/chcs-1/78_3-9> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#verified_by-74> <http://hokukahu.com/systems/chcs-1/3-1> . 
+<http://hokukahu.com/systems/chcs-1/74-7995> <http://hokukahu.com/schema/chcss#verified_date-74> "2014-04-21T10:56:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#medication-8810_3> "PSEUDOEPHEDRINE 30MG @$.03/TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#medication-8810_3> "PSEUDOEPHEDRINE 30MG @$.03/TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#medication-8810_3> "PSEUDOEPHEDRINE 30MG @$.03/TAB"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#order_type-8810_3> <http://hokukahu.com/systems/chcs-1/102-9> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#order_type-8810_3> <http://hokukahu.com/systems/chcs-1/102-9> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#order_type-8810_3> <http://hokukahu.com/systems/chcs-1/102-9> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#ordering_hcp-8810_3> "ROSS,ALBERT J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#ordering_hcp-8810_3> "ROSS,ALBERT J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#ordering_hcp-8810_3> "ROSS,ALBERT J"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#patient-8810_3> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#patient-8810_3> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#patient-8810_3> <http://hokukahu.com/systems/chcs-1/2-1000919> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#patient_status-8810_3> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#patient_status-8810_3> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#patient_status-8810_3> "OUTPATIENT"^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#sig-8810_3> "RX: "^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#sig-8810_3> "RX: "^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#sig-8810_3> "RX: "^^<http://www.w3.org/2001/XMLSchema#string> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#start_date_time-8810_3> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#start_date_time-8810_3> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#start_date_time-8810_3> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-12891> <http://hokukahu.com/schema/chcss#stop_expiration_date-8810_3> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-3777> <http://hokukahu.com/schema/chcss#stop_expiration_date-8810_3> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 
+<http://hokukahu.com/systems/chcs-1/8810_3-8335> <http://hokukahu.com/schema/chcss#stop_expiration_date-8810_3> "2014-04-18T10:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> . 

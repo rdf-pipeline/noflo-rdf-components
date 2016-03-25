@@ -24,9 +24,12 @@
     "noflo-webserver": "0.0.4"
   },
   "dependencies": {
+    "bluebird": "~3.3.1",
+    "fhir-json-to-xml": "git+https://www.github.com/mcarifio/fhir-json-to-xml",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
     "jsonpointer": "~3.0.0",
+    "jsonpath-plus":"~0.14.0",
     "media-typer": "^0.3.0",
     "noflo": "~0.5.14",
     "noflo-adapters": "^0.1.3",
@@ -35,11 +38,12 @@
     "noflo-groups": "^0.1.7",
     "noflo-objects": "^0.1.12",
     "noflo-strings": "^0.1.11",
+    "n3": "~0.4.5",
     "open": "~0.0.5",
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.7",
-    "n3": "0.4.1",
+    "shex": "~0.5.9",
     "underscore": "~1.8.3",
     "uri-templates": "~0.1.9"
   },
@@ -54,18 +58,26 @@
       "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp"
     },
     "components": {
+      "extract-chcs-diagnoses": "./components/extract-chcs-diagnoses.js",
+      "extract-chcs-labs": "./components/extract-chcs-labs.js",
+      "extract-chcs-medications": "./components/extract-chcs-medications.js",
+      "extract-chcs-patients": "./components/extract-chcs-patients.js",
+      "fhir-to-xml": "./components/fhir-to-xml.js",
+      "fhir-xml-to-rdf": "./components/fhir-xml-to-rdf.js",
+      "file-node": "./components/file-node.js",
+      "html-2-objects-compare": "./components/html-2-objects-compare.js",
+      "http-accept": "./components/http-accept.js",
+      "json-file-node": "./components/json-file-node.js",
+      "js-node": "./components/js-node.js",
+      "patient-loader": "./components/patient-loader.js",
       "request-template": "./components/request-template.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
-      "html-2-objects-compare": "./components/html-2-objects-compare.js",
-      "http-accept": "./components/http-accept.js",
       "round-robin": "./components/round-robin.js",
-      "file-node": "./components/file-node.js",
-      "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "shex-chcs-to-rdf": "./components/shex-chcs-to-rdf.js"
     }
   }
 }

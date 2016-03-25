@@ -4,7 +4,7 @@
 var _ = require('underscore');
 var util = require('util');
 
-var stateFactory = require('./create-state');
+var createState = require('./create-state');
 var createLm = require('./create-lm');
 var vniManager = require('./vni-manager');
 
@@ -23,12 +23,13 @@ var vniManager = require('./vni-manager');
  */
 module.exports = function( payload, socketIndex ) {
 
+     console.log('\nframework payload: ',payload);
      var portName = this.name;
 
      var vnid = payload.vnid || '';
      var vni = this.nodeInstance.vni(vnid);
 
-     var inputState = (payload.vnid) ? payload : stateFactory( vnid, payload );
+     var inputState = (_.isUndefined( payload.vnid )) ? createState( vnid, payload ) : payload;
      vni.inputStates( portName, socketIndex, inputState );
 
      if ( shouldRunUpdater( vni ) ) { 
@@ -55,11 +56,11 @@ module.exports = function( payload, socketIndex ) {
              var wrapper = this.nodeInstance.wrapper;
 
              new Promise(function( resolve ) { 
- 
                  // Execute fRunUpdater which will also execute the updater
-                 resolve( wrapper.fRunUpdater.call( vni ) );
+                 resolve( wrapper.fRunUpdater( vnid, vni ) );
 
              }).then( function() { 
+                 console.log('framework return success');
                  // fRunUpdater/Updater success path
              
                  // Returned OK, but updater could have set an error - check for that
@@ -69,10 +70,12 @@ module.exports = function( payload, socketIndex ) {
                  }
 
                  // If not new output or error state data, send it downstream or log it to the console
+console.log('send output');
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
                  handleError( outputPorts.error,  lastErrorState.lm, vni.errorState() );
 
              }, function( rejected ) { 
+                 console.log('framework return rejected: ', rejected);
                  // fRunUpdater/updater failed 
                  if ( isInitState( vni.errorState ) ) { 
                      // fRunUpdater/updater has not already set an error state - use the rejected info

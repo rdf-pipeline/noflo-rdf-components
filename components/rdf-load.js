@@ -33,7 +33,8 @@ exports.getComponent = componentFactory({
             description: "Graph URI template where the parsed triples will be inserted. If it is not specified, triples will be loaded in the default graph",
             datatype: 'string',
             ondata: function(graph) {
-                this.nodeInstance.rdfGraph = graph;
+                this.nodeInstance.rdfGraph = undefined;
+                // this.nodeInstance.rdfGraph = graph;
             }
         },
         input: {

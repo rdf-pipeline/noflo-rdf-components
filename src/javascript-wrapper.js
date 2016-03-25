@@ -1,0 +1,137 @@
+/**
+ * File: javascript-wrapper.js 
+ */
+var _ = require('underscore');
+
+var createState = require('./create-state');
+var factory = require('./pipeline-component-factory');
+
+/**
+ * RDF Pipeline javascript wrapper fRunUpdater function as documented here: 
+ *    https://github.com/rdf-pipeline/noflo-rdf-pipeline/wiki/Wrapper-API
+ * 
+ * @this vni context
+ * @param updater component updater function
+ * @param updaterArgs the introspected arguments found for the component updater.
+ *        used to extract the input for the updater
+ */
+var fRunUpdater = function( updater, updaterArgs, vnid, vni ) {
+
+    // Have one or more parameters - get them in the right order and pass them 
+    var parameters = _.map( updaterArgs, function( arg ) { 
+       // TODO: Modify for multiple inputs
+       var state = vni.inputStates( arg );
+       return state.data;
+    });
+    
+    // Execute the updater
+    var results = updater.apply( vni, parameters );
+
+
+    return Promise.resolve( results ).then(function(results) {
+        if ( results !== null ) { 
+            vni.outputState( createState( vnid, results ) );
+        } 
+    });;
+};
+
+/**
+ * This module provides a Javascript wrapper for updaters.  It is responsible for setting up the
+ * code to ensure updater callback, and then invoking the RDF pipeline factory to complete building
+ * the component and setting up the vni and state metadata.
+ *
+ * @param nodeDef updater node definition. This can be a simple updater function, or an object that contains 
+ *        updater metadata (e.g., input port definitions, description, icons) with an updater.
+ *
+ * @this the context for this wrapper is the node instance.
+ * @return a promise to create the noflo rdf component
+ */
+module.exports = function(nodeDef) { 
+
+    // Ensure we have at least one input port and and updater, using a default port and/or stub updater if 
+    // there is none specified by the pipeline updater author
+    var updaterArgs = null;
+    if ( _.isUndefined(nodeDef) || 
+       ( ! _.isFunction(nodeDef) && ( _.isEmpty( nodeDef ) || ( _.isEmpty( nodeDef.inPorts ))))) {
+       // Got nothing to work with - no input ports and no updater, so create a default updater and input port 
+       nodeDef = { 
+           inPorts: {
+               input: {
+                   datatype: 'object',
+                   description: "default input port" 
+               }
+           },
+           updater: defaultUpdater
+       };
+
+    }  else if ( _.isUndefined( nodeDef.updater ) && !_.isFunction(nodeDef)) { 
+       // Got some node metadata, but no node updater - use the metadata with default updater
+       nodeDef = _.extend( nodeDef, 
+                           { updater: defaultUpdater } );
+
+    } else if ( _.isFunction( nodeDef ) ) { 
+        // Got an updater but no metadata - use updater args as input port list
+        // This assumes that all updater arguments are input
+        updaterArgs = introspect( nodeDef );
+        nodeDef = { inPorts: updaterArgs,
+                    updater: nodeDef };
+    } 
+
+    // Have an updater now, no matter what, be it default or not - figure out what 
+    // the updater arguments are
+    var updaterArgs = (_.isNull( updaterArgs )) ? introspect( nodeDef.updater ) : updaterArgs; 
+ 
+    return factory( nodeDef,
+                    { 
+                      fRunUpdater: fRunUpdater.bind( this, 
+                                                     nodeDef.updater, 
+                                                     updaterArgs ) 
+                      // TODO: Add other Wrapper API's here
+                    } 
+           );
+
+}; // module.exports
+
+// Define a default updater stub function to be used if the caller 
+// did not pass one in.  Simply returns whatever the original input was so it
+// can be sent through the output port to the next component
+var defaultUpdater = function() { 
+    return { output: arguments };
+}
+
+// Introspect the updater to determine what its parameters are.
+// The algorithm here comes from the following sources:
+//  - http://stackoverflow.com/questions/6921588/is-it-possible-to-reflect-the-arguments-of-a-javascript-function#answer-13660631
+//  - https://github.com/angular/angular.js/blob/master/src/auto/injector.js
+var introspect = function( fn ) {
+
+    var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
+    var FN_ARG_SPLIT = /,/;
+    var FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
+    var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+  
+    try {
+        var fnText = fn.toString().replace(STRIP_COMMENTS, '');
+        var argDecl = fnText.match(FN_ARGS);
+        var rawArgs = argDecl[1].split(FN_ARG_SPLIT);
+
+        var args = []; // default to no args
+        if ( ! _.isEqual(rawArgs, [''] )) { 
+            // Got some args so extract them
+            args = _.map( rawArgs, function( arg ) { 
+                return arg.replace(FN_ARG, function(all, underscore, name) { return name });
+            });
+        }
+
+        return args;
+    } catch (e) { 
+        // Could throw exception if we do not have source to introspect
+        // Use default of empty argument list
+        return [];
+    }
+};
+
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports._private = { introspect: introspect };
+} 
