@@ -100,7 +100,9 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    this.errorState({data:input});
+                    var errorState = this.errorState();
+                    errorState.data = input;
+                    this.errorState( errorState );
                 }),
                 sut: jswrapper(function(input) {
                     return "Hello " + input;
@@ -117,7 +119,9 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    this.errorState({data:input});
+                    var errorState = this.errorState();
+                    errorState.data = input;
+                    this.errorState( errorState );
                 }),
                 sut: jswrapper(function(input) {
                     return "Hello " + input;
@@ -129,7 +133,7 @@ describe("framework-state", function() {
                 test.onOutPortData(network.processes.sut.component, 'output', function(output){
                     if (first) {
                         first = false;
-                        test.sendData(network.processes.broken.component, 'input', output);
+                        test.sendData(network.processes.broken.component, 'input', "from broken");
                         setTimeout(done.bind(this, "nothing happened"), 100);
                     } else {
                         fail(output);
@@ -145,8 +149,10 @@ describe("framework-state", function() {
                  done(message);
             }); 
             return test.createNetwork({
-                sut: jswrapper(function(input) {
-                    this.errorState({data:input});
+                broken: jswrapper(function(input) {
+                    var errorState = this.errorState();
+                    errorState.data = input;
+                    this.errorState( errorState );
                 })
             }).then(function(network){
                 test.sendData(network.processes.broken.component, 'input', "Hello World!");
