@@ -1,6 +1,6 @@
 /**
- * File: Lm-mocha.js
- * Unit tests for the lm APIs defined in components/rdf-pipeline/Lm-mocha.js
+ * File: create-lm-mocha.js
+ * Unit tests for the lm APIs defined in src/create-lm.js
  */
 
 var chai = require('chai');
@@ -10,16 +10,16 @@ var should = chai.should();
 var sinon = require('sinon');
 var _ = require('underscore');
 
-var Lm = require('../components/Lm');
+var createLm = require('../src/create-lm');
 
-describe('Lm', function() {
+describe('create-lm', function() {
 
     it('should exist as a function', function() {
-        Lm.should.exist;
-        Lm.should.be.a('function');
+        createLm.should.exist;
+        createLm.should.be.a('function');
     });
 
-    it('should create a new Lm string with the correct components', function() {
+    it('should create a new lm string with the correct components', function() {
 
         // Set up a stub on the date so we can be sure to get a unique LM 
         // with a counter value of 0
@@ -28,7 +28,7 @@ describe('Lm', function() {
             return startingDate;
         });
 
-        var testLm = Lm();
+        var testLm = createLm();
 
         testLm.should.not.be.null;
         testLm.should.be.a('string');
@@ -56,15 +56,15 @@ describe('Lm', function() {
             return startingDate;
         });
 
-        var testLm1 = Lm();
+        var testLm1 = createLm();
         var components1 = testLm1.match(/^LM(\d+)\.(\d+)$/);
         components1.should.have.length(3);
 
-        var testLm2 = Lm();
+        var testLm2 = createLm();
         var components2 = testLm2.match(/^LM(\d+)\.(\d+)$/);
         components2.should.have.length(3);
 
-        var testLm3 = Lm();
+        var testLm3 = createLm();
         var components3 = testLm3.match(/^LM(\d+)\.(\d+)$/);
         components3.should.have.length(3);
 
@@ -81,7 +81,7 @@ describe('Lm', function() {
 
     it('should perform equality checks on same reference correctly', function() {
 
-        var testLm1 = Lm();
+        var testLm1 = createLm();
         var testLm2 = testLm1;
 
         ( testLm2 != testLm1 ).should.be.false;
@@ -98,7 +98,7 @@ describe('Lm', function() {
 
     it('should perform equality checks on the same Lm string value correctly', function() {
         
-        var testLm1 = Lm();
+        var testLm1 = createLm();
         var testLm2 = '' + testLm1; 
 
         ( testLm2 != testLm1 ).should.be.false;
@@ -116,8 +116,8 @@ describe('Lm', function() {
     it('should handle Lm inequality between Lm string values correctly', function() {
         
         // Generate two LMs that should be different from one another
-        var testLm1 = Lm();
-        var testLm2 = Lm();
+        var testLm1 = createLm();
+        var testLm2 = createLm();
 
         ( testLm2 != testLm1 ).should.be.true;
         ( testLm2 == testLm1 ).should.be.false;

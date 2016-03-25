@@ -1,0 +1,50 @@
+# rdf-insert-jsonld.fbp
+
+# Takes parsed JSON-LD and inserts it into the target-graph (IRI) at the sparql-endpoint.
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
+
+# Exports
+INPORT=request.URL:SPARQL_ENDPOINT
+INPORT=setGraph.VALUE:TARGET_GRAPH_URI
+INPORT=load.INPUT:PARSED_JSONLD
+INPORT=authFile.KEY:AUTH_FILE_ENV
+OUTPORT=request.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'POST'          -> METHOD request(rdf-components/request-template)
+'Authorization' -> KEY setAuthorization(rdf-components/object)
+'^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
+'Basic $1'      -> REPLACEMENT basic
+'Content-Type'  -> KEY setContentType(rdf-components/object)
+'application/sparql-update' -> VALUE setContentType OUTPUT -> BASE setHeaders(objects/Extend)
+'sparql/insert-graph-tokens.ru.hbs' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
+
+# Set the default headers in the request
+'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
+
+# Read AUTH_FILE_ENV file content to set the Basic Authorization header
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
+basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders
+
+# Use graph as a sparql update parameter in the request body
+'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> PARAMETERS request
+
+# Wait until the everything is read before executing the request
+'ru'                    -> REGISTER phaser
+authFile OUT            -> REGISTER phaser
+ru OUTPUT               -> ARRIVE phaser
+setAuthorization OUTPUT -> ARRIVE phaser
+
+# Convert the json-ld to ntriples and use as tokens in the request
+'tokens' -> KEY setTokens(rdf-components/object)
+load(rdf-components/rdf-load) OUTPUT -> INPUT ntriples(rdf-components/rdf-ntriples) OUTPUT -> VALUE setTokens
+setTokens OUTPUT -> INPUT phaser(rdf-components/phaser) OUTPUT -> INPUT request
+
+# Error handling echos errors to console.log
+ru ERROR -> IN error
+request ERROR -> IN error
+setContentType ERROR -> IN error
+setAuthorization ERROR -> IN error
+load ERROR -> IN error
+ntriples ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)
