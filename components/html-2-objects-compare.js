@@ -56,17 +56,17 @@ module.exports = jswrapper({
      * @param right Javascript object to display on right side of HTML page and an IIP 
      *             setting of format {"title":"<title>"}
      */
-    updater: function( file, left, right ) {   
+    updater: function(file, left, right) {   
 
         // Verify that we have all data required to generate the html page. 
         // TODO: Revisit and remove this check after more of the pipeline architecture is completed.
-        if ( shouldFireUpdater( file, left, right) ) { 
+        if (shouldFireUpdater(file, left, right)) { 
 
             // We have both an IIP and port data on these ports.  It can theoretically arrive in any order.
             // sortPortData return an object with a title and a data field so we know what we are referencing
             // henceforth.
-            var leftOutput = sortPortData( left, 'left' );
-            var rightOutput = sortPortData( right, 'right' );
+            var leftOutput = sortPortData(left, 'left');
+            var rightOutput = sortPortData(right, 'right');
 
             var content = "<html>\n" +
                           "  <head>\n" +
@@ -79,8 +79,8 @@ module.exports = jswrapper({
                           "           <th bgcolor='#c8c8c8' width='50%'> " + rightOutput.title + " </th>" + 
                           "         </tr>\n" +
                           "         <tr>\n" + 
-                          "           <td bgcolor='#e8e8e8'> <pre> "+ util.inspect( leftOutput.data, {depth: null} ) + "</pre></td>" +
-                          "           <td> <pre> "+ util.inspect( rightOutput.data, {depth: null} ) + "</pre></td>";
+                          "           <td bgcolor='#e8e8e8'> <pre> "+ util.inspect(leftOutput.data, {depth: null}) + "</pre></td>" +
+                          "           <td> <pre> "+ util.inspect(rightOutput.data, {depth: null}) + "</pre></td>";
                           "         </tr>\n" +
                           "      </table>\n" +
                           "  </body>\n" +
@@ -113,8 +113,8 @@ module.exports = jswrapper({
  * @param left Javascript object to display on left side of HTML page & an IIP setting with title
  * @param right Javascript object to display on right side of HTML page & an IIP setting with title
  */
-function shouldFireUpdater( file, left, right ) { 
-    return ( file && haveAllData(left) && haveAllData(right) );
+function shouldFireUpdater(file, left, right) { 
+    return (file && haveAllData(left) && haveAllData(right));
 }
 
 /**
@@ -126,13 +126,13 @@ function shouldFireUpdater( file, left, right ) {
  * 
  * @return a boolean indicating if we should proceed with updater processing or just return
  */
-function haveAllData( array ) { 
+function haveAllData(array) { 
 
     // should have a 2 element array
-    if ( _.isArray(array) && array.length === 2 ) 
+    if (_.isArray(array) && array.length === 2) 
 
          // neither element should be empty
-         if (! ( _.isEmpty(array[0]) || _.isEmpty(array[1]))) 
+         if (! (_.isEmpty(array[0]) || _.isEmpty(array[1]))) 
              return true;
 
     return false;
@@ -142,32 +142,32 @@ function haveAllData( array ) {
  * Given an array of two inputs (IIP & packet) that may have arrived in any order, determine which is
  * which and create an object that explicitly identifies the title and data with keys by that name
  * 
- * @param array a 2 element array that contains a json title in one element ( {"title":"title content"} ) 
+ * @param array a 2 element array that contains a json title in one element ({"title":"title content"}) 
  *              and a data payload in the other element of any format.
  * @param portName name of the port from which the array payloads come.
  *
  * @return an object containing a title and a data element.
  */
-function sortPortData( array,
-                       portName ) { 
+function sortPortData(array,
+                       portName) { 
 
-    if ( array.length != 2 ) { 
+    if (array.length != 2) { 
         throw new Error("Invalid input.  Expected both a title and a data payload on port " + portName + ".");
     }
 
     var result = {};
     
-    for (var i=0, len=array.length; i < len; i++ ) { 
-        if ( _.isObject( array[i] ) && array[i].hasOwnProperty( 'title' )) { 
+    for (var i=0, len=array.length; i < len; i++) { 
+        if (_.isObject(array[i]) && array[i].hasOwnProperty('title')) { 
             result.title = array[i].title;
         } else {
             result.data = array[i];
         }
     }
 
-    if ( _.isUndefined( result.title ) ) { 
+    if (_.isUndefined(result.title)) { 
        throw new Error("Invalid input.  Missing the title setting on port " + portName + ".");
-    } else if ( _.isUndefined( result.data ) ) { 
+    } else if (_.isUndefined(result.data)) { 
        throw new Error("Invalid input.  Missing the input data on port " + portName + ".");
     }
 
