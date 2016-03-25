@@ -21,7 +21,8 @@ var jswrapper = require('../src/javascript-wrapper');
 // second (manually executed)  execution before opening the html comparision file.
 var executionCount = 0;
 
-exports.getComponent = jswrapper({
+// exports.getComponent = jswrapper({
+module.exports = jswrapper({
 
     description: "Generate an HTML page that compares two JavaScript objects side-by-side for easy visual comparison.",
 
@@ -29,7 +30,6 @@ exports.getComponent = jswrapper({
         file: {
             datatype: 'string',
             description: "path to the html file to be created.",
-            addressable: true,
             required: true
         },
         left: { 
