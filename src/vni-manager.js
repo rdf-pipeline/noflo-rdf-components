@@ -128,8 +128,8 @@ function errorState( vni, state ) {
             // Clear state
             delete vni.errorState;
         } else { 
-            // Set state
-            vni.errorState = state;
+            // Overwrite existing state object
+            vni.errorState = _.extend(vni.errorState || {}, state);
         }
 
         return this;
@@ -157,8 +157,8 @@ function outputState( vni, state ) {
             // Clear state
             delete vni.outputState;
         } else { 
-            // Set state
-            vni.outputState = state;
+            // Overwrite existing state
+            vni.outputState = _.extend(vni.outputState || {}, state);
         }
 
         return this;

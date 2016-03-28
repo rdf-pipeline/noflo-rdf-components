@@ -93,7 +93,7 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    this.outputState().error = true;
+                    this.outputState({error: true});
                 }),
                 sut: jswrapper(function(input) {
                     fail("Hello " + input);
@@ -125,9 +125,7 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 }),
                 sut: jswrapper(function(input) {
                     return "Hello " + input;
@@ -168,10 +166,7 @@ describe("framework-state", function() {
                 once: jswrapper(function(input) {
                     switch(++count) {
                         case 1: return input;
-                        default:
-                        var outputState = this.outputState();
-                        outputState.lm = "changed";
-                        this.outputState(outputState);
+                        default: this.outputState({lm: "changed"});
                     }
                 }),
                 sut: jswrapper(function(input) {
@@ -223,9 +218,7 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 }),
                 sut: jswrapper(function(input) {
                     fail("Hello " + input);
@@ -241,9 +234,7 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 }),
                 sut: jswrapper(function(input) {
                     done("Hello " + input);
@@ -258,9 +249,7 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 }),
                 sut: jswrapper(function(input) {
                     return "Hello " + input;
@@ -289,9 +278,7 @@ describe("framework-state", function() {
             }); 
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 })
             }).then(function(network){
                 test.sendData(network.processes.broken.component, 'input', "Hello World!");
