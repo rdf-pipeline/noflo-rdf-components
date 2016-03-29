@@ -71,6 +71,7 @@ describe("jsupdater-behaviour", function() {
                 once: jswrapper(function(input) {
                     switch(++count) {
                         case 1: return input;
+                        case 2: return;
                     }
                 }),
                 sut: jswrapper(function(input) {
@@ -197,6 +198,7 @@ describe("jsupdater-behaviour", function() {
                     switch(++count) {
                         case 1: return input;
                         case 2: throw input;
+                        case 3: return;
                     }
                 }),
                 sut: jswrapper(function(input) {
