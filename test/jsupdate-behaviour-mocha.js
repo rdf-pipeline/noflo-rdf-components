@@ -13,7 +13,7 @@ var jswrapper = require('../src/javascript-wrapper');
  * Theses test are intented to verify the state management of the system.
  * @see https://github.com/rdf-pipeline/noflo-rdf-pipeline/issues/35
  */
-describe("framework-state", function() {
+describe("jsupdater-behaviour", function() {
     it("should fire updater when it has valid input states on all of its attached inputs", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
