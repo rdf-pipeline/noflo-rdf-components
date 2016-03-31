@@ -82,6 +82,31 @@ describe("jsupdater-behaviour", function() {
             }).catch(fail);
         }).should.eventually.have.property('data', "Hello from node1 and from node2");
     });
+    it("should fire updater when it has valid input states on all of its attached sockets", function() {
+        return new Promise(function(done, fail){
+            test.createNetwork({
+                node1: "core/Repeat",
+                node2: "core/Repeat",
+                sut: jswrapper({
+                    inPorts: {
+                        inputs: {
+                            multi: true
+                        }
+                    },
+                    updater: function(inputs) {
+                        return "Hello " + inputs.join(" and ");
+                    }
+                })
+            }).then(function(network){
+                network.graph.addEdge('node1', 'out', 'sut', 'inputs');
+                network.graph.addEdge('node2', 'out', 'sut', 'inputs');
+                test.onOutPortData(network.processes.sut.component, 'error', fail);
+                test.onOutPortData(network.processes.sut.component, 'output', done);
+                test.sendData(network.processes.node1.component, 'in', "from node1");
+                test.sendData(network.processes.node2.component, 'in', "from node2");
+            }).catch(fail);
+        }).should.eventually.have.property('data', "Hello from node1 and from node2");
+    });
     it("should not fire updater if not all of its attached inputs have valid states", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
