@@ -40,7 +40,7 @@ describe('http-accept', function() {
                 network.stop();
                 return resolution;
             });
-        }).should.become("Hello World");
+        }).should.eventually.have.property("data", "Hello World");
     });
     it("should respond with 202", function() {
         return test.createNetwork({

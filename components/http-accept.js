@@ -4,13 +4,12 @@ var _ = require('underscore');
 var getRawBody = require('raw-body');
 var typer = require('media-typer');
 
-var promiseOutput = require('../src/promise-output');
-var componentFactory = require('../src/noflo-component-factory');
+var wrapper = require('../src/javascript-wrapper.js');
 
-exports.getComponent = componentFactory({
+module.exports = wrapper({
     description: "Extracts the request body as a String and produces a 202 Accepted response. Optionally, also filters on request content type.",
     icon: 'sign-in',
-    outPorts: _.defaults({
+    outPorts: {
         rejected: {
             description: "HTTP 415 Unsupported Media Type request/response pair {req, res}",
             datatype: 'object'
@@ -19,89 +18,58 @@ exports.getComponent = componentFactory({
             description: "HTTP 202 Accepted request/response pair {req, res}",
             datatype: 'object'
         }
-    }, promiseOutput.outPorts),
-    inPorts: {
-        limit: {
-            description: "Request Content-Length limit",
-            datatype: 'int',
-            ondata: function(limit) {
-                this.nodeInstance.limit = limit;
+    },
+    updater: function(limit, encoding, type, input) {
+        var outPorts = this.nodeInstance.outPorts;
+        if (contentTypeMatches(type, input.req.headers['content-type'])) {
+            if (_.has(input.req, 'body')) {
+                if (outPorts.accepted.listAttached().length) {
+                    input.res.writeHead(202, "Accepted");
+                    input.res.write("Accepted");
+                    outPorts.accepted.send(input);
+                    outPorts.accepted.disconnect();
+                }
+                return input.req.body;
+            } else {
+                var charset = input.req.headers['content-type'] &&
+                    typer.parse(input.req.headers['content-type']).parameters.charset;
+                return getRawBody(input.req, {
+                    limit: limit || '1mb',
+                    encoding: charset || encoding || 'utf8'
+                }).then(function(body){
+                    if (outPorts.accepted.listAttached().length) {
+                        input.res.writeHead(202, "Accepted");
+                        input.res.write("Accepted\n");
+                        outPorts.accepted.send(input);
+                        outPorts.accepted.disconnect();
+                    }
+                    return body;
+                }, function(err){
+                    if (outPorts.rejected.listAttached().length) {
+                        input.res.writeHead(413, "Payload Too Large");
+                        input.res.write(err.message);
+                        outPorts.rejected.send(input);
+                        outPorts.rejected.disconnect();
+                    }
+                    throw err;
+                });
             }
-        },
-        encoding: {
-            description: "Request body character encoding",
-            datatype: 'string',
-            ondata: function(encoding) {
-                this.nodeInstance.encoding = encoding;
+        } else {
+            if (outPorts.rejected.listAttached().length) {
+                input.res.writeHead(415, "Unsupported Media Type");
+                input.res.write("Expected " + type + " not " + input.req.headers['content-type']);
+                outPorts.rejected.send(input);
+                outPorts.rejected.disconnect();
             }
-        },
-        type: {
-            description: "Request Content-Type",
-            datatype: 'string',
-            ondata: function(type) {
-                this.nodeInstance.types = this.nodeInstance.types || [];
-                this.nodeInstance.types.push(type);
-            }
-        },
-        input: {
-            description: "HTTP request/response pair {req, res}",
-            datatype: 'object',
-            required: true,
-            ondata: promiseOutput(handle)
+            throw Error("Expected " + type + " not " + input.req.headers['content-type']);
         }
     }
 });
 
-function handle(pair){
-    var self = this.nodeInstance;
-    var outPorts = this.nodeInstance.outPorts;
-    if (contentTypeMatches(self.types, pair.req.headers['content-type'])) {
-        if (_.has(pair.req, 'body')) {
-            if (outPorts.accepted.listAttached().length) {
-                pair.res.writeHead(202, "Accepted");
-                pair.res.write("Accepted");
-                outPorts.accepted.send(pair);
-                outPorts.accepted.disconnect();
-            }
-            return pair.req.body;
-        } else {
-            var charset = pair.req.headers['content-type'] &&
-                typer.parse(pair.req.headers['content-type']).parameters.charset;
-            return getRawBody(pair.req, {
-                limit: self.limit || '1mb',
-                encoding: charset || self.encoding || 'utf8'
-            }).then(function(body){
-                if (outPorts.accepted.listAttached().length) {
-                    pair.res.writeHead(202, "Accepted");
-                    pair.res.write("Accepted\n");
-                    outPorts.accepted.send(pair);
-                    outPorts.accepted.disconnect();
-                }
-                return body;
-            }, function(err){
-                if (outPorts.rejected.listAttached().length) {
-                    pair.res.writeHead(413, "Payload Too Large");
-                    pair.res.write(err.message);
-                    outPorts.rejected.send(pair);
-                    outPorts.rejected.disconnect();
-                }
-                throw err;
-            });
-        }
-    } else {
-        if (outPorts.rejected.listAttached().length) {
-            pair.res.writeHead(415, "Unsupported Media Type");
-            pair.res.write("Expected " + self.types + " not " + pair.req.headers['content-type']);
-            outPorts.rejected.send(pair);
-            outPorts.rejected.disconnect();
-        }
-        throw Error("Expected " + self.types + " not " + pair.req.headers['content-type']);
-    }
-}
-
 function contentTypeMatches(possible, type) {
     if (_.isEmpty(possible)) return true;
     else if (!type) return false;
+    else if (!_.isArray(possible)) return contentTypeMatches([possible], type);
     else return possible.find(function(item){
         if (item == type) return true;
         var base = item.substring(0, item.indexOf('/') + 1);
