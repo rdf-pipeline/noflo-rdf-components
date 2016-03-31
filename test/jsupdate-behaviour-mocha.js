@@ -139,7 +139,7 @@ describe("jsupdater-behaviour", function() {
             }).catch(fail);
         }).should.become("nothing happened");
     });
-    it("should not fire updater if upstream updater did not produce an output state after producing one", function() {
+    it("should not fire updater if upstream updater returns undefined after producing an output state", function() {
         return new Promise(function(done, fail){
             var count = 0;
             test.createNetwork({
