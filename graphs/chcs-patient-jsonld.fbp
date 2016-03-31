@@ -5,11 +5,13 @@
 # Exports
 INPORT=setPatientID.VALUE:PATIENT_ID
 INPORT=setAuthority.VALUE:AUTHORITY
+INPORT=setDataset.VALUE:DATASET
 OUTPORT=parseJson.OUT:OUTPUT
 
 # Initial Information Packets (IIP)
 'patientid' -> KEY setPatientID(rdf-components/object)
 'authority' -> KEY setAuthority(rdf-components/object) OUTPUT -> PARAMETERS request
+'dataset'   -> KEY setDataset(rdf-components/object) OUTPUT -> PARAMETERS request
 'http://{+authority}/patient_graph{?dataset,datatype,patientid}' -> URL request
 
 # Default request URL parameters
