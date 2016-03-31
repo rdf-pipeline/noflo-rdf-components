@@ -397,10 +397,15 @@ describe('merge-patient-lab-iips', function() {
                 payload.should.not.be.empty;
                 payload.should.have.all.keys('vnid', 'data', 'error', 'lm');
                 payload.vnid.should.equal('');
-                payload.data.startsWith('Error: Unable to parse parameter').should.be.true;
+                payload.data.should.be.an('object');
+                payload.data.id.should.equal("001");
+                payload.data.name.should.equal("David");
+                payload.data.dob.should.equal("1959-01-23");
                 payload.error.should.be.true;
                 payload.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
 
+                var errorState = node.vni().errorState();
+                expect(errorState.data.startsWith('Error: Unable to parse parameter')).to.be.true;
              }, function(fail) {
 
                 console.error.restore();

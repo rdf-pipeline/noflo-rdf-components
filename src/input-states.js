@@ -3,7 +3,7 @@
 var _ = require('underscore');
 
 /**
- * Getter and Setter for InPort states.
+ * Getter and Merger for InPort states.
  *
  * @this a vni.  Not used, but may be returned
  * @param node a node facade
@@ -13,12 +13,12 @@ var _ = require('underscore');
  * @param state a State object containing both a data payload and an lm.
  *
  * @return getter returns the current input port state state.
- *         setter returns the current context
+ *         merger returns the current context
  *
  * Usage to retrieve state:
  *  vni.inputState(node, vnid) : {portName: currentState, multiPortName: [currentState]}
  *  vni.inputState(node, vnid, portName, socketId) : currentState
- * Usage to store state:
+ * Usage to store merged state:
  *  vni.inputState(node, vnid, {portName: currentState, multiPortName: [currentState]}) : this
  *  vni.inputState(node, vnid, portName, socketId, state) : this
  */ 
@@ -157,7 +157,9 @@ function setPortState(node, vnid, portName, state) {
         if (!vniStateExists(node, vnid, portName)) {
             node.vnis[vnid].inputStates = node.vnis[vnid].inputStates || {};
         }
-        node.vnis[vnid].inputStates[portName] = state;
+        // Overwrite existing state object
+        var states = node.vnis[vnid].inputStates;
+        states[portName] = _.extend(states[portName] || {}, state);
     }
 }
 
@@ -195,7 +197,7 @@ function setPortStateBySocketId(node, vnid, portName, socketId, state) {
         throw Error("This port is not addressable/multi: " + portName);
     } else if (_.isUndefined(state)) {
         if (vniStateExists(node, vnid, portName)) {
-            node.vnis[vnid].inputStates[portName][socketId] = state;
+            node.vnis[vnid].inputStates[portName][socketId] = undefined;
             if (!_.compact(node.vnis[vnid].inputStates[portName]).length) {
                 delete node.vnis[vnid].inputStates[portName];
                 if (_.isEmpty(node.vnis[vnid].inputStates)) {
@@ -208,7 +210,9 @@ function setPortStateBySocketId(node, vnid, portName, socketId, state) {
             node.vnis[vnid].inputStates = node.vnis[vnid].inputStates || {};
             node.vnis[vnid].inputStates[portName] = node.vnis[vnid].inputStates[portName] || [];
         }
-        node.vnis[vnid].inputStates[portName][socketId] = state;
+        // Overwrite existing state object
+        var states = node.vnis[vnid].inputStates[portName];
+        states[socketId] = _.extend(states[socketId] || {}, state);
     }
 }
 

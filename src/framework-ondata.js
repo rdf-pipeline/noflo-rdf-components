@@ -36,6 +36,9 @@ module.exports = function( payload, socketIndex ) {
          // Save vars we will need in the promise where the context is different
          var outputPorts = this.nodeInstance.outPorts;
 
+         var lastErrorState = _.clone( vni.errorState() );  // Shallow clone 
+         var lastOutputLm = vni.outputState().lm;
+
          if ( ! _.isFunction( this.nodeInstance.wrapper.fRunUpdater ) ) { 
 
              // Don't have a wrapper fRunUpdater 
@@ -45,8 +48,6 @@ module.exports = function( payload, socketIndex ) {
              // TODO: revisit this logic later, per rdf-pipeline/noflo-rdf-pipeline#35
 
              // save data used to see if we have a different state after running updater
-             var lastErrorState = _.clone( vni.errorState() );  // Shallow clone 
-             var lastOutputLm = vni.outputState().lm;
  
              clearStateData( vni.errorState ); // clear last error state
 
@@ -59,7 +60,7 @@ module.exports = function( payload, socketIndex ) {
 
              }).then( function() { 
                  // fRunUpdater/Updater success path
-             
+
                  // Returned OK, but updater could have set an error - check for that
                  // and update the LM if the state has changed
                  if ( stateChange( vni.errorState, lastErrorState, true ) ) {
@@ -68,7 +69,7 @@ module.exports = function( payload, socketIndex ) {
                  }
 
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
-                 handleError( vni, outputPorts.error,  lastErrorState.lm );
+                 handleError( vni, outputPorts.error,  lastErrorState );
 
              }, function( rejected ) { 
                  // fRunUpdater/updater failed 
@@ -83,7 +84,7 @@ module.exports = function( payload, socketIndex ) {
                  stateChange( vni.errorState, lastErrorState, true );
 
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
-                 handleError( vni, outputPorts.error, lastErrorState.lm );
+                 handleError( vni, outputPorts.error, lastErrorState );
                   
 
                  // If we haven't already processed the rejected error, do it now
@@ -93,13 +94,13 @@ module.exports = function( payload, socketIndex ) {
                      if ( stateChange( vni.errorState, lastErrorState, true ) ) { 
                          lastErrorState.lm = undefined; 
                      } 
-                     handleError( vni, outputPorts.error, lastErrorState.lm );
+                     handleError( vni, outputPorts.error, lastErrorState );
                  }
 
                  if ( rejected !== vni.errorState().data ) { 
                      lastErrorState = _.clone( vni.errorState() );   
                      changeStateData( vni.errorState, rejected );
-                     handleError( vni, outputPorts.error, lastErrorState.lm );
+                     handleError( vni, outputPorts.error, lastErrorState );
                  }
 
              }).catch( function( e ) { 
@@ -145,15 +146,22 @@ function clearStateData( stateFacade ) {
  * If there is no attached port, logs the error so it can be analyzed.
  *
  * @param port the error port, which may or may not be attached to something down stream
- * @param lastLm last recorded state lm
+ * @param lastErrorState last error state
  */
-function handleError( vni, port, lastLm  ) { 
+function handleError( vni, port, lastErrorState  ) { 
 
     if ( haveError( vni ) )  {
 
         var state = vni.errorState();
 
-        if ( (! handleOutput( port, lastLm, state )) && state.data )  { 
+        // Is this the same error we saw last time we ran the updater?
+        if ( (! _.isUndefined( state.data )) && (! _.isUndefined( lastErrorState.data )) && 
+             state.data === lastErrorState.data ) { 
+           state.lm = lastErrorState.lm;
+           vni.errorState( state );
+         } 
+
+        if ( (! handleOutput( port, lastErrorState.lm, state )) && state.data )  { 
             // State was not sent on to an attached port, and we do have error data
             // so go ahead and log it for debugging/support use.
             if ( state.data.stack ) { 
@@ -190,7 +198,7 @@ function handleOutput( port, lastLm, state ) {
     if ( lastLm !== state.lm || state.error ) { 
 
         // Got any edges out of this port? 
-        if (port.listAttached().length) {
+        if (port.listAttached().length > 0) {
             port.send( state );
             port.disconnect();
             return true;
@@ -279,8 +287,9 @@ function haveAllInputs( vni ) {
     return ! _.some( attachedInPorts, function( port ) { 
 
         var states = vni.inputStates( port.name );
-        return ( _.isUndefined( states ) ||  
-               ( _.isArray( states ) &&  _.some( states, _.isUndefined ))); 
+        return ((_.isUndefined( states ) ||
+                ( _.isArray( states ) &&  _.some( states, _.isUndefined ))) ||
+                haveInputErrors(states));
     });
 }
 
@@ -290,6 +299,25 @@ function haveAllInputs( vni ) {
 function haveError( vni ) { 
     var errorState = vni.errorState();
     return ! ( _.isUndefined( errorState.data ) &&  _.isUndefined( errorState.lm ) );  
+}
+
+/** 
+ * Returns true if any of the input states have the error flag set to true; 
+ * returns false if there are no states, or the input states are set to undefined or false.
+ *
+ * @param states a state object, array of states (if multi input), or undefined if there are no states
+ */
+function haveInputErrors( states ) {
+
+    if ( _.isArray( states ) ) {
+        return _.reduce( states, function( result, state ) {
+            return result || state.error;
+        }, false);
+    } else if ( _.isObject( states ) ) {
+        return ( states.error === true );
+    }
+
+    return false;
 }
 
 /** 
