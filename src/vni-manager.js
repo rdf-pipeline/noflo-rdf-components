@@ -110,7 +110,7 @@ module.exports = function( node ) {
 } // module export
 
 /**
- * Get/Set error state on the vni 
+ * Get/Merge error state on the vni
  * 
  * @this vni context 
  *
@@ -140,7 +140,7 @@ function errorState( vni, state ) {
 }
 
 /**
- * Get/Set output state on the vni 
+ * Get/Merge output state on the vni
  * 
  * @this vni context 
  * 

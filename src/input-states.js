@@ -3,7 +3,7 @@
 var _ = require('underscore');
 
 /**
- * Getter and Setter for InPort states.
+ * Getter and Merger for InPort states.
  *
  * @this a vni.  Not used, but may be returned
  * @param node a node facade
@@ -13,12 +13,12 @@ var _ = require('underscore');
  * @param state a State object containing both a data payload and an lm.
  *
  * @return getter returns the current input port state state.
- *         setter returns the current context
+ *         merger returns the current context
  *
  * Usage to retrieve state:
  *  vni.inputState(node, vnid) : {portName: currentState, multiPortName: [currentState]}
  *  vni.inputState(node, vnid, portName, socketId) : currentState
- * Usage to store state:
+ * Usage to store merged state:
  *  vni.inputState(node, vnid, {portName: currentState, multiPortName: [currentState]}) : this
  *  vni.inputState(node, vnid, portName, socketId, state) : this
  */ 
