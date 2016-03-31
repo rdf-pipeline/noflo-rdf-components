@@ -213,7 +213,7 @@ describe('javascript-wrapper', function() {
         var handler;
         var updater = function(input) { 
            this.should.have.all.keys( 'vnid', 'delete', 'inputStates', 
-                                      'errorState', 'outputState', 'node');
+                                      'errorState', 'outputState', 'nodeInstance');
            handler('success');
         };
         var node = 

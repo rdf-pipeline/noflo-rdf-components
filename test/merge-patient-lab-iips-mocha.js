@@ -58,14 +58,14 @@ describe('merge-patient-lab-iips', function() {
 
             expect(vni).to.be.an('object');
             vni.should.have.all.keys('vnid', 'delete', 'errorState', 
-                                      'inputStates', 'outputState', 'node');
+                                      'inputStates', 'outputState', 'nodeInstance');
 
             vni.vnid.should.be.a('string');
             vni.delete.should.be.a('function');
             vni.errorState.should.be.a('function');
             vni.inputStates.should.be.a('function');
             vni.outputState.should.be.a('function');
-            vni.node.should.be.an('object');
+            vni.nodeInstance.should.be.an('object');
         });
 
         describe('#errorState', function() {
