@@ -221,6 +221,31 @@ describe("jsupdater-behaviour", function() {
             }).catch(fail);
         }).should.eventually.have.property('data', "Hello upstream");
     });
+    it("should not fire updater if upstream updater corrected error, but has no state", function() {
+        return new Promise(function(done, fail){
+            var count = 0;
+            test.createNetwork({
+                upstream: jswrapper(function(input) {
+                    switch(++count) {
+                        case 1: throw input;
+                        case 2: return;
+                    }
+                }),
+                sut: jswrapper(function(input) {
+                    fail("Hello " + input);
+                })
+            }).then(function(network){
+                network.graph.addEdge('upstream', 'output', 'sut', 'input');
+                return new Promise(function(adv) {
+                    test.onOutPortData(network.processes.upstream.component, 'error', adv);
+                    test.sendData(network.processes.upstream.component, 'input', "upstream");
+                }).then(function() {
+                    test.sendData(network.processes.upstream.component, 'input', "correction");
+                    setTimeout(done.bind(this, "nothing happened"), 100);
+                });
+            }).catch(fail);
+        }).should.become("nothing happened");
+    });
     it("should not fire updater if upstream updater set an error data", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
