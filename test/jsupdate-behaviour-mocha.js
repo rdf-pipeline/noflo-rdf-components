@@ -155,6 +155,8 @@ describe("jsupdater-behaviour", function() {
             }).then(function(network){
                 network.graph.addEdge('once', 'output', 'sut', 'input');
                 return new Promise(function(adv) {
+                    // This is in a promise because we need to wait for the first event to finish propagating
+                    // before registering 'fail' on the output port a few lines below.
                     test.onOutPortData(network.processes.sut.component, 'output', adv);
                     test.sendData(network.processes.once.component, 'input', "once");
                 }).then(function() {
