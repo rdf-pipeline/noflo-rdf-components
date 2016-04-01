@@ -63,10 +63,7 @@ describe("framework-ondata", function() {
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function( vni ) { 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -113,10 +110,7 @@ describe("framework-ondata", function() {
             var fRunUpdater = function( vni ) { 
 
                 // update state
-                var state = vni.outputState();
-                state.data = vni.inputStates( 'input' ).data;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: vni.inputStates('input').data, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -178,15 +172,9 @@ describe("framework-ondata", function() {
             var fRunUpdater = function( vni ) { 
 
                 // update error state
-                var errState = vni.errorState();
-                errState.data = errors[count];
-                errState.lm = createLm();
-                vni.errorState( errState );
+                vni.errorState({data: errors[count], lm: createLm()});
 
-                var outState = vni.outputState();
-                outState.data = outData[count++];
-                outState.lm = createLm();
-                vni.outputState( outState );  
+                vni.outputState({data: outData[count++], lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -309,10 +297,7 @@ describe("framework-ondata", function() {
                 test.verifyState( vni.inputStates( 'input2' ), '', input2 );
 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                this.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -385,10 +370,7 @@ describe("framework-ondata", function() {
                 expect( optState ).to.be.undefined;
 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -531,10 +513,7 @@ console.log('in fRunUpdater');
                 test.verifyState( states[1], '', inputEdge2 );
 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
