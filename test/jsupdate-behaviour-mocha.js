@@ -267,7 +267,7 @@ describe("jsupdater-behaviour", function() {
             }).catch(fail);
         }).should.eventually.have.property('data', "Hello once");
     });
-    it("should fire updater if upstream updater did nothing, after error, after valid output", function() {
+    it("should produce output, but not fire updater if upstream updater did nothing, after error, after valid output", function() {
         return new Promise(function(done, fail){
             var count = 0;
             test.createNetwork({
@@ -279,7 +279,10 @@ describe("jsupdater-behaviour", function() {
                     }
                 }),
                 sut: jswrapper(function(input) {
-                    return "Hello " + input;
+                    switch(count) {
+                        case 1: return "Hello " + input;
+                        default: fail("Hello " + input);
+                    }
                 })
             }).then(function(network){
                 network.graph.addEdge('upstream', 'output', 'sut', 'input');
