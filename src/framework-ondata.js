@@ -280,7 +280,7 @@ function attachedInputPorts( node ) {
  */
 function haveAllInputs( vni ) {
 
-    var attachedInPorts = attachedInputPorts( vni.node );
+    var attachedInPorts = attachedInputPorts( vni.nodeInstance );
 
     // If we have undefined data on any port, return false; if we 
     // have data on all ports, return true
