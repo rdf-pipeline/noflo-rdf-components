@@ -7,47 +7,59 @@ var url = require('url');
 var uriTemplates = require('uri-templates');
 var Handlebars = require('handlebars');
 
-var basenode = require('./base-node');
-var promiseComponent = require('./promise-component');
+var promiseOutput = require('../src/promise-output');
+var componentFactory = require('../src/noflo-component-factory');
 
-exports.getComponent = promiseComponent({
+exports.getComponent = componentFactory({
     description: "Initials an HTTP request from uri-template (RFC6570),\
         using object data from the @in port. Resolve 200/300 response body or rejects 400/500 response body",
     icon: 'external-link',
+    outPorts: promiseOutput.outPorts,
     inPorts: {
         method: {
             description: "HTTP method",
             datatype: 'string',
-            ondata: basenode.assign('method', newUriTemplate)
+            ondata: function(method) {
+                this.nodeInstance.method = newUriTemplate(method);
+            }
         },
         url: {
             description: "URI-Template (RFC6570)",
             datatype: 'string',
             required: true,
-            ondata: basenode.assign('url', newUriTemplate)
+            ondata: function(url) {
+                this.nodeInstance.url = newUriTemplate(url);
+            }
         },
         headers: {
             description: "Request headers as name:template pairs using the URI-Template syntax",
             datatype: 'object',
-            ondata: basenode.assign('headers', newUriTemplate)
+            ondata: function(headers) {
+                this.nodeInstance.headers = newUriTemplate(headers);
+            }
         },
         body: {
             description: "Request body template using the Handlebars syntax",
             datatype: 'string',
-            ondata: basenode.assign('body', Handlebars.compile)
+            ondata: function(body) {
+                this.nodeInstance.body = Handlebars.compile(body);
+            }
         },
         parameters: {
             description: "Object data used to populate the templates, but not trigger the request",
             datatype: 'object',
-            required: true,
-            ondata: basenode.assign('parameters', _.defaults)
+            ondata: function(parameters) {
+                this.nodeInstance.parameters = _.defaults(parameters, this.nodeInstance.parameters);
+            }
         },
-        'in': {
+        input: {
             description: "Object data used to populate the templates and trigger the request",
             datatype: 'object',
             required: true,
-            ondata: basenode.assign('data', _.defaults),
-            ondisconnect: execute
+            ondata: function(data) {
+                this.nodeInstance.data = _.defaults(data, this.nodeInstance.data);
+            },
+            ondisconnect: promiseOutput(execute)
         }
     }
 });
@@ -80,19 +92,19 @@ function newUriTemplate(template){
 }
 
 function execute() {
-    var self = this;
-    if (!this.url) return new Promise(function(resolve, reject) {
+    var self = this.nodeInstance || this;
+    if (!self.url) return new Promise(function(resolve, reject) {
         _.defer(function(){
             execute.call(self).then(resolve, reject);
         });
     });
-    var data = _.defaults({}, this.data || {}, this.parameters);
-    if (this.data) this.data = null; // clear for next dataset
-    var options = _.extend(url.parse(this.url(data)), {
-        method: this.method ? this.method(data) : 'GET',
-        headers: this.headers(data)
+    var data = _.defaults({}, self.data || {}, self.parameters);
+    if (self.data) self.data = null; // clear for next dataset
+    var options = _.extend(url.parse(self.url(data)), {
+        method: self.method ? self.method(data) : 'GET',
+        headers: self.headers ? self.headers(data) : []
     });
-    var body = this.body;
+    var body = self.body;
     var prot = options.protocol == 'https:' ? https : http;
     return new Promise(function(resolve, reject) {
         var req = prot.request(options, function(res){

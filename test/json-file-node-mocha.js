@@ -79,7 +79,7 @@ describe('json-file-node', function() {
  
       // Set up a couple sinon spies to be sure this component is handling its process 
       // events for the options and in ports correctly. 
-      basenode = require('../components/base-node');
+      basenode = require('../src/base-node');
       var assignSpy = sinon.spy(basenode, 'assign');
       var onSpy = sinon.spy(basenode, 'on');
 
@@ -131,7 +131,7 @@ describe('json-file-node', function() {
 
     beforeEach(function( done) {
       // Set up a sinon spy for on data
-      basenode = require('../components/base-node');
+      basenode = require('../src/base-node');
       onSpy = sinon.spy(basenode, 'on');
 
       // Set up an outputPort variable we can use for testing
