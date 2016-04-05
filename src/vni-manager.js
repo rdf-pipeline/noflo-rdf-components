@@ -100,7 +100,7 @@ module.exports = function( node ) {
                   inputStates: _.partial( inputStates, this, vnid ), 
                   errorState: _.partial( errorState, this.vnis[vnid] ), 
                   outputState: _.partial( outputState, this.vnis[vnid] ),
-                  node: that
+                  nodeInstance: that
               };
           },
 

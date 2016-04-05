@@ -291,7 +291,7 @@ describe("framework-ondata", function() {
             var fRunUpdater = function( vni ) { 
                 // Verify this is vni context
                 vni.should.have.all.keys( 
-                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'node');
+                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'nodeInstance');
                 
                 test.verifyState( vni.inputStates( 'input1' ), '', input1 );
                 test.verifyState( vni.inputStates( 'input2' ), '', input2 );
@@ -361,7 +361,7 @@ describe("framework-ondata", function() {
             var fRunUpdater = function( vni ) { 
 
                 vni.should.have.all.keys( 
-                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'node');
+                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'nodeInstance');
                 
                 test.verifyState( vni.inputStates( 'reqport' ), '', requiredPortData );
 
@@ -502,7 +502,7 @@ console.log('in fRunUpdater');
 
                 // Verify this is vni context
                 vni.should.have.all.keys( 
-                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'node');
+                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'nodeInstance');
                 
                 // Get the input states
                 var states = vni.inputStates( 'input' );

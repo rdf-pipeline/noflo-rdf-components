@@ -127,8 +127,8 @@ describe("vni-manager", function() {
 
             testVni.should.be.an('object');
            
-            testVni.node.should.exist;
-            testVni.node.should.be.an('object');
+            testVni.nodeInstance.should.exist;
+            testVni.nodeInstance.should.be.an('object');
             node.should.include.keys('nodeName', 'componentName', 'inPorts', 'outPorts',
                                      'vnis', 'deleteAllVnis', 'deleteVni', 'vni' );
 
@@ -164,8 +164,8 @@ describe("vni-manager", function() {
             var testVnid = '';
             var testVni = node.vni( testVnid );
 
-            testVni.node.should.exist;
-            testVni.node.should.be.an('object');
+            testVni.nodeInstance.should.exist;
+            testVni.nodeInstance.should.be.an('object');
             node.should.include.keys('nodeName', 'componentName', 'inPorts', 'outPorts',
                                      'vnis', 'deleteAllVnis', 'deleteVni', 'vni' );
 
@@ -276,7 +276,7 @@ describe("vni-manager", function() {
 
                 // Verify we got a vni facade back
                 result.should.be.an('object');
-                result.should.include.keys( 'errorState', 'inputStates', 'outputState', 'node' );
+                result.should.include.keys( 'errorState', 'inputStates', 'outputState', 'nodeInstance' );
 
                 // Get the input states and verify they are as we expect
                 var inputStates = node.vni().inputStates();
@@ -303,7 +303,7 @@ describe("vni-manager", function() {
 
                 // Verify we got a vni facade back
                 result.should.be.an('object');
-                result.should.include.keys( 'errorState', 'inputStates', 'outputState', 'node' );
+                result.should.include.keys( 'errorState', 'inputStates', 'outputState', 'nodeInstance' );
 
                 // Verify that we have an input state set now
                 var inputStates = node.vni().inputStates();
