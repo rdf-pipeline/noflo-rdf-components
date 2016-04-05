@@ -16,18 +16,18 @@ OUTPORT=request.OUTPUT:OUTPUT
 '^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
 'Basic $1'      -> REPLACEMENT basic
 'Content-Type'  -> KEY setContentType(rdf-components/object)
-'application/sparql-update' -> VALUE setContentType OUTPUT -> BASE setHeaders
+'application/sparql-update' -> VALUE setContentType OUTPUT -> HEADERS request
 'sparql/clear-graph-insert-tokens.ru.hbs' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
 
 # Set the default headers in the request
-'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
-
-# Read AUTH_FILE_ENV file content to set the Basic Authorization header
-authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
-basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders(objects/Extend)
+'' -> VALUE setAuthorization OUTPUT -> HEADERS request
 
 # Use graph as a sparql update parameter in the request body
-'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> PARAMETERS request
+'graph-uri' -> KEY setGraph(rdf-components/object)
+'' -> VALUE setGraph OUTPUT -> PARAMETERS request
+
+# Read AUTH_FILE_ENV file content to set the Basic Authorization header
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> VALUE setAuthorization
 
 # Wait until the everything is read before executing the request
 'ru'                    -> REGISTER phaser
@@ -37,7 +37,7 @@ setAuthorization OUTPUT -> ARRIVE phaser
 
 # Convert the json-ld to ntriples and use as tokens in the request
 'tokens' -> KEY setTokens(rdf-components/object)
-load OUTPUT -> INPUT ntriples(rdf-components/rdf-ntriples) OUTPUT -> VALUE setTokens OUTPUT -> INPUT phaser
+load(rdf-components/rdf-load) OUTPUT -> INPUT ntriples(rdf-components/rdf-ntriples) OUTPUT -> VALUE setTokens OUTPUT -> INPUT phaser
 phaser(rdf-components/phaser) OUTPUT -> INPUT request
 
 # Error handling echos errors to console.log

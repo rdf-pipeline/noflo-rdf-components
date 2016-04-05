@@ -5,82 +5,61 @@ var Promise = require('promise');
 var Handlebars = require('handlebars');
 var rdfstore = require('rdfstore');
 
-var promiseOutput = require('../src/promise-output');
-var componentFactory = require('../src/noflo-component-factory');
+var wrapper = require('../src/javascript-wrapper.js');
 
 /**
  * Executes the given SPARQL update on the provided RDF graph and returns it
  */
-exports.getComponent = componentFactory({
+module.exports = wrapper({
     description: "Executes the given SPARQL update on the provided RDF graph and returns it",
     icon: 'cogs',
-    outPorts: promiseOutput.outPorts,
     inPorts: {
         parameters: {
             description: "A map of template parameters",
             datatype: 'object',
-            ondata: function(parameters) {
-                this.nodeInstance.parameters = parameters;
-            }
+            multi: true
         },
         update: {
             description: "SPARQL update template string in handlebars syntax",
-            datatype: 'string',
-            required: true,
-            ondata: function(update) {
-                this.nodeInstance.update = Handlebars.compile(update);
-            }
+            datatype: 'string'
         },
-        "default": {
+        default_uri: {
             description: "Graph URI for the Default Graph",
             datatype: 'string',
-            ondata: function(defaultURI) {
-                this.nodeInstance.defaultURIs = this.nodeInstance.defaultURIs || [];
-                this.nodeInstance.defaultURIs.push(defaultURI);
-            }
+            multi: true
         },
-        namespace: {
+        namespace_uri: {
             description: "Graph URI for a Named Graph",
             datatype: 'string',
-            ondata: function(namespacesURI) {
-                this.nodeInstance.namespacesURIs = this.nodeInstance.namespacesURIs || [];
-                this.nodeInstance.namespacesURIs.push(namespacesURI);
-            }
+            multi: true
         },
         input: {
             description: "RDF JS Interface Graph object",
-            datatype: 'object',
-            required: true,
-            ondata: promiseOutput(execute)
+            datatype: 'object'
         }
+    },
+    updater: function(parameters, update, default_uri, namespace_uri, input) {
+        var param = _.extend.apply(_, [{}].concat(parameters));
+        var update_str = Handlebars.compile(update)(param);
+        var graphURI = input.graphURI;
+        var defaultURIs = _.compact(_.flatten([graphURI].concat(default_uri)));
+        var args = (default_uri || namespace_uri || graphURI) ?
+            [update_str, defaultURIs, _.flatten(namespace_uri) || []] : [update_str];
+        return asRdfStore(input).then(function(store){
+            return Promise.denodeify(store.execute).apply(store, args).then(function(){
+                if (graphURI) {
+                    return denodeify(store, 'graph', graphURI);
+                } else {
+                    return denodeify(store, 'graph');
+                }
+            }).then(function(graph){
+                graph.rdfstore = store;
+                graph.graphURI = graphURI;
+                return graph;
+            });
+        });
     }
 });
-
-/**
- * Executes the SPARQL update on the given RDF graph and returns it
- * @param graph RDF JS Interface Graph object
- */
-function execute(graph) {
-    var self = this.nodeInstance;
-    var update = self.update(self.parameters);
-    var graphURI = graph.graphURI;
-    var defaultURIs = _.compact([graphURI].concat(self.defaultURIs));
-    var args = (self.defaultURIs || self.namespaceURIs || graphURI) ?
-        [update, defaultURIs, self.namespaceURIs || []] : [update];
-    return asRdfStore(graph).then(function(store){
-        return Promise.denodeify(store.execute).apply(store, args).then(function(){
-            if (graphURI) {
-                return denodeify(store, 'graph', graphURI);
-            } else {
-                return denodeify(store, 'graph');
-            }
-        }).then(function(graph){
-            graph.rdfstore = store;
-            graph.graphURI = graphURI;
-            return graph;
-        });
-    });
-}
 
 /**
  * Converts the given graph into an rdfstore object

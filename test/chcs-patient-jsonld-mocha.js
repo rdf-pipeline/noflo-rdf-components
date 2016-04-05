@@ -14,6 +14,7 @@ describe('chcs-patient-jsonld subgraph', function() {
     it("should build correct URL for patient 1000004", function() {
         var port = 1337;
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             res.end('"' + req.url + '"');
         });
@@ -28,12 +29,12 @@ describe('chcs-patient-jsonld subgraph', function() {
                 network.graph.addInitial('localhost:' + port, 'chcs', 'authority');
                 network.graph.addInitial('1000004', 'chcs', 'patient_id');
             });
-        }).should.eventually.equal("/patient_graph?dataset=chcs-ab&datatype=all&patientid=1000004")
-            .notify(server.close.bind(server));
+        }).should.eventually.have.property('data', "/patient_graph?dataset=chcs-ab&datatype=all&patientid=1000004");
     });
     it("should accept optional dataset", function() {
         var port = 1337;
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             res.end('"' + req.url + '"');
         });
@@ -49,8 +50,7 @@ describe('chcs-patient-jsonld subgraph', function() {
                 network.graph.addInitial('alt', 'chcs', 'dataset');
                 network.graph.addInitial('1000004', 'chcs', 'patient_id');
             });
-        }).should.eventually.equal("/patient_graph?dataset=alt&datatype=all&patientid=1000004")
-            .notify(server.close.bind(server));
+        }).should.eventually.have.property('data', "/patient_graph?dataset=alt&datatype=all&patientid=1000004");
     });
     xit("should GET remote jsonld for patient 1000004", function() {
         return test.createNetwork({
@@ -62,6 +62,6 @@ describe('chcs-patient-jsonld subgraph', function() {
                 output.on('data', done);
                 network.graph.addInitial('1000004', 'chcs', 'patient_id');
             });
-        }).should.eventually.have.all.keys(['@context', '@graph']);
+        }).should.eventually.have.property('data').that.has.all.keys(['@context', '@graph']);
     });
 });

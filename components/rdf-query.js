@@ -5,73 +5,51 @@ var Promise = require('promise');
 var Handlebars = require('handlebars');
 var rdfstore = require('rdfstore');
 
-var promiseOutput = require('../src/promise-output');
-var componentFactory = require('../src/noflo-component-factory');
+var wrapper = require('../src/javascript-wrapper.js');
 
 /**
  * Executes the given SPARQL query on the provided RDF graph and returns the result
  */
-exports.getComponent = componentFactory({
+module.exports = wrapper({
     description: "Executes the given SPARQL query on the provided RDF graph and returns the result",
     icon: 'cog',
-    outPorts: promiseOutput.outPorts,
     inPorts: {
         parameters: {
             description: "A map of template parameters",
             datatype: 'object',
-            ondata: function(parameters) {
-                this.nodeInstance.parameters = parameters;
-            }
+            multi: true
         },
         query: {
             description: "SPARQL query template string in handlebars syntax",
-            datatype: 'string',
-            required: true,
-            ondata: function(query) {
-                this.nodeInstance.query = Handlebars.compile(query);
-            }
+            datatype: 'string'
         },
-        "default": {
+        default_uri: {
             description: "Graph URI for the default dataset",
             datatype: 'string',
-            ondata: function(defaultURI) {
-                this.nodeInstance.defaultURIs = this.nodeInstance.defaultURIs || [];
-                this.nodeInstance.defaultURIs.push(defaultURI);
-            }
+            multi: true
         },
-        namespaces: {
+        namespace_uri: {
             description: "Graph URI for the named dataset",
-            datatype: 'string',
-            ondata: function(namespacesURI) {
-                this.nodeInstance.namespacesURIs = this.nodeInstance.namespacesURIs || [];
-                this.nodeInstance.namespacesURIs.push(namespacesURI);
-            }
+            datatype: 'all',
+            multi: true
         },
         input: {
             description: "RDF JS Interface Graph object",
-            datatype: 'object',
-            required: true,
-            ondata: promiseOutput(execute)
+            datatype: 'object'
         }
+    },
+    updater: function(parameters, query, default_uri, namespace_uri, input) {
+        var param = _.extend.apply(_, [{}].concat(parameters));
+        var query_str = Handlebars.compile(query)(param);
+        var graphURI = input.graphURI;
+        var defaultURIs = _.compact(_.flatten([graphURI].concat(default_uri)));
+        var args = (default_uri || namespace_uri || graphURI) ?
+            [query_str, defaultURIs, _.flatten(namespace_uri) || []] : [query_str];
+        return asRdfStore(input).then(function(store){
+            return Promise.denodeify(store.execute).apply(store, args);
+        });
     }
 });
-
-/**
- * Executes the given SPARQL query on the provided RDF graph and returns the result
- * @this a noflo.InPort or facade with templates on the nodeInstance property object
- * @param graph RDF JS Interface Graph object
- */
-function execute(graph) {
-    var self = this.nodeInstance;
-    var query = self.query(self.parameters);
-    var graphURI = graph.graphURI;
-    var defaultURIs = _.compact([graphURI].concat(self.defaultURIs));
-    var args = (self.defaultURIs || self.namespaceURIs || graphURI) ?
-        [query, defaultURIs, self.namespaceURIs || []] : [query];
-    return asRdfStore(graph).then(function(store){
-        return Promise.denodeify(store.execute).apply(store, args);
-    });
-}
 
 /**
  * Converts the given graph into an rdfstore object

@@ -15,27 +15,26 @@ OUTPORT=rdfJsonld.OUTPUT:OUTPUT
 '^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
 'Basic $1'      -> REPLACEMENT basic
 'Content-Type'  -> KEY setContentType(rdf-components/object)
-'application/sparql-query' -> VALUE setContentType OUTPUT -> BASE setHeaders
+'application/sparql-query' -> VALUE setContentType OUTPUT -> HEADERS request
 'Accept'  -> KEY setAccept(rdf-components/object)
-'text/turtle' -> VALUE setAccept OUTPUT -> BASE setHeaders
+'text/turtle' -> VALUE setAccept OUTPUT -> HEADERS request
 'text/turtle' -> MEDIA rdfLoad(rdf-components/rdf-load)
 'sparql/construct-graph.rq.hbs' -> FILENAME rq(rdf-components/read-content) OUTPUT -> BODY request
 
 # Set the default headers in the request
-'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
+'' -> VALUE setAuthorization OUTPUT -> HEADERS request
 
 # Read AUTH_FILE_ENV file content to set the Basic Authorization header
-authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
-basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders(objects/Extend)
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> VALUE setAuthorization
 
 # Wait until the everything is read before executing the request
-'rq'                    -> REGISTER phaser
+'rq'                    -> REGISTER phaser(rdf-components/phaser)
 authFile OUT            -> REGISTER phaser
 rq OUTPUT               -> ARRIVE phaser
 setAuthorization OUTPUT -> ARRIVE phaser
 
 # Use graph as a sparql update parameter in the request body and parse the result into jsonld
-'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> INPUT request OUTPUT -> INPUT rdfLoad OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
+'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> INPUT phaser OUTPUT -> INPUT request OUTPUT -> INPUT rdfLoad OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
 
 # Error Handling echos errors to console.log
 rq ERROR -> IN error
