@@ -62,6 +62,7 @@
       "rdf-ntriples": "./components/rdf-ntriples.js",
       "object": "./components/object.js",
       "phaser": "./components/phaser.js",
+      "parse-json": "./components/parse-json.js",
       "read-content": "./components/read-content.js",
       "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
