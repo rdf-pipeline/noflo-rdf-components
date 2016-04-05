@@ -5,6 +5,7 @@ chai.should();
 chai.use(require('chai-as-promised'));
 var sinon = require('sinon');
 
+var _ = require('underscore');
 var noflo = require('noflo');
 var test = require('./common-test');
 var jswrapper = require('../src/javascript-wrapper');
@@ -393,7 +394,8 @@ describe("jsupdater-behaviour", function() {
         return new Promise(function(done, fail){
             sinon.stub( console, 'error', function (message) {
                  done(message);
-            }); 
+            });
+            afterEach(_.once(console.error.restore.bind(console.error)));
             test.createNetwork({
                 broken: jswrapper(function(input) {
                     var errorState = this.errorState();
@@ -403,6 +405,6 @@ describe("jsupdater-behaviour", function() {
             }).then(function(network){
                 test.sendData(network.processes.broken.component, 'input', "Hello World!");
             }).catch(fail);
-        }).should.become("Hello World!").and.notify(console.error.restore.bind(console.error));
+        }).should.become("Hello World!");
     });
 });
