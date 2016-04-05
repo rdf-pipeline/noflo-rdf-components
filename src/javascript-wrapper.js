@@ -49,11 +49,9 @@ var fRunUpdater = function( updater, updaterArgs, vni ) {
          } 
          resolve( results );
 
-    }).catch( function( e ) { 
-         var outputState = vni.outputState();
-         if ( _.isUndefined( outputState.error ) || ! outputState.error  ) { 
-             outputState.error = true;
-             vni.outputState( outputState );
+    }).catch( function( e ) {
+         if (!vni.outputState().error) { 
+             vni.outputState({error: true});
          } 
          vni.errorState( createState( vni.vnid, e.toString() ) );
     });
