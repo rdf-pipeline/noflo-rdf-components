@@ -38,28 +38,38 @@ module.exports = wrapper({
             datatype: 'object'
         }
     },
-    updater: function(parameters, update, default_uri, namespace_uri, input) {
-        var param = _.extend.apply(_, [{}].concat(parameters));
-        var update_str = Handlebars.compile(update)(param);
-        var graphURI = input.graphURI;
-        var defaultURIs = _.compact(_.flatten([graphURI].concat(default_uri)));
-        var args = (default_uri || namespace_uri || graphURI) ?
-            [update_str, defaultURIs, _.flatten(namespace_uri) || []] : [update_str];
-        return asRdfStore(input).then(function(store){
-            return Promise.denodeify(store.execute).apply(store, args).then(function(){
-                if (graphURI) {
-                    return denodeify(store, 'graph', graphURI);
-                } else {
-                    return denodeify(store, 'graph');
-                }
-            }).then(function(graph){
-                graph.rdfstore = store;
-                graph.graphURI = graphURI;
-                return graph;
-            });
-        });
-    }
+    updater: execute
 });
+
+/**
+ * Executes the given SPARQL update on the provided RDF graph and returns it
+ * @param parameters A array of maps of template parameters
+ * @param update SPARQL update template string in handlebars syntax
+ * @param default_uri An array of Graph URI for the Default Graph
+ * @param namespace_uri An array of Graph URI for a Named Graph
+ * @param input RDF JS Interface Graph object
+ */
+function execute(parameters, update, default_uri, namespace_uri, input) {
+    var param = _.extend.apply(_, [{}].concat(parameters));
+    var update_str = Handlebars.compile(update)(param);
+    var graphURI = input.graphURI;
+    var defaultURIs = _.compact(_.flatten([graphURI].concat(default_uri)));
+    var args = (default_uri || namespace_uri || graphURI) ?
+        [update_str, defaultURIs, _.flatten(namespace_uri) || []] : [update_str];
+    return asRdfStore(input).then(function(store){
+        return Promise.denodeify(store.execute).apply(store, args).then(function(){
+            if (graphURI) {
+                return denodeify(store, 'graph', graphURI);
+            } else {
+                return denodeify(store, 'graph');
+            }
+        }).then(function(graph){
+            graph.rdfstore = store;
+            graph.graphURI = graphURI;
+            return graph;
+        });
+    });
+}
 
 /**
  * Converts the given graph into an rdfstore object

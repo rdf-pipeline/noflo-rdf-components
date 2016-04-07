@@ -51,37 +51,7 @@ module.exports = wrapper({
             datatype: 'object'
         }
     },
-    updater: function(method, url, headers, body, parameters, input) {
-        var t_method = method && newUriTemplate(method);
-        var t_url = url && newUriTemplate(url);
-        var t_headers = !_.isEmpty(headers) && newUriTemplate(headers);
-        var t_body = body && Handlebars.compile(body);
-        var self = this.nodeInstance || this;
-        var data = _.extend.apply(_, [{}].concat(parameters, [input]));
-        var http_headers = _.extend.apply(_, [{}].concat(t_headers ? t_headers(data) : []));
-        var options = _.extend(URL.parse(t_url(data)), {
-            method: t_method ? t_method(data) : 'GET',
-            headers: _.omit(http_headers, _.isEmpty)
-        });
-        var prot = options.protocol == 'https:' ? https : http;
-        return new Promise(function(resolve, reject) {
-            var req = prot.request(options, function(res){
-                res.setEncoding('utf8');
-                var buffer = [];
-                res.on('data', function(data){
-                    buffer.push(data);
-                }).on('end', function(){
-                    if (res.statusCode < 400) {
-                        resolve(buffer.join(''));
-                    } else {
-                        reject(buffer.join(''));
-                    }
-                }).on('error', reject);
-            }).on('error', reject);
-            if (t_body) req.write(t_body(data));
-            req.end();
-        });
-    }
+    updater: execute
 });
 
 function newUriTemplate(template){
@@ -109,4 +79,36 @@ function newUriTemplate(template){
     } else {
         return _.constant(template);
     }
+}
+
+function execute(method, url, headers, body, parameters, input) {
+    var t_method = method && newUriTemplate(method);
+    var t_url = url && newUriTemplate(url);
+    var t_headers = !_.isEmpty(headers) && newUriTemplate(headers);
+    var t_body = body && Handlebars.compile(body);
+    var self = this.nodeInstance || this;
+    var data = _.extend.apply(_, [{}].concat(parameters, [input]));
+    var http_headers = _.extend.apply(_, [{}].concat(t_headers ? t_headers(data) : []));
+    var options = _.extend(URL.parse(t_url(data)), {
+        method: t_method ? t_method(data) : 'GET',
+        headers: _.omit(http_headers, _.isEmpty)
+    });
+    var prot = options.protocol == 'https:' ? https : http;
+    return new Promise(function(resolve, reject) {
+        var req = prot.request(options, function(res){
+            res.setEncoding('utf8');
+            var buffer = [];
+            res.on('data', function(data){
+                buffer.push(data);
+            }).on('end', function(){
+                if (res.statusCode < 400) {
+                    resolve(buffer.join(''));
+                } else {
+                    reject(buffer.join(''));
+                }
+            }).on('error', reject);
+        }).on('error', reject);
+        if (t_body) req.write(t_body(data));
+        req.end();
+    });
 }

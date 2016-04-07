@@ -19,52 +19,54 @@ module.exports = wrapper({
             datatype: 'object'
         }
     },
-    updater: function(limit, encoding, type, input) {
-        var outPorts = this.nodeInstance.outPorts;
-        if (contentTypeMatches(type, input.req.headers['content-type'])) {
-            if (_.has(input.req, 'body')) {
+    updater: handle
+});
+
+function handle(limit, encoding, type, input) {
+    var outPorts = this.nodeInstance.outPorts;
+    if (contentTypeMatches(type, input.req.headers['content-type'])) {
+        if (_.has(input.req, 'body')) {
+            if (outPorts.accepted.listAttached().length) {
+                input.res.writeHead(202, "Accepted");
+                input.res.write("Accepted");
+                outPorts.accepted.send(input);
+                outPorts.accepted.disconnect();
+            }
+            return input.req.body;
+        } else {
+            var charset = input.req.headers['content-type'] &&
+                typer.parse(input.req.headers['content-type']).parameters.charset;
+            return getRawBody(input.req, {
+                limit: limit || '1mb',
+                encoding: charset || encoding || 'utf8'
+            }).then(function(body){
                 if (outPorts.accepted.listAttached().length) {
                     input.res.writeHead(202, "Accepted");
-                    input.res.write("Accepted");
+                    input.res.write("Accepted\n");
                     outPorts.accepted.send(input);
                     outPorts.accepted.disconnect();
                 }
-                return input.req.body;
-            } else {
-                var charset = input.req.headers['content-type'] &&
-                    typer.parse(input.req.headers['content-type']).parameters.charset;
-                return getRawBody(input.req, {
-                    limit: limit || '1mb',
-                    encoding: charset || encoding || 'utf8'
-                }).then(function(body){
-                    if (outPorts.accepted.listAttached().length) {
-                        input.res.writeHead(202, "Accepted");
-                        input.res.write("Accepted\n");
-                        outPorts.accepted.send(input);
-                        outPorts.accepted.disconnect();
-                    }
-                    return body;
-                }, function(err){
-                    if (outPorts.rejected.listAttached().length) {
-                        input.res.writeHead(413, "Payload Too Large");
-                        input.res.write(err.message);
-                        outPorts.rejected.send(input);
-                        outPorts.rejected.disconnect();
-                    }
-                    throw err;
-                });
-            }
-        } else {
-            if (outPorts.rejected.listAttached().length) {
-                input.res.writeHead(415, "Unsupported Media Type");
-                input.res.write("Expected " + type + " not " + input.req.headers['content-type']);
-                outPorts.rejected.send(input);
-                outPorts.rejected.disconnect();
-            }
-            throw Error("Expected " + type + " not " + input.req.headers['content-type']);
+                return body;
+            }, function(err){
+                if (outPorts.rejected.listAttached().length) {
+                    input.res.writeHead(413, "Payload Too Large");
+                    input.res.write(err.message);
+                    outPorts.rejected.send(input);
+                    outPorts.rejected.disconnect();
+                }
+                throw err;
+            });
         }
+    } else {
+        if (outPorts.rejected.listAttached().length) {
+            input.res.writeHead(415, "Unsupported Media Type");
+            input.res.write("Expected " + type + " not " + input.req.headers['content-type']);
+            outPorts.rejected.send(input);
+            outPorts.rejected.disconnect();
+        }
+        throw Error("Expected " + type + " not " + input.req.headers['content-type']);
     }
-});
+}
 
 function contentTypeMatches(possible, type) {
     if (_.isEmpty(possible)) return true;

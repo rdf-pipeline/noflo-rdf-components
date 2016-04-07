@@ -38,18 +38,28 @@ module.exports = wrapper({
             datatype: 'object'
         }
     },
-    updater: function(parameters, query, default_uri, namespace_uri, input) {
-        var param = _.extend.apply(_, [{}].concat(parameters));
-        var query_str = Handlebars.compile(query)(param);
-        var graphURI = input.graphURI;
-        var defaultURIs = _.compact(_.flatten([graphURI].concat(default_uri)));
-        var args = (default_uri || namespace_uri || graphURI) ?
-            [query_str, defaultURIs, _.flatten(namespace_uri) || []] : [query_str];
-        return asRdfStore(input).then(function(store){
-            return Promise.denodeify(store.execute).apply(store, args);
-        });
-    }
+    updater: execute
 });
+
+/**
+ * Executes the given SPARQL query on the provided RDF graph and returns the result
+ * @param parameters A array of maps of template parameters
+ * @param query SPARQL query template string in handlebars syntax
+ * @param default_uri An array of Graph URI for the Default Graph
+ * @param namespace_uri An array of Graph URI for a Named Graph
+ * @param input RDF JS Interface Graph object
+ */
+function execute(parameters, query, default_uri, namespace_uri, input) {
+    var param = _.extend.apply(_, [{}].concat(parameters));
+    var query_str = Handlebars.compile(query)(param);
+    var graphURI = input.graphURI;
+    var defaultURIs = _.compact(_.flatten([graphURI].concat(default_uri)));
+    var args = (default_uri || namespace_uri || graphURI) ?
+        [query_str, defaultURIs, _.flatten(namespace_uri) || []] : [query_str];
+    return asRdfStore(input).then(function(store){
+        return Promise.denodeify(store.execute).apply(store, args);
+    });
+}
 
 /**
  * Converts the given graph into an rdfstore object
