@@ -21,20 +21,27 @@ var vniManager = require('./vni-manager');
  * @param payload data coming into the port
  * @param socketIndex socket index if the port is a multiple input (addressable) 
  */
-module.exports = function( payload, socketIndex ) {
+module.exports = function(payload, socketIndex) {
 
      var portName = this.name;
+     var outputPorts = this.nodeInstance.outPorts;
 
      var vnid = payload.vnid || '';
      var vni = this.nodeInstance.vni(vnid);
 
-     var inputState = (_.isUndefined( payload.vnid )) ? createState( vnid, payload ) : payload;
-     vni.inputStates( portName, socketIndex, inputState );
+     // Get the old & new input state for port and the new payload
+     var lastInputState = vni.inputStates(portName, socketIndex);
+     var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
+ 
+     // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
+     var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
 
-     if ( shouldRunUpdater( vni ) ) { 
+     // Set the new input state
+     vni.inputStates(portName, socketIndex, inputState);
+
+     if (shouldRunUpdater(vni, isStale)) { 
 
          // Save vars we will need in the promise where the context is different
-         var outputPorts = this.nodeInstance.outPorts;
 
          var lastErrorState = _.clone( vni.errorState() );  // Shallow clone 
          var lastOutputLm = vni.outputState().lm;
@@ -181,6 +188,67 @@ function isInitState( state ) {
     return ( _.isUndefined( state.data ) && _.isUndefined( state.lm ) && _.isUndefined( state.error ) );
 }
 
+
+/*******************************************/
+/* Support for stale data handling policy. */
+/*******************************************/                 
+
+/**
+ * Check to see if we have stale input data and if we do, set the output flag and
+ * send output if downstream nodes do not yet know this data is stale.
+ */
+function handleStaleData(vni, lastInputState, newInputState, outputPort) {
+
+    // Were we last in a stale state?
+    var lastInputStateLm;
+    var wasStale = false;
+    if (!_.isUndefined(lastInputState)) {
+        wasStale = lastInputState.error || lastInputState.stale;
+        lastInputStateLm = lastInputState.lm;
+    }
+
+    // If any of our current inputs are in an error state, then our output data is stale
+    // Also, if we are converting from stale to good state but do not have a new LM (i.e., no 
+    // new data since error flag on input was cleared), then it's still stale
+    var isStale = haveStaleInput(vni) || (wasStale && lastInputStateLm === newInputState.lm);
+    if (isStale) {
+        handleStaleOutput(vni, outputPort, lastInputStateLm);
+    }
+    return isStale;
+} 
+
+/**
+ * Handles stale output processing by setting the stale flag to true and 
+ * sending output to downstream components if appropriate.
+ */ 
+function handleStaleOutput(vni, outputPort, lastInputStateLm) {
+    var outputState = vni.outputState();
+    outputState.stale = true;
+    vni.outputState(outputState);
+    handleOutput(outputPort, lastInputStateLm, vni.outputState());
+}
+
+/**
+ * Returns true if any of the inputs are currently in an error or stale state.
+ */
+function haveStaleInput(vni) { 
+    var attachedInPorts = attachedInputPorts( vni.nodeInstance );
+    return _.some( attachedInPorts, function( port ) { 
+        var states = vni.inputStates( port.name );
+        if ( _.isArray( states ) ) {
+            return _.reduce( states, function( result, state ) {
+                return !_.isUndefined( state ) && (state.error || state.stale);
+            }, false);
+        } else {
+            return !_.isUndefined( states ) && (states.error || states.stale);
+        }
+    });
+}
+
+/*****************************/
+/* General output handling   */
+/*****************************/                 
+
 /**
  * Checks if state is new or not.  If it is new, it sends it down stream to any attached 
  * nodes; if there are no attached nodes, the state data will be logged.
@@ -199,6 +267,7 @@ function handleOutput( port, lastLm, state ) {
 
         // Got any edges out of this port? 
         if (port.listAttached().length > 0) {
+            // console.log('\n sending state: ',state,'\n');
             port.send( state );
             port.disconnect();
             return true;
@@ -278,27 +347,24 @@ function attachedInputPorts( node ) {
  * 
  * @param vni 
  */
-function haveAllInputs( vni ) {
-
-    var attachedInPorts = attachedInputPorts( vni.nodeInstance );
+function haveAllInputs(vni) {
 
     // If we have undefined data on any port, return false; if we 
     // have data on all ports, return true
+    var attachedInPorts = attachedInputPorts(vni.nodeInstance);
     return ! _.some( attachedInPorts, function( port ) { 
-
-        var states = vni.inputStates( port.name );
-        return ((_.isUndefined( states ) ||
-                ( _.isArray( states ) &&  _.some( states, _.isUndefined ))) ||
-                haveInputErrors(states));
+        var states = vni.inputStates(port.name);
+        return ((_.isUndefined(states) ||
+                (_.isArray(states) &&  _.some(states, _.isUndefined))));
     });
 }
 
 /**
  * Returns true if currently have an error; false if not
  */
-function haveError( vni ) { 
+function haveError(vni) { 
     var errorState = vni.errorState();
-    return ! ( _.isUndefined( errorState.data ) &&  _.isUndefined( errorState.lm ) );  
+    return ! (_.isUndefined(errorState.data) &&  _.isUndefined(errorState.lm));  
 }
 
 /** 
@@ -307,30 +373,66 @@ function haveError( vni ) {
  *
  * @param states a state object, array of states (if multi input), or undefined if there are no states
  */
-function haveInputErrors( states ) {
+function haveInputErrors(states) {
 
-    if ( _.isArray( states ) ) {
-        return _.reduce( states, function( result, state ) {
+    if (_.isArray(states)) {
+        return _.reduce(states, function(result, state) {
             return result || state.error;
         }, false);
-    } else if ( _.isObject( states ) ) {
-        return ( states.error === true );
+    } else if (_.isObject(states)) {
+        return (states.error === true);
     }
 
     return false;
+}
+
+/**
+ * Check to see this component received undefined data from an upstream updater.  
+ * If we have previously sent output to downstream nodes, we should not send anything
+ * 
+ * @param states the input states associated with a port
+ * @param last output state 
+ *
+ * @return true if state data is undefined and we've got a previous output lm
+ */
+function inputDataUndef(states, lastOutput) { 
+    if (_.isArray(states)) {
+        return _.reduce(states, function(result, state) {
+            return ((_.isUndefined( state) || _.isUndefined(state.data)) && ! _.isUndefined(lastOutput.lm));
+        }, false);
+    } else {
+        return ((_.isUndefined(states) || _.isUndefined(states.data)) && ! _.isUndefined(lastOutput.lm));
+    }
+}
+
+/**
+ * True if the input data state is good and should be used, i.e, no data errors, 
+ * and no undefined data after the first time it was sent
+ *
+ * @param vni virtual node instance whose input states are to be checked.
+ * @return true if the data state is good
+ */
+function dataIsGood(vni) {
+
+    var attachedInPorts = attachedInputPorts(vni.nodeInstance);
+    var lastOutput = vni.outputState();
+
+    return _.some(attachedInPorts, function(port) { 
+        var states = vni.inputStates(port.name);
+        return ! (haveInputErrors( states) ||  inputDataUndef(states, lastOutput));
+    });
 }
 
 /** 
  * Check the input to see if we have all data attached to run the updater or not. 
  * This is simply a default updater policy - we may have other policies in the future.
  * 
- * @param node node instance of the RDF pipeline component
  * @param vni virtual node instance whose input states are to be checked.
+ * @param isStale true if the input data is stale due to an error upstream
  *
  * @return true if we have received data on all attached input port edges
  */
-function shouldRunUpdater( vni ) { 
-    // TODO: May add different policies in the future.  This is why we 
-    // do NOT call the function below directly
-    return haveAllInputs( vni );
+function shouldRunUpdater(vni, isStale) { 
+    // TODO: May add different policies in the future.
+    return !isStale && haveAllInputs(vni) && dataIsGood(vni);
 }

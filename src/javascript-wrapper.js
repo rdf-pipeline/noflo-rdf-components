@@ -6,7 +6,6 @@ var _ = require('underscore');
 var createLm = require('./create-lm');
 var createState = require('./create-state');
 var factory = require('./pipeline-component-factory');
-var util = require('util');
 
 /**
  * RDF Pipeline javascript wrapper fRunUpdater API as documented here: 
@@ -17,45 +16,69 @@ var util = require('util');
  *        used to extract the input for the updater
  * @param vni a virtual node instance
  */
-var fRunUpdater = function( updater, updaterArgs, vni ) {
+var fRunUpdater = function(updater, updaterArgs, vni) {
 
-    // Default to no updater parameters; if no arguments, we won't go through the map
     var updaterParameters = [];
+    if (_.isEmpty(updaterArgs)) { 
 
-    // Have one or more updater parameters - get them in the right order and pass them 
-    updaterParameters = _.map( updaterArgs, function( arg ) { 
-       var state = vni.inputStates( arg );
-       if ( _.isUndefined( state ) ) { 
-           return undefined;
-       } else if (_.isArray( state )) { 
-           // Have a parameter associated with a port with multiple inputs ->
-           //  get an array of the data elements
-           return _.pluck(state, 'data');
-       } else if ( _.isObject( state ) ) {
-           // Just one input on this port parameter - get it
-           return state.data;
-       } else {
-           throw Error( "FRunupdater found an unexpected state: ", state );
-       }
-    });
+        // No updater arguments specified 
+        // TODO: handle multiple ports even though no input args
+        var states = vni.inputStates();
+        if (states && states.input && states.input.data) { 
+            updaterParameters[0] = states.input.data;
+        }
+
+    } else { 
+        // Have one or more updater parameters - get them in the right order and pass them 
+        updaterParameters = _.map(updaterArgs, function(arg) { 
+           var state = vni.inputStates(arg);
+           if (_.isUndefined(state)) { 
+               return undefined;
+           } else if (_.isArray(state)) { 
+               // Have a parameter associated with a port with multiple inputs ->
+               //  get an array of the data elements
+               return _.pluck(state, 'data');
+           } else if (_.isObject(state)) {
+               // Just one input on this port parameter - get it
+               return state.data;
+           } else {
+               throw Error("FRunupdater found an unexpected state: ", state);
+           }
+        });
+    }
     
+    // Get the last LM and clear error state before we call updater
+    var outputState = vni.outputState();
+    var oldOutputStateLm = outputState.lm;
+    outputState.error = undefined;
+    vni.outputState(outputState);
+
     // Execute the updater on the VNI context, passing the updater Parameters as the API arguments
-    return new Promise( function(resolve ) { 
+    return new Promise(function(resolve) { 
 
-         var results = updater.apply( vni, updaterParameters );
-         if ( results !== null ) { 
-             // If the updater returned anything, set the output state with it
-             vni.outputState( createState( vni.vnid, results ) );
-         } 
-         resolve( results );
+         var results = updater.apply(vni, updaterParameters);
+         resolve(results);
+         }).then( function( results ) { 
 
-    }).catch( function( e ) {
-         if (!vni.outputState().error) { 
-             vni.outputState({error: true});
+             if (! _.isUndefined(results)) { 
+                 // Got some results back from updater
+                 // If the updater returned anything, set the output state with it
+                 var newState = vni.outputState();
+                 if (newState.lm === oldOutputStateLm) { 
+                     // updater did not modify output state lm - create a new output state with new lm
+                     vni.outputState(createState(vni.vnid, results));
+                 } 
+             }
+
+    }).catch(function(e) { 
+         // console.log('wrapper error: ',e);
+         var outputState = vni.outputState();
+         if (_.isUndefined(outputState.error) || ! outputState.error) { 
+             outputState.error = true;
+             vni.outputState(outputState);
          } 
-         vni.errorState( createState( vni.vnid, e.toString() ) );
+         vni.errorState(createState(vni.vnid, e.toString()));
     });
-
 };
 
 /**
