@@ -45,12 +45,12 @@ describe("framework-state", function() {
                 network.graph.addEdge('node2', 'out', 'sut', 'input2');
                 test.sendData(network.processes.node1.component, 'in', "from node1");
                 setTimeout(done.bind(this, "nothing happened"), 100);
-            });
+            }).catch(fail);
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater did not produce an output state", function() {
         return new Promise(function(done, fail){
-            return test.createNetwork({
+            test.createNetwork({
                 sink: jswrapper(function(input) {
                     // do nothing
                 }),
@@ -61,14 +61,39 @@ describe("framework-state", function() {
                 network.graph.addEdge('sink', 'output', 'sut', 'input');
                 test.sendData(network.processes.sink.component, 'input', "tongue");
                 setTimeout(done.bind(this, "nothing happened"), 100);
-            });
+            }).catch(fail);
+        }).should.become("nothing happened");
+    });
+    it("should not fire updater if upstream updater did not produce an output state after producing one", function() {
+        return new Promise(function(done, fail){
+            var count = 0;
+            test.createNetwork({
+                once: jswrapper(function(input) {
+                    switch(++count) {
+                        case 1: return input;
+                    }
+                }),
+                sut: jswrapper(function(input) {
+                    return "Hello " + input;
+                })
+            }).then(function(network){
+                network.graph.addEdge('once', 'output', 'sut', 'input');
+                return new Promise(function(adv) {
+                    test.onOutPortData(network.processes.sut.component, 'output', adv);
+                    test.sendData(network.processes.once.component, 'input', "once");
+                }).then(function() {
+                    test.onOutPortData(network.processes.sut.component, 'output', fail);
+                    test.sendData(network.processes.once.component, 'input', "again");
+                    setTimeout(done.bind(this, "nothing happened"), 100);
+                });
+            }).catch(fail);
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater set an error", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    this.errorState({data:input});
+                    this.outputState({error: true});
                 }),
                 sut: jswrapper(function(input) {
                     fail("Hello " + input);
@@ -100,9 +125,7 @@ describe("framework-state", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 }),
                 sut: jswrapper(function(input) {
                     return "Hello " + input;
@@ -115,13 +138,118 @@ describe("framework-state", function() {
             });
         }).should.eventually.have.property('data', "Hello from broken");
     });
+    it("should fire updater if upstream updater changed output state", function() {
+        return new Promise(function(done, fail){
+            test.createNetwork({
+                once: jswrapper(function(input) {
+                    return input;
+                }),
+                sut: jswrapper(function(input) {
+                    return "Hello " + input;
+                })
+            }).then(function(network){
+                network.graph.addEdge('once', 'output', 'sut', 'input');
+                return new Promise(function(adv) {
+                    test.onOutPortData(network.processes.sut.component, 'output', adv);
+                    test.sendData(network.processes.once.component, 'input', "once");
+                }).then(function() {
+                    test.onOutPortData(network.processes.sut.component, 'output', done);
+                    test.sendData(network.processes.once.component, 'input', "again");
+                });
+            }).catch(fail);
+        }).should.eventually.have.property('data', "Hello again");
+    });
+    it("should fire updater if upstream updater changed output state lm", function() {
+        return new Promise(function(done, fail){
+            var count = 0;
+            test.createNetwork({
+                once: jswrapper(function(input) {
+                    switch(++count) {
+                        case 1: return input;
+                        default: this.outputState({lm: "changed"});
+                    }
+                }),
+                sut: jswrapper(function(input) {
+                    return "Hello " + input;
+                })
+            }).then(function(network){
+                network.graph.addEdge('once', 'output', 'sut', 'input');
+                return new Promise(function(adv) {
+                    test.onOutPortData(network.processes.sut.component, 'output', adv);
+                    test.sendData(network.processes.once.component, 'input', "once");
+                }).then(function() {
+                    test.onOutPortData(network.processes.sut.component, 'output', done);
+                    test.sendData(network.processes.once.component, 'input', "again");
+                });
+            }).catch(fail);
+        }).should.eventually.have.property('data', "Hello once");
+    });
+    it("should fire updater if upstream updater did nothing, after error, after valid output", function() {
+        return new Promise(function(done, fail){
+            var count = 0;
+            test.createNetwork({
+                upstream: jswrapper(function(input) {
+                    switch(++count) {
+                        case 1: return input;
+                        case 2: throw input;
+                    }
+                }),
+                sut: jswrapper(function(input) {
+                    return "Hello " + input;
+                })
+            }).then(function(network){
+                network.graph.addEdge('upstream', 'output', 'sut', 'input');
+                return new Promise(function(adv) {
+                    test.onOutPortData(network.processes.sut.component, 'output', adv);
+                    test.sendData(network.processes.upstream.component, 'input', "upstream");
+                }).then(function() {
+                    return new Promise(function(adv) {
+                        test.onOutPortData(network.processes.upstream.component, 'output', adv);
+                        test.sendData(network.processes.upstream.component, 'input', "again");
+                    });
+                }).then(function() {
+                    test.onOutPortData(network.processes.sut.component, 'output', done);
+                    test.sendData(network.processes.upstream.component, 'input', "yet again");
+                });
+            }).catch(fail);
+        }).should.eventually.have.property('data', "Hello upstream");
+    });
+    it("should not fire updater if upstream updater set an error data", function() {
+        return new Promise(function(done, fail){
+            return test.createNetwork({
+                broken: jswrapper(function(input) {
+                    this.errorState({data: input});
+                }),
+                sut: jswrapper(function(input) {
+                    fail("Hello " + input);
+                })
+            }).then(function(network){
+                network.graph.addEdge('broken', 'output', 'sut', 'input');
+                test.sendData(network.processes.broken.component, 'input', "brake");
+                setTimeout(done.bind(this, "nothing happened"), 100);
+            });
+        }).should.become("nothing happened");
+    });
+    it("should fire error updater if upstream updater set an error data", function() {
+        return new Promise(function(done, fail){
+            return test.createNetwork({
+                broken: jswrapper(function(input) {
+                    this.errorState({data: input});
+                }),
+                sut: jswrapper(function(input) {
+                    done("Hello " + input);
+                })
+            }).then(function(network){
+                network.graph.addEdge('broken', 'error', 'sut', 'input');
+                test.sendData(network.processes.broken.component, 'input', "from broken");
+            });
+        }).should.become("Hello from broken");
+    });
     it("should not notify attached error port if an updater explicity sets the same error", function() {
         return new Promise(function(done, fail){
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 }),
                 sut: jswrapper(function(input) {
                     return "Hello " + input;
@@ -134,14 +262,14 @@ describe("framework-state", function() {
                     if (first) {
                         first = false;
                         test.sendData(network.processes.broken.component, 'input', "from broken");
-                        setTimeout(done.bind(this, "nothing happened"), 100);
+                        setTimeout(done.bind(this, "nothing else happened"), 100);
                     } else {
                         fail(output);
                     }
                 });
                 test.onOutPortData(network.processes.sut.component, 'error', fail);
             });
-        }).should.become("nothing happened");
+        }).should.become("nothing else happened");
     });
     it("should log error port if nothing is attached", function() {
         return new Promise(function(done, fail){
@@ -150,9 +278,7 @@ describe("framework-state", function() {
             }); 
             return test.createNetwork({
                 broken: jswrapper(function(input) {
-                    var errorState = this.errorState();
-                    errorState.data = input;
-                    this.errorState( errorState );
+                    this.errorState({data: input});
                 })
             }).then(function(network){
                 test.sendData(network.processes.broken.component, 'input', "Hello World!");
