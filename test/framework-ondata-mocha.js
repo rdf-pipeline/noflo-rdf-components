@@ -609,14 +609,15 @@ console.log('in fRunUpdater');
                // Should have sent an output state with error flag sent
                console.error.restore();
                done.should.be.an('object'); 
-               done.should.have.all.keys('vnid', 'data', 'error', 'lm' );
+               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm' );
                done.error.should.be.true;
+               expect( done.stale).to.be.undefined;
 
             }, function( fail ) { 
                // Not currently executed since we get the output port data before the error data
                console.error.restore();
                fail.should.be.an('object'); 
-               fail.should.have.all.keys('vnid', 'data', 'error', 'lm' );
+               fail.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm' );
                fail.data.toString().should.equal('Error: '+executedFRunUpdater);
             });
         });
