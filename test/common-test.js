@@ -88,17 +88,17 @@ module.exports = {
         return node ? node : component;
     },
 
-    detachAllInputSockets: function( node ) {
+    detachAllInputSockets: function(node) {
 
         var component = node._component_under_test ? node._component_under_test : node;
-        var portNames = Object.keys( node.inPorts );
+        var portNames = Object.keys(node.inPorts);
 
-        if ( portNames ) {
-             portNames.forEach( function( portName ) {
+        if (portNames) {
+             portNames.forEach(function(portName) {
                  var port = component.inPorts[portName];
                  var sockets = port.listAttached();
-                 if ( _.isArray( sockets ) && sockets.length > 0 ) {
-                    sockets.forEach( function( socket ) {
+                 if (_.isArray(sockets) && sockets.length > 0) {
+                    sockets.forEach(function(socket) {
                         port.detach(socket);
                     });
                  }
@@ -129,14 +129,15 @@ module.exports = {
      * Verifies that the state has the expected vnid & data and the lm is
      * structured as an lm should be.
      */
-    verifyState: function( state, expectedVnid, expectedData, expectedError ) { 
+    verifyState: function(state, expectedVnid, expectedData, expectedError, expectedStale) { 
         state.should.be.an('object');
-        state.should.have.all.keys('vnid', 'lm','data','error');
-        state.vnid.should.equal( expectedVnid );
-        state.data.should.equal( expectedData );
-        state.lm.should.be.a( 'string' );
+        state.should.have.all.keys('vnid', 'lm','data','error','stale');
+        state.vnid.should.equal(expectedVnid);
+        state.data.should.equal(expectedData);
+        state.lm.should.be.a('string');
         state.lm.should.not.be.empty;
-        expect( state.error ).to.equal( expectedError );
+        expect(state.error).to.equal(expectedError);
+        expect(state.stale).to.equal(expectedStale);
         var lmComponents = state.lm.match(/^LM(\d+)\.(\d+)$/);
         lmComponents.should.have.length(3);
     }
