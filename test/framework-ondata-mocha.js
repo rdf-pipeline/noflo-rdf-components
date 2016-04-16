@@ -430,8 +430,8 @@ describe("framework-ondata", function() {
 
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function( vni ) { 
-               // Should not call fRunUpdater when only optional data has been sent
-               // and required port data is still missing
+               // Should not call fRunUpdater when data is missing 
+               // from an attached port
 console.log('in fRunUpdater');
                assert.isNotOk( "fRunUpdater should not be called when missing attached port data!" );
             }
@@ -465,7 +465,8 @@ console.log('in fRunUpdater');
                     // True noflo component - not facade
                     var node = network.processes.node3.component;
 
-                    test.onOutPortData(node, 'output', done);
+                    // Fail if we get output or error:
+                    test.onOutPortData(node, 'output', fail);
                     test.onOutPortData(node, 'error', fail);
 
                     // Attach both repeater nodes - one to each input port 
@@ -474,12 +475,13 @@ console.log('in fRunUpdater');
 
                     // send data to only one of the two attached ports
                     network.graph.addInitial( portData, 'node1', 'in' );
+                    // network.graph.addInitial( portData, 'node2', 'in' );
 
                     // wait and verify we don't hit the fRunUpdater
                     setTimeout( function() { 
                                     done();
                                 }, 
-                                1000); 
+                                100); 
 
                 }).then( function( done ) { 
                    network.stop();
