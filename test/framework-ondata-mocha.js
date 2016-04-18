@@ -432,7 +432,6 @@ describe("framework-ondata", function() {
             var fRunUpdater = function( vni ) { 
                // Should not call fRunUpdater when data is missing 
                // from an attached port
-console.log('in fRunUpdater');
                assert.isNotOk( "fRunUpdater should not be called when missing attached port data!" );
             }
 
