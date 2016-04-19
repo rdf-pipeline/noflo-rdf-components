@@ -51,7 +51,8 @@
       "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
-      "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp"
+      "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp",
+      "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
       "request-template": "./components/request-template.js",
