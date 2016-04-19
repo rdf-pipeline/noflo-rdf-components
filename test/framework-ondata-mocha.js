@@ -63,10 +63,7 @@ describe("framework-ondata", function() {
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function( vni ) { 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -113,10 +110,7 @@ describe("framework-ondata", function() {
             var fRunUpdater = function( vni ) { 
 
                 // update state
-                var state = vni.outputState();
-                state.data = vni.inputStates( 'input' ).data;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: vni.inputStates('input').data, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -178,15 +172,9 @@ describe("framework-ondata", function() {
             var fRunUpdater = function( vni ) { 
 
                 // update error state
-                var errState = vni.errorState();
-                errState.data = errors[count];
-                errState.lm = createLm();
-                vni.errorState( errState );
+                vni.errorState({data: errors[count], lm: createLm()});
 
-                var outState = vni.outputState();
-                outState.data = outData[count++];
-                outState.lm = createLm();
-                vni.outputState( outState );  
+                vni.outputState({data: outData[count++], lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -309,10 +297,7 @@ describe("framework-ondata", function() {
                 test.verifyState( vni.inputStates( 'input2' ), '', input2 );
 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                this.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -385,10 +370,7 @@ describe("framework-ondata", function() {
                 expect( optState ).to.be.undefined;
 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -448,9 +430,8 @@ describe("framework-ondata", function() {
 
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function( vni ) { 
-               // Should not call fRunUpdater when only optional data has been sent
-               // and required port data is still missing
-console.log('in fRunUpdater');
+               // Should not call fRunUpdater when data is missing 
+               // from an attached port
                assert.isNotOk( "fRunUpdater should not be called when missing attached port data!" );
             }
 
@@ -483,7 +464,8 @@ console.log('in fRunUpdater');
                     // True noflo component - not facade
                     var node = network.processes.node3.component;
 
-                    test.onOutPortData(node, 'output', done);
+                    // Fail if we get output or error:
+                    test.onOutPortData(node, 'output', fail);
                     test.onOutPortData(node, 'error', fail);
 
                     // Attach both repeater nodes - one to each input port 
@@ -492,12 +474,13 @@ console.log('in fRunUpdater');
 
                     // send data to only one of the two attached ports
                     network.graph.addInitial( portData, 'node1', 'in' );
+                    // network.graph.addInitial( portData, 'node2', 'in' );
 
                     // wait and verify we don't hit the fRunUpdater
                     setTimeout( function() { 
                                     done();
                                 }, 
-                                1000); 
+                                100); 
 
                 }).then( function( done ) { 
                    network.stop();
@@ -531,10 +514,7 @@ console.log('in fRunUpdater');
                 test.verifyState( states[1], '', inputEdge2 );
 
                 // update state
-                var state = vni.outputState();
-                state.data = executedFRunUpdater;
-                state.lm = createLm();
-                vni.outputState( state );
+                vni.outputState({data: executedFRunUpdater, lm: createLm()});
             }
 
             // Create a pipeline component and get the node instance for it
@@ -630,14 +610,15 @@ console.log('in fRunUpdater');
                // Should have sent an output state with error flag sent
                console.error.restore();
                done.should.be.an('object'); 
-               done.should.have.all.keys('vnid', 'data', 'error', 'lm' );
+               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm' );
                done.error.should.be.true;
+               expect( done.stale).to.be.undefined;
 
             }, function( fail ) { 
                // Not currently executed since we get the output port data before the error data
                console.error.restore();
                fail.should.be.an('object'); 
-               fail.should.have.all.keys('vnid', 'data', 'error', 'lm' );
+               fail.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm' );
                fail.data.toString().should.equal('Error: '+executedFRunUpdater);
             });
         });

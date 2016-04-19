@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 
-var assert = chai.asert;
+var assert = chai.assert;
 var expect = chai.expect;
 chai.should();
 
