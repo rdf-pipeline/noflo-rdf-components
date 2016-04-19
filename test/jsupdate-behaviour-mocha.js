@@ -186,6 +186,10 @@ describe("jsupdater-behaviour", function() {
     });
     it("should not fire updater if upstream updater threw an error", function() {
         return new Promise(function(done, fail){
+            sinon.stub(console, 'error', function (message) {
+                // Expect error messages on this one, so keep it quiet
+            });
+            afterEach(_.once(console.error.restore.bind(console.error)));
             test.createNetwork({
                 broken: jswrapper(function(input) {
                     throw Error(input);
@@ -263,8 +267,12 @@ describe("jsupdater-behaviour", function() {
             }).catch(fail);
         }).should.eventually.have.property('data', "Hello once");
     });
-    it("should produce output, but not fire updater if upstream updater did nothing, after error, after valid output", function() {
+    it("should send an event, but not fire updater if upstream updater did nothing, after error, after valid output", function() {
         return new Promise(function(done, fail){
+            sinon.stub(console, 'error', function (message) {
+                // Expect error messages on this one, so keep it quiet
+            });
+            afterEach(_.once(console.error.restore.bind(console.error)));
             var count = 0;
             test.createNetwork({
                 upstream: jswrapper(function(input) {
@@ -324,6 +332,10 @@ describe("jsupdater-behaviour", function() {
     });
     it("should not fire updater if upstream updater set an error data", function() {
         return new Promise(function(done, fail){
+            sinon.stub(console, 'error', function (message) {
+                // Expect error messages on this one, so keep it quiet
+            });
+            afterEach(_.once(console.error.restore.bind(console.error)));
             return test.createNetwork({
                 broken: jswrapper(function(input) {
                     this.errorState({data: input});
@@ -355,6 +367,10 @@ describe("jsupdater-behaviour", function() {
     });
     it("should not notify attached error port if an updater explicity sets the same error", function() {
         return new Promise(function(done, fail){
+            sinon.stub(console, 'error', function (message) {
+                // Expect error messages on this one, so keep it quiet
+            });
+            afterEach(_.once(console.error.restore.bind(console.error)));
             test.createNetwork({
                 broken: jswrapper(function(input) {
                     this.errorState({data: input});
@@ -381,7 +397,7 @@ describe("jsupdater-behaviour", function() {
     });
     it("should log error port if nothing is attached", function() {
         return new Promise(function(done, fail){
-            sinon.stub( console, 'error', function (message) {
+            sinon.stub(console, 'error', function (message) {
                  done(message);
             });
             afterEach(_.once(console.error.restore.bind(console.error)));
