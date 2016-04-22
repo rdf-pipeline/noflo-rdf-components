@@ -47,4 +47,5 @@ setContentType ERROR -> IN error
 setAuthorization ERROR -> IN error
 load ERROR -> IN error
 ntriples ERROR -> IN error
+phaser ERROR -> IN error
 error(core/Repeat) OUT -> IN output(core/Output)
