@@ -65,7 +65,7 @@ describe('rdf components', function() {
                 output.on('data', done);
                 network.graph.addInitial(john, 'load', 'input');
             });
-        }).should.eventually.include.keys('triples');
+        }).should.eventually.have.property('data').that.include.keys('triples');
     });
     it("should round trip a graph", function() {
         // creating 2 node graph (rdfLoad & rdfJsonld components)
@@ -82,7 +82,7 @@ describe('rdf components', function() {
                 output.on('data', done);
                 network.graph.addInitial(cynthia, 'load', 'input');
             });
-        }).should.eventually.eql(cynthia);
+        }).should.eventually.have.property('data').that.eql(cynthia);
     });
     it("should query a graph", function() {
         return test.createNetwork({
@@ -98,7 +98,7 @@ describe('rdf components', function() {
                 output.on('data', done);
                 network.graph.addInitial(john, 'load', 'input');
             });
-        }).should.become(true);
+        }).should.eventually.have.property('data', true);
     });
     it("should update a graph", function() {
         return test.createNetwork({
@@ -118,7 +118,7 @@ describe('rdf components', function() {
                 output.on('data', done);
                 network.graph.addInitial(john, 'load', 'input');
             });
-        }).should.become(true);
+        }).should.eventually.have.property('data', true);
     });
     it("should serialize a graph", function() {
         return test.createNetwork({
@@ -137,29 +137,32 @@ describe('rdf components', function() {
                 output.on('data', done);
                 network.graph.addInitial(john, 'load', 'input');
             });
-        }).should.eventually.eql(cynthia);
+        }).should.eventually.have.property('data').that.eql(cynthia);
     });
     it("should round trip a graph through rdf-ntriples component", function() {
         return test.createNetwork({
             loadJson: rdfLoad,
             ntriples: rdfNtriples,
+            extract: "ExtractProperty",
             join: "objects/Join",
             loadNtriples: rdfLoad,
             jsonld: rdfJsonld
         }).then(function(network){
             network.graph.addEdge('loadJson', 'output', 'ntriples', 'input');
-            network.graph.addEdge('ntriples', 'output', 'join', 'in');
+            network.graph.addEdge('ntriples', 'output', 'extract', 'in');
+            network.graph.addEdge('extract', 'out', 'join', 'in');
             network.graph.addEdge('join', 'out', 'loadNtriples', 'input');
             network.graph.addEdge('loadNtriples', 'output', 'jsonld', 'input');
             network.graph.addInitial('text/turtle', 'loadNtriples', 'media');
             network.graph.addInitial('', 'join', 'delimiter');
             network.graph.addInitial(frame, 'jsonld', 'frame');
+            network.graph.addInitial('data', 'extract', 'key');
             var output = noflo.internalSocket.createSocket();
             network.processes.jsonld.component.outPorts.output.attach(output);
             return new Promise(function(done, fail) {
                 output.on('data', done);
                 network.graph.addInitial(cynthia, 'loadJson', 'input');
             });
-        }).should.eventually.eql(cynthia);
+        }).should.eventually.have.property('data').that.eql(cynthia);
     });
 });

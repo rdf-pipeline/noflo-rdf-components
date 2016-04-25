@@ -34,7 +34,7 @@ describe('request-template', function() {
                 network.graph.addInitial("http://localhost:1337/", 'request', 'url');
                 network.graph.addInitial({}, 'request', 'input');
             });
-        }).should.become("Hello World");
+        }).should.eventually.have.property('data', "Hello World");
     });
     it("should parameterize url", function() {
         return test.createNetwork({
@@ -51,7 +51,7 @@ describe('request-template', function() {
                 network.graph.addInitial("http://localhost:{port}/", 'request', 'url');
                 network.graph.addInitial({port: 1337}, 'request', 'input');
             });
-        }).should.become("Hello World");
+        }).should.eventually.have.property('data', "Hello World");
     });
     it("should support POST", function() {
         return test.createNetwork({
@@ -69,7 +69,7 @@ describe('request-template', function() {
                 network.graph.addInitial("http://localhost:{port}/", 'request', 'url');
                 network.graph.addInitial({port: 1337}, 'request', 'input');
             });
-        }).should.become("Hello POST");
+        }).should.eventually.have.property('data', "Hello POST");
     });
     it("should support request headers", function() {
         return test.createNetwork({
@@ -88,7 +88,7 @@ describe('request-template', function() {
                 network.graph.addInitial({'Content-Type': '{+type}'}, 'request', 'headers');
                 network.graph.addInitial({port: 1337, type: 'text/plain'}, 'request', 'input');
             });
-        }).should.become("Hello text/plain");
+        }).should.eventually.have.property('data', "Hello text/plain");
     });
     it("should support request body", function() {
         return test.createNetwork({
@@ -113,6 +113,6 @@ describe('request-template', function() {
                 network.graph.addInitial('Hello {{{message}}}', 'request', 'body');
                 network.graph.addInitial({port: 1337, type: 'text/plain', message: "World"}, 'request', 'input');
             });
-        }).should.become("Hello World");
+        }).should.eventually.have.property('data', "Hello World");
     });
 });
