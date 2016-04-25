@@ -4,46 +4,21 @@ var _ = require('underscore');
 var Promise = require('promise');
 var jsonld = require('jsonld').promises;
 
-var promiseOutput = require('../src/promise-output');
-var componentFactory = require('../src/noflo-component-factory');
-
-/**
- * Converts an RDF JS Interface Graph object into a JSON LD Graph object
- */
-exports.getComponent = componentFactory({
-    description: "Converts an RDF JS Interface Graph object into a JSON LD Graph object",
-    icon: 'edit',
-    outPorts: promiseOutput.outPorts,
-    inPorts: {
-        frame: {
-            description: "JSON-LD Frame object",
-            datatype: 'object',
-            ondata: function(frame) {
-                this.nodeInstance.frame = frame;
-            }
-        },
-        input: {
-            description: "RDF JS Interface Graph object",
-            datatype: 'object',
-            required: true,
-            ondata: promiseOutput(execute)
-        }
-    }
-});
+var wrapper = require('../src/javascript-wrapper.js');
 
 /**
  * Converts the given graph object into a JSON LD Graph object using an optional
  * frame on the corresponding Component.
- * @this a noflo.InPort or facade
- * @param graph RDF JS Interface Graph object
+ * @param input RDF JS Interface Graph object
+ * @param frame JSON-LD Frame object
  */
-function execute(graph) {
-    var frame = this.nodeInstance.frame;
-    return buildJSON(graph).then(function(json) {
+module.exports = wrapper(function execute(input, frame) {
+    return buildJSON(input).then(function(json) {
         if (frame) return jsonld.frame(json, frame);
+        else if (json.length == 1) return json[0];
         else return json;
     });
-}
+});
 
 /**
  * Promise of JSON-LD array of objects for the given graph.

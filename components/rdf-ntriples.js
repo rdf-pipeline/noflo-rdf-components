@@ -2,36 +2,17 @@
 
 var _ = require('underscore');
 
-var promiseOutput = require('../src/promise-output');
-var componentFactory = require('../src/noflo-component-factory');
+var wrapper = require('../src/javascript-wrapper.js');
 
 /**
  * Converts an RDF JS Interface Graph object into an object with the property
  * 'tokens' containing an Array of N-Triples tokens. tokens.join('') will produce an N-Triples string.
- */
-exports.getComponent = componentFactory({
-    description: "Converts an RDF JS Interface Graph object into an Array of N-Triples tokens",
-    icon: 'edit',
-    outPorts: promiseOutput.outPorts,
-    inPorts: {
-        input: {
-            description: "RDF JS Interface Graph object",
-            datatype: 'object',
-            required: true,
-            ondata: promiseOutput(execute)
-        }
-    }
-});
-
-/**
- * Promise of N-Triples array of tokens for the given graph.
- * @this a noflo.InPort or facade
- * @param graph RDF JS Interface Graph object
+ * @param input RDF JS Interface Graph object
  * @see https://www.w3.org/TR/rdf-interfaces/#graphs
  */
-function execute(graph) {
+module.exports = wrapper(function(input) {
     var tokens = [];
-    graph.forEach(function(triple) {
+    input.forEach(function(triple) {
         tokens.push.apply(tokens, valueTokens(triple.subject));
         tokens.push(' ');
         tokens.push.apply(tokens, valueTokens(triple.predicate));
@@ -39,8 +20,8 @@ function execute(graph) {
         tokens.push.apply(tokens, valueTokens(triple.object));
         tokens.push(' .', '\n');
     });
-    return [tokens];
-}
+    return tokens;
+});
 
 /**
  * Converts the RDF term into a array of tokens

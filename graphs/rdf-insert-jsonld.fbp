@@ -16,21 +16,21 @@ OUTPORT=request.OUTPUT:OUTPUT
 '^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
 'Basic $1'      -> REPLACEMENT basic
 'Content-Type'  -> KEY setContentType(rdf-components/object)
-'application/sparql-update' -> VALUE setContentType OUTPUT -> BASE setHeaders(objects/Extend)
+'application/sparql-update' -> VALUE setContentType OUTPUT -> HEADERS request
 'sparql/insert-graph-tokens.ru.hbs' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
 
 # Set the default headers in the request
-'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
+'' -> VALUE setAuthorization OUTPUT -> HEADERS request
+'' -> VALUE setGraph OUTPUT -> HEADERS request
 
 # Read AUTH_FILE_ENV file content to set the Basic Authorization header
-authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
-basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> VALUE setAuthorization
 
 # Use graph as a sparql update parameter in the request body
 'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> PARAMETERS request
 
 # Wait until the everything is read before executing the request
-'ru'                    -> REGISTER phaser
+'ru'                    -> REGISTER phaser(rdf-components/phaser)
 authFile OUT            -> REGISTER phaser
 ru OUTPUT               -> ARRIVE phaser
 setAuthorization OUTPUT -> ARRIVE phaser
@@ -38,7 +38,7 @@ setAuthorization OUTPUT -> ARRIVE phaser
 # Convert the json-ld to ntriples and use as tokens in the request
 'tokens' -> KEY setTokens(rdf-components/object)
 load(rdf-components/rdf-load) OUTPUT -> INPUT ntriples(rdf-components/rdf-ntriples) OUTPUT -> VALUE setTokens
-setTokens OUTPUT -> INPUT phaser(rdf-components/phaser) OUTPUT -> INPUT request
+setTokens OUTPUT -> INPUT phaser OUTPUT -> INPUT request
 
 # Error handling echos errors to console.log
 ru ERROR -> IN error
@@ -47,4 +47,5 @@ setContentType ERROR -> IN error
 setAuthorization ERROR -> IN error
 load ERROR -> IN error
 ntriples ERROR -> IN error
+phaser ERROR -> IN error
 error(core/Repeat) OUT -> IN output(core/Output)
