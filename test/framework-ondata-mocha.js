@@ -340,14 +340,9 @@ describe("framework-ondata", function() {
 
                 }).then( function( done ) { 
 
-                   // Stop network & verify we got the output state we expect
-                   network.stop();
+                   // verify we got the output state we expect
                    done.vnid.should.equal( '' ); 
-                   done.data.should.equal( executedFRunUpdater ); 
-
-                }, function( fail ) { 
-                   network.stop();
-                   assert.isNotOk( fail );
+                   done.data.should.equal( executedFRunUpdater );
                 });
             });
         });
@@ -412,14 +407,9 @@ describe("framework-ondata", function() {
                     network.graph.addInitial( requiredPortData, 'node1', 'in' );
                 }).then( function( done ) { 
 
-                   // Stop network & verify we got the output state we expect
-                   network.stop();
+                   // verify we got the output state we expect
                    done.vnid.should.equal( '' ); 
-                   done.data.should.equal( executedFRunUpdater ); 
-    
-                }, function( fail ) { 
-                   network.stop();
-                   assert.isNotOk( fail );
+                   done.data.should.equal( executedFRunUpdater );
                 });
             });
         });
@@ -480,14 +470,7 @@ describe("framework-ondata", function() {
                     setTimeout( function() { 
                                     done();
                                 }, 
-                                100); 
-
-                }).then( function( done ) { 
-                   network.stop();
-
-                }, function( fail ) { 
-                   network.stop();
-                   assert.isNotOk( fail );
+                                100);
                 });
             });
         });
@@ -554,13 +537,8 @@ describe("framework-ondata", function() {
                 }).then( function( done ) { 
 
                    // Verify we got the output state we expect
-                   network.stop();
                    done.vnid.should.equal( '' ); 
-                   done.data.should.equal( executedFRunUpdater ); 
-
-                }, function( fail ) { 
-                    network.stop();
-                    assert.isNotOk( fail );
+                   done.data.should.equal( executedFRunUpdater );
                 });
             });
         });

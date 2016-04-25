@@ -48,6 +48,9 @@ module.exports = {
                     resolve(network);
                 });
             }, true);
+        }).then(function(network){
+            afterEach(_.once(network.stop.bind(network)));
+            return network;
         });
     },
 
