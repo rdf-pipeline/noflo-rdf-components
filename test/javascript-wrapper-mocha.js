@@ -195,16 +195,11 @@ describe('javascript-wrapper', function() {
 
             }).then(function(done) {
 
-               // Stop network & verify we got the output state we expect
-               network.stop();
+               // verify we got the output state we expect
                done.vnid.should.equal('');
                done.data.should.equal("alpha and omega");
                expect(done.error).to.be.undefined;
                done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-
-            }, function(fail) {
-               network.stop();
-               assert.isNotOk(fail);
             });
         });
     });
