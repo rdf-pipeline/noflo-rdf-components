@@ -41,7 +41,8 @@
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.7",
     "underscore": "~1.8.3",
-    "uri-templates": "~0.1.9"
+    "uri-templates": "~0.1.9",
+    "xslt4node": "~0.2.1"
   },
   "noflo": {
     "graphs": {
@@ -70,7 +71,8 @@
       "round-robin": "./components/round-robin.js",
       "file-node": "./components/file-node.js",
       "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "js-node": "./components/js-node.js",
+      "xml-to-rdf-lib": "./components/xml-to-rdf-lib.js"
     }
   }
 }
