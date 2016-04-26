@@ -17,7 +17,6 @@ describe('http-delivery', function() {
             test.createNetwork({
                 delivery: "rdf-components/http-delivery-server"
             }).then(function(network){
-                afterEach(_.once(network.stop.bind(network)));
                 network.graph.addInitial("Hello World!", 'delivery', 'content');
                 network.graph.addInitial('text/plain', 'delivery', 'type');
                 network.graph.addInitial(1337, 'delivery', 'listen');
@@ -35,7 +34,6 @@ describe('http-delivery', function() {
             test.createNetwork({
                 delivery: "rdf-components/http-delivery-server"
             }).then(function(network){
-                afterEach(_.once(network.stop.bind(network)));
                 network.graph.addInitial({vnid:'world',data:"Hello World!"}, 'delivery', 'content');
                 network.graph.addInitial({vnid:'there',data:"Hello There!"}, 'delivery', 'content');
                 network.graph.addInitial('text/plain', 'delivery', 'type');
@@ -54,7 +52,6 @@ describe('http-delivery', function() {
             test.createNetwork({
                 delivery: "rdf-components/http-delivery-server"
             }).then(function(network){
-                afterEach(_.once(network.stop.bind(network)));
                 network.graph.addInitial({vnid:'world',data:"Hello World!"}, 'delivery', 'content');
                 network.graph.addInitial({vnid:'there',data:"Hello There!"}, 'delivery', 'content');
                 network.graph.addInitial('text/plain', 'delivery', 'type');
