@@ -51,7 +51,8 @@
       "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
-      "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp"
+      "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp",
+      "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
       "request-template": "./components/request-template.js",
@@ -62,6 +63,7 @@
       "rdf-ntriples": "./components/rdf-ntriples.js",
       "object": "./components/object.js",
       "phaser": "./components/phaser.js",
+      "parse-json": "./components/parse-json.js",
       "read-content": "./components/read-content.js",
       "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
