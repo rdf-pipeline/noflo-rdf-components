@@ -82,7 +82,11 @@ var fRunUpdater = function(updater, updaterArgs, vni) {
              outputState.error = true;
              vni.outputState(outputState);
          } 
-         vni.errorState(createState(vni.vnid, e.toString()));
+         
+         var errorState = vni.errorState();
+         errorState.data = e.toString();
+         errorState.lm = createLm();
+         vni.errorState(errorState);
     });
 };
 
