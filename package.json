@@ -70,7 +70,8 @@
       "round-robin": "./components/round-robin.js",
       "file-node": "./components/file-node.js",
       "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "js-node": "./components/js-node.js",
+      "id-mapper": "./components/id-mapper.js"
     }
   }
 }
