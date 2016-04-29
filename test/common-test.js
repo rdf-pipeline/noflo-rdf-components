@@ -9,9 +9,23 @@ var chai = require('chai');
 var expect = chai.expect;
 
 var noflo = require('noflo');
+var fs = require('fs');
+
 var _ = require('underscore');
 
 module.exports = {
+
+    /** 
+     * Check whether a file exists or not
+     */
+     fileExists: function(filepath) {
+        try {
+            fs.accessSync(filepath, fs.F_OK);
+            return true;
+        } catch (e) {
+            return false;
+        }
+     },
 
     /**
      * Creates and starts a noflo.Network with a component for every component module

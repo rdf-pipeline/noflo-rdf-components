@@ -20,12 +20,14 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "~5.2.0",
+    "mocha": "^2.3.4",
     "sinon": "^1.17.2",
     "noflo-webserver": "0.0.4"
   },
   "dependencies": {
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
+    "jsonpath-plus": "^0.14.0",
     "jsonpointer": "~3.0.0",
     "media-typer": "^0.3.0",
     "n3": "0.4.1",
@@ -56,6 +58,10 @@
       "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
+      "chcs2fhir-demographics": "./components/chcs2fhir-demographics.js",
+      "chcs2fhir-prescriptions": "./components/chcs2fhir-prescriptions.js",
+      "chcs2fhir-procedures": "./components/chcs2fhir-procedures.js",
+      "id-mapper": "./components/id-mapper.js",
       "request-template": "./components/request-template.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
@@ -72,7 +78,7 @@
       "file-node": "./components/file-node.js",
       "json-file-node": "./components/json-file-node.js",
       "js-node": "./components/js-node.js",
-      "xml-to-rdf-lib": "./components/xml-to-rdf-lib.js"
+      "xml-to-rdf": "./components/xml-to-rdf.js"
     }
   }
 }
