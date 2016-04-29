@@ -44,6 +44,7 @@ function facadePort(nodeInstance, port, portName) {
     }, isOutPort(port) ? {
         connect: port.connect.bind(port),
         send: port.send.bind(port),
+        sendIt: sendIt.bind(port),
         disconnect: port.disconnect.bind(port)
     } : {});
 }
@@ -62,4 +63,9 @@ function isInPort(port) {
  */
 function isOutPort(port) {
     return port instanceof noflo.OutPort;
+}
+
+function sendIt(data) { 
+    this.send(data);
+    this.disconnect();
 }

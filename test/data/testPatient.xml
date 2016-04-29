@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Patient xmlns="http://hl7.org/fhir">
+<identifier>
+<use value="usual"/>
+<type>
+<coding>
+<code value="cmumps"/>
+<display value="cmumps"/>
+</coding>
+<text value="1"/>
+</type>
+<value value="1"/>
+<assigner>
+</assigner>
+</identifier>
+<name>
+<use value="usual"/>
+<family value="BUNNY"/>
+<given value="BUGS C"/>
+</name>
+<gender value="female"/>
+<birthDate value="01-01-2011"/>
+<address>
+<type value="postal"/>
+<line value="1 Hopping Carrot Hunt Road"/>
+<city value="BUNNY HILLS"/>
+<state value="NEBRASKA"/>
+</address>
+<maritalStatus>
+<coding>
+<system value="http://hl7.org/fhir/marital-status"/>
+<code value="M"/>
+<display value="M"/>
+</coding>
+<text value="M"/>
+</maritalStatus>
+</Patient>
