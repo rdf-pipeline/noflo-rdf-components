@@ -13,9 +13,9 @@ OUTPORT=delivery.OUTPUT:OUTPUT
 '/data/query/vnid' -> GET setVnid
 '/vnid' -> SET setVnid(rdf-components/json-pointer)
 
-# When a request comes in sent it to the delivery node and respond
+# When a request comes in send it to the delivery node and respond
 webserver(webserver/Server) REQUEST -> INPUT parse-url(rdf-components/parse-url)
-parse-url OUTPUT -> INPUT setVnid OUTPUT -> INPUT delivery(rdf-components/http-delivery)
+parse-url OUTPUT -> INPUT setVnid OUTPUT -> REQUEST delivery(rdf-components/http-delivery)
 delivery OUTPUT -> IN data OUT -> IN response(webserver/SendResponse)
 
 # Error handling echos errors to console.log
