@@ -1,4 +1,4 @@
-// chcs2fhir-procedures-mocha.js
+// cmumps2fhir-demographics-mocha.js
 
 var chai = require('chai');
 
@@ -12,9 +12,12 @@ var _ = require('underscore');
 var fs = require('fs');
 
 var test = require('./common-test');
-var compFactory = require('../components/chcs2fhir-procedures');
+var compFactory = require('../components/cmumps2fhir-demographics');
 
-describe('chcs2fhir-procedures', function() {
+var testFile = '../rdftransforms/data/fake_chcs/patient-7/chcs-patient7.jsonld';
+
+describe('cmumps2fhir-demographics', function() {
+
     it('should exist as a function', function() {
         compFactory.should.exist;
         compFactory.should.be.a('function');
@@ -28,46 +31,43 @@ describe('chcs2fhir-procedures', function() {
 
     describe('#updater', function() {
 
-        it('should throw an error if chcs is undefined', function() {
+        it('should throw an error if input data is undefined', function() {
             expect(compFactory.updater.bind(this, undefined)).to.throw(Error,
-                /PatientProcedures requires CHCS data input to translate!/);
+                /PatientDemographics requires data to translate!/);
         });
 
-        it('should return empty object if chcs is empty', function() {
+        it('should return empty object if input data is empty', function() {
             sinon.stub(console, 'warn');
             expect(compFactory.updater({})).to.be.empty;
             console.warn.restore();
         });
 
-        it('should convert chcs patient procedures to fhir', function() {
-            try {
-                var chcs = fs.readFileSync('../rdftransforms/data/fake_chcs/patient-7/chcs-patient7.jsonld');
-                var parsedChcs = JSON.parse(chcs); // readfile gives us a json object, so parse it
-                sinon.stub(console, 'log');
-                var translation = compFactory.updater(parsedChcs);
-                console.log.restore();
+        it('should convert patient demographics to fhir', function() {
+            try { 
+                var data = fs.readFileSync(testFile);
+                var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
+                var translation = compFactory.updater(parsedData);
                 translation.should.not.be.empty;
-                translation.should.be.an('array');
-                translation.should.have.length(1);
-                translation[0].should.include.keys('resourceType', 'identifier', 'subject', 'status',
-                                                   'category', 'code', 'performedDateTime', 'encounter');
-                translation[0].resourceType.should.equal('Procedure');
+                translation.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
+                                                'birthDate', 'address','birthDate');
+                translation.resourceType.should.equal('Patient');
             } catch(e) {
                 if (e.code === 'ENOENT') {
                     console.log('        Test data is not available - skipping this test.');
                     return;
                 }
-                throw e;
+                throw e; 
             }
         });
+
     });
 
     describe('functional behavior', function() {
-       it('should convered chcs patient procedures to fhir in a noflo network', function() {
+       it('should convert patient demographics to fhir in a noflo network', function() {
 
-           var chcsFile = '../rdftransforms/data/fake_chcs/patient-7/chcs-patient7.jsonld';
-           if (test.fileExists(chcsFile)) {
+           if (test.fileExists(testFile)) { 
 
+               sinon.stub(console,'log');
                return test.createNetwork(
                     { node1: 'filesystem/ReadFile',
                       node2: { getComponent: compFactory }
@@ -82,11 +82,8 @@ describe('chcs2fhir-procedures', function() {
                         test.onOutPortData(node2, 'output', done);
                         test.onOutPortData(node2, 'error', fail);
 
-                        network.graph.addEdge('node1', 'out', 'node2', 'chcs');
-
-                        sinon.stub(console, 'log');
-                        network.graph.addInitial(chcsFile, 'node1', 'in');
-
+                        network.graph.addEdge('node1', 'out', 'node2', 'data');
+                        network.graph.addInitial(testFile, 'node1', 'in');
                     }).then(function(done) {
                         console.log.restore();
                         done.should.exist;
@@ -95,22 +92,22 @@ describe('chcs2fhir-procedures', function() {
 
                         done.should.have.all.keys('vnid','data','lm','stale','error');
                         done.vnid.should.equal('');
-                        done.data.should.be.an('array');
-                        done.data.should.have.length(1);
-                        done.data[0].should.include.keys('resourceType', 'identifier', 'subject', 'status',
-                                                         'category', 'code', 'performedDateTime', 'encounter');
-                        done.data[0].resourceType.should.equal('Procedure');
+                        done.data.should.be.an('object');
+                        done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
+                                                      'birthDate', 'address','birthDate');
+                        done.data.resourceType.should.equal('Patient');
                         expect(done.error).to.be.undefined;
                         expect(done.stale).to.be.undefined;
                         done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+    
                     }, function(fail) {
                         console.log.restore();
                         console.log('fail: ',fail);
                         assert.fail(fail);
                     });
                });
-           } else {
-               console.log('        CHCS test file is not available.  Skipping this test.');
+           } else { 
+               console.log('        Test file is not available.  Skipping this test.');
            }
        });
    });
