@@ -20,12 +20,14 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "~5.2.0",
+    "mocha": "^2.3.4",
     "sinon": "^1.17.2",
     "noflo-webserver": "0.0.4"
   },
   "dependencies": {
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
+    "jsonpath-plus": "^0.14.0",
     "jsonpointer": "~3.0.0",
     "media-typer": "^0.3.0",
     "n3": "0.4.1",
@@ -41,7 +43,8 @@
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.7",
     "underscore": "~1.8.3",
-    "uri-templates": "~0.1.9"
+    "uri-templates": "~0.1.9",
+    "xslt4node": "~0.2.1"
   },
   "noflo": {
     "graphs": {
@@ -55,22 +58,27 @@
       "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
-      "request-template": "./components/request-template.js",
+      "chcs2fhir-demographics": "./components/chcs2fhir-demographics.js",
+      "chcs2fhir-prescriptions": "./components/chcs2fhir-prescriptions.js",
+      "chcs2fhir-procedures": "./components/chcs2fhir-procedures.js",
+      "file-node": "./components/file-node.js",
+      "html-2-objects-compare": "./components/html-2-objects-compare.js",
+      "http-accept": "./components/http-accept.js",
+      "id-mapper": "./components/id-mapper.js",
+      "json-file-node": "./components/json-file-node.js",
+      "js-node": "./components/js-node.js",
+      "object": "./components/object.js",
+      "parse-json": "./components/parse-json.js",
+      "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
-      "object": "./components/object.js",
-      "phaser": "./components/phaser.js",
-      "parse-json": "./components/parse-json.js",
       "read-content": "./components/read-content.js",
-      "html-2-objects-compare": "./components/html-2-objects-compare.js",
-      "http-accept": "./components/http-accept.js",
+      "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",
-      "file-node": "./components/file-node.js",
-      "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "xml-to-rdf": "./components/xml-to-rdf.js"
     }
   }
 }

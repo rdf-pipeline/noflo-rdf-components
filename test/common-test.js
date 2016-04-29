@@ -9,9 +9,23 @@ var chai = require('chai');
 var expect = chai.expect;
 
 var noflo = require('noflo');
+var fs = require('fs');
+
 var _ = require('underscore');
 
 module.exports = {
+
+    /** 
+     * Check whether a file exists or not
+     */
+     fileExists: function(filepath) {
+        try {
+            fs.accessSync(filepath, fs.F_OK);
+            return true;
+        } catch (e) {
+            return false;
+        }
+     },
 
     /**
      * Creates and starts a noflo.Network with a component for every component module
@@ -123,6 +137,22 @@ module.exports = {
         var socket = noflo.internalSocket.createSocket();
         component.outPorts[portName].attach(socket);
         socket.on('data', handler.bind(node.outPorts[portName]));
+    },
+
+    /**
+     * Get the expected classpath for the saxon jar depending on the current operating system.
+     */
+    saxonClasspath: function() {
+        switch(process.platform) {
+            case 'darwin': 
+                return '/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar';
+            case 'linux': 
+                return '/usr/share/java/saxonb.jar';
+            case 'win32': 
+                return 'c:\saxon\saxon9he.jar';
+            default: 
+                throw Error('Unexpected operating system!');
+        }
     },
 
     /**
