@@ -10,10 +10,29 @@ var wrapper = require('../src/javascript-wrapper.js');
  * input pair.
  */
 module.exports = wrapper(function(content, type, input) {
-    if (type) input.res.writeHead(200, 'OK', {
-        'Content-Type': type || 'text/plain',
-        'Content-Length': content.length
-    });
-    input.res.write(content);
+    if (_.isArray(content)) {
+        input.res.writeHead(200, 'OK', {
+            'Content-Type': type || 'text/plain',
+            'Content-Length': _.pluck(content, 'length').reduce(add, 0)
+        });
+        content.forEach(input.res.write.bind(input.res));
+    } else if (_.isString(content)) {
+        input.res.writeHead(200, 'OK', {
+            'Content-Type': type || 'text/plain',
+            'Content-Length': content.length
+        });
+        input.res.write(content);
+    } else {
+        var json = JSON.stringify(content);
+        input.res.writeHead(200, 'OK', {
+            'Content-Type': type || 'application/json',
+            'Content-Length': json.length
+        });
+        input.res.write(json);
+    }
     return input;
 });
+
+function add(a, b) {
+    return a + b;
+}
