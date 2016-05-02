@@ -53,6 +53,7 @@
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
       "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp",
+      "http-basic-post": "./graphs/http-basic-post.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp",
       "http-delivery-server": "./graphs/http-delivery-server.fbp"
     },
