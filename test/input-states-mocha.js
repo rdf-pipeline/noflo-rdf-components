@@ -72,9 +72,6 @@ describe('input-states', function() {
             network = nw;
         });
     });
-    afterEach(function(){
-        network.stop();
-    });
     it('should exist as a function', function() {
         node.vni().inputStates.should.be.a('function');
     });

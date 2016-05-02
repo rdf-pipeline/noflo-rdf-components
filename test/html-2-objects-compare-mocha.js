@@ -95,8 +95,7 @@ describe('html-2-objects-compare', function() {
 
             }).then(function(done) {
 
-                // Stop network & verify we got the output state we expect
-                network.stop();
+                // verify we got the output state we expect
 
                 done.vnid.should.equal('001');
                 expect(done.error).to.be.undefined;
@@ -125,9 +124,6 @@ describe('html-2-objects-compare', function() {
                         fs.close(fd);
                     });
                 });
-            }, function(fail) {
-               network.stop();
-               assert.fail(fail);
             });  
         }); 
 
@@ -170,15 +166,10 @@ describe('html-2-objects-compare', function() {
 
             }).then(function(done) {
 
-               // Stop network & verify we got the output state we expect
-               network.stop();
+               // verify we got the output state we expect
                done.vnid.should.equal('001');
                expect(done.data).to.be.undefined;
                done.error.should.be.true;
-
-            }, function(fail) {
-               network.stop();
-               assert.fail(fail);
             });  
         }); 
     });
