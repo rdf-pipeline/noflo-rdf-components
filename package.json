@@ -21,8 +21,15 @@
     "chai": "^3.4.1",
     "chai-as-promised": "~5.2.0",
     "mocha": "^2.3.4",
-    "sinon": "^1.17.2",
-    "noflo-webserver": "0.0.4"
+    "mongodb": "^2.1.7",
+    "node-gyp": "^3.3.0",
+    "noflo-webserver": "0.0.4",
+    "npm-config": "^0.2.0",
+    "npm-scripts": "^1.4.0",
+    "sinon": "^1.17.2"
+  },
+  "optionalDependencies": {
+     "rdftransforms": "git+https://www.github.com/hokukahu/rdftransforms.git#rename"
   },
   "dependencies": {
     "bluebird": "~3.3.1",
@@ -51,6 +58,7 @@
   },
   "noflo": {
     "graphs": {
+      "fhir-to-rdf": "./graphs/fhir-to-rdf.fbp",
       "rdf-insert": "./graphs/rdf-insert.fbp",
       "rdf-clear-insert": "./graphs/rdf-clear-insert.fbp",
       "rdf-construct": "./graphs/rdf-construct.fbp",
@@ -58,12 +66,14 @@
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
       "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
+      "console-log": "./graphs/console-log.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
       "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
       "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
       "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
+      "component-path": "./components/component-path.js",
       "fhir-to-xml": "./components/fhir-to-xml.js",
       "file-node": "./components/file-node.js",
       "html-2-objects-compare": "./components/html-2-objects-compare.js",

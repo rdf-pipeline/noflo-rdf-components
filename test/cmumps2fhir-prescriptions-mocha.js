@@ -14,7 +14,7 @@ var fs = require('fs');
 var test = require('./common-test');
 var compFactory = require('../components/cmumps2fhir-prescriptions');
 
-var testFile = '../rdftransforms/data/fake_chcs/patient-7/chcs-patient7.jsonld';
+var testFile = '../rdftransforms.rename/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
 
 describe('cmumpsfhir-prescriptions', function() {
     it('should exist as a function', function() {

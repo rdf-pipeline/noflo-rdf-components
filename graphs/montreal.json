@@ -4,62 +4,22 @@
   "outports": {},
   "groups": [],
   "processes": {
-    "Cmumps Patient": {
-      "component": "filesystem/ReadFile",
-      "metadata": {
-        "label": "Cmumps Patient",
-        "x": -108,
-        "y": 180,
-        "width": 72,
-        "height": 72
-      }
-    },
     "JS Demographics to FHIR": {
       "component": "rdf-components/cmumps2fhir-demographics",
       "metadata": {
         "label": "JS Demographics to FHIR",
-        "x": 288,
+        "x": 432,
         "y": 72,
         "width": 72,
         "height": 72
       }
     },
-    "core/Output_ceugv": {
-      "component": "core/Output",
-      "metadata": {
-        "label": "Output",
-        "x": 1476,
-        "y": 324,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "JSON to XML": {
-      "component": "rdf-components/fhir-to-xml",
-      "metadata": {
-        "label": "JSON to XML",
-        "x": 468,
-        "y": 0,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "Write File": {
+    "Write Demographics TTL": {
       "component": "rdf-components/writeFile",
       "metadata": {
-        "label": "Write File",
-        "x": 900,
+        "label": "Write Demographics TTL",
+        "x": 792,
         "y": 36,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "Get File Names": {
-      "component": "objects/ExtractProperty",
-      "metadata": {
-        "label": "Get File Names",
-        "x": 1296,
-        "y": 324,
         "width": 72,
         "height": 72
       }
@@ -68,48 +28,18 @@
       "component": "rdf-components/cmumps2fhir-prescriptions",
       "metadata": {
         "label": "JS Prescriptions to FHIR",
-        "x": 288,
+        "x": 432,
         "y": 216,
         "width": 72,
         "height": 72
       }
     },
-    "JSON to XML_gvuly": {
-      "component": "rdf-components/fhir-to-xml",
-      "metadata": {
-        "label": "JSON to XML",
-        "x": 504,
-        "y": 180,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "Write File_rz37l": {
+    "Write Prescriptions TTL": {
       "component": "rdf-components/writeFile",
       "metadata": {
-        "label": "Write File",
-        "x": 900,
-        "y": 216,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "XML to RDF": {
-      "component": "rdf-components/xml-to-rdf",
-      "metadata": {
-        "label": "XML to RDF",
-        "x": 684,
-        "y": -36,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "XML to RDF_1xlfn": {
-      "component": "rdf-components/xml-to-rdf",
-      "metadata": {
-        "label": "XML to RDF",
-        "x": 720,
-        "y": 144,
+        "label": "Write Prescriptions TTL",
+        "x": 792,
+        "y": 180,
         "width": 72,
         "height": 72
       }
@@ -118,38 +48,18 @@
       "component": "rdf-components/cmumps2fhir-procedures",
       "metadata": {
         "label": "JS Procedures to FHIR",
-        "x": 252,
-        "y": 648,
+        "x": 432,
+        "y": 504,
         "width": 72,
         "height": 72
       }
     },
-    "JSON to XML_wd97g": {
-      "component": "rdf-components/fhir-to-xml",
-      "metadata": {
-        "label": "JSON to XML",
-        "x": 540,
-        "y": 576,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "XML to RDF_b2gt9": {
-      "component": "rdf-components/xml-to-rdf",
-      "metadata": {
-        "label": "XML to RDF",
-        "x": 792,
-        "y": 648,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "Write File_12i92": {
+    "Write Procedures TTL": {
       "component": "rdf-components/writeFile",
       "metadata": {
-        "label": "Write File",
-        "x": 1044,
-        "y": 576,
+        "label": "Write Procedures TTL",
+        "x": 792,
+        "y": 504,
         "width": 72,
         "height": 72
       }
@@ -158,28 +68,78 @@
       "component": "rdf-components/shex-cmumps-to-rdf",
       "metadata": {
         "label": "ShEx Labs to FHIR RDF",
-        "x": 360,
-        "y": 396,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "Write File_8d8t3": {
-      "component": "rdf-components/writeFile",
-      "metadata": {
-        "label": "Write File",
-        "x": 936,
+        "x": 432,
         "y": 360,
         "width": 72,
         "height": 72
       }
     },
-    "AHLTA Patient": {
+    "Write Labs TTL": {
+      "component": "rdf-components/writeFile",
+      "metadata": {
+        "label": "Write Labs TTL",
+        "x": 792,
+        "y": 360,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "AALTA Patient": {
       "component": "filesystem/ReadFile",
       "metadata": {
-        "label": "AHLTA Patient",
-        "x": -108,
-        "y": 540,
+        "label": "AALTA Patient",
+        "x": 144,
+        "y": 432,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "FHIR to RDF": {
+      "component": "rdf-components/fhir-to-rdf",
+      "metadata": {
+        "label": "FHIR to RDF",
+        "x": 612,
+        "y": 36,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "CMUMPS Patient": {
+      "component": "filesystem/ReadFile",
+      "metadata": {
+        "label": "CMUMPS Patient",
+        "x": 144,
+        "y": 144,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "FHIR to RDF_o478h": {
+      "component": "rdf-components/fhir-to-rdf",
+      "metadata": {
+        "label": "FHIR to RDF",
+        "x": 612,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "FHIR to RDF_j7yrz": {
+      "component": "rdf-components/fhir-to-rdf",
+      "metadata": {
+        "label": "FHIR to RDF",
+        "x": 612,
+        "y": 468,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "Console": {
+      "component": "rdf-components/console-log",
+      "metadata": {
+        "label": "Console",
+        "x": 1116,
+        "y": 252,
         "width": 72,
         "height": 72
       }
@@ -188,11 +148,24 @@
   "connections": [
     {
       "src": {
+        "process": "ShEx Labs to FHIR RDF",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "Write Labs TTL",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 6
+      }
+    },
+    {
+      "src": {
         "process": "JS Demographics to FHIR",
         "port": "output"
       },
       "tgt": {
-        "process": "JSON to XML",
+        "process": "FHIR to RDF",
         "port": "fhir"
       },
       "metadata": {
@@ -201,63 +174,11 @@
     },
     {
       "src": {
-        "process": "Write File",
+        "process": "FHIR to RDF",
         "port": "output"
       },
       "tgt": {
-        "process": "Get File Names",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 4
-      }
-    },
-    {
-      "src": {
-        "process": "Get File Names",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "core/Output_ceugv",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 2
-      }
-    },
-    {
-      "src": {
-        "process": "JS Prescriptions to FHIR",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "JSON to XML_gvuly",
-        "port": "fhir"
-      },
-      "metadata": {
-        "route": 3
-      }
-    },
-    {
-      "src": {
-        "process": "JSON to XML",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "XML to RDF",
-        "port": "sources"
-      },
-      "metadata": {
-        "route": 4
-      }
-    },
-    {
-      "src": {
-        "process": "XML to RDF",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Write File",
+        "process": "Write Demographics TTL",
         "port": "data"
       },
       "metadata": {
@@ -266,137 +187,7 @@
     },
     {
       "src": {
-        "process": "JSON to XML_gvuly",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "XML to RDF_1xlfn",
-        "port": "sources"
-      },
-      "metadata": {
-        "route": 3
-      }
-    },
-    {
-      "src": {
-        "process": "XML to RDF_1xlfn",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Write File_rz37l",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 3
-      }
-    },
-    {
-      "src": {
-        "process": "JS Procedures to FHIR",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "JSON to XML_wd97g",
-        "port": "fhir"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "JSON to XML_wd97g",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "XML to RDF_b2gt9",
-        "port": "sources"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "XML to RDF_b2gt9",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Write File_12i92",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "ShEx Labs to FHIR RDF",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Write File_8d8t3",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 6
-      }
-    },
-    {
-      "src": {
-        "process": "Write File_rz37l",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Get File Names",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 3
-      }
-    },
-    {
-      "src": {
-        "process": "Write File_12i92",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Get File Names",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "Write File_8d8t3",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Get File Names",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 6
-      }
-    },
-    {
-      "src": {
-        "process": "Cmumps Patient",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "ShEx Labs to FHIR RDF",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 6
-      }
-    },
-    {
-      "src": {
-        "process": "Cmumps Patient",
+        "process": "CMUMPS Patient",
         "port": "out"
       },
       "tgt": {
@@ -409,7 +200,20 @@
     },
     {
       "src": {
-        "process": "Cmumps Patient",
+        "process": "JS Prescriptions to FHIR",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "FHIR to RDF_o478h",
+        "port": "fhir"
+      },
+      "metadata": {
+        "route": 3
+      }
+    },
+    {
+      "src": {
+        "process": "CMUMPS Patient",
         "port": "out"
       },
       "tgt": {
@@ -422,7 +226,33 @@
     },
     {
       "src": {
-        "process": "AHLTA Patient",
+        "process": "FHIR to RDF_o478h",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "Write Prescriptions TTL",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 3
+      }
+    },
+    {
+      "src": {
+        "process": "CMUMPS Patient",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "ShEx Labs to FHIR RDF",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 6
+      }
+    },
+    {
+      "src": {
+        "process": "AALTA Patient",
         "port": "out"
       },
       "tgt": {
@@ -434,129 +264,179 @@
       }
     },
     {
-      "data": "utf-8",
+      "src": {
+        "process": "JS Procedures to FHIR",
+        "port": "output"
+      },
       "tgt": {
-        "process": "Cmumps Patient",
-        "port": "encoding"
+        "process": "FHIR to RDF_j7yrz",
+        "port": "fhir"
+      },
+      "metadata": {
+        "route": 7
       }
     },
     {
-      "data": "../rdftransforms/data/fake_chcs/patient-7/chcs-patient7.jsonld",
+      "src": {
+        "process": "FHIR to RDF_j7yrz",
+        "port": "output"
+      },
       "tgt": {
-        "process": "Cmumps Patient",
+        "process": "Write Procedures TTL",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 7
+      }
+    },
+    {
+      "src": {
+        "process": "Write Demographics TTL",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "Console",
         "port": "in"
+      },
+      "metadata": {
+        "route": 4
       }
     },
     {
-      "data": "/tmp",
+      "src": {
+        "process": "Write Prescriptions TTL",
+        "port": "output"
+      },
       "tgt": {
-        "process": "JSON to XML",
-        "port": "outdir"
+        "process": "Console",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 3
       }
     },
     {
-      "data": "data",
+      "src": {
+        "process": "Write Labs TTL",
+        "port": "output"
+      },
       "tgt": {
-        "process": "Get File Names",
-        "port": "key"
+        "process": "Console",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 6
       }
     },
     {
-      "data": "/tmp",
+      "src": {
+        "process": "Write Procedures TTL",
+        "port": "output"
+      },
       "tgt": {
-        "process": "JSON to XML_gvuly",
-        "port": "outdir"
+        "process": "Console",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 7
       }
     },
     {
       "data": "/tmp/PatientDemographics.ttl",
       "tgt": {
-        "process": "Write File",
+        "process": "Write Demographics TTL",
         "port": "filename"
       }
     },
     {
       "data": "/tmp/PatientPrescriptions.ttl",
       "tgt": {
-        "process": "Write File_rz37l",
+        "process": "Write Prescriptions TTL",
         "port": "filename"
-      }
-    },
-    {
-      "data": "./lib/xslt/transform.xsl",
-      "tgt": {
-        "process": "XML to RDF",
-        "port": "transform"
-      }
-    },
-    {
-      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
-      "tgt": {
-        "process": "XML to RDF",
-        "port": "classpath"
-      }
-    },
-    {
-      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
-      "tgt": {
-        "process": "XML to RDF_1xlfn",
-        "port": "classpath"
-      }
-    },
-    {
-      "data": "./lib/xslt/transform.xsl",
-      "tgt": {
-        "process": "XML to RDF_1xlfn",
-        "port": "transform"
-      }
-    },
-    {
-      "data": "/tmp",
-      "tgt": {
-        "process": "JSON to XML_wd97g",
-        "port": "outdir"
-      }
-    },
-    {
-      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
-      "tgt": {
-        "process": "XML to RDF_b2gt9",
-        "port": "classpath"
-      }
-    },
-    {
-      "data": "./lib/xslt/transform.xsl",
-      "tgt": {
-        "process": "XML to RDF_b2gt9",
-        "port": "transform"
       }
     },
     {
       "data": "/tmp/PatientProcedures.ttl",
       "tgt": {
-        "process": "Write File_12i92",
+        "process": "Write Procedures TTL",
         "port": "filename"
       }
     },
     {
       "data": "/tmp/PatientLabs.ttl",
       "tgt": {
-        "process": "Write File_8d8t3",
+        "process": "Write Labs TTL",
         "port": "filename"
       }
     },
     {
       "data": "utf-8",
       "tgt": {
-        "process": "AHLTA Patient",
+        "process": "AALTA Patient",
         "port": "encoding"
       }
     },
     {
-      "data": "../rdftransforms/data/fake_chcs/patient-7/ahlta-patient7-procedures.jsonld",
+      "data": "/tmp",
       "tgt": {
-        "process": "AHLTA Patient",
+        "process": "FHIR to RDF",
+        "port": "outdir"
+      }
+    },
+    {
+      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
+      "tgt": {
+        "process": "FHIR to RDF",
+        "port": "classpath"
+      }
+    },
+    {
+      "data": "utf-8",
+      "tgt": {
+        "process": "CMUMPS Patient",
+        "port": "encoding"
+      }
+    },
+    {
+      "data": "node_modules/rdftransforms/data/fake_cmumps/patient-7/cmumps-patient7.jsonld",
+      "tgt": {
+        "process": "CMUMPS Patient",
         "port": "in"
+      }
+    },
+    {
+      "data": "/tmp",
+      "tgt": {
+        "process": "FHIR to RDF_o478h",
+        "port": "outdir"
+      }
+    },
+    {
+      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
+      "tgt": {
+        "process": "FHIR to RDF_o478h",
+        "port": "classpath"
+      }
+    },
+    {
+      "data": "node_modules/rdftransforms/data/fake_cmumps/patient-7/aalta-patient7-procedures.jsonld",
+      "tgt": {
+        "process": "AALTA Patient",
+        "port": "in"
+      }
+    },
+    {
+      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
+      "tgt": {
+        "process": "FHIR to RDF_j7yrz",
+        "port": "classpath"
+      }
+    },
+    {
+      "data": "/tmp",
+      "tgt": {
+        "process": "FHIR to RDF_j7yrz",
+        "port": "outdir"
       }
     }
   ]

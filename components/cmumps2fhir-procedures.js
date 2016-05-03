@@ -4,8 +4,8 @@ var _ = require('underscore');
 
 // NOTE: The rdftransforms are under a private git repository belonging to Hokukahu, LTD.  
 // Please contact Hokukahu if you wish to run this component
-var extractor = require('../../rdftransforms/translate/chcs');
-var translator = require('../../rdftransforms/translate/chcs2fhir_procedures');
+var extractor = require('rdftransforms').cmumps;
+var translator = require('rdftransforms').procedures;
 
 var wrapper = require('../src/javascript-wrapper');
 
