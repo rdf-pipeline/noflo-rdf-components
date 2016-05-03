@@ -1,0 +1,11 @@
+# clear-load-base-url-vnid.ru.hbs
+
+# Clears a graph and loads the graph-url as the data into an optional graph-uri
+# This file uses http://handlebarsjs.com/
+
+CLEAR {{#if graph-uri}}SILENT GRAPH <{{{graph-uri}}}>{{else}}DEFAULT{{/if}};
+
+LOAD <{{{base-url}}}?vnid={{{vnid}}}>
+{{#if graph-uri~}}
+    INTO GRAPH <{{{graph-uri}}}>
+{{~/if}}
