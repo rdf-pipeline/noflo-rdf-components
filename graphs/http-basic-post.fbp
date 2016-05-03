@@ -19,7 +19,7 @@ OUTPORT=request.OUTPUT:OUTPUT
 'Authorization' -> KEY setAuthorization(rdf-components/object)
 '^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
 'Basic $1'      -> REPLACEMENT basic
-'Content-Type'  -> KEY setContentType(rdf-components/object)
+'Content-Type'  -> KEY setContentType(rdf-components/object) OUTPUT -> HEADERS request
 
 # Set the default headers in the request
 '' -> VALUE setAuthorization OUTPUT -> HEADERS request
