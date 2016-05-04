@@ -79,7 +79,7 @@
       "metadata": {
         "label": "Write Labs TTL",
         "x": 792,
-        "y": 360,
+        "y": 324,
         "width": 72,
         "height": 72
       }
@@ -437,6 +437,27 @@
       "tgt": {
         "process": "FHIR to RDF_j7yrz",
         "port": "outdir"
+      }
+    },
+    {
+      "data": "<urn:local:cmumps:Patient:2-000007>",
+      "tgt": {
+        "process": "FHIR to RDF",
+        "port": "uri"
+      }
+    },
+    {
+      "data": "<urn:local:cmumps:MedicationDispense:2-000007>",
+      "tgt": {
+        "process": "FHIR to RDF_o478h",
+        "port": "uri"
+      }
+    },
+    {
+      "data": "<urn:local:cmumps:Procedure:2-000007>",
+      "tgt": {
+        "process": "FHIR to RDF_j7yrz",
+        "port": "uri"
       }
     }
   ]
