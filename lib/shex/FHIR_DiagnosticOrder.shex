@@ -94,7 +94,7 @@ PREFIX : <http://hl7.org/fhir/Patient.>
 <Patient> {
   :identifier {
     a [fhir:Identifier],
-    fhir:Identifier.system    { fhir:value LITERAL %map:{ fm:subject.idsystem %} }, # hard-coded for chcs
+    fhir:Identifier.system    { fhir:value LITERAL %map:{ fm:subject.idsystem %} }, # hard-coded for cmumps
     fhir:Identifier.value     { fhir:value LITERAL %map:{ fm:subject.identifier %} }
   }
 }

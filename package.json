@@ -58,6 +58,8 @@
   },
   "noflo": {
     "graphs": {
+      "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
+      "console-log": "./graphs/console-log.fbp",
       "fhir-to-rdf": "./graphs/fhir-to-rdf.fbp",
       "rdf-insert": "./graphs/rdf-insert.fbp",
       "rdf-clear-insert": "./graphs/rdf-clear-insert.fbp",
@@ -65,8 +67,6 @@
       "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
-      "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
-      "console-log": "./graphs/console-log.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
@@ -83,6 +83,7 @@
       "js-node": "./components/js-node.js",
       "object": "./components/object.js",
       "parse-json": "./components/parse-json.js",
+      "patient-loader": "./components/patient-loader.js",
       "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",

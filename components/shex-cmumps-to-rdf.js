@@ -25,10 +25,10 @@ function updater(data) {
 
     // Filter to known types
     // for cleaned.jsonld, 2.1 w, 4.2 w/o
-    if (true)
-    parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
-        return ob.type.substr(6) in shexiface.type2shape;
-    });
+    if (true) 
+        parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
+            return ob.type.substr('cmumpss:'.length) in shexiface.type2shape;
+        });  
 
     duplicateScalars(parsedData, ["id", "_id"], "identifier");
 
@@ -50,9 +50,9 @@ function updater(data) {
 		// resolve(dataAndLog.data); !! if you're content with a N3.Store, resolve here.
 		var writer = N3.Writer({ prefixes: {
 		  fhir: "http://hl7.org/fhir/",
-		  chcs: "http://hokukahu.com/systems/chcs-1/",
-		  chem: "http://lpi-chcs.org/translated/labs/clinical_chemistry-63/",
-		  chemres: "http://lpi-chcs.org/translated/labs/clinical_chemistry-63/result-63_04/",
+		  cmumps: "http://hokukahu.com/systems/cmumps-1/",
+		  chem: "http://lpi-cmumps.org/translated/labs/clinical_chemistry-63/",
+		  chemres: "http://lpi-cmumps.org/translated/labs/clinical_chemistry-63/result-63_04/",
 		  xs: "http://www.w3.org/2001/XMLSchema#",
 		  prov: "http://www.w3.org/ns/prov#",
 		} });
@@ -97,10 +97,10 @@ var graphContext = {
         "icd9cm": "http://hokukahu.com/schema/icd9cm#",
         "npi": "http://hokukahu.com/schema/npi#",
         "nddf": "http://hokukahu.com/schema/nddf#",
-        "@vocab": "http://hokukahu.com/schema/chcss#",
-        "chcss": "http://hokukahu.com/schema/chcss#",
+        "@vocab": "http://hokukahu.com/schema/cmumpss#",
+        "cmumpss": "http://hokukahu.com/schema/cmumpss#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
-        "@base": "http://hokukahu.com/systems/chcs-1/",
+        "@base": "http://hokukahu.com/systems/cmumps-1/",
         "_id": "@id",
         "id": "@id",
         "type": "@type",

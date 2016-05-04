@@ -7,7 +7,7 @@ module.exports = wrapper(idMapper);
 
 /**
  * Maps the specified id to another value using the specified map.
- * This is useful when mapping from an ID on one system (e.g., CHCS patient ID) to 
+ * This is useful when mapping from an ID on one system (e.g., patient ID) to 
  * an ID from another system, which may or may not even have the same attribute name 
  * for the id.
  *

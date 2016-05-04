@@ -14,6 +14,5 @@ var wrapper = require('../src/javascript-wrapper.js');
  * @param filename Filename (absolute or relative to this module)
  */
 module.exports = wrapper(function(filename) {
-    console.log('componentPath: ',path.resolve(__dirname, '..', filename));
     return path.resolve(__dirname, '..', filename);
 });
