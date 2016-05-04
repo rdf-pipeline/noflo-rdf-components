@@ -440,21 +440,21 @@
       }
     },
     {
-      "data": "<urn:local:cmumps:Patient:2-000007>",
-      "tgt": {
-        "process": "FHIR to RDF",
-        "port": "uri"
-      }
-    },
-    {
-      "data": "<urn:local:cmumps:MedicationDispense:2-000007>",
+      "data": "<urn:local:fhir:MedicationDispense:2-000007>",
       "tgt": {
         "process": "FHIR to RDF_o478h",
         "port": "uri"
       }
     },
     {
-      "data": "<urn:local:cmumps:Procedure:2-000007>",
+      "data": "<urn:local:fhir:Patient:2-000007>",
+      "tgt": {
+        "process": "FHIR to RDF",
+        "port": "uri"
+      }
+    },
+    {
+      "data": "<urn:local:fhir:Procedure:2-000007>",
       "tgt": {
         "process": "FHIR to RDF_j7yrz",
         "port": "uri"
