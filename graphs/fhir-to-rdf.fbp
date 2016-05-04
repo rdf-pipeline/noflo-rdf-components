@@ -7,6 +7,7 @@
 INPORT=fhirToXml.FHIR:FHIR
 INPORT=fhirToXml.OUTDIR:OUTDIR
 INPORT=xmlToRdf.CLASSPATH:CLASSPATH
+INPORT=xmlToRdf.URI:URI
 OUTPORT=xmlToRdf.OUTPUT:OUTPUT
 
 'lib/xslt/transform.xsl' -> FILENAME componentPath(rdf-components/component-path)

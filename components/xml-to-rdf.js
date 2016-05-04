@@ -23,10 +23,11 @@ module.exports = wrapper( xmlToRdf );
  * @param {array} sources xml files to be processed; noflo GUI can also send it as a string
  * @param {string} classpath classpath to transform library
  * @param {string} transform file path to xslt transform file
+ * @param {string} uri The URI for the fhir RDF resource
  *
  * @return {array} FHIR RDF translations for each of sources files
  */
-function xmlToRdf(sources, classpath, transform) {
+function xmlToRdf(sources, classpath, transform, uri) {
 
     if (_.isUndefined(sources) || _.isUndefined(transform)) {
         throw Error("Xml-to-rdf component expects both sources and transform parameters!");
@@ -42,6 +43,9 @@ function xmlToRdf(sources, classpath, transform) {
     var config = {
         xsltPath: transform,
         result: String,
+        params: {
+            docParam: uri
+        }
     }
 
     // Add the classpath the first time through.  After that we'll have it.
