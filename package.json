@@ -83,7 +83,6 @@
       "js-node": "./components/js-node.js",
       "object": "./components/object.js",
       "parse-json": "./components/parse-json.js",
-      "patient-loader": "./components/patient-loader.js",
       "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",

@@ -18,6 +18,7 @@ var wrapper = require('../src/javascript-wrapper');
 module.exports = wrapper( updater );
 
 function updater(data) {
+
     // shexiface.now("enter updater");
     parsedData = JSON.parse(data);
     
@@ -51,8 +52,6 @@ function updater(data) {
 		var writer = N3.Writer({ prefixes: {
 		  fhir: "http://hl7.org/fhir/",
 		  cmumps: "http://hokukahu.com/systems/cmumps-1/",
-		  chem: "http://lpi-cmumps.org/translated/labs/clinical_chemistry-63/",
-		  chemres: "http://lpi-cmumps.org/translated/labs/clinical_chemistry-63/result-63_04/",
 		  xs: "http://www.w3.org/2001/XMLSchema#",
 		  prov: "http://www.w3.org/ns/prov#",
 		} });
