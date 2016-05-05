@@ -2,6 +2,9 @@
 
 var _ = require('underscore');
 
+var fs = require('fs');
+var readline = require('readline');
+
 var xslt4node = require('xslt4node');
 var first=true;
 
@@ -9,7 +12,7 @@ var helper = require('../src/component-helper');
 var createState = require('../src/create-state');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper( xmlToRdf );
+module.exports = wrapper(xmlToRdf);
 
 /**
  * Perform an xslt transform converting the xml to RDF turtle format using
@@ -23,11 +26,13 @@ module.exports = wrapper( xmlToRdf );
  * @param {array} sources xml files to be processed; noflo GUI can also send it as a string
  * @param {string} classpath classpath to transform library
  * @param {string} transform file path to xslt transform file
- * @param {string} uri The URI for the fhir RDF resource
+ * @param {string} outdir path to the directory where rdf file should be written
  *
  * @return {array} FHIR RDF translations for each of sources files
  */
-function xmlToRdf(sources, classpath, transform, uri) {
+function xmlToRdf(sources, classpath, transform, outdir) {
+
+    // console.log('enter xmlToRdf with ',arguments);
 
     if (_.isUndefined(sources) || _.isUndefined(transform)) {
         throw Error("Xml-to-rdf component expects both sources and transform parameters!");
@@ -39,28 +44,83 @@ function xmlToRdf(sources, classpath, transform, uri) {
     // we have to parse to get the array content.
     var parsedSources = (_.isString(sources)) ? JSON.parse(sources) : sources;
 
-    // Set up the xslt transform configuration
-    var config = {
-        xsltPath: transform,
-        result: String,
-        params: {
-            docParam: uri
-        }
-    }
-
     // Add the classpath the first time through.  After that we'll have it.
     if (first && ! _.isUndefined(classpath)) { 
         xslt4node.addLibrary(classpath);
         first = false;
     }
 
-    // Walk the list of sources, transform each one, and send each on to the next component
-    var result = [];
-    parsedSources.forEach(function(source) { 
-        config.sourcePath = source; 
-        result.push(xslt4node.transformSync(config));
+    var promiseFactories =  _.map( sources, function( source ) {
+        return _.partial( processSource, source, classpath, transform, outdir );
     });
+    var results = Promise.resolve( executeSequentially( promiseFactories ) );
 
-    return result;
+    return Promise.resolve(results);
 }
 
+function executeSequentially(promiseFactories) {
+    var result = Promise.resolve();
+    var results = [];
+    promiseFactories.forEach(function (promiseFactory, index) {
+       result = result.then( promiseFactory );
+       results.push( result );
+    });
+    return Promise.all( results );
+}
+
+/**
+ * Process a source FHIR XML file into an RDF file
+ * 
+ * @param source {string} path to the xml source file to be processed
+ * @param {string} classpath classpath to transform library
+ * @param {string} transform file path to xslt transform file
+ *
+ * @return an updated config object with the docParam setting containing the URN to to be used 
+ *         as the doc root for the rdf resource we'll be generating.
+ */
+function processSource(source, classpath, transform, outdir) { 
+ 
+    return new Promise( function(resolve, reject) { 
+        var fileName = '';
+
+        // Use a stream to avoid reading it all into memory at once
+        var reader = readline.createInterface({
+            input: fs.createReadStream(source)
+        });
+        reader.on('line', function (line) {
+            if (! _.isEmpty(fileName)) { 
+                // Processed our file so now we can shut this reader down
+                reader.destroy();
+            }
+
+            if (line.match(/^<id value=\"urn\:local\:fhir\:/)) {
+                var uri = line.match(/^<id value=\"([A-Za-z0-9\:\-_]+).*/);
+                if (!_.isEmpty(uri)) {
+                    var rdf = 
+                       xslt4node.transformSync({
+                          xsltPath: transform,
+                          result: String,
+                          sourcePath: source,
+                          params: {docParam: '<'+uri[1]+'>'}
+                       });
+                    fileName = outdir+'/'+uri[1]+'.ttl';
+                    fs.writeFileSync(fileName, rdf);
+                    resolve(fileName);
+                }
+            }
+        }); 
+
+        reader.on('error', function() {
+            if (_.isEmpty(fileName)) {
+               reject('Unable to find the RDF resource id in file '+source);
+            }
+        });
+
+        reader.on('end', function() {
+            if (_.isEmpty(fileName)) {
+               reject('Unable to find the RDF resource id in file '+source);
+            }
+        });
+
+    });
+}

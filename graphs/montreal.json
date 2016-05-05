@@ -14,16 +14,6 @@
         "height": 72
       }
     },
-    "Write Demographics TTL": {
-      "component": "rdf-components/writeFile",
-      "metadata": {
-        "label": "Write Demographics TTL",
-        "x": 792,
-        "y": 36,
-        "width": 72,
-        "height": 72
-      }
-    },
     "JS Prescriptions to FHIR": {
       "component": "rdf-components/cmumps2fhir-prescriptions",
       "metadata": {
@@ -34,31 +24,11 @@
         "height": 72
       }
     },
-    "Write Prescriptions TTL": {
-      "component": "rdf-components/writeFile",
-      "metadata": {
-        "label": "Write Prescriptions TTL",
-        "x": 792,
-        "y": 180,
-        "width": 72,
-        "height": 72
-      }
-    },
     "JS Procedures to FHIR": {
       "component": "rdf-components/cmumps2fhir-procedures",
       "metadata": {
         "label": "JS Procedures to FHIR",
         "x": 432,
-        "y": 504,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "Write Procedures TTL": {
-      "component": "rdf-components/writeFile",
-      "metadata": {
-        "label": "Write Procedures TTL",
-        "x": 792,
         "y": 504,
         "width": 72,
         "height": 72
@@ -78,7 +48,7 @@
       "component": "rdf-components/writeFile",
       "metadata": {
         "label": "Write Labs TTL",
-        "x": 792,
+        "x": 648,
         "y": 324,
         "width": 72,
         "height": 72
@@ -94,16 +64,6 @@
         "height": 72
       }
     },
-    "FHIR to RDF": {
-      "component": "rdf-components/fhir-to-rdf",
-      "metadata": {
-        "label": "FHIR to RDF",
-        "x": 612,
-        "y": 36,
-        "width": 72,
-        "height": 72
-      }
-    },
     "CMUMPS Patient": {
       "component": "filesystem/ReadFile",
       "metadata": {
@@ -114,32 +74,42 @@
         "height": 72
       }
     },
-    "FHIR to RDF_o478h": {
+    "Console": {
+      "component": "rdf-components/console-log",
+      "metadata": {
+        "label": "Console",
+        "x": 972,
+        "y": 252,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "FHIR to RDF": {
       "component": "rdf-components/fhir-to-rdf",
       "metadata": {
         "label": "FHIR to RDF",
-        "x": 612,
+        "x": 648,
+        "y": 72,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "FHIR to RDF_q1haq": {
+      "component": "rdf-components/fhir-to-rdf",
+      "metadata": {
+        "label": "FHIR to RDF",
+        "x": 648,
         "y": 180,
         "width": 72,
         "height": 72
       }
     },
-    "FHIR to RDF_j7yrz": {
+    "FHIR to RDF_jxv5q": {
       "component": "rdf-components/fhir-to-rdf",
       "metadata": {
         "label": "FHIR to RDF",
-        "x": 612,
-        "y": 468,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "Console": {
-      "component": "rdf-components/console-log",
-      "metadata": {
-        "label": "Console",
-        "x": 1116,
-        "y": 252,
+        "x": 648,
+        "y": 504,
         "width": 72,
         "height": 72
       }
@@ -161,6 +131,32 @@
     },
     {
       "src": {
+        "process": "Write Labs TTL",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "Console",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 6
+      }
+    },
+    {
+      "src": {
+        "process": "CMUMPS Patient",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "JS Demographics to FHIR",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
         "process": "JS Demographics to FHIR",
         "port": "output"
       },
@@ -178,11 +174,24 @@
         "port": "output"
       },
       "tgt": {
-        "process": "Write Demographics TTL",
-        "port": "data"
+        "process": "Console",
+        "port": "in"
       },
       "metadata": {
         "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "CMUMPS Patient",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "JS Prescriptions to FHIR",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 3
       }
     },
     {
@@ -191,7 +200,7 @@
         "port": "output"
       },
       "tgt": {
-        "process": "FHIR to RDF_o478h",
+        "process": "FHIR to RDF_q1haq",
         "port": "fhir"
       },
       "metadata": {
@@ -200,12 +209,12 @@
     },
     {
       "src": {
-        "process": "FHIR to RDF_o478h",
+        "process": "FHIR to RDF_q1haq",
         "port": "output"
       },
       "tgt": {
-        "process": "Write Prescriptions TTL",
-        "port": "data"
+        "process": "Console",
+        "port": "in"
       },
       "metadata": {
         "route": 3
@@ -226,110 +235,6 @@
     },
     {
       "src": {
-        "process": "JS Procedures to FHIR",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "FHIR to RDF_j7yrz",
-        "port": "fhir"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "FHIR to RDF_j7yrz",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Write Procedures TTL",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "Write Demographics TTL",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Console",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 4
-      }
-    },
-    {
-      "src": {
-        "process": "Write Prescriptions TTL",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Console",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 3
-      }
-    },
-    {
-      "src": {
-        "process": "Write Labs TTL",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Console",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 6
-      }
-    },
-    {
-      "src": {
-        "process": "Write Procedures TTL",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Console",
-        "port": "in"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "CMUMPS Patient",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "JS Demographics to FHIR",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 4
-      }
-    },
-    {
-      "src": {
-        "process": "CMUMPS Patient",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "JS Prescriptions to FHIR",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 3
-      }
-    },
-    {
-      "src": {
         "process": "AALTA Patient",
         "port": "out"
       },
@@ -342,24 +247,29 @@
       }
     },
     {
-      "data": "/tmp/PatientDemographics.ttl",
+      "src": {
+        "process": "JS Procedures to FHIR",
+        "port": "output"
+      },
       "tgt": {
-        "process": "Write Demographics TTL",
-        "port": "filename"
+        "process": "FHIR to RDF_jxv5q",
+        "port": "fhir"
+      },
+      "metadata": {
+        "route": 7
       }
     },
     {
-      "data": "/tmp/PatientPrescriptions.ttl",
+      "src": {
+        "process": "FHIR to RDF_jxv5q",
+        "port": "output"
+      },
       "tgt": {
-        "process": "Write Prescriptions TTL",
-        "port": "filename"
-      }
-    },
-    {
-      "data": "/tmp/PatientProcedures.ttl",
-      "tgt": {
-        "process": "Write Procedures TTL",
-        "port": "filename"
+        "process": "Console",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 7
       }
     },
     {
@@ -377,20 +287,6 @@
       }
     },
     {
-      "data": "/tmp",
-      "tgt": {
-        "process": "FHIR to RDF",
-        "port": "outdir"
-      }
-    },
-    {
-      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
-      "tgt": {
-        "process": "FHIR to RDF",
-        "port": "classpath"
-      }
-    },
-    {
       "data": "utf-8",
       "tgt": {
         "process": "CMUMPS Patient",
@@ -405,20 +301,6 @@
       }
     },
     {
-      "data": "/tmp",
-      "tgt": {
-        "process": "FHIR to RDF_o478h",
-        "port": "outdir"
-      }
-    },
-    {
-      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
-      "tgt": {
-        "process": "FHIR to RDF_o478h",
-        "port": "classpath"
-      }
-    },
-    {
       "data": "node_modules/rdftransforms/data/fake_cmumps/patient-7/aalta-patient7-procedures.jsonld",
       "tgt": {
         "process": "AALTA Patient",
@@ -426,38 +308,45 @@
       }
     },
     {
+      "data": "/tmp",
+      "tgt": {
+        "process": "FHIR to RDF",
+        "port": "outdir"
+      }
+    },
+    {
       "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
       "tgt": {
-        "process": "FHIR to RDF_j7yrz",
+        "process": "FHIR to RDF",
+        "port": "classpath"
+      }
+    },
+    {
+      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
+      "tgt": {
+        "process": "FHIR to RDF_q1haq",
+        "port": "classpath"
+      }
+    },
+    {
+      "data": "/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar",
+      "tgt": {
+        "process": "FHIR to RDF_jxv5q",
         "port": "classpath"
       }
     },
     {
       "data": "/tmp",
       "tgt": {
-        "process": "FHIR to RDF_j7yrz",
+        "process": "FHIR to RDF_q1haq",
         "port": "outdir"
       }
     },
     {
-      "data": "<urn:local:fhir:MedicationDispense:2-000007>",
+      "data": "/tmp",
       "tgt": {
-        "process": "FHIR to RDF_o478h",
-        "port": "uri"
-      }
-    },
-    {
-      "data": "<urn:local:fhir:Patient:2-000007>",
-      "tgt": {
-        "process": "FHIR to RDF",
-        "port": "uri"
-      }
-    },
-    {
-      "data": "<urn:local:fhir:Procedure:2-000007>",
-      "tgt": {
-        "process": "FHIR to RDF_j7yrz",
-        "port": "uri"
+        "process": "FHIR to RDF_jxv5q",
+        "port": "outdir"
       }
     }
   ]
