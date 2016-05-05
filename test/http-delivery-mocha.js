@@ -17,8 +17,7 @@ var httpDelivery = require('../components/http-delivery');
 describe('http-delivery', function() {
     var port = 1337;
     var origin = 'http://localhost:' + port;
-    var endpoint = "http://localhost:8080/openrdf-sesame/repositories/http-delivery-mocha";
-    var endpoint_update = "http://localhost:8080/openrdf-sesame/repositories/http-delivery-mocha/statements";
+    var endpoint = "http://10.255.241.10:10035/repositories/http-delivery-mocha";
     it("should receive a request using a sub-graph", function() {
         return new Promise(function(done, fail) {
             test.createNetwork({
@@ -91,7 +90,7 @@ describe('http-delivery', function() {
         }).then(function(network){
             network.graph.addInitial('rdf-auth-file', 'sparql', 'auth_file_env');
             network.graph.addInitial('rdf-auth-file', 'construct', 'auth_file_env');
-            network.graph.addInitial(endpoint_update, 'sparql', 'sparql_endpoint');
+            network.graph.addInitial(endpoint, 'sparql', 'sparql_endpoint');
             network.graph.addInitial(endpoint, 'construct', 'sparql_endpoint');
             network.graph.addInitial(port, 'sparql', 'listen');
             network.graph.addInitial(origin + '/', 'sparql', 'base_url');

@@ -5,7 +5,7 @@
 
 CLEAR {{#if graph-uri}}SILENT GRAPH <{{{graph-uri}}}>{{else}}DEFAULT{{/if}};
 
-LOAD <{{{base-url}}}?vnid={{{vnid}}}>
+LOAD <{{{base-url}}}?vnid={{{vnid}}}&ext=.ttl>
 {{#if graph-uri~}}
     INTO GRAPH <{{{graph-uri}}}>
 {{~/if}}
