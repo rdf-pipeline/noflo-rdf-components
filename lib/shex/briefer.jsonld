@@ -1,0 +1,68 @@
+{
+  "@context": "Sourced from https://docs.google.com/document/d/1TnHJuGA5_zkp_LhYZmVzV358AXDIK8n-xqUFeV9KKc4, some comments removed, formatted or moved to more instructive locations",
+  "@context": "https://raw.githubusercontent.com/hokukahu/rdftransforms/rename/data/fake_cmumps/patient-7/context.jsonld?token=AAjAJuFoZUj0oQNXT2yqrex7sRLD1x-6ks5XMlZiwA%3D%3D",
+  "@graph": [
+    {
+      "_id": "63-000007",
+      "identifier": "63-000007",
+      "label": "BUNNY,BUGS",
+      "clinical_chemistry-63": [
+        {
+          "date_time_specimen_taken-63_04": {
+            "type": "xsd:dateTime",
+            "value": "1990-01-01T00:00:00"
+          },
+          "login_date_time-63_04": {
+            "type": "xsd:dateTime",
+            "value": "1990-01-01T00:00:00"
+          },
+          "collection_sample-63_04": {
+            "id": "62-319",
+            "label": "HIV TUBE"
+          },
+          "lab_work_element-63_04": {
+            "id": "44-4246",
+            "label": "MAD HATTER LAB"
+          },
+          "specimen-63_04": {
+            "id": "61-72",
+            "label": "SERUM"
+          },
+          "result-63_04": [
+            {
+              "test-63_07": {
+                "id": "60-4220",
+                "label": "HIV-1 AB"
+              },
+              "enter_date_time-63_07": {
+                "type": "xsd:dateTime",
+                "value": "1990-01-01T00:00:00"
+              },
+              "type": "cmumpss:Result-63_07",
+              "id": "1_07-4220_9999999.111111_0001007",
+              "identifier": "1_07-4220_9999999.111111_0001007",
+              "lab_method-63_07": {
+                "id": "8710-2972",
+                "label": "HIV INTEROPERABILITY (01JAN90)"
+              }
+            }
+          ],
+          "hcp-63_04": {
+            "id": "6-485",
+            "label": "POOH,WINNIE"
+          },
+          "label": "1990-01-01T00:00:00Z",
+          "type": "cmumpss:Clinical_Chemistry-63_04",
+          "id": "63_04-9999999.111111_000007",
+          "identifier": "63_04-9999999.111111_000007"
+        }
+      ],
+      "patient-63": {
+        "id": "2-000007",
+        "identifier": "2-000007",
+        "label": "BUNNY,BUGS"
+      },
+      "type": "cmumpss:Lab_Result-63"
+    }
+  ]
+}

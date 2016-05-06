@@ -20,15 +20,26 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "~5.2.0",
-    "sinon": "^1.17.2",
-    "noflo-webserver": "0.0.4"
+    "mocha": "^2.3.4",
+    "mongodb": "^2.1.7",
+    "node-gyp": "^3.3.0",
+    "noflo-webserver": "0.0.4",
+    "npm-config": "^0.2.0",
+    "npm-scripts": "^1.4.0",
+    "sinon": "^1.17.2"
+  },
+  "optionalDependencies": {
+     "rdftransforms": "git+https://www.github.com/hokukahu/rdftransforms.git#rename"
   },
   "dependencies": {
+    "bluebird": "~3.3.1",
+    "fhir-json-to-xml": "git+https://www.github.com/mcarifio/fhir-json-to-xml",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
+    "jsonpath-plus": "^0.14.0",
     "jsonpointer": "~3.0.0",
     "media-typer": "^0.3.0",
-    "n3": "0.4.1",
+    "n3": "0.4.5",
     "noflo": "~0.5.14",
     "noflo-adapters": "^0.1.3",
     "noflo-core": "^0.1.14",
@@ -40,37 +51,50 @@
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.7",
+    "shex": "~0.5.9",
     "underscore": "~1.8.3",
-    "uri-templates": "~0.1.9"
+    "uri-templates": "~0.1.9",
+    "xslt4node": "~0.2.1"
   },
   "noflo": {
     "graphs": {
+      "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
+      "console-log": "./graphs/console-log.fbp",
+      "fhir-to-rdf": "./graphs/fhir-to-rdf.fbp",
       "rdf-insert": "./graphs/rdf-insert.fbp",
       "rdf-clear-insert": "./graphs/rdf-clear-insert.fbp",
       "rdf-construct": "./graphs/rdf-construct.fbp",
       "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
-      "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
-      "request-template": "./components/request-template.js",
+      "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
+      "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
+      "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
+      "component-path": "./components/component-path.js",
+      "fhir-to-xml": "./components/fhir-to-xml.js",
+      "file-node": "./components/file-node.js",
+      "html-2-objects-compare": "./components/html-2-objects-compare.js",
+      "http-accept": "./components/http-accept.js",
+      "id-mapper": "./components/id-mapper.js",
+      "json-file-node": "./components/json-file-node.js",
+      "js-node": "./components/js-node.js",
+      "object": "./components/object.js",
+      "parse-json": "./components/parse-json.js",
+      "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
-      "object": "./components/object.js",
-      "phaser": "./components/phaser.js",
-      "parse-json": "./components/parse-json.js",
       "read-content": "./components/read-content.js",
-      "html-2-objects-compare": "./components/html-2-objects-compare.js",
-      "http-accept": "./components/http-accept.js",
+      "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",
-      "file-node": "./components/file-node.js",
-      "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "shex-cmumps-to-rdf": "./components/shex-cmumps-to-rdf.js",
+      "writeFile": "./components/writeFile.js",
+      "xml-to-rdf": "./components/xml-to-rdf.js"
     }
   }
 }
