@@ -1,6 +1,8 @@
 // cmumps2fhir-demographics.js
 
 var _ = require('underscore');
+var fs = require('fs');
+var util = require('util');
 
 // NOTE: The rdftransforms are under a private git repository belonging to Hokukahu, LTD.  
 // Please contact Hokukahu if you wish to run this component
@@ -16,10 +18,15 @@ module.exports = wrapper(patientDemographics);
  * it to FHIR format.
  * 
  * @param data cmumps patient data to be translated
+ * @param outdir output directory for json intermediate files
  * 
  * @return the patient's demographic data in FHIR format
  */
-function patientDemographics(data) {   
+function patientDemographics(data, outdir) {   
+
+    var cmumpsDemographics;
+    var fhirDemographics;
+    var filename;
 
     if (_.isUndefined(data)) { 
         throw Error("PatientDemographics requires data to translate!");
@@ -29,20 +36,33 @@ function patientDemographics(data) {
     var patientData = (_.isString(data)) ? JSON.parse(data) : data;
 
     // Extract all patient demographic data from dataset
-    var demographics = extractor.extractDemographics(patientData);
-    if (_.isEmpty(demographics)) {
+    var cmumpsDemographics = extractor.extractDemographics(patientData);
+
+    // Write intermediate cmumps json file for debug purposes
+    filename = outdir+'CmumpsDemographics.json';
+    fs.writeFileSync(filename, util.inspect(cmumpsDemographics, {depth:null}));
+    console.log('Wrote',filename);
+
+    if (_.isEmpty(cmumpsDemographics)) {
         console.warn('No patient demographics found!');
         return {};
     }
 
     // If we have more than one patient in the dataset, return an array of the patient data
-    if (demographics.length > 1) {
-        return _.map(demographics, function(demographic) {
+    if (cmumpsDemographics.length > 1) {
+        fhirDemographics = _.map(cmumpDemographics, function(cmumpsDemographic) {
             // translate the demographic record to FHIR
-            return translator.translateDemographicsFhir(demographic);
+            return translator.translateDemographicsFhir(cmumpsDemographic);
         });
-    } 
- 
-    // Just one patient in this dataset, so translate to FHIR & return as a single object
-    return translator.translateDemographicsFhir(demographics[0]);
+    } else { 
+        // Just one patient in this dataset, so translate to FHIR & return as a single object
+        fhirDemographics = translator.translateDemographicsFhir(cmumpsDemographics[0]);
+    }
+
+    // Write intermediate fhir json file for debug purposes
+    filename = outdir+'FhirDemographics.json';
+    fs.writeFileSync(filename, util.inspect(fhirDemographics, {depth:null}));
+    console.log('Wrote',filename);
+
+    return fhirDemographics;
 }
