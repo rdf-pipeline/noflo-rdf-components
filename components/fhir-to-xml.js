@@ -28,7 +28,7 @@ function fhirToXmlFile( fhir, outdir ) {
                return ( key !== 'extension'  );
            }); 
            var fhirXml =  fhirJsonToXml.toXML( obj2 ); 
-           var xmlFileName = outdir+'/fhir-'+createLm()+'.xml';
+           var xmlFileName = outdir+'fhir-'+createLm()+'.xml';
            // console.log('\nwrite file: ',xmlFileName,'\n');
            fs.writeFileSync(xmlFileName, fhirXml.toString());
            return xmlFileName; 
@@ -39,7 +39,7 @@ function fhirToXmlFile( fhir, outdir ) {
            return ( key !== 'extension' );
        }); 
       var fhirXml =  fhirJsonToXml.toXML( obj ); 
-      var xmlFileName = outdir+'/fhir-'+createLm()+'.xml';
+      var xmlFileName = outdir+'fhir-'+createLm()+'.xml';
       // console.log('write file: ',xmlFileName);
       fs.writeFileSync(xmlFileName, fhirXml.toString());
       xmlFileNames = [ xmlFileName ];

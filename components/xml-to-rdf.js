@@ -103,7 +103,7 @@ function processSource(source, classpath, transform, outdir) {
                           sourcePath: source,
                           params: {docParam: '<'+uri[1]+'>'}
                        });
-                    fileName = outdir+'/'+uri[1]+'.ttl';
+                    fileName = outdir+uri[1]+'.ttl';
                     fs.writeFileSync(fileName, rdf);
                     resolve(fileName);
                 }

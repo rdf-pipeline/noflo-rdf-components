@@ -4,36 +4,6 @@
   "outports": {},
   "groups": [],
   "processes": {
-    "JS Demographics to FHIR": {
-      "component": "rdf-components/cmumps2fhir-demographics",
-      "metadata": {
-        "label": "JS Demographics to FHIR",
-        "x": 432,
-        "y": 72,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "JS Prescriptions to FHIR": {
-      "component": "rdf-components/cmumps2fhir-prescriptions",
-      "metadata": {
-        "label": "JS Prescriptions to FHIR",
-        "x": 432,
-        "y": 216,
-        "width": 72,
-        "height": 72
-      }
-    },
-    "JS Procedures to FHIR": {
-      "component": "rdf-components/cmumps2fhir-procedures",
-      "metadata": {
-        "label": "JS Procedures to FHIR",
-        "x": 432,
-        "y": 504,
-        "width": 72,
-        "height": 72
-      }
-    },
     "ShEx Labs to FHIR RDF": {
       "component": "rdf-components/shex-cmumps-to-rdf",
       "metadata": {
@@ -113,6 +83,36 @@
         "width": 72,
         "height": 72
       }
+    },
+    "JS Demographics to FHIR": {
+      "component": "rdf-components/cmumps2fhir-demographics",
+      "metadata": {
+        "label": "JS Demographics to FHIR",
+        "x": 396,
+        "y": 108,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "JS Prescriptions to FHIR": {
+      "component": "rdf-components/cmumps2fhir-prescriptions",
+      "metadata": {
+        "label": "JS Prescriptions to FHIR",
+        "x": 432,
+        "y": 216,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "JS Procedures to FHIR": {
+      "component": "rdf-components/cmumps2fhir-procedures",
+      "metadata": {
+        "label": "JS Procedures to FHIR",
+        "x": 396,
+        "y": 504,
+        "width": 72,
+        "height": 72
+      }
     }
   },
   "connections": [
@@ -144,32 +144,6 @@
     },
     {
       "src": {
-        "process": "CMUMPS Patient",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "JS Demographics to FHIR",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 4
-      }
-    },
-    {
-      "src": {
-        "process": "JS Demographics to FHIR",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "FHIR to RDF",
-        "port": "fhir"
-      },
-      "metadata": {
-        "route": 4
-      }
-    },
-    {
-      "src": {
         "process": "FHIR to RDF",
         "port": "output"
       },
@@ -179,32 +153,6 @@
       },
       "metadata": {
         "route": 4
-      }
-    },
-    {
-      "src": {
-        "process": "CMUMPS Patient",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "JS Prescriptions to FHIR",
-        "port": "data"
-      },
-      "metadata": {
-        "route": 3
-      }
-    },
-    {
-      "src": {
-        "process": "JS Prescriptions to FHIR",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "FHIR to RDF_q1haq",
-        "port": "fhir"
-      },
-      "metadata": {
-        "route": 3
       }
     },
     {
@@ -235,6 +183,71 @@
     },
     {
       "src": {
+        "process": "FHIR to RDF_jxv5q",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "Console",
+        "port": "in"
+      },
+      "metadata": {
+        "route": 7
+      }
+    },
+    {
+      "src": {
+        "process": "CMUMPS Patient",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "JS Demographics to FHIR",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "JS Demographics to FHIR",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "FHIR to RDF",
+        "port": "fhir"
+      },
+      "metadata": {
+        "route": 4
+      }
+    },
+    {
+      "src": {
+        "process": "CMUMPS Patient",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "JS Prescriptions to FHIR",
+        "port": "data"
+      },
+      "metadata": {
+        "route": 3
+      }
+    },
+    {
+      "src": {
+        "process": "JS Prescriptions to FHIR",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "FHIR to RDF_q1haq",
+        "port": "fhir"
+      },
+      "metadata": {
+        "route": 3
+      }
+    },
+    {
+      "src": {
         "process": "AALTA Patient",
         "port": "out"
       },
@@ -254,19 +267,6 @@
       "tgt": {
         "process": "FHIR to RDF_jxv5q",
         "port": "fhir"
-      },
-      "metadata": {
-        "route": 7
-      }
-    },
-    {
-      "src": {
-        "process": "FHIR to RDF_jxv5q",
-        "port": "output"
-      },
-      "tgt": {
-        "process": "Console",
-        "port": "in"
       },
       "metadata": {
         "route": 7
@@ -308,7 +308,7 @@
       }
     },
     {
-      "data": "/tmp",
+      "data": "/tmp/",
       "tgt": {
         "process": "FHIR to RDF",
         "port": "outdir"
@@ -336,16 +336,37 @@
       }
     },
     {
-      "data": "/tmp",
+      "data": "/tmp/",
       "tgt": {
         "process": "FHIR to RDF_q1haq",
         "port": "outdir"
       }
     },
     {
-      "data": "/tmp",
+      "data": "/tmp/",
       "tgt": {
         "process": "FHIR to RDF_jxv5q",
+        "port": "outdir"
+      }
+    },
+    {
+      "data": "/tmp/",
+      "tgt": {
+        "process": "JS Demographics to FHIR",
+        "port": "outdir"
+      }
+    },
+    {
+      "data": "/tmp/",
+      "tgt": {
+        "process": "JS Prescriptions to FHIR",
+        "port": "outdir"
+      }
+    },
+    {
+      "data": "/tmp/",
+      "tgt": {
+        "process": "JS Procedures to FHIR",
         "port": "outdir"
       }
     }
