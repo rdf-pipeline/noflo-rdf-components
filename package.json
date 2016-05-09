@@ -55,22 +55,23 @@
       "http-accept-server": "./graphs/http-accept-server.fbp"
     },
     "components": {
-      "request-template": "./components/request-template.js",
+      "file-node": "./components/file-node.js",
+      "html-2-objects-compare": "./components/html-2-objects-compare.js",
+      "http-accept": "./components/http-accept.js",
+      "id-mapper": "./components/id-mapper.js",
+      "json-file-node": "./components/json-file-node.js",
+      "js-node": "./components/js-node.js",
+      "object": "./components/object.js",
+      "parse-json": "./components/parse-json.js",
+      "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
       "rdf-update": "./components/rdf-update.js",
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
-      "object": "./components/object.js",
-      "phaser": "./components/phaser.js",
-      "parse-json": "./components/parse-json.js",
       "read-content": "./components/read-content.js",
-      "html-2-objects-compare": "./components/html-2-objects-compare.js",
-      "http-accept": "./components/http-accept.js",
-      "round-robin": "./components/round-robin.js",
-      "file-node": "./components/file-node.js",
-      "json-file-node": "./components/json-file-node.js",
-      "js-node": "./components/js-node.js"
+      "request-template": "./components/request-template.js",
+      "round-robin": "./components/round-robin.js"
     }
   }
 }
