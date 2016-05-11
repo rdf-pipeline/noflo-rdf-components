@@ -60,7 +60,8 @@
       "rdf-construct": "./graphs/rdf-construct.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
       "rdf-insert": "./graphs/rdf-insert.fbp",
-      "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp"
+      "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
+      "vni-data-output": "./graphs/vni-data-output.fbp"
     },
     "components": {
       "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
