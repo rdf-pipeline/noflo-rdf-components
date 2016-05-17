@@ -610,9 +610,10 @@ describe("framework-ondata", function() {
                // Should have sent an output state with error flag sent
                console.error.restore();
                done.should.be.an('object'); 
-               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm' );
+               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm' );
                done.error.should.be.true;
                expect( done.stale).to.be.undefined;
+               expect( done.groupLm).to.be.undefined;
 
             }, function( fail ) { 
                // Not currently executed since we get the output port data before the error data

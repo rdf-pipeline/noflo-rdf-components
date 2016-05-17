@@ -71,7 +71,8 @@
       "rdf-ntriples": "./components/rdf-ntriples.js",
       "read-content": "./components/read-content.js",
       "request-template": "./components/request-template.js",
-      "round-robin": "./components/round-robin.js"
+      "round-robin": "./components/round-robin.js",
+      "simple-splitter": "./components/simple-splitter.js"
     }
   }
 }

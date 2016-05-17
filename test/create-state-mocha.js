@@ -33,7 +33,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm');
 
        // Check the content
        state.vnid.should.equal(testVnid);
@@ -41,6 +41,7 @@ describe("create-state", function() {
        expect(state.lm).to.be.undefined;
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
+       expect(state.groupLm).to.be.undefined;
     });
 
     it("should create a new state if given an empty vnid & data parameter", function() {
@@ -52,7 +53,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale');
+       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
 
        // Check the content
        state.vnid.should.equal(testVnid);
@@ -64,6 +65,7 @@ describe("create-state", function() {
 
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
+       expect(state.groupLm).to.be.undefined;
     });
 
     it("should create a new state if given an non-empty vnid & data parameter", function() {
@@ -75,7 +77,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm');
 
        // Check the content
        state.vnid.should.equal(testVnid);
@@ -87,6 +89,7 @@ describe("create-state", function() {
 
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
+       expect(state.groupLm).to.be.undefined;
     });
 
     it("should use the lm parameter if it is defined", function() {
@@ -99,7 +102,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale');
+       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -109,6 +112,7 @@ describe("create-state", function() {
 
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
+       expect(state.groupLm).to.be.undefined;
     });
 
     it("should use the error flag if it is defined", function() {
@@ -122,7 +126,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale');
+       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -132,6 +136,7 @@ describe("create-state", function() {
 
        state.error.should.be.true;
        expect(state.stale).to.be.undefined;
+       expect(state.groupLm).to.be.undefined;
     });
     it("should use the stale flag if it is defined", function() {
 
@@ -145,7 +150,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale');
+       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -153,8 +158,9 @@ describe("create-state", function() {
        // Check the LM
        state.lm.should.equal(testLm);
 
-       expect(state.eror).to.be.undefined;
+       expect(state.error).to.be.undefined;
        state.stale.should.be.true;
+       expect(state.groupLm).to.be.undefined;
     });
     it("should use both the stale and error flags if defined", function() {
 
@@ -168,7 +174,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale');
+       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -178,5 +184,28 @@ describe("create-state", function() {
 
        state.error.should.be.true;
        state.stale.should.be.true;
+       expect(state.groupLm).to.be.undefined;
+    });
+
+    it("should use groupLm if defined", function() {
+       // Set up a test state
+       var testVnid = '1';
+       var testLm =  'LM1328113669.00000000000000001';
+       var groupLm =  'LM1328113669.00000000000000002';
+       var testString = "Some test data";
+       var state = createState(testVnid, testString, testLm, undefined, undefined, groupLm);
+
+        // Verify we got an object with the right keys
+       state.should.be.an('object');
+       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
+
+       state.vnid.should.equal(testVnid);
+       state.data.should.equal(testString);
+       expect(state.error).to.be.undefined;
+       expect(state.stale).to.be.undefined;
+
+       // Check the LMs
+       state.groupLm.should.equal(groupLm);
+       state.lm.should.equal(testLm);
     });
 });
