@@ -6,6 +6,7 @@ var _ = require('underscore');
 var createLm = require('./create-lm');
 var createState = require('./create-state');
 var factory = require('./pipeline-component-factory');
+var wrapperHelper = require('./wrapper-helper');
 
 /**
  * RDF Pipeline javascript wrapper fRunUpdater API as documented here: 
@@ -18,40 +19,11 @@ var factory = require('./pipeline-component-factory');
  */
 var fRunUpdater = function(updater, updaterFormals, vni) {
 
-    var updaterActuals = [];
-    if (_.isEmpty(updaterFormals)) { 
+    var updaterActuals = wrapperHelper.getUpdaterParameters(vni, updaterFormals);
 
-        // No updater arguments specified 
-        // TODO: handle multiple ports even though no input args
-        var states = vni.inputStates();
-        if (states && states.input && states.input.data) { 
-            updaterActuals[0] = states.input.data;
-        }
-
-    } else { 
-        // Have one or more updater parameters - get them in the right order and pass them 
-        updaterActuals = _.map(updaterFormals, function(arg) { 
-           var state = vni.inputStates(arg);
-           if (_.isUndefined(state)) { 
-               return undefined;
-           } else if (_.isArray(state)) { 
-               // Have a parameter associated with a port with multiple inputs ->
-               //  get an array of the data elements
-               return _.pluck(state, 'data');
-           } else if (_.isObject(state)) {
-               // Just one input on this port parameter - get it
-               return state.data;
-           } else {
-               throw Error("FRunupdater found an unexpected state: ", state);
-           }
-        });
-    }
-    
-    // Get the last LM and clear error state before we call updater
-    var outputState = vni.outputState();
-    var oldOutputStateLm = outputState.lm;
-    outputState.error = undefined;
-    vni.outputState(outputState);
+    var oldOutputStateLm = vni.outputState().lm;
+    vni.outputState({error: undefined});
+    var groupLm = wrapperHelper.groupLm(vni.inputStates());
 
     // Execute the updater on the VNI context, passing the updater Parameters as the API arguments
     return new Promise(function(resolve) { 
@@ -64,26 +36,19 @@ var fRunUpdater = function(updater, updaterFormals, vni) {
      }).then(function(results) { 
          // console.log('updater returned results: ',results);
 
-         if (! _.isUndefined(results)) { 
+         if (! _.isUndefined(results)) {
              // Got some results back from updater
              // If the updater returned anything, set the output state with it
-             var newState = vni.outputState();
-             if (newState.lm === oldOutputStateLm || 
-                 _.isUndefined(oldOutputStateLm) && ! _.isUndefined(newState.lm)) { 
+             var newStateLm = vni.outputState().lm;
+             if (newStateLm === oldOutputStateLm ||
+                 _.isUndefined(oldOutputStateLm) && ! _.isUndefined(newStateLm)) {
                  // updater did not modify output state lm - update it now
-                 vni.outputState({data: results, lm: createLm()}); 
-             } 
+                 vni.outputState({data: results, groupLm: groupLm, lm: createLm()});
+             }
          }
 
     }).catch(function(e) { 
-         // console.log('wrapper error: ',e);
-         var outputState = vni.outputState();
-         if (_.isUndefined(outputState.error) || ! outputState.error) { 
-             outputState.error = true;
-             vni.outputState(outputState);
-         } 
-         
-         vni.errorState({data: e, lm: createLm()}); 
+        wrapperHelper.handleUpdaterException(vni, e);
     });
 };
 
@@ -93,19 +58,18 @@ var fRunUpdater = function(updater, updaterFormals, vni) {
  * the component and setting up the vni and state metadata.
  *
  * @param nodeDefOrUpdater 
+ * @param overrides 
+ *
  * @return a promise to create the noflo rdf component
  */
-module.exports = function(nodeDefOrUpdater) { 
+module.exports = function(nodeDefOrUpdater, overrides) { 
 
     // Variables needed to create our pipeline component
     var updaterArgs;
-    var updater;
     var nodeDef; 
 
-    // Do we have an updater specified?  If not, use the default one
-    if (_.isUndefined(nodeDefOrUpdater) || _.isEmpty(nodeDefOrUpdater)) { 
-        updater  = defaultUpdater;
-    }
+    var callbacks = _.isUndefined(overrides) ? {} : overrides; 
+    var updater = (!_.isUndefined(callbacks.defaultUpdater)) ? callbacks.defaultUpdater : defaultUpdater;
 
     if (_.isFunction(nodeDefOrUpdater)) { 
 
@@ -126,9 +90,7 @@ module.exports = function(nodeDefOrUpdater) {
        nodeDef = nodeDefOrUpdater || {};
 
        // use default updater if we do not have one or nodeDef.updater if we do
-       if (_.isUndefined(nodeDef.updater) || ! _.isFunction(nodeDef.updater)) { 
-           updater = defaultUpdater;
-       } else { 
+       if ((! _.isUndefined(nodeDef.updater)) && _.isFunction(nodeDef.updater)) { 
 	   updater = nodeDef.updater;
        }
        updaterArgs = introspect(updater);
@@ -157,8 +119,12 @@ module.exports = function(nodeDefOrUpdater) {
 					       }, {}));
     }
 
-    // TODO: Add additional wrapper functions to this object
-    var wrapper = {fRunUpdater: _.partial(fRunUpdater, updater, updaterArgs)};
+    // TODO: Add additional wrapper functions to the wrapper object
+    if (!_.isUndefined(callbacks.fRunUpdater)) { 
+       callbacks = {fRunUpdater: _.partial(callbacks.fRunUpdater, updater, updaterArgs)}; 
+    }
+    var wrapper = _.defaults(callbacks, 
+                             {fRunUpdater: _.partial(fRunUpdater, updater, updaterArgs)});
     return _.defaults(factory(nodeDef, wrapper), nodeDef);
 
 }; // module.exports
