@@ -32,7 +32,7 @@ authFile OUT            -> REGISTER phaser(rdf-components/phaser)
 setAuthorization OUTPUT -> ARRIVE phaser
 phaser OUTPUT -> INPUT request
 
-# Error handling echos errors to console.log
+# Reduce down to a common error port
 request ERROR -> IN error
 setContentType ERROR -> IN error
 setAuthorization ERROR -> IN error

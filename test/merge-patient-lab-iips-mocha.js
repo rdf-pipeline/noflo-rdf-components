@@ -434,7 +434,7 @@ describe('merge-patient-lab-iips', function() {
                 payload.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
 
                 var errorState = node.vni().errorState();
-                expect(errorState.data.startsWith('Error: Unable to parse parameter')).to.be.true;
+                errorState.data.toString().should.contain('Error: Unable to parse parameter');
              }, function(fail) {
 
                 console.error.restore();
