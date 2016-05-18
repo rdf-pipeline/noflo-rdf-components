@@ -36,9 +36,6 @@ describe('http-accept', function() {
                 });
                 req.write("Hello World");
                 req.end();
-            }).then(function(resolution){
-                network.stop();
-                return resolution;
             });
         }).should.eventually.have.property("data", "Hello World");
     });
@@ -59,9 +56,6 @@ describe('http-accept', function() {
                 });
                 req.write("Hello World");
                 req.end();
-            }).then(function(resolution){
-                network.stop();
-                return resolution;
             });
         }).should.eventually.have.property("data", "Hello World");
     });
@@ -86,7 +80,6 @@ describe('http-accept', function() {
                     port: 1337,
                     path: '/'
                 }, function(res){
-                    network.stop();
                     done(res.statusCode);
                 });
                 req.write("Hello World");

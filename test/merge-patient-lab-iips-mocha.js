@@ -381,8 +381,7 @@ describe('merge-patient-lab-iips', function() {
 
                 }).then(function(done) {
 
-                    // Stop network & verify we got the output state we expect
-                    network.stop();
+                    // verify we got the output state we expect
  
                     done.should.exist;
                     done.should.not.be.empty;
@@ -399,10 +398,6 @@ describe('merge-patient-lab-iips', function() {
                     data.dob.should.equal('1979-01-23');
                     data.glucose.should.equal('75');
                     data.date.should.equal('2012-02-01');
-
-                }, function(fail) {
-                    network.stop();
-                    assert.fail(fail);
                 });
             });
         });
