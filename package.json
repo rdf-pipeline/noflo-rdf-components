@@ -36,6 +36,7 @@
     "noflo-groups": "^0.1.7",
     "noflo-objects": "^0.1.12",
     "noflo-strings": "^0.1.11",
+    "noflo-webserver": "0.0.4",
     "open": "~0.0.5",
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
@@ -51,9 +52,14 @@
       "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct-jsonld": "./graphs/rdf-construct-jsonld.fbp",
+      "rdf-sparql-load": "./graphs/rdf-sparql-load.fbp",
+      "rdf-sparql-load-jsonld": "./graphs/rdf-sparql-load-jsonld.fbp",
+      "rdf-sparql-clear-load": "./graphs/rdf-sparql-clear-load.fbp",
+      "rdf-sparql-clear-load-jsonld": "./graphs/rdf-sparql-clear-load-jsonld.fbp",
       "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp",
       "http-basic-post": "./graphs/http-basic-post.fbp",
-      "http-accept-server": "./graphs/http-accept-server.fbp"
+      "http-accept-server": "./graphs/http-accept-server.fbp",
+      "http-delivery-server": "./graphs/http-delivery-server.fbp"
     },
     "components": {
       "file-node": "./components/file-node.js",
@@ -71,6 +77,9 @@
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
       "read-content": "./components/read-content.js",
+      "http-delivery": "./components/http-delivery.js",
+      "json-pointer": "./components/json-pointer.js",
+      "parse-url": "./components/parse-url.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js"
     }

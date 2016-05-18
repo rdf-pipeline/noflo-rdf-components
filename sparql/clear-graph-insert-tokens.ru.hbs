@@ -3,7 +3,7 @@
 # Clears a graph and inserts the tokens as the data
 # This file uses http://handlebarsjs.com/
 
-CLEAR {{#if graph-uri}}GRAPH <{{{graph-uri}}}>{{else}}DEFAULT{{/if}};
+CLEAR {{#if graph-uri}}SILENT GRAPH <{{{graph-uri}}}>{{else}}DEFAULT{{/if}};
 
 INSERT DATA {
     {{#if graph-uri~}}

@@ -1,0 +1,38 @@
+# rdf-sparql-clear-load.fbp
+
+# Takes RDF JS Interface Graph object and inserts it into the target-graph (IRI) at the sparql-endpoint.
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
+
+# Exports
+INPORT=request.URL:SPARQL_ENDPOINT
+INPORT=setGraph.VALUE:TARGET_GRAPH_URI
+INPORT=ntriples.INPUT:RDF_GRAPH
+INPORT=request.AUTH_FILE_ENV:AUTH_FILE_ENV
+INPORT=setUrl.VALUE:BASE_URL
+INPORT=delivery.LISTEN:LISTEN
+OUTPORT=request.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'text/turtle'   -> TYPE delivery(rdf-components/http-delivery-server)
+'application/sparql-update' -> TYPE request(rdf-components/http-basic-post)
+'sparql/clear-load-base-url-vnid.ru.hbs' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY request
+
+# Set the default headers in the request
+'' -> VALUE setGraph
+
+# Use graph as a sparql update parameter in the request body
+'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> PARAMETERS request
+'base-url' -> KEY setUrl(rdf-components/object) OUTPUT -> PARAMETERS request
+'vnid' -> KEY setVnid(rdf-components/object)
+'/vnid' -> GET getVnid(rdf-components/json-pointer)
+'/data' -> SET getVnid
+
+# Convert the RDF_GRAPH to ntriples and use as tokens in the request
+ntriples(rdf-components/rdf-ntriples) OUTPUT -> CONTENT delivery
+ntriples OUTPUT -> INPUT getVnid OUTPUT -> VALUE setVnid OUTPUT -> INPUT request
+
+# Error handling echos errors to console.log
+ru ERROR -> IN error
+request ERROR -> IN error
+ntriples ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)

@@ -1,0 +1,9 @@
+# load-base-url-vnid.ru.hbs
+
+# Loads the graph-url as the data into an optional graph-uri
+# This file uses http://handlebarsjs.com/
+
+LOAD <{{{base-url}}}?vnid={{{vnid}}}&ext=.ttl>
+{{#if graph-uri~}}
+    INTO GRAPH <{{{graph-uri}}}>
+{{~/if}}
