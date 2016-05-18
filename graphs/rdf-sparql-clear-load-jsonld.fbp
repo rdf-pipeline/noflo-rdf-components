@@ -1,17 +1,19 @@
-# rdf-insert-jsonld.fbp
+# rdf-sparql-clear-load-jsonld.fbp
 
 # Takes parsed JSON-LD and inserts it into the target-graph (IRI) at the sparql-endpoint.
 # The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
 
 # Exports
-INPORT=insert.SPARQL_ENDPOINT:SPARQL_ENDPOINT
-INPORT=insert.TARGET_GRAPH_URI:TARGET_GRAPH_URI
+INPORT=sparql.SPARQL_ENDPOINT:SPARQL_ENDPOINT
+INPORT=sparql.TARGET_GRAPH_URI:TARGET_GRAPH_URI
 INPORT=load.INPUT:PARSED_JSONLD
-INPORT=insert.AUTH_FILE_ENV:AUTH_FILE_ENV
-OUTPORT=insert.OUTPUT:OUTPUT
+INPORT=sparql.AUTH_FILE_ENV:AUTH_FILE_ENV
+INPORT=sparql.BASE_URL:BASE_URL
+INPORT=sparql.LISTEN:LISTEN
+OUTPORT=sparql.OUTPUT:OUTPUT
 
 # Parse the json-ld to RDF JS Interface Graph object before inserting
-load(rdf-components/rdf-load) OUTPUT -> RDF_GRAPH insert(rdf-components/rdf-insert)
+load(rdf-components/rdf-load) OUTPUT -> RDF_GRAPH sparql(rdf-components/rdf-sparql-clear-load)
 
 # Error handling echos errors to console.log
 load ERROR -> IN error(core/Output)

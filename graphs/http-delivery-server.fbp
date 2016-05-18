@@ -1,0 +1,24 @@
+# http-delivery-server.fbp
+
+# Extracts the request body as a String and produces a 202 Accepted response. Optionally, also filters on request content type.
+
+# Exports
+INPORT=delivery.CONTENT:CONTENT
+INPORT=delivery.TYPE:TYPE
+INPORT=webserver.LISTEN:LISTEN
+OUTPORT=delivery.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'data' -> KEY data(objects/ExtractProperty)
+'/data/query/vnid' -> GET setVnid
+'/vnid' -> SET setVnid(rdf-components/json-pointer)
+
+# When a request comes in send it to the delivery node and respond
+webserver(webserver/Server) REQUEST -> INPUT parse-url(rdf-components/parse-url)
+parse-url OUTPUT -> INPUT setVnid OUTPUT -> REQUEST delivery(rdf-components/http-delivery)
+delivery OUTPUT -> IN data OUT -> IN response(webserver/SendResponse)
+
+# Error handling echos errors to console.log
+delivery ERROR -> IN error
+setVnid ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)

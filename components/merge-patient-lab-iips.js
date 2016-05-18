@@ -35,9 +35,9 @@ module.exports = jswrapper( updater );
  */
 function updater(patient, labwork) {
 
-    patient = jsObject( patient );
-    labwork = jsObject( labwork );
-    return _.extend({}, patient, labwork);
+    var aPatient = jsObject( patient );
+    var aLabwork = jsObject( labwork );
+    return _.extend({}, aPatient, aLabwork);
 }
 
 /**

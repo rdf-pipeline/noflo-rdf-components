@@ -4,45 +4,13 @@
 # The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
 
 # Exports
-INPORT=request.URL:SPARQL_ENDPOINT
-INPORT=setGraph.VALUE:SOURCE_GRAPH_URI
-INPORT=authFile.KEY:AUTH_FILE_ENV
+INPORT=construct.SPARQL_ENDPOINT:SPARQL_ENDPOINT
+INPORT=construct.SOURCE_GRAPH_URI:SOURCE_GRAPH_URI
+INPORT=construct.AUTH_FILE_ENV:AUTH_FILE_ENV
 OUTPORT=rdfJsonld.OUTPUT:OUTPUT
 
-# Initial Information Packets (IIP)
-'POST' -> METHOD request(rdf-components/request-template)
-'Authorization' -> KEY setAuthorization(rdf-components/object)
-'^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
-'Basic $1'      -> REPLACEMENT basic
-'Content-Type'  -> KEY setContentType(rdf-components/object)
-'application/sparql-query' -> VALUE setContentType OUTPUT -> BASE setHeaders
-'Accept'  -> KEY setAccept(rdf-components/object)
-'text/turtle' -> VALUE setAccept OUTPUT -> BASE setHeaders
-'text/turtle' -> MEDIA rdfLoad(rdf-components/rdf-load)
-'sparql/construct-graph.rq.hbs' -> FILENAME rq(rdf-components/read-content) OUTPUT -> BODY request
-
-# Set the default headers in the request
-'{}' -> IN createObject(strings/ParseJson) OUT -> IN setHeaders OUT -> HEADERS request
-
-# Read AUTH_FILE_ENV file content to set the Basic Authorization header
-authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic
-basic OUT -> VALUE setAuthorization OUTPUT -> IN setHeaders(objects/Extend)
-
-# Wait until the everything is read before executing the request
-'rq'                    -> REGISTER phaser
-authFile OUT            -> REGISTER phaser
-rq OUTPUT               -> ARRIVE phaser
-setAuthorization OUTPUT -> ARRIVE phaser
-
-# Use graph as a sparql update parameter in the request body and parse the result into jsonld
-'graph-uri' -> KEY setGraph(rdf-components/object) OUTPUT -> INPUT request OUTPUT -> INPUT rdfLoad OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
+# Parse the result into jsonld
+construct(rdf-components/rdf-construct) OUTPUT -> INPUT rdfJsonld(rdf-components/rdf-jsonld)
 
 # Error Handling echos errors to console.log
-rq ERROR -> IN error
-request ERROR -> IN error
-setContentType ERROR -> IN error
-setAuthorization ERROR -> IN error
-setAccept ERROR -> IN error
-phaser ERROR -> IN error
-rdfJsonld ERROR -> IN error
-error(core/Repeat) OUT -> IN output(core/Output)
+rdfJsonld ERROR -> IN error(core/Output)

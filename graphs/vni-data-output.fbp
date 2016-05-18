@@ -1,0 +1,13 @@
+# vni-data-output.fbp
+
+# Subgraph that accepts an RDF Pipeline VNI, uses extract-property to extract the data,
+# and then prints to the data to the core/output (usually console). 
+
+# publish the ports for this subgraph 
+INPORT=extractProperty.IN:IN
+OUTPORT=output.OUT:OUT
+
+# Extract the data field from the input VNI
+'data' -> KEY extractProperty(objects/ExtractProperty) 
+
+extractProperty(objects/ExtractProperty) OUT -> IN output(core/Output)

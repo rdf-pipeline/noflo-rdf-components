@@ -36,11 +36,28 @@ describe('http-accept', function() {
                 });
                 req.write("Hello World");
                 req.end();
-            }).then(function(resolution){
-                network.stop();
-                return resolution;
             });
-        }).should.become("Hello World");
+        }).should.eventually.have.property("data", "Hello World");
+    });
+    it("should receive a request using a sub-graph", function() {
+        return test.createNetwork({
+            accept: "rdf-components/http-accept-server"
+        }).then(function(network){
+            return new Promise(function(done, fail) {
+                var error = noflo.internalSocket.createSocket();
+                var output = noflo.internalSocket.createSocket();
+                network.processes.accept.component.outPorts.output.attach(output);
+                output.on('data', done);
+                network.graph.addInitial(1337, 'accept', 'listen');
+                var req = http.request({
+                    method: 'POST',
+                    port: 1337,
+                    path: '/'
+                });
+                req.write("Hello World");
+                req.end();
+            });
+        }).should.eventually.have.property("data", "Hello World");
     });
     it("should respond with 202", function() {
         return test.createNetwork({
@@ -63,7 +80,6 @@ describe('http-accept', function() {
                     port: 1337,
                     path: '/'
                 }, function(res){
-                    network.stop();
                     done(res.statusCode);
                 });
                 req.write("Hello World");
