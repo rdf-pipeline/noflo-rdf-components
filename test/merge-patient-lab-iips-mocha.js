@@ -358,7 +358,7 @@ describe('merge-patient-lab-iips', function() {
 
         it("should have patient and labwork output state after input ports processing", function() {
 
-
+            this.timeout(3000);
             return test.createNetwork(
                 { node1: 'core/Repeat',
                   node2: 'core/Repeat',
@@ -403,6 +403,7 @@ describe('merge-patient-lab-iips', function() {
         });
 
         it("should handle JSON parse errors", function() {
+            this.timeout(2500);
             var node = test.createComponent(compFactory);
             sinon.stub(console, 'error');
             return new Promise(function(done, fail){

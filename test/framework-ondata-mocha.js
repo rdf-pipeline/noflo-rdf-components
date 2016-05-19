@@ -349,6 +349,7 @@ describe("framework-ondata", function() {
 
         it( "should invoke fRunUpdater without waiting for unattached port data", function() {
 
+            this.timeout(2500);
             var requiredPortData = 'Required Port Data';
             var executedFRunUpdater = "Executed fRunUpdater API";
 
@@ -416,6 +417,7 @@ describe("framework-ondata", function() {
 
         it( "should not invoke fRunUpdater with missing attached port data", function() {
 
+            this.timeout(2500);
             var portData = 'Some Port Data';
 
             // Define the fRunUpdater that framework should invoke

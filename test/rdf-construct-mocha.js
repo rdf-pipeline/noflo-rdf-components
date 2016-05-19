@@ -28,6 +28,7 @@ describe('rdf-construct subgraph', function() {
         }]
     };
     it("should parse text/turtle", function() {
+        this.timeout(2500);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
@@ -52,6 +53,7 @@ describe('rdf-construct subgraph', function() {
         }).should.eventually.have.property('data').that.has.property('@id', "http://dbpedia.org/resource/John_Lennon");
     });
     it("should parse text/turtle into JSON LD", function() {
+        this.timeout(2500);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {

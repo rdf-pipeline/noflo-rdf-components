@@ -16,6 +16,7 @@ var jswrapper = require('../src/javascript-wrapper');
  */
 describe("jsupdater-behaviour", function() {
     it("should produce data from updater", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 sut: jswrapper(function(input) {
@@ -42,6 +43,7 @@ describe("jsupdater-behaviour", function() {
         }).should.eventually.have.property('data', "Hello input");
     });
     it("should produce an error when updater throws an error", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 sut: jswrapper(function(input) {
@@ -54,6 +56,7 @@ describe("jsupdater-behaviour", function() {
         }).should.eventually.have.property('data', "Hello input");
     });
     it("should produce an error when updater rejects result", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 sut: jswrapper(function(input) {
@@ -109,6 +112,7 @@ describe("jsupdater-behaviour", function() {
         }).should.eventually.have.property('data', "Hello from node1 and from node2");
     });
     it("should not fire updater if not all of its attached inputs have valid states", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             return test.createNetwork({
                 node1: "core/Repeat",
@@ -125,6 +129,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater did not produce an output state", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 sink: jswrapper(function(input) {
@@ -141,6 +146,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater returns undefined after producing an output state", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             var count = 0;
             test.createNetwork({
@@ -169,6 +175,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater set an error", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 broken: jswrapper(function(input) {
@@ -185,6 +192,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater threw an error", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             sinon.stub(console, 'error', function (message) {
                 // Expect error messages on this one, so keep it quiet
@@ -205,6 +213,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should notify attached error port if an updater explicity sets error", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 broken: jswrapper(function(input) {
@@ -222,6 +231,7 @@ describe("jsupdater-behaviour", function() {
         }).should.eventually.have.property('data', "Hello from broken");
     });
     it("should fire updater if upstream updater changed output state", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 once: jswrapper(function(input) {
@@ -243,6 +253,7 @@ describe("jsupdater-behaviour", function() {
         }).should.eventually.have.property('data', "Hello again");
     });
     it("should fire updater if upstream updater changed output state lm", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             var count = 0;
             test.createNetwork({
@@ -306,6 +317,7 @@ describe("jsupdater-behaviour", function() {
         }).should.eventually.have.property('data', "Hello upstream");
     });
     it("should not fire updater if upstream updater corrected error, but has no state", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             var count = 0;
             test.createNetwork({
@@ -331,6 +343,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater set an error data", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             sinon.stub(console, 'error', function (message) {
                 // Expect error messages on this one, so keep it quiet
@@ -351,6 +364,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should fire error updater if upstream updater set an error data", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 broken: jswrapper(function(input) {
@@ -366,6 +380,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("Hello from broken");
     });
     it("should not notify attached error port if an updater explicity sets the same error", function() {
+        this.timeout(2500);
         return new Promise(function(done, fail){
             sinon.stub(console, 'error', function (message) {
                 // Expect error messages on this one, so keep it quiet
@@ -396,6 +411,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing else happened");
     });
     it("should log error port if nothing is attached", function() {
+        this.timeout(2800);
         return new Promise(function(done, fail){
             sinon.stub(console, 'error', function (message) {
                  done(message);
