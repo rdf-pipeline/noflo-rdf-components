@@ -12,6 +12,7 @@ var test = require('./common-test');
 var requestTemplate = require('../components/request-template');
 
 describe('request-template', function() {
+    this.timeout(3500);
     var server = http.createServer();
     before(function(){
         server.listen(1337);

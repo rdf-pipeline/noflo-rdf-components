@@ -65,6 +65,7 @@ describe('id-mapper', function() {
 
 
    describe('functional behavior', function() {
+       this.timeout(2500);
        it('should map ids in a noflo network', function() {
            return test.createNetwork(
                 { node1: 'strings/ParseJson',
