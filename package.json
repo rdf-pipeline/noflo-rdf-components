@@ -20,12 +20,17 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "~5.2.0",
-    "sinon": "^1.17.2",
-    "noflo-webserver": "0.0.4"
+    "mocha": "^2.3.4",
+    "mongodb": "^2.1.7",
+    "sinon": "^1.17.2"
+  },
+  "optionalDependencies": {
+     "rdftransforms": "git+https://www.github.com/hokukahu/rdftransforms.git#rename"
   },
   "dependencies": {
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
+    "jsonpath-plus": "^0.14.0",
     "jsonpointer": "~3.0.0",
     "media-typer": "^0.3.0",
     "n3": "0.4.1",
@@ -46,7 +51,7 @@
   },
   "noflo": {
     "graphs": {
-      "chcs-patient-jsonld": "./graphs/chcs-patient-jsonld.fbp",
+      "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp",
       "http-basic-post": "./graphs/http-basic-post.fbp",
       "http-delivery-server": "./graphs/http-delivery-server.fbp",
@@ -63,14 +68,20 @@
       "vni-data-output": "./graphs/vni-data-output.fbp"
     },
     "components": {
+      "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
+      "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
+      "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
       "file-node": "./components/file-node.js",
       "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
+      "http-delivery": "./components/http-delivery.js",
       "id-mapper": "./components/id-mapper.js",
       "json-file-node": "./components/json-file-node.js",
+      "json-pointer": "./components/json-pointer.js",
       "js-node": "./components/js-node.js",
       "object": "./components/object.js",
       "parse-json": "./components/parse-json.js",
+      "parse-url": "./components/parse-url.js",
       "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
@@ -78,9 +89,6 @@
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
       "read-content": "./components/read-content.js",
-      "http-delivery": "./components/http-delivery.js",
-      "json-pointer": "./components/json-pointer.js",
-      "parse-url": "./components/parse-url.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js"
     }

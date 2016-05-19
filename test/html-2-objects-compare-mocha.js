@@ -130,7 +130,7 @@ describe('html-2-objects-compare', function() {
     });
 
     it("should fail when called with no title", function() {
-
+        this.timeout(2500);
         return commonTest.createNetwork(
             { node1: 'core/Repeat', 
               node2: 'core/Repeat', 
