@@ -65,7 +65,6 @@ describe('simple-splitter', function() {
                     network.graph.addInitial(testHash, 'nodeA', 'input');
 
                 }).then(function(done) {
-console.log('done=',done);
                     done.should.be.an('object');
                     done.vnid.should.equal('1');
                     done.data.should.equal("one");
@@ -73,7 +72,6 @@ console.log('done=',done);
                     expect(done.stale).to.be.undefined;
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                    done.groupLm.should.not.equal(done.lm);
                 });
             }); 
         });

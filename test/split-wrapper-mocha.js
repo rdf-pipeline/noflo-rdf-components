@@ -27,13 +27,27 @@ describe('split-wrapper', function() {
 
         describe('#fRunUpdater', function() {
 
-            it("should fail if not given a vnid hash", function() {
-
+            it("should fail gracefully if not given a hash", function() {
                 return new Promise(function(done) {
-                    var node = commonTest.createComponent(splitWrapper({ inPorts:['vnid_hash'] }));
+                    var node = commonTest.createComponent(splitWrapper({ inPorts:['input'] }));
                     commonTest.onOutPortData(node, 'output', done);
                     sinon.stub( console, 'error');
-                    commonTest.sendData(node, 'vnid_hash', "A test input string");
+                    commonTest.sendData(node, 'input', "A test input string");
+                }).then(function(done) {
+                   console.error.restore();
+                   done.should.be.an('object');
+                   done.vnid.should.equal('');
+                   done.error.should.be.true;
+                   expect(done.stale).to.be.undefined;
+                });
+            });
+
+            it("should fail gracefully if not given any ports or input", function() {
+                return new Promise(function(done) {
+                    var node = commonTest.createComponent(splitWrapper());
+                    commonTest.onOutPortData(node, 'output', done);
+                    sinon.stub( console, 'error');
+                    commonTest.sendData(node, 'input', "A test input string");
                 }).then(function(done) {
                    console.error.restore();
                    done.should.be.an('object');
@@ -44,8 +58,6 @@ describe('split-wrapper', function() {
             });
 
             it("should generate vnid hash port and run updater when passed only an updater", function() {
-     
-
                 var handler;
                 var updater = function(hash) {
                    handler('success');
@@ -59,14 +71,13 @@ describe('split-wrapper', function() {
             });
 
             it("should trigger wrapper updater function if no updater specified", function() {
-
-                var node = commonTest.createComponent(splitWrapper({ inPorts:['vnid_hash'] }));
+                var node = commonTest.createComponent(splitWrapper({ inPorts: ['input'] }));
 
                 return new Promise(function(done, fail) {
                     commonTest.onOutPortData(node, 'output', done);
                     commonTest.onOutPortData(node, 'error', fail);
 
-                    commonTest.sendData(node, 'vnid_hash', {"1":"one"});
+                    commonTest.sendData(node, 'input', {"1":"one"});
 
                 }).then(function(done) {
                     done.should.be.an('object');
@@ -261,7 +272,6 @@ describe('split-wrapper', function() {
                         expect(done.stale).to.be.undefined;
                         done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                         done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                        done.groupLm.should.not.equal(done.lm);
                     });
                 });
             });

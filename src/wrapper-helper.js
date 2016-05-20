@@ -10,13 +10,13 @@ var createLm = require('../src/create-lm');
 
 module.exports = {
     executeUpdater: executeUpdater,
-    getUpdaterParameters: getUpdaterParameters,
+    getUpdaterActuals: getUpdaterActuals,
     groupLm: groupLm,
     handleUpdaterException: handleUpdaterException,
     updateOutputState: updateOutputState
 };
 
-function getUpdaterParameters(vni, updaterFormals) { 
+function getUpdaterActuals(vni, updaterFormals) { 
 
     var updaterActuals = [];
     if (_.isEmpty(updaterFormals)) {
@@ -51,7 +51,7 @@ function getUpdaterParameters(vni, updaterFormals) {
 }
 
 function executeUpdater(updater, updaterFormals, vni, updateOutputState) {
-    var updaterActuals = getUpdaterParameters(vni, updaterFormals);
+    var updaterActuals = getUpdaterActuals(vni, updaterFormals);
 
     var oldOutputStateLm = vni.outputState().lm;
     vni.outputState({error: undefined});

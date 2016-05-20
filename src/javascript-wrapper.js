@@ -19,7 +19,7 @@ var wrapperHelper = require('./wrapper-helper');
  */
 var fRunUpdater = function(updater, updaterFormals, vni) {
 
-    var updaterActuals = wrapperHelper.getUpdaterParameters(vni, updaterFormals);
+    var updaterActuals = wrapperHelper.getUpdaterActuals(vni, updaterFormals);
 
     var oldOutputStateLm = vni.outputState().lm;
     vni.outputState({error: undefined});

@@ -6,19 +6,7 @@ var createState = require('./create-state');
 var wrapper = require('./javascript-wrapper');
 var wrapperHelper = require('./wrapper-helper');
 
-/**
- *  Define a default updater stub function to be used if the caller
- * did not pass one in.  Simply returns whatever the original input was so it
- * can be sent through the output port to the next component
- *
- * @param vnid_hash hash of vnids and data values 
- */
-function defaultUpdater(vnid_hash) {
-    return vnid_hash;
-}
-
 function fRunUpdater(updater, updaterFormals, vni) {
-
     return new Promise(function( resolve ) {
         var results = wrapperHelper.executeUpdater(updater, 
                                                    updaterFormals, 
@@ -44,7 +32,7 @@ function fRunUpdater(updater, updaterFormals, vni) {
              vni.outputState({data: results, groupLm: groupLm});  
             
              var hash = vni.outputState().data;
-             var lm = createLm(); // Create an lm for the new vnis we will be sending 
+             var lm = groupLm; // Create an lm for the new vnis we will be sending 
              var outputPort = vni.nodeInstance.outPorts.output;
 
              // Walk the hash as returned by the updater, and generate each of the split nodes
@@ -68,7 +56,6 @@ function fRunUpdater(updater, updaterFormals, vni) {
 };
 
 module.exports = function(nodeDefOrUpdater) {
-    var overrideCallbacks = {defaultUpdater: defaultUpdater,
-                             fRunUpdater: fRunUpdater};
+    var overrideCallbacks = {fRunUpdater: fRunUpdater};
     return wrapper(nodeDefOrUpdater, overrideCallbacks);
 }
