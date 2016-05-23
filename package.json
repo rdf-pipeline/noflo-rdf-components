@@ -25,9 +25,10 @@
     "sinon": "^1.17.2"
   },
   "optionalDependencies": {
-     "rdftransforms": "git+https://www.github.com/hokukahu/rdftransforms.git#rename"
+     "rdftransforms": "git+https://www.github.com/hokukahu/rdftransforms.git"
   },
   "dependencies": {
+    "fhir-json-to-xml": "git+https://www.github.com/mcarifio/fhir-json-to-xml",
     "handlebars": "~4.0.4",
     "jsonld": "^0.4.2",
     "jsonpath-plus": "^0.14.0",
@@ -71,6 +72,7 @@
       "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
       "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
       "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
+      "fhir-json-to-xml": "./components/fhir-json-to-xml.js",
       "file-node": "./components/file-node.js",
       "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
@@ -89,6 +91,7 @@
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
       "read-content": "./components/read-content.js",
+      "replace-substring": "./components/replace-substring.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js"
     }

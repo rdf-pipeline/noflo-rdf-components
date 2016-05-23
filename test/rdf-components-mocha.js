@@ -87,7 +87,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data').that.eql(cynthia);
     });
     it("should query a graph", function() {
-        this.timeout(2750);
+        this.timeout(3000);
         return test.createNetwork({
             load: rdfLoad,
             query: rdfQuery
