@@ -96,7 +96,7 @@ describe('cmumps2fhir-demographics', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
                     done.vnid.should.equal('');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 

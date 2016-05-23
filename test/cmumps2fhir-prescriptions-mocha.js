@@ -105,7 +105,7 @@ describe('cmumpsfhir-prescriptions', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
                     done.vnid.should.equal('');
                     done.data.should.be.an('array');
                     done.data.should.have.length(6);

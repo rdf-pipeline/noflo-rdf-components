@@ -84,6 +84,7 @@ describe('merge-patient-lab-iips', function() {
                     data: Error('Setting an error message'),
                     error: undefined,
                     stale: undefined,
+                    groupLm: undefined,
                     lm: 'LM1328113669.00000000000000001'
                 };
                 node.vni().errorState(_.clone(errorState));
@@ -99,6 +100,7 @@ describe('merge-patient-lab-iips', function() {
                     data: Error('Setting an error message'),
                     error: undefined,
                     stale: undefined,
+                    groupLm: undefined,
                     lm: 'LM1328113669.00000000000000001'
                 };
                 node.vni().errorState(_.clone(errorState));
@@ -160,6 +162,7 @@ describe('merge-patient-lab-iips', function() {
                     data: { id: '001', name: 'Alice', dob: '1969-01-23' },
                     error: undefined,
                     stale: undefined,
+                    groupLm: undefined,
                     lm: 'LM1328113669.00000000000000001'
                 };
                 node.vni().inputStates({'patient': _.mapObject(patientState, _.clone)});
@@ -198,6 +201,7 @@ describe('merge-patient-lab-iips', function() {
                                             glucose: '75',  date: '2012-02-01' },
                                     error: false,
                                     stale: undefined,
+                                    groupLm: undefined,
                                     lm: 'LM1328113669.00000000000000001' };
                 node.vni().outputState(_.mapObject(mergedState, _.clone));
 
@@ -213,6 +217,7 @@ describe('merge-patient-lab-iips', function() {
                                             glucose: '75', date: '2012-02-01' },
                                     error: false,
                                     stale: undefined,
+                                    groupLm: undefined,
                                     lm: 'LM1328113669.00000000000000001' };
                 node.vni().outputState(_.mapObject(outputState, _.clone));
 
@@ -358,7 +363,7 @@ describe('merge-patient-lab-iips', function() {
 
         it("should have patient and labwork output state after input ports processing", function() {
 
-            this.timeout(3000);
+            this.timeout(3250);
             return test.createNetwork(
                 { node1: 'core/Repeat',
                   node2: 'core/Repeat',
@@ -424,7 +429,7 @@ describe('merge-patient-lab-iips', function() {
                 console.error.restore();
                 payload.should.exist;
                 payload.should.not.be.empty;
-                payload.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm');
+                payload.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm');
                 payload.vnid.should.equal('');
                 payload.data.should.be.an('object');
                 payload.data.id.should.equal("001");
@@ -432,6 +437,7 @@ describe('merge-patient-lab-iips', function() {
                 payload.data.dob.should.equal("1959-01-23");
                 payload.error.should.be.true;
                 expect(payload.stale).to.be.undefined;
+                expect(payload.groupLm).to.be.undefined;
                 payload.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
 
                 var errorState = node.vni().errorState();

@@ -13,6 +13,7 @@ var httpAccept = require('../components/http-accept');
 
 describe('http-accept', function() {
     it("should receive a request", function() {
+        this.timeout(3000);
         return test.createNetwork({
             accept: httpAccept
         }).then(function(network){
@@ -40,6 +41,7 @@ describe('http-accept', function() {
         }).should.eventually.have.property("data", "Hello World");
     });
     it("should receive a request using a sub-graph", function() {
+        this.timeout(2750);
         return test.createNetwork({
             accept: "rdf-components/http-accept-server"
         }).then(function(network){
@@ -60,6 +62,7 @@ describe('http-accept', function() {
         }).should.eventually.have.property("data", "Hello World");
     });
     it("should respond with 202", function() {
+        this.timeout(2750);
         return test.createNetwork({
             accept: httpAccept
         }).then(function(network){

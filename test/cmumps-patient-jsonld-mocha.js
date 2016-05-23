@@ -15,7 +15,7 @@ describe('cmumps-patient-jsonld subgraph', function() {
     var dataset = 'c'+'h'+'c'+'s'+'-ab';
 
     it("should build correct URL for patient 1000004", function() {
-        this.timeout(3000);
+        this.timeout(3250);
         var port = 1337;
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));

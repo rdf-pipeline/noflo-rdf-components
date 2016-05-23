@@ -34,7 +34,7 @@ describe('rdf-insert subgraph', function() {
         '<http://dbpedia.org/resource/John_Lennon> <http://xmlns.com/foaf/0.1/name> "John Lennon" .\n' +
         '}\n';
     it("should POST jsonld as SPARQL INSERT", function() {
-        this.timeout(3000);
+        this.timeout(4000);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
@@ -76,7 +76,7 @@ describe('rdf-insert subgraph', function() {
         }).should.eventually.have.property('data', sparql.replace(/#.*|\s+/g,'\n').trim());
     });
     it("should POST RDF Graph as SPARQL INSERT using the default graph", function() {
-        this.timeout(3000);
+        this.timeout(4000);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
@@ -110,7 +110,7 @@ describe('rdf-insert subgraph', function() {
         }).should.eventually.have.property('data', sparql.replace(/#.*|\s+/g,'\n').trim());
     });
     it("should POST jsonld as SPARQL INSERT using the default graph", function() {
-        this.timeout(3000);
+        this.timeout(3500);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
@@ -142,7 +142,7 @@ describe('rdf-insert subgraph', function() {
         }).should.eventually.have.property('data', sparql.replace(/#.*|\s+/g,'\n').trim());
     });
     it("should POST RDF Graph using the provided credentials", function() {
-        this.timeout(3000);
+        this.timeout(3250);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {

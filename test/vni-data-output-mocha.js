@@ -14,7 +14,7 @@ var test = require('./common-test');
 describe('vni-data-output graph', function() {
 
     it('should print the data from a vni to the console', function() {
-        this.timeout(2500);
+        this.timeout(3000);
 
         // Hide the log output to avoid test clutter
         sinon.stub(console,'log');

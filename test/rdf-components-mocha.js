@@ -56,7 +56,7 @@ describe('rdf components', function() {
         }]
     };
     it("should load a json-ld graph", function() {
-        this.timeout(3500);
+        this.timeout(4000);
         return test.createNetwork({
             load: rdfLoad
         }).then(function(network){
@@ -69,7 +69,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data').that.include.keys('triples');
     });
     it("should round trip a graph", function() {
-        this.timeout(3500);
+        this.timeout(4500);
         // creating 2 node graph (rdfLoad & rdfJsonld components)
         return test.createNetwork({
             load: rdfLoad,
@@ -87,7 +87,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data').that.eql(cynthia);
     });
     it("should query a graph", function() {
-        this.timeout(3000);
+        this.timeout(3500);
         return test.createNetwork({
             load: rdfLoad,
             query: rdfQuery
@@ -104,7 +104,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data', true);
     });
     it("should update a graph", function() {
-        this.timeout(2750);
+        this.timeout(3750);
         return test.createNetwork({
             load: rdfLoad,
             update: rdfUpdate,
@@ -125,7 +125,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data', true);
     });
     it("should serialize a graph", function() {
-        this.timeout(2750);
+        this.timeout(3500);
         return test.createNetwork({
             load: rdfLoad,
             update: rdfUpdate,
@@ -145,7 +145,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data').that.eql(cynthia);
     });
     it("should round trip a graph through rdf-ntriples component", function() {
-        this.timeout(3000);
+        this.timeout(4000);
         return test.createNetwork({
             loadJson: rdfLoad,
             ntriples: rdfNtriples,

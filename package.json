@@ -93,7 +93,8 @@
       "read-content": "./components/read-content.js",
       "replace-substring": "./components/replace-substring.js",
       "request-template": "./components/request-template.js",
-      "round-robin": "./components/round-robin.js"
+      "round-robin": "./components/round-robin.js",
+      "simple-splitter": "./components/simple-splitter.js"
     }
   }
 }

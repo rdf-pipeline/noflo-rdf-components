@@ -150,7 +150,7 @@ describe('noflo-component-factory', function() {
         }).should.become(0);
     });
     it("should have a nodeName", function() {
-        this.timeout(2750);
+        this.timeout(3000);
 
         var node;
         var instanceId = "testinstance";
@@ -176,7 +176,7 @@ describe('noflo-component-factory', function() {
         }).should.eventually.eql(instanceId);
     });
     it("should have a componentName", function() {
-        this.timeout(2750);
+        this.timeout(3000);
 
         var node;
         var instanceId = "testinstance";

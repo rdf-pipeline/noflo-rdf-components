@@ -14,7 +14,7 @@ var inputStates = require('../src/input-states');
 var createLm = require('../src/create-lm');
 
 describe('input-states', function() {
-    this.timeout(3000);
+    this.timeout(3500);
     var node, network;
     beforeEach(function(){
         var getComponent = componentFactory({

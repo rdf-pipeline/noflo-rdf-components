@@ -65,7 +65,7 @@ describe('id-mapper', function() {
 
 
    describe('functional behavior', function() {
-       this.timeout(2500);
+       this.timeout(2750);
        it('should map ids in a noflo network', function() {
            return test.createNetwork(
                 { node1: 'strings/ParseJson',
@@ -92,11 +92,12 @@ describe('id-mapper', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','lm','stale','error', 'groupLm');
                     done.vnid.should.equal('');
                     expect(done.data).to.equal('10');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
+                    expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
 
                 }, function(fail) {

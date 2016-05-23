@@ -13,7 +13,7 @@ var roundRobin = require('../components/round-robin');
 
 describe('round-robin', function() {
     it("should echo data", function() {
-        this.timeout(3000);
+        this.timeout(3250);
         return test.createNetwork({
             robin: roundRobin
         }).then(function(network){
@@ -42,7 +42,7 @@ describe('round-robin', function() {
         }).should.become("Hello again");
     });
     it("should skip detached sockets", function() {
-        this.timeout(3000);
+        this.timeout(3500);
         return test.createNetwork({
             robin: roundRobin
         }).then(function(network){

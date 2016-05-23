@@ -19,7 +19,7 @@ describe('http-delivery', function() {
     var origin = 'http://localhost:' + port;
     var endpoint = "http://10.255.241.10:10035/repositories/http-delivery-mocha";
     it("should receive a request using a sub-graph", function() {
-        this.timeout(2500);
+        this.timeout(3000);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 delivery: "rdf-components/http-delivery-server"
@@ -37,7 +37,7 @@ describe('http-delivery', function() {
         }).should.become("Hello World!");
     });
     it("should receive a request with a non-empty vnid", function() {
-        this.timeout(2500);
+        this.timeout(3250);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 delivery: "rdf-components/http-delivery-server"
@@ -56,7 +56,7 @@ describe('http-delivery', function() {
         }).should.become("Hello World!");
     });
     it("should receive a request with a non-empty vnid", function() {
-        this.timeout(2500);
+        this.timeout(3250);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 delivery: "rdf-components/http-delivery-server"

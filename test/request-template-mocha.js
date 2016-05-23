@@ -21,6 +21,7 @@ describe('request-template', function() {
         server.close();
     });
     it("should send a request", function() {
+        this.timeout(2750);
         return test.createNetwork({
             request: requestTemplate
         }).then(function(network){
@@ -38,6 +39,7 @@ describe('request-template', function() {
         }).should.eventually.have.property('data', "Hello World");
     });
     it("should parameterize url", function() {
+        this.timeout(3250);
         return test.createNetwork({
             request: requestTemplate
         }).then(function(network){
@@ -55,6 +57,7 @@ describe('request-template', function() {
         }).should.eventually.have.property('data', "Hello World");
     });
     it("should support POST", function() {
+        this.timeout(4000);
         return test.createNetwork({
             request: requestTemplate
         }).then(function(network){
@@ -73,6 +76,7 @@ describe('request-template', function() {
         }).should.eventually.have.property('data', "Hello POST");
     });
     it("should support request headers", function() {
+        this.timeout(4250);
         return test.createNetwork({
             request: requestTemplate
         }).then(function(network){
@@ -92,6 +96,7 @@ describe('request-template', function() {
         }).should.eventually.have.property('data', "Hello text/plain");
     });
     it("should support request body", function() {
+        this.timeout(4000);
         return test.createNetwork({
             request: requestTemplate
         }).then(function(network){

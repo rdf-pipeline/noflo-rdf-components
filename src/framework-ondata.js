@@ -283,16 +283,11 @@ function handleOutput( port, lastLm, state ) {
  * @param vni 
  * @param errorFlag (optional) if not undefined, the errorFlag value will be set
  */
-function setOutputErrorFlag( vni, errorFlag ) {
+function setOutputErrorFlag(vni, errorFlag) {
 
-    var outputState  = vni.outputState();
-    if ( _.isUndefined( errorFlag ) ) { 
-        outputState.error = ! _.isUndefined( vni.errorState().data );
-    } else { 
-        outputState.error = errorFlag;
-    }
+    var error =  _.isUndefined(errorFlag) ?  ! _.isUndefined(vni.errorState().data) : errorFlag;
 
-    vni.outputState( outputState );
+    vni.outputState({error: error});
 }
 
 /** 
@@ -434,5 +429,5 @@ function dataIsGood(vni) {
  */
 function shouldRunUpdater(vni, isStale) { 
     // TODO: May add different policies in the future.
-    return !isStale && haveAllInputs(vni) && dataIsGood(vni);
+    return (!isStale) && haveAllInputs(vni) && dataIsGood(vni);
 }

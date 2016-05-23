@@ -52,7 +52,7 @@ describe('html-2-objects-compare', function() {
     });
 
     it("should  generate the correct comparison file when called with good input data", function() {
-
+        this.timeout(2750);
         var filePath = 'test/data/comparison.html';
         var expectedFilePath = 'test/data/expected-comparison.html';
 
@@ -130,7 +130,7 @@ describe('html-2-objects-compare', function() {
     });
 
     it("should fail when called with no title", function() {
-        this.timeout(2500);
+        this.timeout(2750);
         return commonTest.createNetwork(
             { node1: 'core/Repeat', 
               node2: 'core/Repeat', 

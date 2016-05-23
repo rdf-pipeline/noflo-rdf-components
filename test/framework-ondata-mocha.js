@@ -282,7 +282,7 @@ describe("framework-ondata", function() {
         });
 
         it( "should manage multiple port node vni state, fRunUpdater invocation, & output state", function() {
-
+            this.timeout(2750);
             var input1 = 'Uno';
             var input2 = 'Dos';
             var executedFRunUpdater = "Executed fRunUpdater API";
@@ -349,7 +349,7 @@ describe("framework-ondata", function() {
 
         it( "should invoke fRunUpdater without waiting for unattached port data", function() {
 
-            this.timeout(2500);
+            this.timeout(3000);
             var requiredPortData = 'Required Port Data';
             var executedFRunUpdater = "Executed fRunUpdater API";
 
@@ -417,7 +417,7 @@ describe("framework-ondata", function() {
 
         it( "should not invoke fRunUpdater with missing attached port data", function() {
 
-            this.timeout(2500);
+            this.timeout(3000);
             var portData = 'Some Port Data';
 
             // Define the fRunUpdater that framework should invoke
@@ -478,7 +478,7 @@ describe("framework-ondata", function() {
         });
 
         it("should call fRunUpdater on addressable ports", function() {
-
+            this.timeout(2750);
             var inputEdge1 = 'Eins';
             var inputEdge2 = 'Zwei';
             var executedFRunUpdater = "Executed fRunUpdater API";
@@ -590,9 +590,10 @@ describe("framework-ondata", function() {
                // Should have sent an output state with error flag sent
                console.error.restore();
                done.should.be.an('object'); 
-               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm' );
+               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm' );
                done.error.should.be.true;
                expect( done.stale).to.be.undefined;
+               expect( done.groupLm).to.be.undefined;
 
             }, function( fail ) { 
                // Not currently executed since we get the output port data before the error data
