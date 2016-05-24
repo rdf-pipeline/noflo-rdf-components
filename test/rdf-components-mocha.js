@@ -125,7 +125,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data', true);
     });
     it("should serialize a graph", function() {
-        this.timeout(3500);
+        this.timeout(3750);
         return test.createNetwork({
             load: rdfLoad,
             update: rdfUpdate,

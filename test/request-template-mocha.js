@@ -21,7 +21,7 @@ describe('request-template', function() {
         server.close();
     });
     it("should send a request", function() {
-        this.timeout(2750);
+        this.timeout(3250);
         return test.createNetwork({
             request: requestTemplate
         }).then(function(network){
