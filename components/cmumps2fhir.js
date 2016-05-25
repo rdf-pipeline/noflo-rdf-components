@@ -5,9 +5,7 @@ var _ = require('underscore');
 var fs = require('fs');
 var util = require('util');
 
-// NOTE: The rdftransforms are under a private git repository belonging to Hokukahu, LTD.  
-// Please contact Hokukahu if you wish to run this component
-var extractor = require('rdftransforms').cmumps;
+var extractor = require('translators').cmumps;
 
 /** 
  * Given some cmumps patient data, this helper extracts the piece of interest (e.g, demographics),  

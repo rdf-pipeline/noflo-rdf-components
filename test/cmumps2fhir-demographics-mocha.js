@@ -13,7 +13,7 @@ var fs = require('fs');
 var test = require('./common-test');
 var compFactory = require('../components/cmumps2fhir-demographics');
 
-var testFile = __dirname + '/../node_modules/rdftransforms/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
+var testFile = __dirname + '/../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
 
 describe('cmumps2fhir-demographics', function() {
 
