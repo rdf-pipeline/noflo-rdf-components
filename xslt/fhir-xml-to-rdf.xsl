@@ -29,7 +29,7 @@
     <xsl:param name="literals" select="'nest'"/>
 
     <!-- Name of the definitions file -->
-    <xsl:param name="fhirdefs">definitions.xml</xsl:param>
+    <xsl:param name="fhirdefs">fhir-definitions.xml</xsl:param>
 
     <!-- Debugging -->
     <xsl:param name="debug" select="false()"/>

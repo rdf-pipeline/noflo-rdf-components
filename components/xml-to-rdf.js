@@ -35,7 +35,7 @@ function xmlToRdf(sources, classpath, transform, outdir) {
     // console.log('enter xmlToRdf with ',arguments);
 
     if (_.isUndefined(sources) || _.isUndefined(transform) || _.isUndefined(outdir)) {
-        throw Error("Xml-to-rdf component expects sources, transform xslt, and outdir parameters!");
+        throw Error("Xml-to-rdf component expects sources, fhir-xml-to-rdf xslt, and outdir parameters!");
     }
 
     // Get the sources as an array.  If coming from another component, it will generally

@@ -30,22 +30,22 @@ describe('xml-to-rdf', function() {
 
         it('should throw an error if no parameters', function() {
             expect(compFactory.updater.bind(this)).to.throw(Error, 
-                /Xml-to-rdf component expects sources, transform xslt, and outdir parameters!/);
+                /Xml-to-rdf component expects sources, fhir-xml-to-rdf xslt, and outdir parameters!/);
         }); 
 
         it('should throw an error if sources is undefined', function() {
             expect(compFactory.updater.bind(this, undefined)).to.throw(Error, 
-                /Xml-to-rdf component expects sources, transform xslt, and outdir parameters!/);
+                /Xml-to-rdf component expects sources, fhir-xml-to-rdf xslt, and outdir parameters!/);
         }); 
 
         it('should throw an error if transform is undefined', function() {
             expect(compFactory.updater.bind(this, ['./test/data/testPatient.xml'])).to.throw(Error, 
-                /Xml-to-rdf component expects sources, transform xslt, and outdir parameters!/);
+                /Xml-to-rdf component expects sources, fhir-xml-to-rdf xslt, and outdir parameters!/);
         }); 
 
         it('should NOT throw an error if classpath is undefined', function() {
             expect(compFactory.updater.bind(this, 
-                                            ['./test/data/testPatient.xml'], undefined, './xslt/transform.xsl', '/tmp')).to.not.throw.error;
+                                            ['./test/data/testPatient.xml'], undefined, './xslt/fhir-xml-to-rdf.xsl', '/tmp')).to.not.throw.error;
         }); 
 
 
@@ -53,8 +53,8 @@ describe('xml-to-rdf', function() {
             expect(compFactory.updater.bind(this, 
                                             ['./test/data/testPatient.xml'], 
                                              test.saxonClasspath(),
-                                             './xslt/transform.xsl')).to.throw(Error, 
-                /Xml-to-rdf component expects sources, transform xslt, and outdir parameters!/);
+                                             './xslt/fhir-xml-to-rdf.xsl')).to.throw(Error, 
+                /Xml-to-rdf component expects sources, fhir-xml-to-rdf xslt, and outdir parameters!/);
         }); 
 
         it('should translate xml to rdf with good input parameters', function() {
@@ -66,7 +66,7 @@ describe('xml-to-rdf', function() {
             expect(compFactory.updater.call(node.vni(''), 
                                             ['./test/data/testPatient.xml'], 
                                             classpath,
-                                            './xslt/transform.xsl',
+                                            './xslt/fhir-xml-to-rdf.xsl',
                                             '/tmp/')).to.not.throw.error;
         }); 
    });
@@ -104,7 +104,7 @@ describe('xml-to-rdf', function() {
                     var classpath = test.saxonClasspath();
                     network.graph.addInitial(classpath, 'node2', 'in');
 
-                    network.graph.addInitial('./xslt/transform.xsl', 'node3', 'in');
+                    network.graph.addInitial('./xslt/fhir-xml-to-rdf.xsl', 'node3', 'in');
                     network.graph.addInitial('/tmp/', 'node4', 'in');
 
                 }).then(function(done) {
@@ -140,7 +140,7 @@ describe('xml-to-rdf', function() {
        });
 
        it('should translate patient prescription fhir xml to RDF in a noflo network', function() {
-          this.timeout(3500);
+          this.timeout(3750);
            return test.createNetwork(
                 { node1: 'core/Repeat',
                   node2: 'core/Repeat',
@@ -171,7 +171,7 @@ describe('xml-to-rdf', function() {
                     var classpath = test.saxonClasspath();
                     network.graph.addInitial(classpath, 'node2', 'in');
 
-                    network.graph.addInitial('./xslt/transform.xsl', 'node3', 'in');
+                    network.graph.addInitial('./xslt/fhir-xml-to-rdf.xsl', 'node3', 'in');
                     network.graph.addInitial('/tmp/', 'node4', 'in');
 
                 }).then(function(done) {
@@ -238,7 +238,7 @@ describe('xml-to-rdf', function() {
                     var classpath = test.saxonClasspath();
                     network.graph.addInitial(classpath, 'node2', 'in');
 
-                    network.graph.addInitial('./xslt/transform.xsl', 'node3', 'in');
+                    network.graph.addInitial('./xslt/fhir-xml-to-rdf.xsl', 'node3', 'in');
                     network.graph.addInitial('/tmp/', 'node4', 'in');
 
                 }).then(function(done) {
