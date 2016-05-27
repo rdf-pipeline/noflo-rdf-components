@@ -32,7 +32,7 @@ module.exports = function(node) {
               },
 
               update: function(startTime, eventType) { 
-                   var time = Date.now() - startTime + 1; // ensure we get at least 1 ms
+                   var time = Date.now() - startTime; 
                    this.metrics.numberOfEvents++;
 
                    switch(eventType) { 

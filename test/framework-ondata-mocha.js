@@ -97,12 +97,9 @@ describe("framework-ondata", function() {
 
                // Verify success metrics are updated
                node.profiler.metrics.should.be.an('object');
-               node.profiler.metrics.averageUpdateTime.should.be.greaterThan(0);
                node.profiler.metrics.numberOfErrors.should.equal(0);
                node.profiler.metrics.numberOfEvents.should.equal(1);
                node.profiler.metrics.numberOfUpdates.should.equal(1);
-               node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
-               node.profiler.metrics.totalUpdateTime.should.be.greaterThan(0);
 
             }, function( fail ) { 
                // Failure - something is not right
@@ -162,13 +159,10 @@ describe("framework-ondata", function() {
 
                   // Verify success metrics are updated for multiple successes
                   node.profiler.metrics.should.be.an('object');
-                  node.profiler.metrics.averageUpdateTime.should.be.greaterThan(0);
                   node.profiler.metrics.numberOfErrors.should.equal(0);
                   node.profiler.metrics.numberOfEvents.should.equal(2);
                   node.profiler.metrics.numberOfUpdates.should.equal(2);
                   node.profiler.metrics.totalErrorTime.should.equal(0);
-                  node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
-                  node.profiler.metrics.totalUpdateTime.should.be.greaterThan(0);
 
                }, function( fail2 ) { 
                    assert.isNotOk( fail2 );
@@ -238,9 +232,6 @@ describe("framework-ondata", function() {
                    node.profiler.metrics.numberOfErrors.should.equal(2);
                    node.profiler.metrics.numberOfEvents.should.equal(2);
                    node.profiler.metrics.numberOfUpdates.should.equal(0);
-                   node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
-                   node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
-                   node.profiler.metrics.totalUpdateTime.should.equal(0);
 
                  }, function( fail ) {
                    console.log('fail!');
@@ -310,8 +301,6 @@ describe("framework-ondata", function() {
                    node.profiler.metrics.numberOfErrors.should.equal(2);
                    node.profiler.metrics.numberOfEvents.should.equal(2);
                    node.profiler.metrics.numberOfUpdates.should.equal(0);
-                   node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
-                   node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
                    node.profiler.metrics.totalUpdateTime.should.equal(0);
 
                 });
@@ -641,8 +630,6 @@ describe("framework-ondata", function() {
                node.profiler.metrics.numberOfErrors.should.equal(1);
                node.profiler.metrics.numberOfEvents.should.equal(1);
                node.profiler.metrics.numberOfUpdates.should.equal(0);
-               node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
-               node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
                node.profiler.metrics.totalUpdateTime.should.equal(0);
 
             }, function( fail ) { 
@@ -709,8 +696,6 @@ describe("framework-ondata", function() {
                node.profiler.metrics.numberOfErrors.should.equal(1);
                node.profiler.metrics.numberOfEvents.should.equal(1);
                node.profiler.metrics.numberOfUpdates.should.equal(0);
-               node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
-               node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
                node.profiler.metrics.totalUpdateTime.should.equal(0);
 
             }, function( fail ) { 

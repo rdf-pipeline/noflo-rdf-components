@@ -59,13 +59,13 @@ describe("profiler", function() {
 
                 // Check the metrics match what we expect
                 var metrics = node.profiler.metrics;
-                metrics.averageUpdateTime.should.be.greaterThan(delay);
+                metrics.averageUpdateTime.should.be.at.least(delay);
                 metrics.numberOfErrors.should.equal(0);
                 metrics.numberOfEvents.should.equal(1);
                 metrics.numberOfUpdates.should.equal(1);
                 metrics.totalErrorTime.should.equal(0);
-                metrics.totalProcessingTime.should.be.greaterThan(delay);
-                metrics.totalUpdateTime.should.be.greaterThan(delay);
+                metrics.totalProcessingTime.should.be.at.least(delay);
+                metrics.totalUpdateTime.should.be.at.least(delay);
                 metrics.averageUpdateTime.should.equal(metrics.totalUpdateTime);
                 done();
             }, delay);
@@ -87,9 +87,9 @@ describe("profiler", function() {
                 metrics.numberOfErrors.should.equal(1);
                 metrics.numberOfEvents.should.equal(1);
                 metrics.numberOfUpdates.should.equal(0);
-                metrics.totalErrorTime.should.be.greaterThan(delay);
+                metrics.totalErrorTime.should.be.at.least(delay);
                 metrics.totalUpdateTime.should.equal(0);
-                metrics.totalProcessingTime.should.be.greaterThan(delay);
+                metrics.totalProcessingTime.should.be.at.least(delay);
                 done();
             }, delay);
         });
@@ -112,7 +112,7 @@ describe("profiler", function() {
                 metrics.numberOfUpdates.should.equal(0);
                 metrics.totalErrorTime.should.equal(0);
                 metrics.totalUpdateTime.should.equal(0);
-                metrics.totalProcessingTime.should.be.greaterThan(delay);
+                metrics.totalProcessingTime.should.be.at.least(delay);
                 done();
             }, delay);
         });
