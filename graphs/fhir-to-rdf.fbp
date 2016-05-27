@@ -1,0 +1,21 @@
+# fhir-to-rdf.fbp
+
+# Subgraph that accepts a fhir javascript object, and invokes the fhir-json-to-xml component 
+# to convert it to xml, and then the xml-to-rdf component to convert it to RDF.
+
+# publish the ports for this subgraph 
+INPORT=fhirJsonToXml.FHIR:FHIR
+INPORT=repeat.IN:OUTDIR
+INPORT=xmlToRdf.CLASSPATH:CLASSPATH
+OUTPORT=xmlToRdf.OUTPUT:OUTPUT
+
+'xslt/fhir-xml-to-rdf.xsl' -> TRANSFORM xmlToRdf(rdf-compponents/xml-to-rdf)
+
+fhirJsonToXml(rdf-components/fhir-json-to-xml) OUTPUT -> SOURCES xmlToRdf(rdf-components/xml-to-rdf)
+
+repeat(core/Repeat) OUT -> OUTDIR fhirJsonToXml(rdf-components/fhir-json-to-xml)
+repeat(core/Repeat) OUT -> OUTDIR xmlToRdf(rdf-components/xml-to-rdf)
+
+# Error handling to echo errors to console.log
+fhir-json-to-xml ERROR -> IN output(core/Output)
+xml-to-rdf ERROR -> IN output(core/Output)

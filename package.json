@@ -44,11 +44,13 @@
     "rdfstore": "~0.9.8",
     "translators": "git+https://www.github.com/rdf-pipeline/translators",
     "underscore": "~1.8.3",
-    "uri-templates": "~0.1.9"
+    "uri-templates": "~0.1.9",
+    "xslt4node": "~0.2.1"
   },
   "noflo": {
     "graphs": {
       "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
+      "fhir-to-rdf": "./graphs/fhir-to-rdf.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp",
       "http-basic-post": "./graphs/http-basic-post.fbp",
       "http-delivery-server": "./graphs/http-delivery-server.fbp",
@@ -90,7 +92,8 @@
       "replace-substring": "./components/replace-substring.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",
-      "simple-splitter": "./components/simple-splitter.js"
+      "simple-splitter": "./components/simple-splitter.js",
+      "xml-to-rdf": "./components/xml-to-rdf.js"
     }
   }
 }

@@ -129,6 +129,22 @@ module.exports = {
     },
 
     /**
+     * Get the expected classpath for the saxon jar depending on the current operating system.
+     */
+    saxonClasspath: function() {
+        switch(process.platform) {
+            case 'darwin':
+                return '/Library/Java/Extensions/SaxonHE9-7-0-4J/saxon9he.jar';
+            case 'linux':
+                return '/usr/share/java/saxonb.jar';
+            case 'win32':
+                return 'c:\saxon\saxon9he.jar';
+            default:
+                throw Error('Unexpected operating system!');
+        }
+    },
+
+    /**
      * Verifies that the state has the expected vnid & data and the lm is
      * structured as an lm should be.
      */

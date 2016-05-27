@@ -110,7 +110,7 @@ describe('rdf-insert subgraph', function() {
         }).should.eventually.have.property('data', sparql.replace(/#.*|\s+/g,'\n').trim());
     });
     it("should POST jsonld as SPARQL INSERT using the default graph", function() {
-        this.timeout(3500);
+        this.timeout(3750);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
@@ -168,7 +168,7 @@ describe('rdf-insert subgraph', function() {
         }).should.eventually.have.property('data', 'Basic QWxhZGRpbjpPcGVuU2VzYW1l');
     });
     it("should POST jsonld using the provided credentials", function() {
-        this.timeout(3000);
+        this.timeout(3250);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
