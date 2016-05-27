@@ -20,6 +20,7 @@ var nofloCompFactory = require('./noflo-component-factory');
 var promiseOutput = require('../src/promise-output');
 var vniManager = require('./vni-manager');
 var framework_ondata = require('./framework-ondata');
+var profiler = require('./profiler');
 
 /**
  * Creates a noflo-component factory, as described by the nodeDef parameter, 
@@ -35,34 +36,34 @@ var framework_ondata = require('./framework-ondata');
  * @return a pipeline customized noflo component factory
  */
 
-module.exports = function( nodeDef, wrapper, ondata ) { 
+module.exports = function(nodeDef, wrapper, ondata) { 
 
     ondata = ondata || framework_ondata;
 
     // Create the component factory and return it
     return nofloCompFactory(
-        _.defaults( 
+        _.defaults(
             { 
               inPorts: 
                    // Add the framework ondata function to each input port so we get called
                    // when new data arrives 
-                   _.mapObject(nodeDef.inPorts, function( port, portName ) {  
-                       return _.extend( { ondata: ondata }, 
+                   _.mapObject(nodeDef.inPorts, function(port, portName) {  
+                       return _.extend({ ondata: ondata }, 
                                         port);
                    }),
 
               outPorts:  
                    // ensure we have the standard output & error ports and add in any custom ports
-                   _.extend( {},
+                   _.extend({},
                              promiseOutput.outPorts,
-                             nodeDef.outPorts )
+                             nodeDef.outPorts)
             },
             nodeDef 
-        ), 
+       ), 
         // specify a callback to initialize node facade with pipeline specific settings
         // after the noflo-component-factory initializes the node instance
-        _.partial( pipelineNodeInit, wrapper ) 
-    );
+        _.partial(pipelineNodeInit, wrapper) 
+   );
 
 } // module.exports
 
@@ -72,7 +73,8 @@ module.exports = function( nodeDef, wrapper, ondata ) {
  * 
  * @param node facade to be initialized
  */
-var pipelineNodeInit = function( wrapper, facade ) { 
-    vniManager( facade );
+var pipelineNodeInit = function(wrapper, facade) { 
+    vniManager(facade);
     facade.wrapper = wrapper || {};
+    profiler(facade);
 }

@@ -16,7 +16,7 @@ var jswrapper = require('../src/javascript-wrapper');
  */
 describe("jsupdater-behaviour", function() {
     it("should produce data from updater", function() {
-        this.timeout(3000);
+        this.timeout(3250);
         return new Promise(function(done, fail){
             test.createNetwork({
                 sut: jswrapper(function(input) {
@@ -368,7 +368,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should fire error updater if upstream updater set an error data", function() {
-        this.timeout(3250);
+        this.timeout(3500);
         return new Promise(function(done, fail){
             test.createNetwork({
                 broken: jswrapper(function(input) {

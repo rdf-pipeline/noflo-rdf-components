@@ -95,6 +95,15 @@ describe("framework-ondata", function() {
                done.vnid.should.equal( '' ); 
                done.data.should.equal( executedFRunUpdater ); 
 
+               // Verify success metrics are updated
+               node.profiler.metrics.should.be.an('object');
+               node.profiler.metrics.averageUpdateTime.should.be.greaterThan(0);
+               node.profiler.metrics.numberOfErrors.should.equal(0);
+               node.profiler.metrics.numberOfEvents.should.equal(1);
+               node.profiler.metrics.numberOfUpdates.should.equal(1);
+               node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
+               node.profiler.metrics.totalUpdateTime.should.be.greaterThan(0);
+
             }, function( fail ) { 
                // Failure - something is not right
                assert.isNotOk( fail );
@@ -150,6 +159,16 @@ describe("framework-ondata", function() {
 
                   done2.vnid.should.equal( '' ); 
                   done2.data.should.equal( inData2 ); 
+
+                  // Verify success metrics are updated for multiple successes
+                  node.profiler.metrics.should.be.an('object');
+                  node.profiler.metrics.averageUpdateTime.should.be.greaterThan(0);
+                  node.profiler.metrics.numberOfErrors.should.equal(0);
+                  node.profiler.metrics.numberOfEvents.should.equal(2);
+                  node.profiler.metrics.numberOfUpdates.should.equal(2);
+                  node.profiler.metrics.totalErrorTime.should.equal(0);
+                  node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
+                  node.profiler.metrics.totalUpdateTime.should.be.greaterThan(0);
 
                }, function( fail2 ) { 
                    assert.isNotOk( fail2 );
@@ -213,6 +232,16 @@ describe("framework-ondata", function() {
                        return sendDataAndVerify( node, ++count );
                    }
 
+                   // Verify error metrics are updated
+                   node.profiler.metrics.should.be.an('object');
+                   node.profiler.metrics.averageUpdateTime.should.equal(0);
+                   node.profiler.metrics.numberOfErrors.should.equal(2);
+                   node.profiler.metrics.numberOfEvents.should.equal(2);
+                   node.profiler.metrics.numberOfUpdates.should.equal(0);
+                   node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
+                   node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
+                   node.profiler.metrics.totalUpdateTime.should.equal(0);
+
                  }, function( fail ) {
                    console.log('fail!');
                    assert.isNotOk( fail );
@@ -274,6 +303,17 @@ describe("framework-ondata", function() {
                    if ( count < 1 ) { 
                        return sendDataAndVerify( node, ++count );
                    }
+
+                   // Verify error metrics are updated
+                   node.profiler.metrics.should.be.an('object');
+                   node.profiler.metrics.averageUpdateTime.should.equal(0);
+                   node.profiler.metrics.numberOfErrors.should.equal(2);
+                   node.profiler.metrics.numberOfEvents.should.equal(2);
+                   node.profiler.metrics.numberOfUpdates.should.equal(0);
+                   node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
+                   node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
+                   node.profiler.metrics.totalUpdateTime.should.equal(0);
+
                 });
 
             }
@@ -595,6 +635,16 @@ describe("framework-ondata", function() {
                expect( done.stale).to.be.undefined;
                expect( done.groupLm).to.be.undefined;
 
+               // Verify metrics are updated on fRunUpdater exception path
+               node.profiler.metrics.should.be.an('object');
+               node.profiler.metrics.averageUpdateTime.should.equal(0);
+               node.profiler.metrics.numberOfErrors.should.equal(1);
+               node.profiler.metrics.numberOfEvents.should.equal(1);
+               node.profiler.metrics.numberOfUpdates.should.equal(0);
+               node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
+               node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
+               node.profiler.metrics.totalUpdateTime.should.equal(0);
+
             }, function( fail ) { 
                // Not currently executed since we get the output port data before the error data
                console.error.restore();
@@ -652,6 +702,16 @@ describe("framework-ondata", function() {
                // Should go through here after the timeout
                console.error.restore();
                logBuffer.startsWith('framework-ondata unable to process fRunUpdater results!').should.be.true;
+
+               // Verify metrics are updated on fRunUpdater exception path
+               node.profiler.metrics.should.be.an('object');
+               node.profiler.metrics.averageUpdateTime.should.equal(0);
+               node.profiler.metrics.numberOfErrors.should.equal(1);
+               node.profiler.metrics.numberOfEvents.should.equal(1);
+               node.profiler.metrics.numberOfUpdates.should.equal(0);
+               node.profiler.metrics.totalErrorTime.should.be.greaterThan(0);
+               node.profiler.metrics.totalProcessingTime.should.be.greaterThan(0);
+               node.profiler.metrics.totalUpdateTime.should.equal(0);
 
             }, function( fail ) { 
                // Should not go through here right now 
