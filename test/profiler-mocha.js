@@ -21,97 +21,136 @@ describe("profiler", function() {
         var node = {componentName: "TestComponentName", nodeName: "TestNodeName"};
         profiler(node);
         node.profiler.should.be.an('object');
-        node.profiler.should.have.all.keys('eventTypes', 'metrics', 'update');
+        node.profiler.should.have.all.keys('metrics', 
+                                           'startEvent', 'stopEvent',
+                                           'startUpdate', 'stopUpdate' );
 
-        node.profiler.eventTypes.should.be.an('object');
         node.profiler.metrics.should.be.an('object');
-        node.profiler.update.should.be.a('function');
+        node.profiler.startEvent.should.be.a('function');
+        node.profiler.stopEvent.should.be.a('function');
+        node.profiler.startUpdate.should.be.a('function');
+        node.profiler.stopUpdate.should.be.a('function');
 
-        node.profiler.metrics.should.have.all.keys('averageUpdateTime', 'numberOfErrors', 
-                                                   'numberOfEvents', 'numberOfUpdates',
-                                                   'startTime', 'totalErrorTime', 
-                                                   'totalProcessingTime', 'totalUpdateTime');
+	node.profiler.metrics.should.have.all.keys('numberOfUpdates', 'averageUpdateTime', 'totalUpdateTime',
+                                                   'numberOfErrors', 'averageErrorTime', 'totalErrorTime',
+                                                   'numberOfEvents', 'averageEventTime', 'totalEventTime',
+                                                   'startTime', 'totalProcessingTime');
         var metrics = node.profiler.metrics;
-        metrics.averageUpdateTime.should.equal(0);
-        metrics.numberOfErrors.should.equal(0);
-        metrics.numberOfEvents.should.equal(0);
         metrics.numberOfUpdates.should.equal(0);
-        metrics.startTime.should.be.at.least(start);
-        metrics.totalErrorTime.should.equal(0);
-        metrics.totalProcessingTime.should.equal(0);
+        metrics.averageUpdateTime.should.equal(0);
         metrics.totalUpdateTime.should.equal(0); 
+        metrics.numberOfErrors.should.equal(0);
+        metrics.averageErrorTime.should.equal(0);
+        metrics.totalErrorTime.should.equal(0);
+        metrics.numberOfEvents.should.equal(0);
+        metrics.averageEventTime.should.equal(0);
+        metrics.totalEventTime.should.equal(0);
+        metrics.startTime.should.be.at.least(start);
+        metrics.totalProcessingTime.should.equal(0);
     });
 
-    describe("#update", function() {
+    describe("#updateStart & updateStop", function() {
 
-        it("should update success metrics", function(done) {
-            var startTime = Date.now();
+        it("should update updater success metrics", function(done) {
 
             var node = {componentName: "TestComponentName", nodeName: "TestNodeName"};
             profiler(node);
 	    node.profiler.should.be.an('object');
-	    node.profiler.update.should.be.a('function');
+	    node.profiler.startUpdate.should.be.a('function');
+	    node.profiler.stopUpdate.should.be.a('function');
 
-            // Wait a bit so we have a difference in the times
+            // Start update & wait a bit so we have a difference in the times
+            var updateStart = node.profiler.startUpdate();
             var delay = 10;
             setTimeout(function() { 
-                node.profiler.update(startTime, node.profiler.eventTypes.UPDATE_SUCCESS);  
+                node.profiler.stopUpdate(updateStart, false);  
 
                 // Check the metrics match what we expect
                 var metrics = node.profiler.metrics;
-                metrics.averageUpdateTime.should.be.at.least(delay);
-                metrics.numberOfErrors.should.equal(0);
-                metrics.numberOfEvents.should.equal(1);
                 metrics.numberOfUpdates.should.equal(1);
-                metrics.totalErrorTime.should.equal(0);
-                metrics.totalProcessingTime.should.be.at.least(delay);
+                metrics.averageUpdateTime.should.be.at.least(delay);
                 metrics.totalUpdateTime.should.be.at.least(delay);
+
+                metrics.numberOfErrors.should.equal(0);
+                metrics.averageErrorTime.should.equal(0);
+                metrics.totalErrorTime.should.equal(0);
+
+                metrics.numberOfEvents.should.equal(0);
+                metrics.averageEventTime.should.equal(0);
+                metrics.totalEventTime.should.equal(0);
+
+                metrics.totalProcessingTime.should.be.at.least(delay);
                 metrics.averageUpdateTime.should.equal(metrics.totalUpdateTime);
                 done();
             }, delay);
         });
 
         it("should update error metrics", function(done) {
-            var startTime = Date.now();
 
             var node = {componentName: "TestComponentName", nodeName: "TestNodeName"};
+
             profiler(node);
-          
+	    node.profiler.should.be.an('object');
+	    node.profiler.startUpdate.should.be.a('function');
+	    node.profiler.stopUpdate.should.be.a('function');
+            var updateStart = node.profiler.startUpdate();
+
             var delay = 5;
-            setTimeout(function() { 
-                node.profiler.update(startTime, node.profiler.eventTypes.UPDATE_ERROR);
+            setTimeout(function() {
+                node.profiler.stopUpdate(updateStart, true);
 
                 // Check the metrics match what we expect
                 var metrics = node.profiler.metrics;
-                metrics.averageUpdateTime.should.equal(0);
                 metrics.numberOfErrors.should.equal(1);
-                metrics.numberOfEvents.should.equal(1);
-                metrics.numberOfUpdates.should.equal(0);
+                metrics.averageErrorTime.should.be.at.least(delay);
                 metrics.totalErrorTime.should.be.at.least(delay);
+
+                metrics.numberOfEvents.should.equal(0);
+                metrics.averageEventTime.should.equal(0);
+                metrics.totalEventTime.should.equal(0);
+
+                metrics.numberOfUpdates.should.equal(0);
+                metrics.averageUpdateTime.should.equal(0);
                 metrics.totalUpdateTime.should.equal(0);
+
                 metrics.totalProcessingTime.should.be.at.least(delay);
                 done();
             }, delay);
         });
 
+    });
+
+    describe("#eventStart & eventStop", function() {
+
         it("should update event metrics", function(done) {
-            var startTime = Date.now();
 
             var node = {componentName: "TestComponentName", nodeName: "TestNodeName"};
+
             profiler(node);
-          
-            var delay = 3;
-            setTimeout(function() { 
-                node.profiler.update(startTime, node.profiler.eventTypes.ONDATA_EVENT);
+	    node.profiler.should.be.an('object');
+	    node.profiler.startEvent.should.be.a('function');
+	    node.profiler.stopEvent.should.be.a('function');
+            var eventStart = node.profiler.startEvent();
+
+            var delay = 5;
+            setTimeout(function() {
+                node.profiler.stopEvent(eventStart);
 
                 // Check the metrics match what we expect
                 var metrics = node.profiler.metrics;
-                metrics.averageUpdateTime.should.equal(0);
-                metrics.numberOfErrors.should.equal(0);
+
                 metrics.numberOfEvents.should.equal(1);
+                metrics.averageEventTime.should.be.at.least(delay);
+                metrics.totalEventTime.should.be.at.least(delay);
+
                 metrics.numberOfUpdates.should.equal(0);
-                metrics.totalErrorTime.should.equal(0);
+                metrics.averageUpdateTime.should.equal(0);
                 metrics.totalUpdateTime.should.equal(0);
+
+                metrics.numberOfErrors.should.equal(0);
+                metrics.averageErrorTime.should.equal(0);
+                metrics.totalErrorTime.should.equal(0);
+
                 metrics.totalProcessingTime.should.be.at.least(delay);
                 done();
             }, delay);
@@ -121,24 +160,42 @@ describe("profiler", function() {
     describe("Functional Tests", function() {
 
         it("should be accessible in a component updater", function() {
+           this.timeout(3000);
 
-           var handler;
            var updater = function(input) {
                this.nodeInstance.profiler.should.be.an('object');
-               this.nodeInstance.profiler.should.have.all.keys('eventTypes', 'metrics', 'update');
-               this.nodeInstance.profiler.eventTypes.should.be.an('object');
+               this.nodeInstance.profiler.should.have.all.keys('metrics', 
+                                                  'startEvent', 'stopEvent',
+                                                  'startUpdate', 'stopUpdate' );
                this.nodeInstance.profiler.metrics.should.be.an('object');
-               this.nodeInstance.profiler.update.should.be.a('function');
-               handler('success');
+               this.nodeInstance.profiler.startEvent.should.be.a('function');
+               this.nodeInstance.profiler.stopEvent.should.be.a('function');
+               this.nodeInstance.profiler.startUpdate.should.be.a('function');
+               this.nodeInstance.profiler.stopUpdate.should.be.a('function');
+               return 'success';
            };
 
            var node = test.createComponent(jswrapper(updater));
 
-           return new Promise(function(callback){
-               handler = callback;
+           return new Promise(function(done) {
+               test.onOutPortData(node, 'output', done);
                test.sendData(node, 'input', "test input to log");
            }).then(function(done) {
-               done.should.equal('success');
+               done.data.should.equal('success');
+               var metrics = node.profiler.metrics;
+               metrics.numberOfEvents.should.equal(1);
+               metrics.averageEventTime.should.be.at.least(1);
+               metrics.totalEventTime.should.equal(metrics.averageEventTime);
+
+               metrics.numberOfUpdates.should.equal(1);
+               metrics.averageUpdateTime.should.be.at.least(1);
+               metrics.totalUpdateTime.should.equal(metrics.averageUpdateTime);
+
+               metrics.numberOfErrors.should.equal(0);
+               metrics.averageErrorTime.should.equal(0);
+               metrics.totalErrorTime.should.equal(0);
+
+               metrics.totalProcessingTime.should.equal(metrics.totalEventTime+metrics.totalUpdateTime);
            });
         });
     });

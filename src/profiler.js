@@ -15,47 +15,55 @@ module.exports = function(node) {
         {
           profiler: {
               metrics: {
-                  averageUpdateTime: 0,
-                  numberOfErrors: 0,
-                  numberOfEvents: 0,
                   numberOfUpdates: 0,
-                  startTime: Date.now(),
+                  averageUpdateTime: 0,
+                  totalUpdateTime: 0,
+                  numberOfErrors: 0,
+                  averageErrorTime: 0,
                   totalErrorTime: 0,
-                  totalProcessingTime: 0,
-                  totalUpdateTime: 0
+                  numberOfEvents: 0,
+                  averageEventTime: 0,
+                  totalEventTime: 0,
+                  startTime: Date.now(),
+                  totalProcessingTime: 0
               },
 
-              eventTypes: {
-                  ONDATA_EVENT: 1,
-                  UPDATE_SUCCESS: 2,
-                  UPDATE_ERROR: 3
+              startEvent: function() {
+                  return Date.now();
+              },
+ 
+              stopEvent: function(eventStart) { 
+                  var stoptime = Date.now() - eventStart;
+
+                  this.metrics.numberOfEvents++;
+                  this.metrics.totalEventTime += stoptime;
+                  this.metrics.averageEventTime = 
+                      Math.round(this.metrics.totalEventTime/this.metrics.numberOfEvents);
+
+                  this.metrics.totalProcessingTime += stoptime;
               },
 
-              update: function(startTime, eventType) { 
-                   var time = Date.now() - startTime; 
-                   this.metrics.numberOfEvents++;
+              startUpdate: function() {
+                  return Date.now();
+              },
 
-                   switch(eventType) { 
-                       case this.eventTypes.ONDATA_EVENT: {
-                           // already incremented event count, so nothing more to do
-                           break;
-                       }
-                       case this.eventTypes.UPDATE_SUCCESS: {
-                           this.metrics.numberOfUpdates++;
-                           this.metrics.totalUpdateTime += time;
-                           this.metrics.averageUpdateTime = 
-                               Math.round(this.metrics.totalUpdateTime/this.metrics.numberOfUpdates);
-                           break;
-                       }
-                       case this.eventTypes.UPDATE_ERROR: {
-                           this.metrics.numberOfErrors++;
-                           this.metrics.totalErrorTime += time;
-                           break;
-                       }
-                       default: throw Error('Profiler update received unknown event type!');
-                   }
-                   this.metrics.totalProcessingTime += time;
-              } 
+              stopUpdate: function(updateStart, isError) {
+                  var stoptime = Date.now() - updateStart;
+
+                  if (isError) { 
+                      this.metrics.numberOfErrors++;
+                      this.metrics.totalErrorTime += stoptime;
+                      this.metrics.averageErrorTime = 
+                          Math.round(this.metrics.totalErrorTime/this.metrics.numberOfErrors);
+                  } else {
+                      this.metrics.numberOfUpdates++;
+                      this.metrics.totalUpdateTime += stoptime;
+                      this.metrics.averageUpdateTime = 
+                          Math.round(this.metrics.totalUpdateTime/this.metrics.numberOfUpdates);
+                  }
+
+                  this.metrics.totalProcessingTime += stoptime;
+              }
          } // profiler
     }); // extend
 } // module export

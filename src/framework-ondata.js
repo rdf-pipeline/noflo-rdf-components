@@ -24,7 +24,8 @@ var vniManager = require('./vni-manager');
 module.exports = function(payload, socketIndex) {
 
      var profiler = this.nodeInstance.profiler;
-     var startTime = Date.now();
+
+     var eventStart = profiler.startEvent();
 
      var portName = this.name;
      var outputPorts = this.nodeInstance.outPorts;
@@ -43,7 +44,6 @@ module.exports = function(payload, socketIndex) {
      vni.inputStates(portName, socketIndex, inputState);
 
      if (shouldRunUpdater(vni, isStale)) { 
-
          // Save vars we will need in the promise where the context is different
 
          var lastErrorState = _.clone( vni.errorState() );  // Shallow clone 
@@ -52,17 +52,19 @@ module.exports = function(payload, socketIndex) {
          if ( ! _.isFunction( this.nodeInstance.wrapper.fRunUpdater ) ) { 
 
              // Don't have a wrapper fRunUpdater 
+             profiler.stopEvent(eventStart);
              throw Error( 'No wrapper fRunUpdater function found!  Cannot run updater.' );
 
          } else { 
-
              // TODO: revisit this logic later, per rdf-pipeline/noflo-rdf-pipeline#35
              // save data used to see if we have a different state after running updater
              clearStateData( vni.errorState ); // clear last error state
 
              // Save wrapper to make it accessible from the Promise
              var wrapper = this.nodeInstance.wrapper;
-             var updaterStartTime = Date.now();
+
+             profiler.stopEvent(eventStart); // done with general event processing 
+             var updateStart = profiler.startUpdate(); 
 
              new Promise(function( resolve ) { 
                  // Execute fRunUpdater which will also execute the updater
@@ -81,11 +83,7 @@ module.exports = function(payload, socketIndex) {
                  handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
                  handleError( vni, outputPorts.error,  lastErrorState );
 
-                 if (vni.outputState().error) { 
-                     profiler.update(updaterStartTime, profiler.eventTypes.UPDATE_ERROR);
-                 } else { 
-                     profiler.update(updaterStartTime, profiler.eventTypes.UPDATE_SUCCESS);
-                 }
+                 profiler.stopUpdate(updateStart, vni.outputState().error);
 
              }, function( rejected ) { 
                  // fRunUpdater/updater failed 
@@ -119,17 +117,18 @@ module.exports = function(payload, socketIndex) {
                      handleError( vni, outputPorts.error, lastErrorState );
                  }
 
-                 profiler.update(updaterStartTime, profiler.eventTypes.UPDATE_ERROR);
+                 profiler.stopUpdate(updateStart, true);
 
              }).catch( function( e ) { 
                  console.error( "framework-ondata unable to process fRunUpdater results!" );
                  var err = ( e.stack ) ? e.stack : e;
                  console.error( err );
-                 profiler.update(updaterStartTime, profiler.eventTypes.UPDATE_ERROR);
+                 profiler.stopUpdate(updateStart, true);
              }); 
-         } // have an fRunUpdater
-     } else { // not ready for fRunUpdater yet
-         profiler.update(startTime, profiler.eventTypes.ONDATA_EVENT);
+         }
+     } else {
+         // not ready to call fRunUpdater yet
+         profiler.stopEvent(eventStart);
      }
 };
 
