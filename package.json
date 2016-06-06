@@ -54,6 +54,7 @@
       "http-accept-server": "./graphs/http-accept-server.fbp",
       "http-basic-post": "./graphs/http-basic-post.fbp",
       "http-delivery-server": "./graphs/http-delivery-server.fbp",
+      "load-balancer": "./graphs/load-balancer.fbp",
       "rdf-clear-insert": "./graphs/rdf-clear-insert.fbp",
       "rdf-clear-insert-jsonld": "./graphs/rdf-clear-insert-jsonld.fbp",
       "rdf-construct": "./graphs/rdf-construct.fbp",
@@ -93,7 +94,9 @@
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",
       "simple-splitter": "./components/simple-splitter.js",
-      "xml-to-rdf": "./components/xml-to-rdf.js"
+      "stringify-json": "./components/stringify-json.js",
+      "xml-to-rdf": "./components/xml-to-rdf.js",
+      "zip": "./components/zip.js"
     }
   }
 }
