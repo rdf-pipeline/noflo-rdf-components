@@ -44,7 +44,7 @@ describe('load-balancer', function() {
             }).catch(fail);
         }).should.eventually.have.property('data', "Hello World!");
     });
-    it("should distribute to multiple target", function() {
+    it("should distribute to multiple targets", function() {
         return new Promise(function(done, fail){
             var server = http.createServer();
             afterEach(_.once(server.close.bind(server)));
