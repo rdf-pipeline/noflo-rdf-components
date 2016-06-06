@@ -79,6 +79,8 @@ describe('load-balancer', function() {
                 fs.writeFile(targetFileName, list.join('\n'), function(){
                     process.env['target-list-file'] = targetFileName;
                     network.graph.addInitial('target-list-file', 'balancer', 'target_list_file_env');
+                    // load-balancer uses a hash algorithm to determine target,
+                    // so the same input (and the same number of targets) will always go to the same place
                     network.graph.addInitial({vnid:"A",data:"A"}, 'balancer', 'input');
                     network.graph.addInitial({vnid:"B",data:"B"}, 'balancer', 'input');
                     network.graph.addInitial({vnid:"C",data:"C"}, 'balancer', 'input');
