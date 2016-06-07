@@ -29,7 +29,7 @@ describe("framework-ondata", function() {
     describe("#ondata", function() {
 
         it( "should throw error if no wrapper fRunUpdater configured", function() {
-
+            sinon.stub(console, 'error');
             var inData = "A bit of input data";
 
             // Create a pipeline component and get the node instance for it
@@ -52,7 +52,14 @@ describe("framework-ondata", function() {
                 test.onOutPortData(node, 'output', done);
                 test.onOutPortData(node, 'error', fail);
                 test.sendData(node, 'input', inData);
-            }).should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updater.');
+         
+            }).then( function( done ) { 
+                console.error.restore();
+                throw Error('Test failed - framework should not complete successfully if wrapper has no fRunUpdater!');
+            }, function(fail) { 
+                console.error.restore();
+                expect(fail.message).to.equal('No wrapper fRunUpdater function found!  Cannot run updater.');
+            });
         });
 
         it( "should manage single port node vni state, fRunUpdater invocation, & output state", function() {

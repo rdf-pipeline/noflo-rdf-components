@@ -24,110 +24,110 @@ var vniManager = require('./vni-manager');
 module.exports = function(payload, socketIndex) {
 
      var profiler = this.nodeInstance.profiler;
-
      var eventStart = profiler.startEvent();
+     try {
 
-     var portName = this.name;
-     var outputPorts = this.nodeInstance.outPorts;
+         var portName = this.name;
+         var outputPorts = this.nodeInstance.outPorts;
 
-     var vnid = payload.vnid || '';
-     var vni = this.nodeInstance.vni(vnid);
+         var vnid = payload.vnid || '';
+         var vni = this.nodeInstance.vni(vnid);
 
-     // Get the old & new input state for port and the new payload
-     var lastInputState = vni.inputStates(portName, socketIndex);
-     var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
+         // Get the old & new input state for port and the new payload
+         var lastInputState = vni.inputStates(portName, socketIndex);
+         var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
  
-     // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
-     var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
+         // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
+         var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
 
-     // Set the new input state
-     vni.inputStates(portName, socketIndex, inputState);
+         // Set the new input state
+         vni.inputStates(portName, socketIndex, inputState);
 
-     if (shouldRunUpdater(vni, isStale)) { 
-         // Save vars we will need in the promise where the context is different
+         if (shouldRunUpdater(vni, isStale)) { 
+             // Save vars we will need in the promise where the context is different
 
-         var lastErrorState = _.clone( vni.errorState() );  // Shallow clone 
-         var lastOutputLm = vni.outputState().lm;
+             var lastErrorState = _.clone(vni.errorState());  // Shallow clone 
+             var lastOutputLm = vni.outputState().lm;
 
-         if ( ! _.isFunction( this.nodeInstance.wrapper.fRunUpdater ) ) { 
+             if (! _.isFunction(this.nodeInstance.wrapper.fRunUpdater)) { 
+                 throw new Error('No wrapper fRunUpdater function found!  Cannot run updater.');
 
-             // Don't have a wrapper fRunUpdater 
-             profiler.stopEvent(eventStart);
-             throw Error( 'No wrapper fRunUpdater function found!  Cannot run updater.' );
+             } else { 
+                 // TODO: revisit this logic later, per rdf-pipeline/noflo-rdf-pipeline#35
+                 // save data used to see if we have a different state after running updater
+                 clearStateData(vni.errorState); // clear last error state
 
-         } else { 
-             // TODO: revisit this logic later, per rdf-pipeline/noflo-rdf-pipeline#35
-             // save data used to see if we have a different state after running updater
-             clearStateData( vni.errorState ); // clear last error state
+                 // Save wrapper to make it accessible from the Promise
+                 var wrapper = this.nodeInstance.wrapper;
+                 var updateStart;
 
-             // Save wrapper to make it accessible from the Promise
-             var wrapper = this.nodeInstance.wrapper;
+                 new Promise(function(resolve) { 
+                     updateStart = profiler.startUpdate(); 
+                     resolve(wrapper.fRunUpdater(vni));
 
-             profiler.stopEvent(eventStart); // done with general event processing 
-             var updateStart = profiler.startUpdate(); 
+                 }).then(function() { 
+                     // fRunUpdater/Updater success path
 
-             new Promise(function( resolve ) { 
-                 // Execute fRunUpdater which will also execute the updater
-                 resolve( wrapper.fRunUpdater( vni ) );
+                     // Returned OK, but updater could have set an error - check for that
+                     // and update the LM if the state has changed
+                     if (stateChange(vni.errorState, lastErrorState, true)) {
+                         setOutputErrorFlag(vni);   
+                         lastOutputLm = undefined;  // got a new error so force sending output
+                     }
 
-             }).then( function() { 
-                 // fRunUpdater/Updater success path
+                     handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
+                     handleError(vni, outputPorts.error,  lastErrorState);
 
-                 // Returned OK, but updater could have set an error - check for that
-                 // and update the LM if the state has changed
-                 if ( stateChange( vni.errorState, lastErrorState, true ) ) {
-                    setOutputErrorFlag( vni );   
-                    lastOutputLm = undefined;  // got a new error so force sending output
-                 }
+                     profiler.stopUpdate(updateStart, vni.outputState().error);
 
-                 handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
-                 handleError( vni, outputPorts.error,  lastErrorState );
+                 }, function(rejected) { 
+                     // fRunUpdater/updater failed 
+                     if (isInitState(vni.errorState)) { 
+                         // fRunUpdater/updater has not already set an error state - use the rejected info
+                         changeStateData(vni.errorState, rejected);
+                     }
 
-                 profiler.stopUpdate(updateStart, vni.outputState().error);
+                     setOutputErrorFlag(vni, true); 
 
-             }, function( rejected ) { 
-                 // fRunUpdater/updater failed 
-                 if ( isInitState( vni.errorState ) ) { 
-                     // fRunUpdater/updater has not already set an error state - use the rejected info
-                     changeStateData( vni.errorState, rejected );
-                 }
+                     stateChange(vni.outputState, lastOutputLm, false);
+                     stateChange(vni.errorState, lastErrorState, true);
 
-                 setOutputErrorFlag( vni, true ); 
-
-                 stateChange( vni.outputState, lastOutputLm, false );
-                 stateChange( vni.errorState, lastErrorState, true );
-
-                 handleOutput( outputPorts.output, lastOutputLm, vni.outputState() );
-                 handleError( vni, outputPorts.error, lastErrorState );
+                     handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
+                     handleError(vni, outputPorts.error, lastErrorState);
                   
+                     // If we haven't already processed the rejected error, do it now
+                     if (rejected !== vni.errorState().data) { 
+                         lastErrorState = _.clone(vni.errorState());   
+                         changeStateData(vni.errorState, rejected);
+                         if (stateChange(vni.errorState, lastErrorState, true)) { 
+                             lastErrorState.lm = undefined; 
+                         } 
+                         handleError(vni, outputPorts.error, lastErrorState);
+                     }
 
-                 // If we haven't already processed the rejected error, do it now
-                 if ( rejected !== vni.errorState().data ) { 
-                     lastErrorState = _.clone( vni.errorState() );   
-                     changeStateData( vni.errorState, rejected );
-                     if ( stateChange( vni.errorState, lastErrorState, true ) ) { 
-                         lastErrorState.lm = undefined; 
-                     } 
-                     handleError( vni, outputPorts.error, lastErrorState );
-                 }
+                     if (rejected !== vni.errorState().data) { 
+                         lastErrorState = _.clone(vni.errorState());   
+                         changeStateData(vni.errorState, rejected);
+                         handleError(vni, outputPorts.error, lastErrorState);
+                     }
 
-                 if ( rejected !== vni.errorState().data ) { 
-                     lastErrorState = _.clone( vni.errorState() );   
-                     changeStateData( vni.errorState, rejected );
-                     handleError( vni, outputPorts.error, lastErrorState );
-                 }
+                     profiler.stopUpdate(updateStart, true);
 
-                 profiler.stopUpdate(updateStart, true);
-
-             }).catch( function( e ) { 
-                 console.error( "framework-ondata unable to process fRunUpdater results!" );
-                 var err = ( e.stack ) ? e.stack : e;
-                 console.error( err );
-                 profiler.stopUpdate(updateStart, true);
-             }); 
-         }
-     } else {
-         // not ready to call fRunUpdater yet
+                 }).catch(function(e) { 
+                     console.error('framework-ondata unable to process fRunUpdater results!');
+                     var err = (e.stack) ? e.stack : e;
+                     console.error(err);
+                     profiler.stopUpdate(updateStart, true);
+                     throw e;
+                 }); 
+             }
+         } 
+     } catch(e) {
+         console.error("Unexpected exception in framework ondata!"); 
+         var err = (e.stack) ? e.stack : e;
+         console.error(err);
+         throw e;
+     } finally {
          profiler.stopEvent(eventStart);
      }
 };
