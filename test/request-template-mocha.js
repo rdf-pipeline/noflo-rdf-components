@@ -39,7 +39,7 @@ describe('request-template', function() {
         }).should.eventually.have.property('data', "Hello World");
     });
     it("should parameterize url", function() {
-        this.timeout(3250);
+        this.timeout(3500);
         return test.createNetwork({
             request: requestTemplate
         }).then(function(network){

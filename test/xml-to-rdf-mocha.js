@@ -73,7 +73,7 @@ describe('xml-to-rdf', function() {
 
    describe('functional behavior', function() {
        it('should translate patient demographics fhir xml to RDF in a noflo network', function() {
-          this.timeout(3500);
+          this.timeout(3750);
            return test.createNetwork(
                 { node1: 'core/Repeat',
                   node2: 'core/Repeat',

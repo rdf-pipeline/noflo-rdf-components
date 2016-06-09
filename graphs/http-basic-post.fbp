@@ -22,13 +22,14 @@ OUTPORT=request.OUTPUT:OUTPUT
 'Content-Type'  -> KEY setContentType(rdf-components/object) OUTPUT -> HEADERS request
 
 # Set the default headers in the request
+'' -> REGISTER phaser(rdf-components/phaser)
 '' -> VALUE setAuthorization OUTPUT -> HEADERS request
 
 # Read AUTH_FILE_ENV file content to set the Basic Authorization header
 authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> VALUE setAuthorization
 
 # Wait until the optional authFile is read before executing the request
-authFile OUT            -> REGISTER phaser(rdf-components/phaser)
+authFile OUT            -> REGISTER phaser
 setAuthorization OUTPUT -> ARRIVE phaser
 phaser OUTPUT -> INPUT request
 
