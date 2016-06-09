@@ -5,7 +5,12 @@ var _ = require('underscore');
 var wrapper = require('../src/javascript-wrapper.js');
 
 /**
- * Merges together one of the values of the array with the given value
+ * Merges together one of the values of the array with the given value.
+ * Selects one member of an array based on the hashcode of a given value.
+ * This is used in load balancing, to distribute requests across an array of
+ * available servers, where the value is a vnid. Hashing is used to ensure
+ * that the same server is used for subsequent requests for the same vnid
+ * (provided that the server list does not change).
  * @param array Array of values to choose from
  * @param value to include in output
  * @return an Array consistent of an item from array and value
