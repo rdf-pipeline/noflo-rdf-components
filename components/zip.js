@@ -11,6 +11,9 @@ var wrapper = require('../src/javascript-wrapper.js');
  * available servers, where the value is a vnid. Hashing is used to ensure
  * that the same server is used for subsequent requests for the same vnid
  * (provided that the server list does not change).
+ * This process is a form of convolution functions, which maps a tuple of
+ * sequences into a sequence of tuples. This family of functions is more
+ * commonly referred to as zip.
  * @param array Array of values to choose from
  * @param value to include in output
  * @return an Array consistent of an item from array and value
