@@ -21,6 +21,13 @@ function choose(value, len) {
     return (code % len + len) % len;
 }
 
+/**
+ * This algorithm was created for sdbm (a public-domain reimplementation of ndbm) database library.
+ * the function is hash(i) = hash(i - 1) * 65599 + str[i]; while the magic constant 65599 was picked
+ * out of thin air while experimenting with different constants, it turns out to be a prime number.
+ * This is one of the algorithms used in berkeley db and elsewhere.
+ * @see http://erlycoder.com/49/javascript-hash-functions-to-convert-string-into-integer-hash-
+ */
 function hashCode(str){
     var hash = 0, i, char;
     if (str.length === 0) return hash;
