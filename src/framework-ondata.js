@@ -63,7 +63,7 @@ module.exports = function(payload, socketIndex) {
 
              new Promise(function( resolve ) { 
                  // Execute fRunUpdater which will also execute the updater
-                 resolve( wrapper.fRunUpdater( vni ) );
+                 resolve( wrapper.fRunUpdater( vni, payload ) );
 
              }).then( function() { 
                  // fRunUpdater/Updater success path
