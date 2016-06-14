@@ -1,0 +1,37 @@
+# load-balancer.fbp
+
+# Sends the input packet to one of the target URLs listed in the file referenced
+# in the environment variable whos name is sent to TARGET_LIST_FILE_ENV.
+
+# Exports
+INPORT=phaser.INPUT:INPUT
+INPORT=readEnv.KEY:TARGET_LIST_FILE_ENV
+INPORT=request.AUTH_FILE_ENV:AUTH_FILE_ENV
+OUTPORT=request.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'trim' -> METHOD trimFile(objects/CallMethod)
+'trim' -> METHOD trimLine(objects/CallMethod)
+'["target","body"]' -> IN names(strings/ParseJson) OUT -> KEY object(rdf-components/object)
+'{+target}' -> URL request(rdf-components/http-basic-post)
+'application/json' -> TYPE request
+'{{{body}}}' -> BODY request
+
+# Read target URL list from environment variable containing the filename
+readEnv(core/ReadEnv) OUT -> IN readFile(filesystem/ReadFile) OUT -> IN trimFile
+trimFile OUT -> IN split(strings/SplitStr) OUT -> IN trimLine OUT -> IN toArray
+toArray(adapters/PacketsToArray) OUT -> ARRAY zip(rdf-components/zip)
+
+# Wait until the target list is received before issuing requests
+'target'    -> REGISTER phaser(rdf-components/phaser)
+toArray OUT -> ARRIVE phaser
+phaser OUTPUT -> INPUT stringify(rdf-components/stringify-json)
+
+# Combine JSON INPUT with target URL list to produce request parameters
+stringify OUTPUT -> VALUE zip OUTPUT -> VALUE object OUTPUT -> INPUT request
+
+# Error handling echos errors to console.log
+zip ERROR -> IN error
+object ERROR -> IN error
+request ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)
