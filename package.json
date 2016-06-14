@@ -24,6 +24,7 @@
     "sinon": "^1.17.2"
   },
   "dependencies": {
+    "bluebird": "^3.4.0",
     "fhir-json-to-xml": "git+https://www.github.com/rdf-pipeline/fhir-json-to-xml",
     "handlebars": "~4.0.4",
     "jsonld": "~0.4.11",
@@ -42,6 +43,7 @@
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.8",
+    "shex": "~0.5.9",
     "translators": "git+https://www.github.com/rdf-pipeline/translators",
     "underscore": "~1.8.3",
     "uri-templates": "~0.1.9",
@@ -93,8 +95,10 @@
       "replace-substring": "./components/replace-substring.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",
+      "simple-join": "./components/simple-join.js",
       "simple-splitter": "./components/simple-splitter.js",
       "stringify-json": "./components/stringify-json.js",
+      "to-upper-case": "./components/to-upper-case.js",
       "xml-to-rdf": "./components/xml-to-rdf.js",
       "zip": "./components/zip.js"
     }
