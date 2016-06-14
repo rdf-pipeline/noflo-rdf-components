@@ -60,16 +60,16 @@ module.exports = function(wrapper, defNumPorts) {
         it("should accept object with one inPort definition", function() {
             return Promise.resolve({
                 inPorts: { 
-                    myinput: { datatype: 'string', 
+                    input: { datatype: 'string', 
                                description: "my input description",
                                required: true }
                 },
-                updater: function(myinput) {
+                updater: function(input) {
                              handler('success');
                 }
             }).then(wrapper).then(commonTest.createComponent).then(function(component){
                 return _.keys(component.inPorts);
-            }).should.eventually.become([ 'myinput' ]);
+            }).should.eventually.become([ 'input' ]);
         });
     
     });
