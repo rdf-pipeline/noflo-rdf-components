@@ -5,8 +5,11 @@ var _ = require('underscore');
 var extractor = require('translators').cmumps;
 var translator = require('translators').procedures;
 
+var compHelper = require('../src/component-helper');
 var cmumps2fhir = require('./cmumps2fhir');
 var wrapper = require('../src/javascript-wrapper');
+
+var debug = compHelper.debugAll || false;
 
 module.exports = wrapper(cmumps2fhirProcedures);
 
@@ -21,6 +24,11 @@ module.exports = wrapper(cmumps2fhirProcedures);
  * @return an array of the patient's procedure data in FHIR format
  */
 function cmumps2fhirProcedures(data, cmumps_file, fhir_file) {
+
+    if (debug) {
+        console.log( '\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
+        // console.log('data: ',util.inspect(data,{depth:null})+'\n');
+    }
 
     if (_.isUndefined(data)) {
         throw Error("PatientProcedures requires data to translate!");

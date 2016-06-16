@@ -3,10 +3,13 @@
  */
 var _ = require('underscore');
 
+var compHelper = require('./component-helper');
 var createLm = require('./create-lm');
 var createState = require('./create-state');
 var factory = require('./pipeline-component-factory');
 var wrapperHelper = require('./wrapper-helper');
+
+var debug = compHelper.debugAll || false;
 
 /**
  * RDF Pipeline javascript wrapper fRunUpdater API as documented here: 
@@ -27,14 +30,16 @@ var fRunUpdater = function(updater, updaterFormals, vni) {
 
     // Execute the updater on the VNI context, passing the updater Parameters as the API arguments
     return new Promise(function(resolve) { 
+        if (debug)
+            console.log('\n' + compHelper.formattedNodeName(vni.nodeInstance) +
+                        ' calling updater');
 
-         // console.log('\ncalling updater for ',vni.nodeInstance.componentName,
-         //             ', nodeName=',vni.nodeInstance.nodeName);
          var results = updater.apply(vni, updaterActuals);
          resolve(results);
 
      }).then(function(results) { 
-         // console.log('updater returned results: ',results);
+         if (debug)
+             console.log(compHelper.formattedNodeName(vni.nodeInstance) + ' updater returned results:\n',results,'\n');
 
          if (! _.isUndefined(results)) {
              // Got some results back from updater

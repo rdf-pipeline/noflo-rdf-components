@@ -1,12 +1,16 @@
 // cmumps2fhir-demographics.js
 
 var _ = require('underscore');
+var util = require('util');
 
 var extractor = require('translators').cmumps;
 var translator = require('translators').demographics;
 
 var cmumps2fhir = require('./cmumps2fhir');
+var compHelper = require('../src/component-helper');
 var wrapper = require('../src/javascript-wrapper');
+
+var debug = compHelper.debugAll || false;
 
 module.exports = wrapper(patientDemographics);
 
@@ -23,6 +27,12 @@ module.exports = wrapper(patientDemographics);
  * @return the patient's demographic data in FHIR format
  */
 function patientDemographics(data, cmumps_file, fhir_file) {   
+
+    if (debug) {
+        console.log( '\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
+        // console.log('data: ',util.inspect(data,{depth:null})+'\n');
+    }
+
 
     if (_.isUndefined(data)) { 
         throw Error("PatientDemographics requires data to translate!");

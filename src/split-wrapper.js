@@ -1,10 +1,13 @@
 // split-wrapper.js
 var _ = require('underscore');
 
+var compHelper = require('./component-helper');
 var createLm = require('./create-lm');
 var createState = require('./create-state');
 var wrapper = require('./javascript-wrapper');
 var wrapperHelper = require('./wrapper-helper');
+
+var debug = compHelper.debugAll || false;
 
 /**
  *  Define a default updater stub function to be used if the caller
@@ -20,6 +23,11 @@ function defaultUpdater(vnid_hash) {
 function fRunUpdater(updater, updaterFormals, vni) {
 
     return new Promise(function( resolve ) {
+        if (debug) 
+            console.log('\n' + compHelper.formattedNodeName(vni.nodeInstance) +
+                        ' calling updater');
+
+
         var results = wrapperHelper.executeUpdater(updater, 
                                                    updaterFormals, 
                                                    vni, 
@@ -27,6 +35,9 @@ function fRunUpdater(updater, updaterFormals, vni) {
         resolve(results);
 
     }).then( function(results) {
+        if (debug)
+             console.log(compHelper.formattedNodeName(vni.nodeInstance) + 
+                         ' updater returned results:\n',results,'\n');
 
          if (! _.isUndefined(results)) {
 
@@ -57,7 +68,9 @@ function fRunUpdater(updater, updaterFormals, vni) {
                                              undefined, // not stale
                                              groupLm); 
                      outputPort.sendIt(state);
-                     // console.log('      sent',state,'\n');
+                     if (debug)
+                         console.log('    ' + compHelper.formattedNodeName(vni.nodeInstance) + 
+                                     ' sent:\n',state,'\n');
                  }
              }
          }

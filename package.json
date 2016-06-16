@@ -44,6 +44,7 @@
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.8",
     "shex": "~0.5.9",
+    "stack-trace": "0.0.9",
     "translators": "git+https://www.github.com/rdf-pipeline/translators",
     "underscore": "~1.8.3",
     "uri-templates": "~0.1.9",

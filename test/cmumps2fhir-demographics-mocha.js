@@ -58,6 +58,9 @@ describe('cmumps2fhir-demographics', function() {
             var cmumpsFile='/tmp/cmumpsDemographics.out';
             var fhirFile='/tmp/fhirDemographics.out';
 
+            test.rmFile(cmumpsFile);
+            test.rmFile(fhirFile);
+
             sinon.stub(console, 'log');
             var translation = compFactory.updater(parsedData, cmumpsFile, fhirFile);
             console.log.restore();
@@ -73,25 +76,32 @@ describe('cmumps2fhir-demographics', function() {
     describe('functional behavior', function() {
        it('should convert patient demographics to fhir in a noflo network', function() {
            this.timeout(3000);
-           sinon.stub(console,'log');
            return test.createNetwork(
                 { node1: 'filesystem/ReadFile',
-                  node2: { getComponent: compFactory }
+                  node2: 'core/Repeat',
+                  node3: 'core/Repeat',
+                  node4: 'rdf-components/cmumps2fhir-demographics'
             }).then(function(network) {
 
                 return new Promise(function(done, fail) {
 
-                    // True noflo component - not facade
                     var node1 = network.processes.node1.component;
                     var node2 = network.processes.node2.component;
+                    var node3 = network.processes.node3.component;
+                    var node4 = network.processes.node4.component;
 
-                    test.onOutPortData(node2, 'output', done);
-                    test.onOutPortData(node2, 'error', fail);
+                    test.onOutPortData(node4, 'output', done);
+                    test.onOutPortData(node4, 'error', fail);
 
-                    network.graph.addEdge('node1', 'out', 'node2', 'data');
+                    network.graph.addEdge('node1', 'out', 'node4', 'data');
+                    network.graph.addEdge('node2', 'out', 'node4', 'cmumps_file');
+                    network.graph.addEdge('node3', 'out', 'node4', 'fhir_file');
+
                     network.graph.addInitial(testFile, 'node1', 'in');
+                    network.graph.addInitial('', 'node2', 'in');
+                    network.graph.addInitial('', 'node3', 'in');
+
                 }).then(function(done) {
-                    console.log.restore();
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');
@@ -107,7 +117,6 @@ describe('cmumps2fhir-demographics', function() {
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
     
                 }, function(fail) {
-                    console.log.restore();
                     console.log('fail: ',fail);
                     throw Error(fail);
                 });

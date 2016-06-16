@@ -7,15 +7,23 @@ var N3 = require("n3");
 var jsonld = require("jsonld");
 
 var fs = require('fs');
+var util = require('util');
 
+var compHelper = require('../src/component-helper');
 var shexiface = require("../shex/shexiface");
 var wrapper = require('../src/javascript-wrapper');
+
+var debug = compHelper.debugAll || false;
 
 module.exports = wrapper( updater );
 
 function updater(data) {
 
-    // shexiface.now("enter updater");
+   if (debug) {
+       console.log('\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
+       // console.log('data: ',util.inspect(data, {depth:null})+'\n');
+   }
+
    if (_.isEmpty(data)) {
         throw Error("shex-cmumps-to-rdf component requires cmumps data to parse!");
     }

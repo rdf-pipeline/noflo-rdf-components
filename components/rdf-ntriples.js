@@ -2,7 +2,10 @@
 
 var _ = require('underscore');
 
+var compHelper = require('../src/component-helper');
 var wrapper = require('../src/javascript-wrapper.js');
+
+var debug = compHelper.debugAll || false;
 
 /**
  * Converts an RDF JS Interface Graph object into an object with the property
@@ -11,6 +14,8 @@ var wrapper = require('../src/javascript-wrapper.js');
  * @see https://www.w3.org/TR/rdf-interfaces/#graphs
  */
 module.exports = wrapper(function(input) {
+    if (debug) 
+       console.log('\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
     var tokens = [];
     input.forEach(function(triple) {
         tokens.push.apply(tokens, valueTokens(triple.subject));

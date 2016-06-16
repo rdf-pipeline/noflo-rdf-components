@@ -260,11 +260,13 @@ describe("framework-ondata", function() {
                 // We use a promise here because this section is asynchronous
                 return new Promise( function(done, fail) {
 
+                    sinon.stub(console, 'error');
                     test.onOutPortData(node, 'error', fail);
                     test.sendData(node, 'input', inData[0]);
 
                 }).then( function( done ) {
                    // Should not succeed
+                   console.error.restore();
                    assert.isNotOk( done );
 
                 }, function( fail ) {
@@ -272,8 +274,12 @@ describe("framework-ondata", function() {
                    fail.data.toString().should.equal( 'Error: '+ updaterErr );
 
                    if ( count < 1 ) { 
+                       console.error.restore();
                        return sendDataAndVerify( node, ++count );
+                   } else {
+                       console.error.restore();
                    }
+ 
                 });
 
             }
@@ -651,7 +657,7 @@ describe("framework-ondata", function() {
             }).then( function( done ) { 
                // Should go through here after the timeout
                console.error.restore();
-               logBuffer.startsWith('framework-ondata unable to process fRunUpdater results!').should.be.true;
+               logBuffer.startsWith('framework-ondata.js - module.exports() unable to process fRunUpdater results!').should.be.true;
 
             }, function( fail ) { 
                // Should not go through here right now 

@@ -4,7 +4,10 @@ var _ = require('underscore');
 var Promise = require('promise');
 var rdfstore = require('rdfstore');
 
+var compHelper = require('../src/component-helper');
 var wrapper = require('../src/javascript-wrapper.js');
+
+var debug = compHelper.debugAll || false;
 
 /**
  * Loads data into a RDF JS Interface Graph object
@@ -14,6 +17,9 @@ var wrapper = require('../src/javascript-wrapper.js');
  * @param input RDF data to be parsed and loaded or an URI where the data will be retrieved after performing content negotiation
  */
 module.exports = wrapper(function(options, media, graph, input) {
+    if (debug) 
+       console.log('\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
+
     var graphURI = graph ? graph :
         _.isString(input) && !input.match(/[^\w%-._~:\/?#\[\]@!$&'()*+,;=]/) ?
         input : undefined;
