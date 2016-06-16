@@ -6,6 +6,9 @@ var ondata = require('./framework-ondata');
 var createLm = require('./create-lm');
 var createState = require('./create-state');
 
+/**
+ * Overrides the "input" port to split the data into multiple states using the key as the vnid.
+ */
 module.exports = function(nodeDefOrUpdater) {
     var nodeDef = _.isFunction(nodeDefOrUpdater) ? {updater: nodeDefOrUpdater} : nodeDefOrUpdater || {};
     return wrapper(_.defaults({
