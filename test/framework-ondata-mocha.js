@@ -637,12 +637,6 @@ describe("framework-ondata", function() {
                         wrapper )
             );
 
-            var logBuffer = '';
-            // Hide expected console error message from test output
-            sinon.stub( console, 'error', function (message) {
-                logBuffer += message;
-            }); 
-
             return new Promise( function(done, fail) { 
 
                 test.onOutPortData(node, 'output', done);
@@ -656,13 +650,6 @@ describe("framework-ondata", function() {
 
             }).then( function( done ) { 
                // Should go through here after the timeout
-               console.error.restore();
-               logBuffer.startsWith('framework-ondata.js - module.exports() unable to process fRunUpdater results!').should.be.true;
-
-            }, function( fail ) { 
-               // Should not go through here right now 
-               console.error.restore();
-               assert.isNotOk( fail );
             });
         });
 
