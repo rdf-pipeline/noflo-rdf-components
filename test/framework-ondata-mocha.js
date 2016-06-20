@@ -653,5 +653,49 @@ describe("framework-ondata", function() {
             });
         });
 
+        it("should be deterministic with options first", function() {
+            this.timeout(5000);
+            var payload = {vnid: '1', data: 'I'};
+            return new Promise(function(done, fail){
+                test.createNetwork({
+                    node: factory({
+                        inPorts: {
+                            input: {},
+                            options: {}
+                        }
+                    }, {
+                        fRunUpdater: function(vni){
+                            done(vni.inputStates('input'));
+                        }
+                    })
+                }).then(function(network){
+                    network.graph.addInitial('O', 'node', 'options');
+                    network.graph.addInitial(payload, 'node', 'input');
+                }).catch(fail);
+            }).should.eventually.deep.equal(payload);
+        });
+
+        it("should be deterministic with options second", function() {
+            this.timeout(5000);
+            var payload = {vnid: '1', data: 'I'};
+            return new Promise(function(done, fail){
+                test.createNetwork({
+                    node: factory({
+                        inPorts: {
+                            input: {},
+                            options: {}
+                        }
+                    }, {
+                        fRunUpdater: function(vni){
+                            done(vni.inputStates('input'));
+                        }
+                    })
+                }).then(function(network){
+                    network.graph.addInitial(payload, 'node', 'input');
+                    network.graph.addInitial('O', 'node', 'options');
+                }).catch(fail);
+            }).should.eventually.deep.equal(payload);
+        });
+
     });
 });
