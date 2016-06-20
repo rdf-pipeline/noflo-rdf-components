@@ -6,11 +6,9 @@ var util = require('util');
 
 var fhir2xml = require('fhir-json-to-xml');
 
-var compHelper = require('../src/component-helper');
+var logger = require('../src/logger');
 var createLm = require('../src/create-lm');
 var wrapper = require('../src/javascript-wrapper');
-
-var debug = compHelper.debugAll || false;
 
 module.exports = wrapper(fhirJsonToXmlFile);
 
@@ -25,10 +23,8 @@ module.exports = wrapper(fhirJsonToXmlFile);
  */
 function fhirJsonToXmlFile(fhir, outdir) {  
 
-    if (debug) {
-        console.log( '\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
+    logger.debug('Enter', {nodeInstance: this.nodeInstance});
         // console.log('fhir: ',util.inspect(fhir,{depth:null})+'\n');
-    }
 
    if (_.isUndefined(fhir) || _.isUndefined(outdir) || _.isEmpty(outdir)) { 
        throw Error('Expected fhir data and an output directory in which to write the xml files!');
@@ -89,9 +85,7 @@ function writeToXmlFile(outdir, resourceType, fhirXml) {
     var xmlFileName = _.isUndefined(resourceType) ?  outdir+'fhir-'+'-'+createLm()+'.xml' :
         outdir+'fhir-'+resourceType+'-'+createLm()+'.xml';
     fs.writeFileSync(xmlFileName, fhirXml.toString());
-    if (debug)
-        console.log(compHelper.formattedNodeName(this.nodeInstance) + 
-                    ' wrote file '+xmlFileName);
+    logger.debug('wrote file', {xmlFileName: xmlFileName, nodeInstance: this.nodeInstance});
 
     return xmlFileName; 
 }

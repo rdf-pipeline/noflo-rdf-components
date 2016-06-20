@@ -6,11 +6,9 @@ var util = require('util');
 var extractor = require('translators').cmumps;
 var translator = require('translators').prescriptions;
 
-var compHelper = require('../src/component-helper');
+var logger = require('../src/logger');
 var cmumps2fhir = require('./cmumps2fhir');
 var wrapper = require('../src/javascript-wrapper');
-
-var debug = compHelper.debugAll || false;
 
 module.exports = wrapper(cmumps2fhirPrescriptions);
 
@@ -26,10 +24,8 @@ module.exports = wrapper(cmumps2fhirPrescriptions);
  * @return an array of the patient's medications in FHIR format
  */
 function cmumps2fhirPrescriptions(data, cmumps_file, fhir_file) {
-    if (debug) { 
-        console.log( '\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
+    logger.debug('Enter', {nodeInstance: this.nodeInstance});
         // console.log('data: ',util.inspect(data,{depth:null})+'\n');
-    }
 
     if (_.isUndefined(data)) {
         throw Error("PatientPrescriptions requires data to translate!");

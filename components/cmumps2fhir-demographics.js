@@ -7,10 +7,8 @@ var extractor = require('translators').cmumps;
 var translator = require('translators').demographics;
 
 var cmumps2fhir = require('./cmumps2fhir');
-var compHelper = require('../src/component-helper');
+var logger = require('../src/logger');
 var wrapper = require('../src/javascript-wrapper');
-
-var debug = compHelper.debugAll || false;
 
 module.exports = wrapper(patientDemographics);
 
@@ -28,11 +26,8 @@ module.exports = wrapper(patientDemographics);
  */
 function patientDemographics(data, cmumps_file, fhir_file) {   
 
-    if (debug) {
-        console.log( '\nEnter ' + compHelper.formattedNodeName(this.nodeInstance));
+    logger.debug('Enter', {nodeInstance: this.nodeInstance});
         // console.log('data: ',util.inspect(data,{depth:null})+'\n');
-    }
-
 
     if (_.isUndefined(data)) { 
         throw Error("PatientDemographics requires data to translate!");

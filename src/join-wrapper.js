@@ -14,13 +14,12 @@
 var _ = require('underscore');
 var util = require('util');
 
-var compHelper = require('./component-helper');
+var logger = require('./logger');
 var createLm = require('./create-lm');
 var createState = require('./create-state');
 var wrapper = require('./javascript-wrapper');
 var wrapperHelper = require('./wrapper-helper');
 
-var debug = compHelper.debugAll || false;
 var splitJoinHash = {};
 
 module.exports = function(nodeDefOrUpdater) {
@@ -68,9 +67,7 @@ var fRunUpdater = function(updater, updaterFormals, vni, payload) {
     vni.outputState({error: undefined});
 
     return new Promise(function( resolve ) {
-        if (debug)
-            console.log('\n' + compHelper.formattedNodeName(vni.nodeInstance) +
-                        ' calling updater');
+        logger.debug('calling updater', vni);
 
         // Call the updater so the component can do whatever the user wants with the hash and input data
         var results = wrapperHelper.executeUpdater(updater, 
@@ -80,9 +77,7 @@ var fRunUpdater = function(updater, updaterFormals, vni, payload) {
         resolve(results);
 
     }).then( function(results) {
-        if (debug)
-            console.log(compHelper.formattedNodeName(vni.nodeInstance) + 
-                        ' updater returned results:\n',results,'\n');
+        logger.debug('updater returned results', {results: util.inspect(results), nodeInstance: vni.nodeInstance});
 
         if (! _.isUndefined(results)) {
             // Got some results back from updater

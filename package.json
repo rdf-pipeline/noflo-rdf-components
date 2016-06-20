@@ -48,6 +48,7 @@
     "translators": "git+https://www.github.com/rdf-pipeline/translators",
     "underscore": "~1.8.3",
     "uri-templates": "~0.1.9",
+    "winston": "^2.2.0",
     "xslt4node": "~0.2.1"
   },
   "noflo": {

@@ -4,12 +4,11 @@
 var _ = require('underscore');
 var util = require('util');
 
-var compHelper = require('./component-helper');
+var util = require('util');
+var logger = require('./logger');
 var createState = require('./create-state');
 var createLm = require('./create-lm');
 var vniManager = require('./vni-manager');
-
-var debug = compHelper.debugAll || false;
 
 /** 
  * The standard RDF pipeline framework ondata method. This is called whenever  
@@ -29,13 +28,12 @@ module.exports = function(payload, socketIndex) {
      var portName = this.name;
      var outputPorts = this.nodeInstance.outPorts;
 
-     if (debug) {
-         var socketInfo = _.isUndefined(socketIndex) ? '' : 'on socketIndex: '+socketIndex;
-         console.log('\nEnter ' +
-                     compHelper.formattedNodeName(this.nodeInstance) + 
-                     ' for port: ' + portName +
-                     socketInfo + ' with payload: ',payload);
-     }
+    logger.debug('Enter', {
+        port: portName,
+        socketIndex: socketIndex,
+        payload: util.inspect(payload),
+        nodeInstance: this.nodeInstance
+    });
 
      var vnid = payload.vnid || '';
      var vni = this.nodeInstance.vni(vnid);
@@ -73,9 +71,10 @@ module.exports = function(payload, socketIndex) {
 
              }).then( function() { 
                  // fRunUpdater/Updater success path
-                 if (debug) 
-                     console.log(compHelper.formattedNodeName(vni.nodeInstance) +
-                                 ' fRunUpdater success:\n  ', vni.outputState());
+                logger.debug('fRunUpdater success', {
+                    output: util.inspect(vni.outputState()),
+                    nodeInstance: vni.nodeInstance
+                });
 
                  // Returned OK, but updater could have set an error - check for that
                  // and update the LM if the state has changed
@@ -88,8 +87,7 @@ module.exports = function(payload, socketIndex) {
                  handleError(vni, outputPorts.error,  lastErrorState);
 
              }, function( rejected ) { 
-                 console.error(compHelper.formattedNodeName(vni.nodeInstance) +
-                               ' fRunUpdater failed!');
+                 logger.error('fRunUpdater failed!', vni);
 
                  // fRunUpdater/updater failed 
                  if (isInitState(vni.errorState)) { 
@@ -123,8 +121,7 @@ module.exports = function(payload, socketIndex) {
                  }
 
              }).catch( function(e) { 
-                 console.error(compHelper.formattedNodeName(vni.nodeInstance) + 
-                               " unable to process fRunUpdater results!\n" );
+                 logger.error("unable to process fRunUpdater results!", vni);
                  var err = (e.stack) ? e.stack : e;
                  console.error(err);
              }); 
@@ -280,9 +277,10 @@ function handleOutput( port, lastLm, state ) {
 
         // Got any edges out of this port? 
         if (port.listAttached().length > 0) {
-            if (debug)
-                console.log('\n  '+compHelper.formattedNodeName(port.nodeInstance)+
-                            ' sending state:\n ',util.inspect(state,{depth:1})+'\n');
+            logger.debug('sending state', {
+                state: util.inspect(state,{depth:1}),
+                nodeInstance: port.nodeInstance
+            });
 
             port.send( state );
             port.disconnect();
