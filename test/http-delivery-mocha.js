@@ -5,6 +5,7 @@ var chaiAsPromised = require('chai-as-promised');
 chai.should();
 chai.use(chaiAsPromised);
 
+var fs = require('fs');
 var http = require('http');
 var os = require('os');
 var path = require('path');
@@ -102,6 +103,51 @@ describe('http-delivery', function() {
                     test.onOutPortData(network.processes.sparql.component, 'output', done);
                     network.graph.addInitial("urn:test:graph", 'sparql', 'target_graph_uri');
                     network.graph.addInitial(john, 'sparql', 'parsed_jsonld');
+                });
+            }).then(stubs.promiseLater).then(function(){
+                return new Promise(function(done) {
+                    test.onOutPortData(network.processes.construct.component, 'output', done);
+                    network.graph.addInitial("urn:test:graph", 'construct', 'source_graph_uri');
+                });
+            });
+        }).should.eventually.have.property('data').that.has.property('@id', "http://dbpedia.org/resource/John_Lennon");
+    });
+    xit("should round trip rdf file through SPARQL LOAD", function() {
+        this.timeout(10000);
+        if (!process.env['rdf-auth-file']) {
+            process.env['rdf-auth-file'] = path.join(os.tmpdir(), 'rdf-auth');
+        }
+        var turtle = [
+            '<http://dbpedia.org/resource/John_Lennon> <http://schema.org/spouse> <http://dbpedia.org/resource/Cynthia_Lennon> .',
+            '<http://dbpedia.org/resource/John_Lennon> <http://xmlns.com/foaf/0.1/name> "John Lennon" .'
+        ].join('\n');
+        var file = path.join(os.tmpdir(), 'rdf-john.ttl');
+        fs.writeFileSync(file, turtle, {encoding: 'utf-8'});
+        var john = {
+            "@context": "http://json-ld.org/contexts/person.jsonld",
+            "@graph": [{
+                "@id": "http://dbpedia.org/resource/John_Lennon",
+                "name": "John Lennon",
+                "spouse": "http://dbpedia.org/resource/Cynthia_Lennon"
+            }]
+        };
+        return test.createNetwork({
+            sparql: "rdf-components/rdf-sparql-clear-load-file",
+            construct: "rdf-components/rdf-construct-jsonld"
+        }).then(function(network){
+            network.graph.addInitial('rdf-auth-file', 'sparql', 'auth_file_env');
+            network.graph.addInitial('rdf-auth-file', 'construct', 'auth_file_env');
+            network.graph.addInitial(endpoint, 'sparql', 'sparql_endpoint');
+            network.graph.addInitial(endpoint, 'construct', 'sparql_endpoint');
+            network.graph.addInitial(port, 'sparql', 'listen');
+            network.graph.addInitial(origin + '/', 'sparql', 'base_url');
+            return stubs.promiseLater().then(function(){
+                return new Promise(function(done) {
+                    test.onOutPortData(network.processes.sparql.component, 'output', done);
+                    network.graph.addInitial("urn:test:graph", 'sparql', 'target_graph_uri');
+                    network.graph.addInitial('text/turtle', 'sparql', 'rdf_type');
+                    network.graph.addInitial('utf-8', 'sparql', 'rdf_encoding');
+                    network.graph.addInitial(file, 'sparql', 'rdf_file');
                 });
             }).then(stubs.promiseLater).then(function(){
                 return new Promise(function(done) {
