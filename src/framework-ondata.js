@@ -39,6 +39,17 @@ module.exports = function(payload, socketIndex) {
      // Set the new input state
      vni.inputStates(portName, socketIndex, inputState);
 
+    if (vnid) {
+        runUpdater(this.nodeInstance, vni, isStale, payload);
+    } else {
+        this.nodeInstance.forEachVni(function(vni) {
+            runUpdater(this.nodeInstance, vni, isStale, payload);
+        }, this);
+    }
+};
+
+function runUpdater(nodeInstance, vni, isStale, payload) {
+     var outputPorts = nodeInstance.outPorts;
      if (shouldRunUpdater(vni, isStale)) { 
 
          // Save vars we will need in the promise where the context is different
@@ -46,7 +57,7 @@ module.exports = function(payload, socketIndex) {
          var lastErrorState = _.clone( vni.errorState() );  // Shallow clone 
          var lastOutputLm = vni.outputState().lm;
 
-         if ( ! _.isFunction( this.nodeInstance.wrapper.fRunUpdater ) ) { 
+         if ( ! _.isFunction( nodeInstance.wrapper.fRunUpdater ) ) {
 
              // Don't have a wrapper fRunUpdater 
              throw Error( 'No wrapper fRunUpdater function found!  Cannot run updater.' );
@@ -59,7 +70,7 @@ module.exports = function(payload, socketIndex) {
              clearStateData( vni.errorState ); // clear last error state
 
              // Save wrapper to make it accessible from the Promise
-             var wrapper = this.nodeInstance.wrapper;
+             var wrapper = nodeInstance.wrapper;
 
              new Promise(function( resolve ) { 
                  // Execute fRunUpdater which will also execute the updater

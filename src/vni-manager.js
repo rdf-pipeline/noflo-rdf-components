@@ -39,6 +39,20 @@ module.exports = function( node ) {
     _.extend( node, 
         {
 
+            /**
+             * Calls fn for each known vni in the system
+             *
+             * @this node instance
+             * @return node instance node for easy chaining
+             */
+            forEachVni: function(fn, thisArg) {
+                var vnids = _.keys(this.vnis);
+                for (var i=0,n=vnids.length; i<n; i++) {
+                    fn.call(thisArg, this.vni(vnids[i]), vnids[i], this);
+                }
+                return this;
+            },
+
           /**
            * Delete all vnis assiciated with the node instance.
            *
