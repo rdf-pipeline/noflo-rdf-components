@@ -44,7 +44,7 @@ var fRunUpdater = function(updater, updaterFormals, vni, payload) {
 
     var groupLm = wrapperHelper.groupLm(vni.inputStates());
 
-    if (_.isUndefined(groupLm)) {
+    if (_.isUndefined(payload.groupLm)) {
         // Just received hash (which has no group lm), but no input, so there's nothing to do yet 
         return;
 
