@@ -197,4 +197,33 @@ describe('noflo-component-factory', function() {
             return node.componentName;
         }).should.eventually.eql(factoryId);
     });
+    it("should have nodeInstance translator flag that defaults to false", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.translator);
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "translator?");
+        }).should.become("translator? false");
+    });
+    it("should have translator flag that can be set to true", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                translator: true,
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.translator);
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "translator?");
+        }).should.become("translator? true");
+    });
 });
