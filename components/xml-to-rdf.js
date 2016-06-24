@@ -8,7 +8,7 @@ var readline = require('readline');
 var xslt4node = require('xslt4node');
 var first=true;
 
-var helper = require('../src/component-helper');
+var logger = require('../src/logger');
 var createState = require('../src/create-state');
 var wrapper = require('../src/javascript-wrapper');
 
@@ -32,7 +32,7 @@ module.exports = wrapper(xmlToRdf);
  */
 function xmlToRdf(sources, classpath, transform, outdir) {
 
-    // console.log('enter xmlToRdf with ',arguments);
+    logger.debug('Enter', {arguments: arguments, nodeInstance: this.nodeInstance});
 
     if (_.isUndefined(sources) || _.isUndefined(transform) || _.isUndefined(outdir)) {
         throw Error("Xml-to-rdf component expects sources, fhir-xml-to-rdf xslt, and outdir parameters!");
@@ -124,6 +124,8 @@ function processSource(source, classpath, transform, outdir) {
                     // Write the file
                     fileName = outdir+uri[1]+'.ttl';
                     fs.writeFileSync(fileName, rdf);
+                    logger.debug('wrote file', {fileName: fileName, nodeInstance: this.nodeInstance});
+ 
                     resolve(fileName);
                 }
             }

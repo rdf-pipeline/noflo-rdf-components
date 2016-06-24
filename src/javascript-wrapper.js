@@ -3,6 +3,8 @@
  */
 var _ = require('underscore');
 
+var util = require('util');
+var logger = require('./logger');
 var createLm = require('./create-lm');
 var createState = require('./create-state');
 var factory = require('./pipeline-component-factory');
@@ -27,14 +29,13 @@ var fRunUpdater = function(updater, updaterFormals, vni) {
 
     // Execute the updater on the VNI context, passing the updater Parameters as the API arguments
     return new Promise(function(resolve) { 
+        logger.debug('calling updater', vni);
 
-         // console.log('\ncalling updater for ',vni.nodeInstance.componentName,
-         //             ', nodeName=',vni.nodeInstance.nodeName);
          var results = updater.apply(vni, updaterActuals);
          resolve(results);
 
      }).then(function(results) { 
-         // console.log('updater returned results: ',results);
+         logger.debug('updater returned results', {results: util.inspect(results), nodeInstance: vni.nodeInstance});
 
          if (! _.isUndefined(results)) {
              // Got some results back from updater

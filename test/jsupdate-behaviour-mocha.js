@@ -115,7 +115,7 @@ describe("jsupdater-behaviour", function() {
         }).should.eventually.have.property('data', "Hello from node1 and from node2");
     });
     it("should not fire updater if not all of its attached inputs have valid states", function() {
-        this.timeout(3750);
+        this.timeout(4000);
         return new Promise(function(done, fail){
             return test.createNetwork({
                 node1: "core/Repeat",
@@ -347,7 +347,7 @@ describe("jsupdater-behaviour", function() {
         }).should.become("nothing happened");
     });
     it("should not fire updater if upstream updater set an error data", function() {
-        this.timeout(4250);
+        this.timeout(4500);
         return new Promise(function(done, fail){
             sinon.stub(console, 'error', function (message) {
                 // Expect error messages on this one, so keep it quiet

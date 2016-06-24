@@ -2,11 +2,13 @@
 
 var _ = require('underscore');
 var fs = require('fs');
+var util = require('util');
 
 var fhir2xml = require('fhir-json-to-xml');
 
-var wrapper = require('../src/javascript-wrapper');
+var logger = require('../src/logger');
 var createLm = require('../src/create-lm');
+var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper(fhirJsonToXmlFile);
 
@@ -20,6 +22,9 @@ module.exports = wrapper(fhirJsonToXmlFile);
  * @return a list of the xml files that were written
  */
 function fhirJsonToXmlFile(fhir, outdir) {  
+
+    logger.debug('Enter', {nodeInstance: this.nodeInstance});
+        // console.log('fhir: ',util.inspect(fhir,{depth:null})+'\n');
 
    if (_.isUndefined(fhir) || _.isUndefined(outdir) || _.isEmpty(outdir)) { 
        throw Error('Expected fhir data and an output directory in which to write the xml files!');
@@ -40,7 +45,7 @@ function fhirJsonToXmlFile(fhir, outdir) {
            var cleanFhir = filterAttribute(fhirObject, 'extension');
 
            // convert the object to xml, write to a file, and return the file name
-           return writeToXmlFile(outdir, fhirJsonToXml.toXML(cleanFhir)); 
+           return writeToXmlFile(outdir, fhirObject.resourceType, fhirJsonToXml.toXML(cleanFhir)); 
       }); 
 
    } else { 
@@ -49,9 +54,10 @@ function fhirJsonToXmlFile(fhir, outdir) {
        var cleanFhir = filterAttribute(fhir, 'extension');
 
        // convert the fhir object to xml, write to a file, and return the file name
-       xmlFileNames = [ writeToXmlFile(outdir, fhirJsonToXml.toXML(cleanFhir)) ]; 
+       xmlFileNames = [writeToXmlFile(outdir, fhir.resourceType, fhirJsonToXml.toXML(cleanFhir))]; 
    } 
 
+   // console.log('FHIR JSON to XML returning ',xmlFileNames,'\n');
    return xmlFileNames; 
 }
 
@@ -75,8 +81,11 @@ function filterAttribute(object, attributeName) {
  * @param outdir output directory path
  * @param fhir fhir object to be written
  */
-function writeToXmlFile(outdir, fhirXml) { 
-    var xmlFileName = outdir+'fhir-'+createLm()+'.xml';
+function writeToXmlFile(outdir, resourceType, fhirXml) { 
+    var xmlFileName = _.isUndefined(resourceType) ?  outdir+'fhir-'+'-'+createLm()+'.xml' :
+        outdir+'fhir-'+resourceType+'-'+createLm()+'.xml';
     fs.writeFileSync(xmlFileName, fhirXml.toString());
+    logger.debug('wrote file', {xmlFileName: xmlFileName, nodeInstance: this.nodeInstance});
+
     return xmlFileName; 
 }

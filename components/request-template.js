@@ -7,7 +7,8 @@ var URL = require('url');
 var uriTemplates = require('uri-templates');
 var Handlebars = require('handlebars');
 
-var wrapper = require('../src/javascript-wrapper.js');
+var logger = require('../src/logger');
+var wrapper = require('../src/javascript-wrapper');
 
 /**
  * Initials an HTTP request from uri-template (RFC6570), using object data from
@@ -94,6 +95,9 @@ function execute(method, url, headers, body, parameters, input) {
         headers: _.omit(http_headers, _.isEmpty)
     });
     var prot = options.protocol == 'https:' ? https : http;
+
+    logger.debug('options', {options: options, nodeInstance: this.nodeInstance});
+
     return new Promise(function(resolve, reject) {
         var req = prot.request(options, function(res){
             res.setEncoding('utf8');

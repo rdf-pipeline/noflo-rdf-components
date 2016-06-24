@@ -10,6 +10,7 @@ var expect = chai.expect;
 
 var noflo = require('noflo');
 var _ = require('underscore');
+var fs = require('fs');
 
 module.exports = {
 
@@ -127,6 +128,19 @@ module.exports = {
         component.outPorts[portName].attach(socket);
         socket.on('data', handler.bind(node.outPorts[portName]));
     },
+
+    /** 
+     * Remove a file if it exists.  Do not throw error if it does not exist.
+     * equivalent to rm -f
+     */
+     rmFile: function(path) { 
+         try {  
+             fs.unlinkSync(path) 
+         } catch(e) { 
+             if (e.code !== 'ENOENT') 
+                 throw e
+         };
+     },
 
     /**
      * Get the expected classpath for the saxon jar depending on the current operating system.

@@ -7,7 +7,9 @@ var N3 = require("n3");
 var jsonld = require("jsonld");
 
 var fs = require('fs');
+var util = require('util');
 
+var logger = require('../src/logger');
 var shexiface = require("../shex/shexiface");
 var wrapper = require('../src/javascript-wrapper');
 
@@ -15,7 +17,9 @@ module.exports = wrapper( updater );
 
 function updater(data) {
 
-    // shexiface.now("enter updater");
+   logger.debug('Enter', {nodeInstance: this.nodeInstance});
+       // console.log('data: ',util.inspect(data, {depth:null})+'\n');logger.debug
+
    if (_.isEmpty(data)) {
         throw Error("shex-cmumps-to-rdf component requires cmumps data to parse!");
     }

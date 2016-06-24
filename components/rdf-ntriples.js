@@ -2,6 +2,7 @@
 
 var _ = require('underscore');
 
+var logger = require('../src/logger');
 var wrapper = require('../src/javascript-wrapper.js');
 
 /**
@@ -11,6 +12,7 @@ var wrapper = require('../src/javascript-wrapper.js');
  * @see https://www.w3.org/TR/rdf-interfaces/#graphs
  */
 module.exports = wrapper(function(input) {
+    logger.debug('Enter', this);
     var tokens = [];
     input.forEach(function(triple) {
         tokens.push.apply(tokens, valueTokens(triple.subject));

@@ -121,7 +121,7 @@ describe('javascript-wrapper', function() {
             });
 
             it("should trigger updater function with multiple input parameters", function() {
-                this.timeout(3000);
+                this.timeout(3250);
                 var handler;
                 return commonTest.createNetwork(
                     { node1: 'core/Repeat', // input node to test node 3
