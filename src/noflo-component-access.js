@@ -21,7 +21,8 @@ function facadeComponent(node) {
         },
         get componentName() {
             return node.componentName;
-        }
+        },
+        translator: node.translator
     };
     return _.extend(facade, {
         inPorts: _.mapObject(_.pick(node.inPorts, isInPort), facadePort.bind(this, facade)),
