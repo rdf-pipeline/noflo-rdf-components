@@ -134,7 +134,7 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
              }).catch( function(e) { 
                  logger.error("unable to process fRunUpdater results!", vni);
                  var err = (e.stack) ? e.stack : e;
-                 console.error(err);
+                 logger.error(err);
              }); 
          } // have an fRunUpdater
      } // not ready for fRunUpdater yet
