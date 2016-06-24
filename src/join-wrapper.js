@@ -42,24 +42,20 @@ function defaultUpdater(vnid_hash, input) {
 
 var fRunUpdater = function(updater, updaterFormals, vni, payload) {
 
+    // Just received hash (which has no group lm), but no input, so there's nothing to do yet 
+    if (_.isUndefined(payload.groupLm)) return;
+
+    // We have an input with data that went through the split chain
+    var hashState = getHashState(vni, payload);
     var groupLm = wrapperHelper.groupLm(vni.inputStates());
 
-    if (_.isUndefined(groupLm)) {
-        // Just received hash (which has no group lm), but no input, so there's nothing to do yet 
-        return;
+    // Is this the first time we've seen data from this split group?
+    if (_.isUndefined(splitJoinHash[groupLm])) {
 
-    } else {
-       // We have an input with data that went through the split chain
-       var hashState = getHashState(vni, payload);
-
-       // Is this the first time we've seen data from this split group?
-       if (_.isUndefined(splitJoinHash[groupLm])) {
-
-           // Got a new hash so create an entry for tracking it and mark all hash fields pending
-           splitJoinHash[groupLm] = _.mapObject(hashState.data, function(val, key) {
-               return {[key]: val, pending: true};
-           });
-       } 
+        // Got a new hash so create an entry for tracking it and mark all hash fields pending
+        splitJoinHash[groupLm] = _.mapObject(hashState.data, function(val, key) {
+            return {[key]: val, pending: true};
+        });
     }
 
     var oldOutputStateLm = vni.outputState().lm;
