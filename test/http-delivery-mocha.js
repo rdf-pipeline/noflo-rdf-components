@@ -123,14 +123,6 @@ describe('http-delivery', function() {
         ].join('\n');
         var file = path.join(os.tmpdir(), 'rdf-john.ttl');
         fs.writeFileSync(file, turtle, {encoding: 'utf-8'});
-        var john = {
-            "@context": "http://json-ld.org/contexts/person.jsonld",
-            "@graph": [{
-                "@id": "http://dbpedia.org/resource/John_Lennon",
-                "name": "John Lennon",
-                "spouse": "http://dbpedia.org/resource/Cynthia_Lennon"
-            }]
-        };
         return test.createNetwork({
             sparql: "rdf-components/rdf-sparql-clear-load-file",
             construct: "rdf-components/rdf-construct-jsonld"
