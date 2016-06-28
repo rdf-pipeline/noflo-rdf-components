@@ -43,8 +43,14 @@ var fRunUpdater = function(updater, updaterFormals, vni) {
              var newStateLm = vni.outputState().lm;
              if (newStateLm === oldOutputStateLm ||
                  _.isUndefined(oldOutputStateLm) && ! _.isUndefined(newStateLm)) {
+
                  // updater did not modify output state lm - update it now
-                 vni.outputState({data: results, groupLm: groupLm, lm: createLm()});
+                 var id = graphUri.call(vni, results.id);
+                 if (_.isUndefined(id)) { 
+                     vni.outputState({data: results, groupLm: groupLm, lm: createLm()});
+                 } else {
+                     vni.outputState({data: results, groupLm: groupLm, lm: createLm(), graphUri: id});
+                 }
              }
          }
 
@@ -139,6 +145,37 @@ module.exports = function(nodeDefOrUpdater, overrides) {
  */
 var defaultUpdater = function(input) { 
     return input;
+}
+
+/**
+ * Create a graph ID for a translator, to be stored as metadata for use by
+ * downstream nodes
+ * 
+ * @this vni context
+ * @param id a resource ID
+ * @return the graph ID if it is the first one we've seen; an array of graph IDs if we already 
+ *         had one; will return undefined if there is no id
+ */
+function graphUri(id) {
+
+    if (this.nodeInstance.isTranslator && ! _.isUndefined(id)) {
+
+        var translator = encodeURIComponent(this.nodeInstance.componentName);
+        var resourceId = encodeURI(id);
+        var uri = 'urn:local:' + translator + ":" + resourceId;
+
+        var outputState = this.outputState();
+        if (_.isUndefined(outputState['graphUri'])) {
+            // first graph ID we've seen - use it
+            return uri;
+        } else if (outputState['graphUri'] !== uri) {
+            // Already have a graph ID - make an array of them
+            return [outputState['graphUri'], uri]; 
+        } else {
+            // graph ID matches what we already have.  Note it and move on.
+            logger.debug('wrapper does not need to add id because it is already there');
+        }
+    }
 }
 
 // Introspect the updater to determine what its parameters are.
