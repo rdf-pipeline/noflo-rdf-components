@@ -54,7 +54,9 @@ describe("patient-hash", function() {
                   "@graph": [ demographics ]}; 
 
             // Invoke component updater
-            var hash = factory.updater(testdata);
+            var node = test.createComponent(factory);
+            var vni = node.vni('');
+            var hash = factory.updater.call(vni, testdata);
 	    hash.should.be.an('object');
 
             var demographicsId = demographicsType+':'+patientId;
@@ -199,8 +201,11 @@ describe("patient-hash", function() {
                 prescription: 'rdf-components/custom-prescription-translator',
                 procedure: 'rdf-components/custom-procedure-translator'}
 
+            var node = test.createComponent(factory);
+            var vni = node.vni('');
+
             // Invoke component updater
-            var hash = factory.updater(testdata, customTranslators);
+            var hash = factory.updater.call(vni, testdata, customTranslators);
 	    hash.should.be.an('object');
 
             var demographicsId = demographicsType+':'+patientId;
@@ -235,8 +240,11 @@ describe("patient-hash", function() {
 
             var customTranslators = {demographics: 'rdf-components/custom-demographics-translator'};
 
+            var node = test.createComponent(factory);
+            var vni = node.vni('');
+
             // Invoke component updater
-            var hash = factory.updater(testdata, customTranslators);
+            var hash = factory.updater.call(vni, testdata, customTranslators);
 	    hash.should.be.an('object');
 
             var demographicsId = demographicsType+':'+patientId;
@@ -293,6 +301,7 @@ describe("patient-hash", function() {
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3); 
+                    done.patientId.should.equal('2-000007'); // verify patient ID metadata is there
                 });
             });
         });

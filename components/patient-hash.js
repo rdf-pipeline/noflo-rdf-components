@@ -59,6 +59,7 @@ function patientHash(patient_json, translator_components) {
     }
 
     var patientDemographics = extractor.extractDemographics(patient); 
+    var self = this;
     _.each(translators, function(translator, type) { 
           switch(type) { 
               case 'demographics': {
@@ -66,9 +67,18 @@ function patientHash(patient_json, translator_components) {
                   break;
               }
               case 'labs': {
-                  // Current shex translator expects entire patient record
-                  var id = _.isEmpty(patientDemographics) ? 'PatientRecord:'+createLm(): 'PatientRecord:'+patientDemographics[0]._id;
-                  hash[id] = {data: patient, translateBy: translator};
+                  if ( _.isEmpty(patientDemographics)) { 
+                      logger.debug('No patient ID available for labs processing in this data set!');
+                      var id = 'PatientRecord:'+createLm();
+                      hash[id] = {data: patient, translateBy: translator};
+                  } else { 
+                      var patientId = patientDemographics[0]._id;
+                      var id = 'PatientRecord:' + patientId;
+
+                      // Current shex translator expects entire patient record
+                      hash[id] = {data: patient, translateBy: translator};
+                      self.outputState({patientId: patientId}); 
+                  }
                   break;
               }
               case 'prescription': {
