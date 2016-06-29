@@ -49,3 +49,5 @@ module.exports = function(vnid, data, lm, error, stale, groupLm) {
                 groupLm: groupLm,
                 lm: lm || createLm() };
 };
+
+module.exports.STATE_KEYS = ['vnid', 'data', 'error', 'stale', 'groupLm', 'lm'];

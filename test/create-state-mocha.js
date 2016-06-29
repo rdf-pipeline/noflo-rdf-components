@@ -208,4 +208,9 @@ describe("create-state", function() {
        state.groupLm.should.equal(groupLm);
        state.lm.should.equal(testLm);
     });
+
+    it("State object default keys should match exported STATE_KEYS", function() {
+        var state = createState('');
+        Object.keys(state).should.deep.equal(createState.STATE_KEYS); 
+    });
 });
