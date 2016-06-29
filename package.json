@@ -87,6 +87,7 @@
       "object": "./components/object.js",
       "parse-json": "./components/parse-json.js",
       "parse-url": "./components/parse-url.js",
+      "patient-hash": "./components/patient-hash.js",
       "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
