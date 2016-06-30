@@ -41,7 +41,7 @@ function cmumps2fhirPrescriptions(data, cmumps_file, fhir_file) {
     // How many prescriptions do we have?  
     if (! _.isEmpty(prescriptions)) {
         var numberOfMeds = (_.isArray(prescriptions)) ? prescriptions.length : 1;
-        console.log('Number of Prescriptions: ',numberOfMeds+'\n');
+        logger.info('Number of Prescriptions: ',numberOfMeds+'\n');
     }
 
     return prescriptions;

@@ -24,7 +24,7 @@ module.exports = wrapper(cmumps2fhirProcedures);
 function cmumps2fhirProcedures(data, cmumps_file, fhir_file) {
 
     logger.debug('Enter', {nodeInstance: this.nodeInstance});
-        // console.log('data: ',util.inspect(data,{depth:null})+'\n');
+    // console.log('data: ',util.inspect(data,{depth:null})+'\n');
 
     if (_.isUndefined(data)) {
         throw Error("PatientProcedures requires data to translate!");
@@ -39,7 +39,7 @@ function cmumps2fhirProcedures(data, cmumps_file, fhir_file) {
     // How many procedures do we have?
     if (! _.isEmpty(procedures)) {
         var numberOfProcs = (_.isArray(procedures)) ? procedures.length : 1;
-        console.log('Number of Procedures: ',numberOfProcs);
+        logger.info('Number of Procedures: ',numberOfProcs);
     }
 
     return procedures;
