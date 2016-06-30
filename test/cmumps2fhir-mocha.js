@@ -10,8 +10,9 @@ var sinon = require('sinon');
 var _ = require('underscore');
 var fs = require('fs');
 
-var test = require('./common-test');
 var cmumps2fhir = require('../components/cmumps2fhir');
+var logger = require('../src/logger');
+var test = require('./common-test');
 
 var testFile = '../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
 
@@ -28,9 +29,9 @@ describe('cmumps2fhir', function() {
     });
 
     it('should return empty object if input data is empty', function() {
-            sinon.stub(console, 'warn');
+            sinon.stub(logger, 'warn');
             expect(cmumps2fhir({})).to.be.empty;
-            console.warn.restore();
+            logger.warn.restore();
     });
 
     it('should extract data using the specified extractor function', function() {
@@ -45,7 +46,7 @@ describe('cmumps2fhir', function() {
     it('should gracefully handle a failed extraction', function() {
 
         var warned = false;
-        sinon.stub(console, 'warn', function(message) { 
+        sinon.stub(logger, 'warn', function(message) { 
              // should get a warning like "No patient cmumps data found".
              warned = true;
         });
@@ -56,7 +57,7 @@ describe('cmumps2fhir', function() {
 	}
 
         var results = cmumps2fhir(testData, extractor);
-        console.warn.restore();
+        logger.warn.restore();
 
         expect(results).to.be.undefined;
         warned.should.be.true;
@@ -74,7 +75,7 @@ describe('cmumps2fhir', function() {
     it('should gracefully handle a failed translation', function() {
 
         var warned = false;
-        sinon.stub(console, 'warn', function(message) { 
+        sinon.stub(logger, 'warn', function(message) { 
              // should get a warning like "No patient cmumps data found".
              warned = true;
         });
@@ -85,7 +86,7 @@ describe('cmumps2fhir', function() {
 	}
 
         var results = cmumps2fhir(testData, undefined, translator);
-        console.warn.restore();
+        logger.warn.restore();
 
         expect(results).to.be.undefined;
         warned.should.be.true;
@@ -117,9 +118,9 @@ describe('cmumps2fhir', function() {
         var cmumpsFile='/tmp/cmumpsExtract.out';
         var fhirFile='/tmp/fhirTranslation.out';
 
-        sinon.stub(console, 'log');
+        sinon.stub(logger, 'info');
         var results = cmumps2fhir(testData, extractor, translator, cmumpsFile, fhirFile);
-        console.log.restore();
+        logger.info.restore();
 
         results.should.equal('https://github.com/fhir-pipeline');
 
