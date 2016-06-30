@@ -15,7 +15,7 @@ var rdfUpdate = require('../components/rdf-update');
 var rdfJsonld = require('../components/rdf-jsonld');
 var rdfNtriples = require('../components/rdf-ntriples');
 
-describe('rdf components', function() {
+describe('rdf-components', function() {
     var prefix = 'PREFIX dbpedia:<http://dbpedia.org/resource/>\n' +
         'PREFIX foaf:<http://xmlns.com/foaf/0.1/>\n' +
         'PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n';
@@ -125,7 +125,7 @@ describe('rdf components', function() {
         }).should.eventually.have.property('data', true);
     });
     it("should serialize a graph", function() {
-        this.timeout(3750);
+        this.timeout(4000);
         return test.createNetwork({
             load: rdfLoad,
             update: rdfUpdate,
