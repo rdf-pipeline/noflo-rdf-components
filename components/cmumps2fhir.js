@@ -7,6 +7,8 @@ var util = require('util');
 
 var extractor = require('translators').cmumps;
 
+var logger = require('../src/logger');
+
 /** 
  * Given some cmumps patient data, this helper extracts the piece of interest (e.g, demographics),  
  * translates it to FHIR, and returns it.
@@ -36,7 +38,7 @@ module.exports = function(data, extractor, translator, cmumpsFile, fhirFile) {
 
     if (_.isEmpty(cmumpsData)) {
         // This may be normal in some cases, so log a warning in case it's not, and return 
-        console.warn('No patient cmumps data found!');
+        if (!_.isUndefined(extractor)) logger.warn('No patient cmumps data found!');
         return;
     }
 
@@ -54,7 +56,7 @@ module.exports = function(data, extractor, translator, cmumpsFile, fhirFile) {
 
     if (_.isEmpty(fhirData)) {
         // This may be normal in some cases, so just log a warning we got nothing, and return 
-        console.warn('No patient cmumps data translated to fhir!');
+        if (!_.isUndefined(translator)) logger.warn('No patient cmumps data translated to fhir!');
     }
 
     return fhirData;
@@ -62,7 +64,7 @@ module.exports = function(data, extractor, translator, cmumpsFile, fhirFile) {
 
 function writeFile(fileName, data) {
     if (! _.isEmpty(fileName)) {
-        fs.writeFileSync(fileName, util.inspect(data, {depth:null}));
-        console.log('Wrote',fileName);
+        fs.writeFileSync(fileName, util.inspect(data, {depth: null}));
+        logger.info('Wrote', fileName);
     }
 }

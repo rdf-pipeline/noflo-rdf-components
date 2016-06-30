@@ -10,8 +10,9 @@ var sinon = require('sinon');
 var _ = require('underscore');
 var fs = require('fs');
 
-var test = require('./common-test');
 var compFactory = require('../components/cmumps2fhir-prescriptions');
+var logger = require('../src/logger');
+var test = require('./common-test');
 
 var testFile = __dirname + '/../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
 
@@ -35,19 +36,16 @@ describe('cmumpsfhir-prescriptions', function() {
         });
 
         it('should return undefined if data is empty', function() {
-            sinon.stub(console, 'warn');
+            sinon.stub(logger, 'warn');
             var result = compFactory.updater({});
             expect(compFactory.updater({})).to.be.undefined;
-            console.warn.restore();
+            logger.warn.restore();
         });
 
         it('should convert patient prescriptions to fhir', function() {
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-
-            sinon.stub(console, 'log');
             var translation = compFactory.updater(parsedData);
-            console.log.restore();
 
             translation.should.not.be.empty;
             translation.should.be.an('array');
@@ -67,10 +65,7 @@ describe('cmumpsfhir-prescriptions', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            sinon.stub(console, 'log');
             var translation = compFactory.updater(parsedData, cmumpsFile, fhirFile);
-            console.log.restore();
-
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
@@ -90,7 +85,6 @@ describe('cmumpsfhir-prescriptions', function() {
                   node3: 'core/Repeat',
                   node4: 'rdf-components/cmumps2fhir-prescriptions'
             }).then(function(network) {
-                sinon.stub(console, 'log');
                 return new Promise(function(done, fail) {
 
                     var node1 = network.processes.node1.component;
@@ -110,7 +104,6 @@ describe('cmumpsfhir-prescriptions', function() {
                     network.graph.addInitial('', 'node3', 'in');
 
                 }).then(function(done) {
-                    console.log.restore();
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');
@@ -126,10 +119,6 @@ describe('cmumpsfhir-prescriptions', function() {
                     expect(done.stale).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
 
-                }, function(fail) {
-                    console.log.restore();
-                    console.log('fail: ',fail);
-                    throw Error(fail);
                 });
            });
        });
