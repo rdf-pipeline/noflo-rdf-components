@@ -11,11 +11,13 @@ var util = require('util');
 
 var logger = require('../src/logger');
 var shexiface = require("../shex/shexiface");
-var wrapper = require('../src/javascript-wrapper');
+var wrapper = require('../src/shex-wrapper');
 
-module.exports = wrapper( updater );
+module.exports = wrapper({
+    preprocess: preprocess
+});
 
-function updater(data) {
+function preprocess(data) {
 
    logger.debug('Enter', {nodeInstance: this.nodeInstance});
        // console.log('data: ',util.inspect(data, {depth:null})+'\n');logger.debug
@@ -47,55 +49,7 @@ function updater(data) {
                        ["id", "_id"],
                         "identifier");
 
-    var parser = N3.Parser();
-    var inGraph = N3.Store();
-
-    return new Promise( function( resolve, reject ) {
-
-        jsonld.toRDF(parsedData, {format: 'application/nquads'}, function(error, nquads) {
-	    if (error) {
-                return reject(error);
-            }
-
-	    parser.parse(nquads, function (error, triple, prefixes) {
-	        if (error) {
-                    return reject(error);
-                }
-
-                if (triple) {
-                    inGraph.addTriple(triple);
-                } else {
-                    shexiface.ShExMapPerson(inGraph).then(function (dataAndLog) {
-
-		        // resolve(dataAndLog.data); !! if you're content with a N3.Store, resolve here.
-		        var writer = N3.Writer({ 
-                            prefixes: {
-		                fhir: "http://hl7.org/fhir/",
-		                cmumps: "http://hokukahu.com/systems/cmumps-1/",
-		                xs: "http://www.w3.org/2001/XMLSchema#",
-		                prov: "http://www.w3.org/ns/prov#"
-		            } 
-                        });
-
-		        dataAndLog.data.find(null, null, null).forEach(function (t) {
-		            writer.addTriple(t);
-		        });
-
-		        writer.end(function (error, result) {
-		            if (error) {
-                                reject(error);
-		            } else {
-                                resolve(result);
-                            }
-		        });		
-
-	            }).catch(function (e) {
-		        reject(e);
-	            });
-	        }
-	    });
-        });
-    });
+    return parsedData;
 }
 
 /**
