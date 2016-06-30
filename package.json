@@ -98,10 +98,14 @@
       "replace-substring": "./components/replace-substring.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",
+      "shex-cmumps-to-rdf": "./components/shex-cmumps-to-rdf.js",
       "simple-join": "./components/simple-join.js",
       "simple-splitter": "./components/simple-splitter.js",
       "stringify-json": "./components/stringify-json.js",
       "to-upper-case": "./components/to-upper-case.js",
+      "translate-demographics-cmumps2fhir": "./components/translate-demographics-cmumps2fhir.js",
+      "translate-prescription-cmumps2fhir": "./components/translate-prescription-cmumps2fhir.js",
+      "translate-procedure-cmumps2fhir": "./components/translate-procedure-cmumps2fhir.js",
       "xml-to-rdf": "./components/xml-to-rdf.js",
       "zip": "./components/zip.js"
     }
