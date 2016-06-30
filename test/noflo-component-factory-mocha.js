@@ -150,8 +150,6 @@ describe('noflo-component-factory', function() {
         }).should.become(0);
     });
     it("should have a nodeName", function() {
-        this.timeout(3000);
-
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
@@ -176,8 +174,6 @@ describe('noflo-component-factory', function() {
         }).should.eventually.eql(instanceId);
     });
     it("should have a componentName", function() {
-        this.timeout(3000);
-
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
@@ -200,5 +196,34 @@ describe('noflo-component-factory', function() {
         }).then(function(network){
             return node.componentName;
         }).should.eventually.eql(factoryId);
+    });
+    it("should have nodeInstance isTranslator flag that defaults to false", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.isTranslator);
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "isTranslator?");
+        }).should.become("isTranslator? false");
+    });
+    it("should have isTranslator flag that can be set to true", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                isTranslator: true,
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.isTranslator);
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "isTranslator?");
+        }).should.become("isTranslator? true");
     });
 });
