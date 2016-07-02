@@ -72,6 +72,8 @@
       "vni-data-output": "./graphs/vni-data-output.fbp"
     },
     "components": {
+      "add-metadata": "./components/add-metadata.js",
+      "add-metadatum": "./components/add-metadatum.js",
       "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
       "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
       "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
