@@ -1,0 +1,107 @@
+{
+  "properties": {},
+  "inports": {},
+  "outports": {},
+  "groups": [],
+  "processes": {
+    "rdf-components/read-content_phpms": {
+      "component": "rdf-components/read-content",
+      "metadata": {
+        "label": "read-content",
+        "x": 432,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "rdf-components/parse-json_mxqdk": {
+      "component": "rdf-components/parse-json",
+      "metadata": {
+        "label": "parse-json",
+        "x": 612,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "rdf-components/cmumps2fhir-demographics_7irxa": {
+      "component": "rdf-components/cmumps2fhir-demographics",
+      "metadata": {
+        "label": "cmumps2fhir-demographics",
+        "x": 828,
+        "y": 144,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "rdf-components/vni-data-output_89xgj": {
+      "component": "rdf-components/vni-data-output",
+      "metadata": {
+        "label": "vni-data-output",
+        "x": 1044,
+        "y": 180,
+        "width": 72,
+        "height": 72
+      }
+    }
+  },
+  "connections": [
+    {
+      "src": {
+        "process": "rdf-components/read-content_phpms",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "rdf-components/parse-json_mxqdk",
+        "port": "input"
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-components/parse-json_mxqdk",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
+        "port": "data"
+      },
+      "metadata": {
+        "route": null
+      }
+    },
+    {
+      "src": {
+        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "rdf-components/vni-data-output_89xgj",
+        "port": "in"
+      },
+      "metadata": {
+        "route": null
+      }
+    },
+    {
+      "data": "test/data/cmumps-patient7.jsonld",
+      "tgt": {
+        "process": "rdf-components/read-content_phpms",
+        "port": "filename"
+      }
+    },
+    {
+      "data": "/tmp/cmumps.txt",
+      "tgt": {
+        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
+        "port": "cmumps_file"
+      }
+    },
+    {
+      "data": "/tmp/fhir.txt",
+      "tgt": {
+        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
+        "port": "fhir_file"
+      }
+    }
+  ]
+}
