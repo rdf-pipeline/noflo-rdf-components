@@ -1,0 +1,128 @@
+// throttle-mocha.js
+// throttle component tests
+
+var chai = require('chai');
+var expect = chai.expect;
+var should = chai.should();
+
+var sinon = require('sinon');
+
+var fs = require('fs');
+var os = require('os');
+
+var test = require('./common-test');
+var factory = require('../components/throttle');
+
+describe('throttle', function() {
+
+    it("should exist as a function", function() {
+        factory.should.exist;
+        factory.should.be.a('function');
+    });
+
+    it("should instantiate a noflo component", function() {
+        var node = test.createComponent(factory);
+        node.should.be.an('object');
+        node.should.include.keys('nodeName', 'componentName', 'outPorts', 'inPorts', 'vni', 'vnis');
+    });
+
+    describe('#updater', function() {
+
+        it("should throw an error if no arguments specified", function() {
+            expect(factory.updater.bind(this)).to.throw(Error,
+                "Throttle requires an integer throttle_size!  Received: 'undefined'");
+        });
+
+        it("should throw an error if no throttle size was specified", function() {
+            expect(factory.updater.bind(this, undefined, 'testEnvVar')).to.throw(Error,
+                "Throttle requires an integer throttle_size!  Received: 'undefined'");
+        });
+
+        it("should throw an error if no file_envvar  was specified", function() {
+            expect(factory.updater.bind(this, 3, undefined)).to.throw(Error,
+                /Throttle requires an environment variable file_envvar to specify the data to process!/);
+        });
+
+        it("should throw an error if file_envvar environment variable does not exist", function() {
+            expect(factory.updater.bind(this, 3, 'testEnvVar')).to.throw(Error,
+                "Throttle environment variable testEnvVar is not defined!");
+        });
+
+        it("should throw an error if file_envvar does not contain path to an  existing file", function() {
+            process.env.testEnvVar = '/tmp/Non-existent-file.txt';
+            expect(factory.updater.bind(this, 3, 'testEnvVar')).to.throw(Error,
+                   "ENOENT: no such file or directory, open '/tmp/Non-existent-file.txt'");
+        });
+
+        it("should log a warning if file_envvar referenced file has no content", function() {
+            var testfile = os.tmpdir() + './testfile.txt';
+            fs.writeFile(testfile, '', function() { 
+                process.env.testEnvVar = testfile;
+                var node = test.createComponent(factory);
+                
+                var warning;
+                sinon.stub(logger,'warn', function(message) {
+                    warning = message;
+                });
+                var result = factory.updater.call(node.vni(''), "1", 'testEnvVar');
+                logger.warn.restore();
+		warning.should.be.a('string');
+		warning.should.equal("No data found in " + process.env.testEnvVar);
+           });
+        });
+
+        it("should output a hash of throttle_size", function() {
+           var node = test.createComponent(factory);
+           var testfile = __dirname+"/data/ids.txt";
+           process.env.testEnvVar = testfile;
+           var result = factory.updater.call(node.vni(''), "2", 'testEnvVar', 'UTF-8');
+           result.should.not.be.empty;
+           result.should.deep.equal({ '1': '1', '2': '2' });
+        });
+
+    });
+
+    describe('functional behavior', function() {
+
+        it('should run in  a noflo network', function() {
+            this.timeout(3000);
+            var testsize = 1;
+            var testfile = __dirname+"/data/ids.txt";
+            process.env.testEnvVar = testfile;
+
+            return test.createNetwork(
+                 { filevar: 'core/Repeat',
+                   throttlesize: 'core/Repeat',
+                   throttle: 'rdf-components/throttle' }
+
+           ).then(function(network) {
+                var filevar = network.processes.filevar.component;
+                var throttlesize = network.processes.throttlesize.component;
+                var throttle = network.processes.throttle.component;
+
+                return new Promise(function(done, fail) {
+
+                    test.onOutPortData(throttle, 'output', done);
+
+                    network.graph.addEdge('filevar', 'out', 'throttle', 'file_envvar');
+                    network.graph.addEdge('throttlesize', 'out', 
+                                          'throttle', 'throttle_size');
+
+                    network.graph.addInitial('testEnvVar', 'filevar', 'in');
+                    network.graph.addInitial(testsize, 'throttlesize', 'in');
+
+                }).then(function(done) {
+                    // This component uses split-wrapper - we expect to get just the 
+                    // first value processed here.  It is 3 not 1 because we already
+                    // initialized the throttle in a previous test.
+                    done.should.be.an('object');
+                    done.vnid.should.equal('3');
+                    done.data.should.equal('3');
+                    expect(done.error).to.be.undefined;
+                    expect(done.stale).to.be.undefined;
+                });
+            }); 
+        });
+
+    });
+});
