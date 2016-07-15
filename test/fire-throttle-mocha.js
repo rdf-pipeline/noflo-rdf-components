@@ -7,7 +7,6 @@ var should = chai.should();
 var http = require('http');
 
 var test = require('./common-test');
-var factory = require('../components/throttle-fire');
 
 describe('fire-throttle', function() {
 
@@ -27,9 +26,10 @@ describe('fire-throttle', function() {
 
                 test.onOutPortData(throttler, 'output', done);
 
-                // set initial data for the fire-throttle component
+                // Send the port to listen on 
                 network.graph.addInitial(testPort, 'throttler', 'listen');
-                network.graph.addInitial(testSize, 'throttler', 'throttle_size');
+
+                // Post a message to the port
                 var req = http.request({ method: 'POST',
                                          port: testPort,
                                          path: '/' });
@@ -37,8 +37,8 @@ describe('fire-throttle', function() {
                 req.end();
 
             }).then(function(done) {
-                done.should.be.an('object');
-                test.verifyState(done, '', testSize);
+                // verify we got a value of 1 back from the graph
+                done.should.equal('1'); 
             });
 
         }); 

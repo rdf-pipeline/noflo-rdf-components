@@ -7,17 +7,15 @@ INPORT=accept.LIMIT:LIMIT
 INPORT=accept.ENCODING:ENCODING
 INPORT=accept.TYPE:TYPE
 INPORT=webserver.LISTEN:LISTEN
-INPORT=throttle.THROTTLE_SIZE:THROTTLE_SIZE
-OUTPORT=throttle.OUTPUT:OUTPUT
+OUTPORT=kick.OUT:OUTPUT
 
 # When a request comes in sent it to the accept node and respond
 webserver(webserver/Server) REQUEST -> INPUT accept(rdf-components/http-accept)
 accept ACCEPTED -> IN response(webserver/SendResponse)
 accept REJECTED -> IN response
 
-# Send whatever was received from the webserver as input to throttle-fire
-accept(rdf-components/http-accept) OUTPUT -> INPUT throttle(rdf-components/throttle-fire)
-'1' -> THROTTLE_SIZE throttle(rdf-components/throttle-fire)
+accept(rdf-components/http-accept) OUTPUT -> IN kick(core/Kick)
+'1' -> DATA kick(core/Kick)
 
 # Error handling echos errors to console.log
 accept ERROR -> IN error(core/Output)

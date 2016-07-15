@@ -29,28 +29,33 @@ describe('throttle', function() {
     describe('#updater', function() {
 
         it("should throw an error if no arguments specified", function() {
-            expect(factory.updater.bind(this)).to.throw(Error,
+            var node = test.createComponent(factory);
+            expect(factory.updater.bind(node.vni(''))).to.throw(Error,
                 "Throttle requires an integer throttle_size!  Received: 'undefined'");
         });
 
         it("should throw an error if no throttle size was specified", function() {
-            expect(factory.updater.bind(this, undefined, 'testEnvVar')).to.throw(Error,
+            var node = test.createComponent(factory);
+            expect(factory.updater.bind(node.vni(''), undefined, 'testEnvVar')).to.throw(Error,
                 "Throttle requires an integer throttle_size!  Received: 'undefined'");
         });
 
         it("should throw an error if no file_envvar  was specified", function() {
-            expect(factory.updater.bind(this, 3, undefined)).to.throw(Error,
+            var node = test.createComponent(factory);
+            expect(factory.updater.bind(node.vni(''), 3, undefined)).to.throw(Error,
                 /Throttle requires an environment variable file_envvar to specify the data to process!/);
         });
 
         it("should throw an error if file_envvar environment variable does not exist", function() {
-            expect(factory.updater.bind(this, 3, 'testEnvVar')).to.throw(Error,
+            var node = test.createComponent(factory);
+            expect(factory.updater.bind(node.vni(''), 3, 'testEnvVar')).to.throw(Error,
                 "Throttle environment variable testEnvVar is not defined!");
         });
 
         it("should throw an error if file_envvar does not contain path to an  existing file", function() {
+            var node = test.createComponent(factory);
             process.env.testEnvVar = '/tmp/Non-existent-file.txt';
-            expect(factory.updater.bind(this, 3, 'testEnvVar')).to.throw(Error,
+            expect(factory.updater.bind(node.vni(''), 3, 'testEnvVar')).to.throw(Error,
                    "ENOENT: no such file or directory, open '/tmp/Non-existent-file.txt'");
         });
 
@@ -112,12 +117,9 @@ describe('throttle', function() {
                     network.graph.addInitial(testsize, 'throttlesize', 'in');
 
                 }).then(function(done) {
-                    // This component uses split-wrapper - we expect to get just the 
-                    // first value processed here.  It is 3 not 1 because we already
-                    // initialized the throttle in a previous test.
                     done.should.be.an('object');
-                    done.vnid.should.equal('3');
-                    done.data.should.equal('3');
+                    done.vnid.should.equal('1');
+                    done.data.should.equal('1');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                 });

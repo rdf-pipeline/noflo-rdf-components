@@ -106,7 +106,6 @@
       "simple-splitter": "./components/simple-splitter.js",
       "stringify-json": "./components/stringify-json.js",
       "throttle": "./components/throttle.js",
-      "throttle-fire": "./components/throttle-fire.js",
       "to-upper-case": "./components/to-upper-case.js",
       "translate-demographics-cmumps2fhir": "./components/translate-demographics-cmumps2fhir.js",
       "translate-prescription-cmumps2fhir": "./components/translate-prescription-cmumps2fhir.js",
