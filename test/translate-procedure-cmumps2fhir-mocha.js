@@ -77,6 +77,7 @@ describe('translate-procedure-cmumps2fhir', function() {
 
     describe('functional behavior', function() {
        it('should convert patient procedures to fhir in a noflo network', function() {
+           this.timeout(2500);
            return test.createNetwork(
                 { repeaterNode: 'core/Repeat',
                   patientHashNode: 'rdf-components/patient-hash',
