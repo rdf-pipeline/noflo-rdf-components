@@ -25,42 +25,54 @@ var vniManager = require('./vni-manager');
  */
 module.exports = function(payload, socketIndex) {
 
-    var portName = this.name;
-    var outputPorts = this.nodeInstance.outPorts;
+     var profiler = this.nodeInstance.profiler;
+     var eventStart = profiler.startEvent();
 
-    logger.debug('Enter', {
-        port: portName,
-        socketIndex: socketIndex,
-        payload: util.inspect(payload),
-        nodeInstance: this.nodeInstance
-    });
+     try { 
+         var portName = this.name;
+         var outputPorts = this.nodeInstance.outPorts;
 
-    var vnid = payload.vnid || '';
-    var vni = this.nodeInstance.vni(vnid);
+         logger.debug('Enter', {
+             port: portName,
+             socketIndex: socketIndex,
+             payload: util.inspect(payload),
+             nodeInstance: this.nodeInstance
+         });
 
-    // Get the old & new input state for port and the new payload
-    var lastInputState = vni.inputStates(portName, socketIndex);
-    var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
+         var vnid = payload.vnid || '';
+         var vni = this.nodeInstance.vni(vnid);
+
+         // Get the old & new input state for port and the new payload
+         var lastInputState = vni.inputStates(portName, socketIndex);
+         var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
  
-    // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
-    var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
+         // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
+         var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
 
-    // Set the new input state
-    vni.inputStates(portName, socketIndex, inputState);
+         // Set the new input state
+         vni.inputStates(portName, socketIndex, inputState);
 
-    // append any input state metadata to the outputState so it gets passed on to downstream nodes
-    setDefaultMetadata(vni, inputState);
+         // append any input state metadata to the outputState so it gets passed on to downstream nodes
+         setDefaultMetadata(vni, inputState);
 
-    if (vnid) {
-        runUpdater(this.nodeInstance, vni, isStale, payload);
-    } else {
-        this.nodeInstance.forEachVni(function(vni) {
-            runUpdater(this.nodeInstance, vni, isStale, payload);
-        }, this);
-    }
+         if (vnid) {
+             runUpdater(this.nodeInstance, vni, isStale, payload, profiler);
+         } else {
+             this.nodeInstance.forEachVni(function(vni) {
+                 runUpdater(this.nodeInstance, vni, isStale, payload, profiler);
+             }, this);
+         }
+     } catch(e) {
+         logger.error("Unexpected exception in framework ondata!");
+         var err = (e.stack) ? e.stack : e;
+         logger.error(err);
+         throw e;
+     } finally {
+         profiler.stopEvent(eventStart);
+     }
 };
 
-function runUpdater(nodeInstance, vni, isStale, payload) {
+function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
      var outputPorts = nodeInstance.outPorts;
      if (shouldRunUpdater(vni, isStale)) { 
 
@@ -78,8 +90,11 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
 
              // Save wrapper to make it accessible from the Promise
              var wrapper = nodeInstance.wrapper;
+             var updateStart;
 
              new Promise(function(resolve) { 
+                 updateStart = profiler.startUpdate();
+
                  // Execute fRunUpdater which will also execute the updater
                  resolve(wrapper.fRunUpdater(vni, payload));
 
@@ -100,6 +115,7 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
                  handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error,  lastErrorState);
 
+                 profiler.stopUpdate(updateStart, vni.outputState().error);
              }, function( rejected ) { 
                  logger.error('fRunUpdater failed!', vni);
 
@@ -117,7 +133,6 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
                  handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error, lastErrorState);
                   
-
                  // If we haven't already processed the rejected error, do it now
                  if ( rejected !== vni.errorState().data) { 
                      lastErrorState = _.clone(vni.errorState());   
@@ -134,7 +149,10 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
                      handleError(vni, outputPorts.error, lastErrorState);
                  }
 
+                 profiler.stopUpdate(updateStart, true);
+
              }).catch( function(e) { 
+                 profiler.stopUpdate(updateStart, true);
                  logger.error("unable to process fRunUpdater results!", vni);
                  var err = (e.stack) ? e.stack : e;
                  logger.error(err);

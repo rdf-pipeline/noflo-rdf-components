@@ -14,11 +14,11 @@ var sinon = require('sinon');
 
 var noflo = require('noflo');
 
+var createLm = require('../src/create-lm');
 var framework_ondata = require('../src/framework-ondata');
 var factory = require('../src/pipeline-component-factory');
-var test = require('./common-test');
-var createLm = require('../src/create-lm');
 var logger = require('../src/logger');
+var test = require('./common-test');
 
 describe("framework-ondata", function() {
 
@@ -52,8 +52,18 @@ describe("framework-ondata", function() {
                 // Send some data to the input port
                 test.onOutPortData(node, 'output', done);
                 test.onOutPortData(node, 'error', fail);
+                sinon.stub(logger, 'error');
                 test.sendData(node, 'input', inData);
-            }).should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updater.');
+            }).then(function(done) { 
+                logger.error.restore();
+                throw Error("framework did not throw error when wrapper fRunUpdater was not configured!");
+            }, function(fail) { 
+                logger.error.restore();
+                fail.toString().should.contain('Error: No wrapper fRunUpdater function found!  Cannot run updater.');
+                
+            });
+
+should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updater.');
         });
 
         it("should manage single port node vni state, fRunUpdater invocation, & output state", function() {

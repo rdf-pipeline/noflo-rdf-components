@@ -80,6 +80,7 @@ describe('translate-demographics-cmumps2fhir', function() {
 
     describe('functional behavior', function() {
        it('should convert patient demographics to fhir in a noflo network', function() {
+           this.timeout(2500);
            return test.createNetwork(
                 { repeaterNode: 'core/Repeat',
                   patientHashNode: 'rdf-components/patient-hash',
