@@ -114,7 +114,7 @@ describe('translate-procedure-cmumps2fhir', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'graphUri');
                     done.vnid.should.equal('Procedure:Procedure-1074046');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'subject', 'status',
@@ -124,6 +124,7 @@ describe('translate-procedure-cmumps2fhir', function() {
                     expect(done.stale).to.be.undefined;
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.graphUri.startsWith('urn:local:rdf-components%2Ftranslate-procedure-cmumps2fhir').should.be.true;
                 }, function(fail) {
                     console.error('fail: ',fail);
                     throw Error(fail);

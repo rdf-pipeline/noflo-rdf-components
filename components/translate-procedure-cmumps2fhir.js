@@ -8,7 +8,8 @@ var compHelper = require('../src/component-helper');
 var logger = require('../src/logger');
 var wrapper = require('../src/translation-wrapper');
 
-module.exports = wrapper(translateProcedures);
+module.exports = wrapper({isTranslator: true,
+                          updater: translateProcedures});
 
 /**
  * Given cmumps patient procedure data, this updater translates it to FHIR format.

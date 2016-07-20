@@ -9,7 +9,8 @@ var compHelper = require('../src/component-helper');
 var logger = require('../src/logger');
 var wrapper = require('../src/translation-wrapper');
 
-module.exports = wrapper(translateDemographics);
+module.exports = wrapper({isTranslator: true, 
+                          updater: translateDemographics});
 
 /** 
  * Given cmumps patient demographic data, this updater translates it to FHIR format.
