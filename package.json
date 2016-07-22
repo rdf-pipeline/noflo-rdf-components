@@ -67,6 +67,8 @@
       "rdf-insert": "./graphs/rdf-insert.fbp",
       "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
       "rdf-sparql-clear-load": "./graphs/rdf-sparql-clear-load.fbp",
+      "rdf-sparql-clear-load-content": "./graphs/rdf-sparql-clear-load-content.fbp",
+      "rdf-sparql-clear-load-file": "./graphs/rdf-sparql-clear-load-file.fbp",
       "rdf-sparql-clear-load-jsonld": "./graphs/rdf-sparql-clear-load-jsonld.fbp",
       "rdf-sparql-load": "./graphs/rdf-sparql-load.fbp",
       "rdf-sparql-load-jsonld": "./graphs/rdf-sparql-load-jsonld.fbp",

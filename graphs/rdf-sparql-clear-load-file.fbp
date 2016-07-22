@@ -1,0 +1,21 @@
+# rdf-sparql-clear-load-file.fbp
+
+# Takes RDF filename string and inserts its content into the target-graph (IRI) at the sparql-endpoint.
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
+
+# Exports
+INPORT=sparql.SPARQL_ENDPOINT:SPARQL_ENDPOINT
+INPORT=sparql.TARGET_GRAPH_URI:TARGET_GRAPH_URI
+INPORT=readContent.FILENAME:RDF_FILE
+INPORT=readContent.ENCODING:RDF_ENCODING
+INPORT=sparql.RDF_TYPE:RDF_TYPE
+INPORT=sparql.AUTH_FILE_ENV:AUTH_FILE_ENV
+INPORT=sparql.BASE_URL:BASE_URL
+INPORT=sparql.LISTEN:LISTEN
+OUTPORT=sparql.OUTPUT:OUTPUT
+
+# Convert the RDF_GRAPH to ntriples and use as tokens in the request
+readContent(rdf-components/read-content) OUTPUT -> RDF_CONTENT sparql(rdf-components/rdf-sparql-clear-load-content)
+
+# Error handling to console.log
+readContent ERROR -> IN error(core/Output)
