@@ -1,3 +1,8 @@
+# File:  clear-and-set-mgraph.ru
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
 # Clear and set mGraph: , which is a metadata graph that 
 # describes the patient data graphs present in the database.
 #

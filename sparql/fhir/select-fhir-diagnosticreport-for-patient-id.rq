@@ -1,3 +1,8 @@
+# File:  select-fhir-diagnosticreport-for-patient-id.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
 # Select fhir:DiagnosticReport data (labs) for a patient ID.
 # It is currently stored in the DiagnosticOrder graph.
 # The patient ID is hard-coded into the "bind" statement below.

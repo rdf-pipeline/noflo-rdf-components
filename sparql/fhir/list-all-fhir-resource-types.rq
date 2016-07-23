@@ -1,3 +1,8 @@
+# File:  list-all-fhir-resource-types.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
 # List All FHIR Resource Types -- not only those directly referenced in mGraph.
 #
 # This queries uses metadata in the mGraph: graph to

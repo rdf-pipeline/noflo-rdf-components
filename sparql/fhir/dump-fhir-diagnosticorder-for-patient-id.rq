@@ -1,4 +1,9 @@
-# Dumpt FHIR DiagnosticOrder triples for a patient ID.
+# File:  dump-fhir-diagnosticorder-for-patient-id.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
+# Dump FHIR DiagnosticOrder triples for a patient ID.
 # The patient ID is hard-coded into the "bind" statement below.
 #
 # This query depends on metadata in the mGraph: graph.

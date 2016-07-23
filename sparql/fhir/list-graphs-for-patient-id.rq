@@ -1,3 +1,8 @@
+# File:  list-graphs-for-patient-id.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
 # List graphs for a patient ID.
 # The patient ID is hard-coded into the "bind" statement below.
 #
