@@ -1,0 +1,13 @@
+# List patient IDs
+#
+# This query depends on metadata in mGraph: 
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:test:mGraph>
+
+select distinct ?patientId { 
+  graph mGraph: { 
+    ?s a meta:Graph ;
+      meta:patientId ?patientId .
+  } }
+

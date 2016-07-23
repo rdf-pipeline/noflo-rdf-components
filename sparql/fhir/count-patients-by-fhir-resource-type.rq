@@ -1,0 +1,18 @@
+# Count patients by FHIR resource type
+#
+# This queries uses metadata in the mGraph: graph to
+# count patient graphs by FHIR resource type.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:test:mGraph>
+
+select ?fhirResourceType (count(?patientId) as ?nPatients) {
+select distinct ?fhirResourceType ?patientId { 
+  graph mGraph: { 
+    ?g a meta:Graph ;
+      meta:patientId ?patientId ;
+      meta:fhirResourceType ?fhirResourceType .
+  } }
+}
+group by ?fhirResourceType
+

@@ -1,0 +1,7 @@
+# List all graphs in the repository
+
+select distinct ?g {
+  graph ?g { ?s ?p ?v . }
+        }
+order by ?g
+

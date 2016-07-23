@@ -1,0 +1,30 @@
+# Count Triples for All Patients
+#
+# This queries uses metadata in the mGraph: graph to
+# count patient graphs by FHIR resource type.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:test:mGraph>
+PREFIX fhir: <http://hl7.org/fhir/>
+
+select ?patientId (count(*) as ?nTriples) {
+  select distinct ?patientId ?s ?p ?v {
+      {
+        select distinct ?resourceGraph ?patientId { 
+        # bind( "2-1007041" as ?patientId ) .
+        graph mGraph: { 
+          ?resourceGraph a meta:Graph ;
+            meta:patientId ?patientId ;
+            meta:fhirResourceType ?anyFhirResourceType .
+        } 
+      }
+    }
+    graph ?resourceGraph {
+      ?s ?p ?v .
+    }
+  }
+}
+group by ?patientId
+order by desc(?nTriples)
+
+

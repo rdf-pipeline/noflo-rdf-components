@@ -1,0 +1,26 @@
+# List All FHIR Resource Types -- not only those directly referenced in mGraph.
+#
+# This queries uses metadata in the mGraph: graph to
+# count patient graphs by FHIR resource type.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:test:mGraph>
+PREFIX fhir: <http://hl7.org/fhir/>
+
+select distinct ?fhirResourceType { {
+      select distinct ?resourceGraph { 
+        graph mGraph: { 
+          ?resourceGraph a meta:Graph ;
+            meta:fhirResourceType ?fhirResourceType .
+        } 
+      }
+    }
+  bind( str(fhir:) as ?fhirPrefix ) .
+  graph ?resourceGraph {
+    ?s a ?fhirResourceType .
+  }
+  filter( strstarts(str(?fhirResourceType), ?fhirPrefix) ) .
+}
+order by ?fhirResourceType
+
+

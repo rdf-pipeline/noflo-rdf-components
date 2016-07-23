@@ -1,0 +1,19 @@
+# List FHIR Resources in mGraph (the metadata graph).
+# If an individual graph holds other FHIR resources this query
+# will not find them.
+#
+# This queries uses metadata in the mGraph: graph to
+# count patient graphs by FHIR resource type.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:test:mGraph>
+
+      select distinct ?fhirResourceType { 
+        graph mGraph: { 
+          ?resourceGraph a meta:Graph ;
+            meta:fhirResourceType ?fhirResourceType .
+        } 
+      }
+order by ?fhirResourceType
+
+

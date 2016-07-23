@@ -1,0 +1,34 @@
+# Select fhir:DiagnosticReport data (labs) for a patient ID.
+# It is currently stored in the DiagnosticOrder graph.
+# The patient ID is hard-coded into the "bind" statement below.
+#
+# This query depends on metadata in the mGraph: graph.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:test:mGraph>
+PREFIX fhir: <http://hl7.org/fhir/>
+
+select distinct ?patientId ?reportIdSystem ?reportId ?reportIssued ?observationSystem ?observationCode { {
+  select distinct ?graph ?patientId { 
+    bind( "1000919" as ?patientId ) .
+    graph mGraph: { 
+      ?graph a meta:Graph ;
+        meta:patientId ?patientId ;
+        meta:fhirResourceType fhir:DiagnosticOrder .
+    } }
+  }
+  graph ?graph {
+    ?report a fhir:DiagnosticReport .
+    ?report fhir:DiagnosticReport.identifier ?identifier .
+    ?identifier fhir:Identifier.system / fhir:value ?reportIdSystem .
+    ?identifier fhir:Identifier.value / fhir:value ?reportId .
+    ?report fhir:DiagnosticReport.issued / fhir:value ?reportIssued .
+    ?report fhir:DiagnosticReport.result / fhir:reference ?obs .
+    ?obs a fhir:Observation .
+    ?obs fhir:Observation.code / fhir:Observation.coding ?coding .
+    ?coding fhir:Observation.code / fhir:value ?observationCode .
+    ?coding fhir:Observation.system / fhir:value ?observationSystem .
+  }
+}
+
+

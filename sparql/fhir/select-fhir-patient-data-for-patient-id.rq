@@ -1,0 +1,32 @@
+# Select fhir:Patient data for a patient ID.
+# The patient ID is hard-coded into the "bind" statement below.
+#
+# This query depends on metadata in the mGraph: graph.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:test:mGraph>
+PREFIX fhir: <http://hl7.org/fhir/>
+
+select distinct ?patientId ?family ?given ?gender ?birthDate ?maritalStatus ?city ?state { {
+  select distinct ?graph ?patientId { 
+    bind( "1000919" as ?patientId ) .
+    graph mGraph: { 
+      ?graph a meta:Graph ;
+        meta:patientId ?patientId ;
+        meta:fhirResourceType fhir:Patient .
+    } }
+  }
+  graph ?graph {
+    ?s a fhir:Patient ;
+      fhir:Patient.name ?humanName .
+    ?humanName fhir:HumanName.family / fhir:value ?family ;
+      fhir:HumanName.given / fhir:value ?given .
+    ?s fhir:Patient.gender / fhir:value ?gender .
+    ?s fhir:Patient.birthDate / fhir:value ?birthDate .
+    ?s fhir:Patient.maritalStatus / fhir:CodeableConcept.text / fhir:value ?maritalStatus .
+    ?s fhir:Patient.address ?address .
+    ?address fhir:Address.city / fhir:value ?city ;
+      fhir:Address.state / fhir:value ?state .
+  }
+}
+
