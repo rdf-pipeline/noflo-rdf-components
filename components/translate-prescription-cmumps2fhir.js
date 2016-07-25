@@ -10,7 +10,8 @@ var compHelper = require('../src/component-helper');
 var logger = require('../src/logger');
 var wrapper = require('../src/translation-wrapper');
 
-module.exports = wrapper(translatePrescription);
+module.exports = wrapper({isTranslator: true,
+                          updater: translatePrescription});
 
 /**
  * Given cmumps patient prescription data, this updater translates it to FHIR format.
