@@ -8,7 +8,7 @@
 # This query depends on metadata in mGraph: 
 
 PREFIX meta: <urn:meta#>
-PREFIX mGraph: <urn:test:mGraph>
+PREFIX mGraph: <urn:local:mGraph>
 
 select distinct ?patientId { 
   graph mGraph: { 

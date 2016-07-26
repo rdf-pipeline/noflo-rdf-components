@@ -9,7 +9,7 @@
 # count patient graphs by FHIR resource type.
 
 PREFIX meta: <urn:meta#>
-PREFIX mGraph: <urn:test:mGraph>
+PREFIX mGraph: <urn:local:mGraph>
 
 select ?fhirResourceType (count(?patientId) as ?nPatients) {
 select distinct ?fhirResourceType ?patientId { 
