@@ -55,6 +55,7 @@
     "graphs": {
       "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
       "fhir-to-rdf": "./graphs/fhir-to-rdf.fbp",
+      "fire-throttle": "./graphs/fire-throttle.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp",
       "http-basic-post": "./graphs/http-basic-post.fbp",
       "http-delivery-server": "./graphs/http-delivery-server.fbp",
@@ -66,12 +67,16 @@
       "rdf-insert": "./graphs/rdf-insert.fbp",
       "rdf-insert-jsonld": "./graphs/rdf-insert-jsonld.fbp",
       "rdf-sparql-clear-load": "./graphs/rdf-sparql-clear-load.fbp",
+      "rdf-sparql-clear-load-content": "./graphs/rdf-sparql-clear-load-content.fbp",
+      "rdf-sparql-clear-load-file": "./graphs/rdf-sparql-clear-load-file.fbp",
       "rdf-sparql-clear-load-jsonld": "./graphs/rdf-sparql-clear-load-jsonld.fbp",
       "rdf-sparql-load": "./graphs/rdf-sparql-load.fbp",
       "rdf-sparql-load-jsonld": "./graphs/rdf-sparql-load-jsonld.fbp",
       "vni-data-output": "./graphs/vni-data-output.fbp"
     },
     "components": {
+      "add-metadata": "./components/add-metadata.js",
+      "add-metadatum": "./components/add-metadatum.js",
       "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
       "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
       "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
@@ -87,6 +92,7 @@
       "object": "./components/object.js",
       "parse-json": "./components/parse-json.js",
       "parse-url": "./components/parse-url.js",
+      "patient-hash": "./components/patient-hash.js",
       "phaser": "./components/phaser.js",
       "rdf-load": "./components/rdf-load.js",
       "rdf-query": "./components/rdf-query.js",
@@ -97,10 +103,15 @@
       "replace-substring": "./components/replace-substring.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",
+      "shex-cmumps-to-rdf": "./components/shex-cmumps-to-rdf.js",
       "simple-join": "./components/simple-join.js",
       "simple-splitter": "./components/simple-splitter.js",
       "stringify-json": "./components/stringify-json.js",
+      "throttle": "./components/throttle.js",
       "to-upper-case": "./components/to-upper-case.js",
+      "translate-demographics-cmumps2fhir": "./components/translate-demographics-cmumps2fhir.js",
+      "translate-prescription-cmumps2fhir": "./components/translate-prescription-cmumps2fhir.js",
+      "translate-procedure-cmumps2fhir": "./components/translate-procedure-cmumps2fhir.js",
       "xml-to-rdf": "./components/xml-to-rdf.js",
       "zip": "./components/zip.js"
     }

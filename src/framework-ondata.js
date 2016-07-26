@@ -25,39 +25,54 @@ var vniManager = require('./vni-manager');
  */
 module.exports = function(payload, socketIndex) {
 
-     var portName = this.name;
-     var outputPorts = this.nodeInstance.outPorts;
+     var profiler = this.nodeInstance.profiler;
+     var eventStart = profiler.startEvent();
 
-    logger.debug('Enter', {
-        port: portName,
-        socketIndex: socketIndex,
-        payload: util.inspect(payload),
-        nodeInstance: this.nodeInstance
-    });
+     try { 
+         var portName = this.name;
+         var outputPorts = this.nodeInstance.outPorts;
 
-     var vnid = payload.vnid || '';
-     var vni = this.nodeInstance.vni(vnid);
+         logger.debug('Enter', {
+             port: portName,
+             socketIndex: socketIndex,
+             payload: util.inspect(payload),
+             nodeInstance: this.nodeInstance
+         });
 
-     // Get the old & new input state for port and the new payload
-     var lastInputState = vni.inputStates(portName, socketIndex);
-     var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
+         var vnid = payload.vnid || '';
+         var vni = this.nodeInstance.vni(vnid);
+
+         // Get the old & new input state for port and the new payload
+         var lastInputState = vni.inputStates(portName, socketIndex);
+         var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
  
-     // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
-     var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
+         // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
+         var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
 
-     // Set the new input state
-     vni.inputStates(portName, socketIndex, inputState);
+         // Set the new input state
+         vni.inputStates(portName, socketIndex, inputState);
 
-    if (vnid) {
-        runUpdater(this.nodeInstance, vni, isStale, payload);
-    } else {
-        this.nodeInstance.forEachVni(function(vni) {
-            runUpdater(this.nodeInstance, vni, isStale, payload);
-        }, this);
-    }
+         // append any input state metadata to the outputState so it gets passed on to downstream nodes
+         setDefaultMetadata(vni, inputState);
+
+         if (vnid) {
+             runUpdater(this.nodeInstance, vni, isStale, payload, profiler);
+         } else {
+             this.nodeInstance.forEachVni(function(vni) {
+                 runUpdater(this.nodeInstance, vni, isStale, payload, profiler);
+             }, this);
+         }
+     } catch(e) {
+         logger.error("Unexpected exception in framework ondata!");
+         var err = (e.stack) ? e.stack : e;
+         logger.error(err);
+         throw e;
+     } finally {
+         profiler.stopEvent(eventStart);
+     }
 };
 
-function runUpdater(nodeInstance, vni, isStale, payload) {
+function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
      var outputPorts = nodeInstance.outPorts;
      if (shouldRunUpdater(vni, isStale)) { 
 
@@ -75,8 +90,11 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
 
              // Save wrapper to make it accessible from the Promise
              var wrapper = nodeInstance.wrapper;
+             var updateStart;
 
              new Promise(function(resolve) { 
+                 updateStart = profiler.startUpdate();
+
                  // Execute fRunUpdater which will also execute the updater
                  resolve(wrapper.fRunUpdater(vni, payload));
 
@@ -97,6 +115,7 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
                  handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error,  lastErrorState);
 
+                 profiler.stopUpdate(updateStart, vni.outputState().error);
              }, function( rejected ) { 
                  logger.error('fRunUpdater failed!', vni);
 
@@ -114,7 +133,6 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
                  handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error, lastErrorState);
                   
-
                  // If we haven't already processed the rejected error, do it now
                  if ( rejected !== vni.errorState().data) { 
                      lastErrorState = _.clone(vni.errorState());   
@@ -131,7 +149,10 @@ function runUpdater(nodeInstance, vni, isStale, payload) {
                      handleError(vni, outputPorts.error, lastErrorState);
                  }
 
+                 profiler.stopUpdate(updateStart, true);
+
              }).catch( function(e) { 
+                 profiler.stopUpdate(updateStart, true);
                  logger.error("unable to process fRunUpdater results!", vni);
                  var err = (e.stack) ? e.stack : e;
                  logger.error(err);
@@ -455,4 +476,52 @@ function dataIsGood(vni) {
 function shouldRunUpdater(vni, isStale) { 
     // TODO: May add different policies in the future.
     return (!isStale) && haveAllInputs(vni) && dataIsGood(vni);
+}
+
+/**
+ * Set default output metadata by appending input state metadata to the outputState 
+ * so it gets passed on to downstream nodes.
+ */
+function setDefaultMetadata(vni, inputState) {
+
+    var inputKeys = Object.keys(inputState);
+    var outputState = vni.outputState();
+    var outputKeys = Object.keys(outputState);
+
+    // Walk through list of keys looking for non-standard state keys - those will be metadata.
+    inputKeys.forEach(function(key) {
+        if (!_.contains(createState.STATE_KEYS, key)) {
+
+            // Found a metadata key - do we already know about it on the output? 
+            if (_.contains(outputKeys, key)) { 
+
+                // We already have an entry for this metadata key.  
+                var metadata = outputState[key];
+                if (_.isArray(metadata) && !_.contains(metadata, inputState[key])) {
+                    // Metadata is an array - push this value onto it with any earlier values
+                    // So downstream node can see them all
+                    logger.debug('Framework found multiple metadata values for ',key);
+                    metadata.push(inputState[key]);
+                    metadata = _.uniq(metadata);
+
+                } else if ((!_.isArray(metadata)) && (metadata !== inputState[key])) {
+                    // Metadata is currently a single value and we have two different values for it
+
+                    // Is either the new value or the old value undefined?  If so, keep whatever the new value is
+                    if (_.isUndefined(inputState[key]) || _.isUndefined(metadata)) { 
+                        vni.outputState({[key]: inputState[key]});
+
+                    } else { 
+                        // Have two different values for the same metadata key -> make an array with them
+                        logger.debug('Framework has two metadata values for ',key);
+                        var metadataArray = [metadata, inputState[key]];
+                        vni.outputState({[key]: metadataArray});
+                    }
+                }
+            } else {  
+                // First time we've seen this metadata key - add it to the output state
+                vni.outputState({[key]: inputState[key]});
+            }
+        }
+    });
 }

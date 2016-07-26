@@ -27,7 +27,7 @@ module.exports = wrapper(patientDemographics);
 function patientDemographics(data, cmumps_file, fhir_file) {   
 
     logger.debug('Enter', {nodeInstance: this.nodeInstance});
-        // console.log('data: ',util.inspect(data,{depth:null})+'\n');
+    // console.log('data: ',util.inspect(data,{depth:null})+'\n');
 
     if (_.isUndefined(data)) { 
         throw Error("PatientDemographics requires data to translate!");

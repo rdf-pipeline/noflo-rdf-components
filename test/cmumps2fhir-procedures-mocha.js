@@ -10,8 +10,9 @@ var sinon = require('sinon');
 var _ = require('underscore');
 var fs = require('fs');
 
-var test = require('./common-test');
 var compFactory = require('../components/cmumps2fhir-procedures');
+var logger = require('../src/logger');
+var test = require('./common-test');
 
 var testFile = __dirname + '/../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
 
@@ -35,18 +36,15 @@ describe('cmumps2fhir-procedures', function() {
         });
 
         it('should return empty object if data is empty', function() {
-            sinon.stub(console, 'warn');
+            sinon.stub(logger, 'warn');
             expect(compFactory.updater({})).to.be.empty;
-            console.warn.restore();
+            logger.warn.restore();
         });
 
         it('should convert patient procedures to fhir', function() {
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-
-            sinon.stub(console, 'log');
             var translation = compFactory.updater(parsedData);
-            console.log.restore();
 
             translation.should.not.be.empty;
             translation.should.be.an('array');
@@ -66,10 +64,7 @@ describe('cmumps2fhir-procedures', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            sinon.stub(console, 'log');
             var translation = compFactory.updater(parsedData, cmumpsFile, fhirFile);
-            console.log.restore();
-
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
@@ -81,7 +76,6 @@ describe('cmumps2fhir-procedures', function() {
     describe('functional behavior', function() {
        it('should convert patient procedures to fhir in a noflo network', function() {
            this.timeout(3000);
-           sinon.stub(console,'log');
            return test.createNetwork(
                 { node1: 'filesystem/ReadFile',
                   node2: 'core/Repeat',
@@ -108,7 +102,6 @@ describe('cmumps2fhir-procedures', function() {
                     network.graph.addInitial('', 'node3', 'in');
 
                 }).then(function(done) {
-                    console.log.restore();
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');
@@ -123,10 +116,6 @@ describe('cmumps2fhir-procedures', function() {
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                }, function(fail) {
-                    console.log.restore();
-                    console.log('fail: ',fail);
-                    throw Error(fail);
                 });
            });
        });

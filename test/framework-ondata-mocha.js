@@ -14,11 +14,11 @@ var sinon = require('sinon');
 
 var noflo = require('noflo');
 
+var createLm = require('../src/create-lm');
 var framework_ondata = require('../src/framework-ondata');
 var factory = require('../src/pipeline-component-factory');
-var test = require('./common-test');
-var createLm = require('../src/create-lm');
 var logger = require('../src/logger');
+var test = require('./common-test');
 
 describe("framework-ondata", function() {
 
@@ -52,8 +52,18 @@ describe("framework-ondata", function() {
                 // Send some data to the input port
                 test.onOutPortData(node, 'output', done);
                 test.onOutPortData(node, 'error', fail);
+                sinon.stub(logger, 'error');
                 test.sendData(node, 'input', inData);
-            }).should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updater.');
+            }).then(function(done) { 
+                logger.error.restore();
+                throw Error("framework did not throw error when wrapper fRunUpdater was not configured!");
+            }, function(fail) { 
+                logger.error.restore();
+                fail.toString().should.contain('Error: No wrapper fRunUpdater function found!  Cannot run updater.');
+                
+            });
+
+should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updater.');
         });
 
         it("should manage single port node vni state, fRunUpdater invocation, & output state", function() {
@@ -712,6 +722,231 @@ describe("framework-ondata", function() {
                     network.graph.addInitial('O', 'node', 'options');
                 }).catch(fail);
             }).should.eventually.deep.equal(payload);
+        });
+
+        // Propagates a metadata property "id" from an up stream node to down stream node.
+        it("should propagate input metadata downstream", function() {
+            var testId = "test identifier";
+            var testdata = "more data";
+            return test.createNetwork({
+                node1: {getComponent: factory({inPorts: {input: {}}, 
+                                               outPorts: {output: {}}
+                                             },
+                                             {fRunUpdater: function(vni){ 
+                                                  // put id metadata and value into the output state
+                                                  vni.outputState({id: testId, data: "some data", lm: createLm()}); 
+                                             }}
+                )}, 
+                node2: {getComponent: factory({inPorts: {input: {}},
+                                               outPorts: {output: {}}
+                                              },
+                                              {fRunUpdater: function(vni){ 
+                                                   // update data and timestamp, but don't tamper with the metadata
+                                                   vni.outputState({data: testdata, lm:createLm()}); 
+                                              }}
+                )}
+            }).then(function(network){
+
+                 return new Promise(function(done, fail) {
+                     var node1 = network.processes.node1.component;
+                     var node2 = network.processes.node2.component;
+
+                     network.graph.addEdge('node1', 'output', 'node2', 'input');
+
+                     test.onOutPortData(node2, 'output', done);
+                     test.onOutPortData(node2, 'error', fail);
+
+                     network.graph.addInitial("init data", 'node1', 'input');
+                 }).then(function(done) {
+                     test.verifyState(done, '', testdata);
+                     done.id.should.equal(testId);  // verify framework propagated the metadata id to the second node
+                 });
+
+            });
+        });
+
+
+        // sets and maintains the same metadata property "id" with same value despite multiple updater calls 
+        // with different data
+        it("should maintain same metadata value when received multiple times", function() {
+            var testId = "test identifier";
+            var testdata = "more data";
+            return test.createNetwork({
+                node1: {getComponent: factory({
+                                               inPorts: {input: {}}, 
+                                               outPorts: {output: {}}
+                                              },
+                                              {fRunUpdater: function(vni){ 
+                                                  // set metadata id property with a test id
+                                                  vni.outputState({id: testId, data: "some data", lm: createLm()}); 
+                                              }}
+                )}, 
+                node2: {getComponent: factory({
+                                               inPorts: {input: {}},
+                                               outPorts: {output: {}}
+                                              },
+                                              {fRunUpdater: function(vni){ 
+                                                   // update data but don't tamper with metadata id 
+                                                   vni.outputState({data: testdata, lm:createLm()});
+                                              }}
+                                      )
+               }
+            }).then(function(network){
+
+                 var node1 = network.processes.node1.component;
+                 var node2 = network.processes.node2.component;
+
+                 return new Promise(function(done, fail) {
+
+                     network.graph.addEdge('node1', 'output', 'node2', 'input');
+
+                     test.onOutPortData(node2, 'output', done);
+                     test.onOutPortData(node2, 'error', fail);
+
+                     network.graph.addInitial("init data", 'node1', 'input');
+                 }).then(function(done) {
+                     test.verifyState(done, '', testdata);
+                     done.id.should.equal(testId);  // verify framework propagated the metadata id to the second node
+
+                     return new Promise(function(done2) {
+                         test.onOutPortData(node2, 'output', done2);
+                         network.graph.addInitial("second data", 'node1', 'input');
+
+                     }).then(function(done2) {
+                         test.verifyState(done2, '', testdata);
+                         done2.id.should.equal(testId); 
+                     });
+                 });
+            });
+        });
+
+        it("should handle multiple metadata values for same key by creating an array of the values", function() {
+            var testId = "test identifier";
+            var count = 0;
+            var testdata = "more data";
+            return test.createNetwork({
+                node1: {getComponent: factory({
+                                               inPorts: {input: {}}, 
+                                               outPorts: {output: {}}
+                                              },
+                                              {fRunUpdater: function(vni){ 
+                                                   count++;
+                                                   vni.outputState({id: testId + count, data: "some data", lm: createLm()}); 
+                                              }}
+                )}, 
+                node2: {getComponent: factory({
+                                               inPorts: {input: {}},
+                                               outPorts: {output: {}}
+                                              },
+                                              {fRunUpdater: function(vni){ 
+                                                   vni.outputState({data: testdata, lm:createLm()});
+                                              }}
+                                      )
+               }
+            }).then(function(network){
+
+                 var node1 = network.processes.node1.component;
+                 var node2 = network.processes.node2.component;
+
+                 return new Promise(function(done, fail) {
+
+                     network.graph.addEdge('node1', 'output', 'node2', 'input');
+
+                     test.onOutPortData(node2, 'output', done);
+                     test.onOutPortData(node2, 'error', fail);
+
+                     network.graph.addInitial("init data", 'node1', 'input');
+
+                 }).then(function(done) {
+                     test.verifyState(done, '', testdata);
+                     done.id.should.equal(testId+count);
+
+                     return new Promise(function(done2) {
+                         test.onOutPortData(node2, 'output', done2);
+
+                         network.graph.addInitial("second data", 'node1', 'input');
+                     }).then(function(done2) {
+                         test.verifyState(done2, '', testdata);
+                         done2.id.should.deep.equal([testId+'1', testId+'2']); // verify we have an array of values
+
+                         return new Promise(function(done3) {
+                             test.onOutPortData(node2, 'output', done3);
+                             network.graph.addInitial("third data", 'node1', 'input');
+
+                         }).then(function(done3) {
+                             test.verifyState(done3, '', testdata);
+                             done3.id.should.deep.equal([testId+'1', testId+'2', testId+'3']); // verify the array grew
+                         });
+
+                     });
+                 });
+
+            });
+        });
+
+        it("should handle undefined metadata value updates", function() {
+            var testId = "test identifier";
+            var testdata = "more data";
+            var count = 0;
+            return test.createNetwork({
+                node1: {getComponent: factory({
+                                               inPorts: {input: {}}, 
+                                               outPorts: {output: {}}
+                                              },
+                                              {fRunUpdater: function(vni) { 
+                                                  count++;
+                                                  if (count % 2 === 1) 
+                                                      vni.outputState({id: testId, data: "some data", lm: createLm()}); 
+                                                  else
+                                                      vni.outputState({id: undefined, data: "some data", lm: createLm()}); 
+                                              }}
+                )}, 
+                node2: {getComponent: factory({
+                                               inPorts: {input: {}},
+                                               outPorts: {output: {}}
+                                              },
+                                              {fRunUpdater: function(vni){ 
+                                                   vni.outputState({data: testdata, lm:createLm()});
+                                              }}
+                                      )
+               }
+            }).then(function(network){
+
+                 var node1 = network.processes.node1.component;
+                 var node2 = network.processes.node2.component;
+
+                 return new Promise(function(done, fail) {
+
+                     network.graph.addEdge('node1', 'output', 'node2', 'input');
+
+		     test.onOutPortData(node2, 'output', done);
+		     test.onOutPortData(node2, 'error', fail);
+
+                     network.graph.addInitial("init data", 'node1', 'input');
+                 }).then(function(done) {
+                     test.verifyState(done, '', testdata);
+                     done.id.should.equal(testId); // Verify we got the single value we expect
+
+                     return new Promise(function(done2) {
+                         test.onOutPortData(node2, 'output', done2);
+                         network.graph.addInitial("second data", 'node1', 'input');
+
+                     }).then(function(done2) {
+                         test.verifyState(done2, '', testdata);
+                         expect(done2.id).to.be.undefined; // verify our metadata value was reset to undefined
+
+                         return new Promise(function(done3) {
+                             test.onOutPortData(node2, 'output', done3);
+                             network.graph.addInitial("third data", 'node1', 'input');
+
+                         }).then(function(done3) {
+                             test.verifyState(done3, '', testdata);
+                             done3.id.should.equal(testId);   // verify that we got the single value we expect again
+                         });
+                     });
+                 });
+            });
+
         });
 
     });

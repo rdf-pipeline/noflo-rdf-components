@@ -164,9 +164,9 @@ module.exports = {
      */
     verifyState: function(state, expectedVnid, expectedData, expectedError, expectedStale, expectedGroupLm) { 
         state.should.be.an('object');
-        state.should.have.all.keys('vnid', 'lm','data','error','stale', 'groupLm');
+        state.should.include.keys('vnid', 'lm','data','error','stale', 'groupLm');
         state.vnid.should.equal(expectedVnid);
-        state.data.should.equal(expectedData);
+        expect(state.data).to.deep.equal(expectedData);
         state.lm.should.be.a('string');
         state.lm.should.not.be.empty;
         expect(state.error).to.equal(expectedError);
