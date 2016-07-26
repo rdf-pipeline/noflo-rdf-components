@@ -31,12 +31,12 @@ function cmumps2fhirPrescriptions(data, cmumps_file, fhir_file) {
         throw Error("PatientPrescriptions requires data to translate!");
     }
 
-    var prescriptions = cmumps2fhir(data,
-                                    extractor.extractMedications,
-                                    translator.translatePrescriptionsFhir,
-                                    cmumps_file,
-                                    fhir_file);
-
+    var prescriptions = cmumps2fhir.call(this,
+                                         data,
+                                         extractor.extractMedications,
+                                         translator.translatePrescriptionsFhir,
+                                         cmumps_file,
+                                         fhir_file);
 
     // How many prescriptions do we have?  
     if (! _.isEmpty(prescriptions)) {

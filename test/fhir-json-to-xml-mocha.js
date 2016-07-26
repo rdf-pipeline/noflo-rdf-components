@@ -68,14 +68,14 @@ describe('fhir-json-to-xml', function() {
         });
 
         it('should convert multiple fhir objects to xml', function() {
-            var data = fs.readFileSync('test/data/fhir-prescripts.json');
+            var data = fs.readFileSync(__dirname + '/data/fhir-prescripts.json');
             var parsedData = JSON.parse(data);
 
             var xmlFiles = compFactory.updater(parsedData,'/tmp/');
 
             xmlFiles.should.not.be.empty;
             xmlFiles.should.be.an('array');
-            xmlFiles.should.have.length(6);
+            xmlFiles.should.have.length(3);
 
             xmlFiles.forEach( function(xmlFile) { 
                 var buf = fs.readFileSync(xmlFile);

@@ -33,11 +33,12 @@ function translateDemographics(input, cmumps_file, fhir_file) {
         throw Error("No patient demographics data to translate!");
     }
 
-    var demographics = cmumps2fhir(input,  
-                                   undefined,  // no extraction required 
-                                   translator.translateDemographicsFhir,
-                                   cmumps_file, 
-                                   fhir_file);
+    var demographics = cmumps2fhir.call(this,
+                                        input,  
+                                        undefined,  // no extraction required 
+                                        translator.translateDemographicsFhir,
+                                        cmumps_file, 
+                                        fhir_file);
 
     logger.debug('Translated demographics:\n',util.inspect(demographics, {depth:null}));
     return demographics;

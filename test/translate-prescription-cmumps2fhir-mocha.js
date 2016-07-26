@@ -34,20 +34,23 @@ describe('translate-prescriptions-cmumps2fhir', function() {
     describe('#updater', function() {
 
         it('should throw an error if data is undefined', function() {
-            expect(factory.updater.bind(this, undefined)).to.throw(Error,
+            var node = test.createComponent(factory);
+            expect(factory.updater.bind(node.vni(), undefined)).to.throw(Error,
                 /No patient prescription data to translate!/);
         });
 
         it('should return undefined if data is empty', function() {
-            var result = factory.updater({});
+            var node = test.createComponent(factory);
+            var result = factory.updater.call(node.vni(), {});
             expect(factory.updater({})).to.be.undefined;
         });
 
         it('should convert patient prescriptions to fhir', function() {
+            var node = test.createComponent(factory);
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
             var prescriptions = extractor.extractPrescriptions(parsedData);
-            var translation = factory.updater(prescriptions);
+            var translation = factory.updater.call(node.vni(), prescriptions);
             translation.should.not.be.empty;
             translation.should.be.an('array');
             translation.should.have.length(3);
@@ -58,7 +61,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
         });
 
         it('should write data to the specified intermediate files', function() {
-
+            var node = test.createComponent(factory);
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
             var prescriptions = extractor.extractPrescriptions(parsedData);
@@ -68,7 +71,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            var translation = factory.updater(prescriptions, cmumpsFile, fhirFile);
+            var translation = factory.updater.call(node.vni(), prescriptions, cmumpsFile, fhirFile);
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
