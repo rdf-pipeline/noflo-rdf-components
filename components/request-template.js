@@ -90,6 +90,7 @@ function execute(method, url, headers, body, parameters, input) {
     var self = this.nodeInstance || this;
     var data = _.extend.apply(_, [{}].concat(parameters, [input]));
     var http_headers = _.extend.apply(_, [{}].concat(t_headers ? t_headers(data) : []));
+    if (!t_url) throw Error("URL is required " + _.toArray(arguments).join(','));
     var options = _.extend(URL.parse(t_url(data)), {
         method: t_method ? t_method(data) : 'GET',
         headers: _.omit(http_headers, _.isEmpty)

@@ -1,0 +1,51 @@
+# ag-sparql-federate.fbp
+
+# Executes a SPARQL query against a dynamic federation of AllegroGraph repositories
+
+# Exports
+INPORT=createSession.URL:TARGET_URL
+INPORT=readEnv.KEY:TARGET_LIST_FILE_ENV
+INPORT=executeSparql.BODY:SPARQL_QUERY
+INPORT=input.IN:INPUT
+INPORT=auth.IN:AUTH_FILE_ENV
+OUTPORT=result.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'trim' -> METHOD trimFile(objects/CallMethod)
+'trim' -> METHOD trimLine(objects/CallMethod)
+'application/x-www-form-urlencoded' -> TYPE createSession
+'application/x-www-form-urlencoded' -> TYPE closeSession
+'application/sparql-query' -> TYPE executeSparql
+'{+session}/session/close' -> URL closeSession
+'session' -> KEY setSession(rdf-components/object)
+'targetList' -> KEY setTargetList(rdf-components/object)
+'templates/ag-session-create.hbs' -> FILENAME ru(rdf-components/read-content) OUTPUT -> BODY createSession
+
+# Authentication
+auth(core/Repeat) OUT -> AUTH_FILE_ENV createSession(rdf-components/http-basic-post)
+auth(core/Repeat) OUT -> AUTH_FILE_ENV executeSparql(rdf-components/http-basic-post)
+auth(core/Repeat) OUT -> AUTH_FILE_ENV closeSession(rdf-components/http-basic-post)
+
+# Read target URL list from environment variable containing the filename
+readEnv(core/ReadEnv) OUT -> IN readFile(filesystem/ReadFile) OUT -> IN trimFile
+trimFile OUT -> IN split(strings/SplitStr) OUT -> IN trimLine OUT -> IN toArray
+toArray(adapters/PacketsToArray) OUT -> VALUE setTargetList OUTPUT -> PARAMETERS createSession
+
+# Create a Federated Session
+input(core/Repeat) OUT -> INPUT createSession
+
+# Execute SPARQL
+'wait' -> REGISTER phaser(rdf-components/phaser)
+createSession OUTPUT -> URL executeSparql OUTPUT -> ARRIVE phaser
+input OUT -> INPUT executeSparql OUTPUT -> INPUT result
+
+# Close session
+'wait' -> REGISTER result(rdf-components/phaser)
+createSession OUTPUT -> VALUE setSession OUTPUT -> INPUT phaser
+phaser OUTPUT -> INPUT closeSession OUTPUT -> ARRIVE result
+
+# Error handling echos errors to console.log
+createSession ERROR -> IN error
+executeSparql ERROR -> IN error
+closeSession ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)

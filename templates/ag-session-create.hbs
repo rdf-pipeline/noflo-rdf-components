@@ -1,0 +1,11 @@
+{{!-- ag-session-create --}}
+{{!-- Used to create a federated session --}}
+{{!-- @see http://franz.com/agraph/support/documentation/current/http-protocol.html#post-session --}}
+
+{{~#each targetList~}}
+    {{#if @first~}}
+        store=<{{{this}}}>
+    {{~else~}}
+        %2B<{{{this}}}>
+    {{~/if}}
+{{~/each~}}
