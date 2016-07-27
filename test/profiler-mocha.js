@@ -172,6 +172,11 @@ describe("profiler", function() {
                nodeInstance.profiler.stopEvent.should.be.a('function');
                nodeInstance.profiler.startUpdate.should.be.a('function');
                nodeInstance.profiler.stopUpdate.should.be.a('function');
+               function delay(ms) {
+                  ms += new Date().getTime();
+                  while (new Date() < ms){}
+               }
+               delay(1); // wait long enough to ensure average update time is greater than 0
                return 'success';
            };
 
