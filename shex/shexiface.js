@@ -164,8 +164,9 @@ function mapLoadedShapes(fromSchema, toSchema, fromGraph, toGraph, fromNode, toN
     var validator = ShExValidator.construct(fromSchema);
     Mapper.register(validator);
 
-    // run validator
-    if (!validator.validate(fromGraph, fromNode, null)) {
+  // run validator
+    var val = validator.validate(fromGraph, fromNode, null);
+    if ("errors" in val) {
         return false;
     }
 
