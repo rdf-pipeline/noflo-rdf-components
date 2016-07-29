@@ -16,7 +16,9 @@ var wrapper = require('../src/javascript-wrapper.js');
  * @param frame JSON-LD Frame object
  * @param context JSON-LD Context object
  */
-module.exports = wrapper(function execute(json, frame, context) {
+module.exports = wrapper(updater);
+
+function updater(json, frame, context) {
     if (frame) return jsonld.frame(json, from, {documentLoader: function(url, cb) {
         if (context) return cb(null, {document: context});
         else return jsonld.documentLoaders.node()(url, cb);
@@ -32,4 +34,4 @@ module.exports = wrapper(function execute(json, frame, context) {
             return jsonld.documentLoaders.node()(url, cb);
     }});
     else return json;
-});
+}
