@@ -43,7 +43,7 @@
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.8",
-    "shex": "~0.5.9",
+    "shex": "~0.8.0",
     "stack-trace": "0.0.9",
     "translators": "git+https://www.github.com/rdf-pipeline/translators",
     "underscore": "~1.8.3",
