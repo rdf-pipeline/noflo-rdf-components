@@ -55,7 +55,14 @@ function fRunUpdater(nodeDef, vni) {
             resolve(nodeDef.preprocess(input));
         else
             resolve(input);
-    }).then(jsonld_to_n3).then(shexmap).then(n3_to_jsonld).then(function(json) {
+    }).then(jsonld_to_n3).then(function shexmap(fromGraph) {
+        var makeTargetNode = _.partial(nodeDef.makeTargetNode, fromGraph);
+        return shexiface(fromGraph, nodeDef.myTypeToShape, nodeDef.myBase,
+		        nodeDef.staticBindings, makeTargetNode, nodeDef.targetFixup
+	    ).then(function(dataAndLog) {
+            return dataAndLog.data;
+        });
+    }).then(n3_to_jsonld).then(function(json) {
         if (nodeDef.postprocess)
             return nodeDef.postprocess(json);
         else
@@ -87,12 +94,6 @@ function jsonld_to_n3(json) {
 function toN3(term) {
     if (term.type != 'literal') return term.value;
     else return N3.Util.createLiteral(term.value, term.language || term.datatype);
-}
-
-function shexmap(n3) {
-    return shexiface.ShExMapPerson(n3).then(function(dataAndLog) {
-        return dataAndLog.data;
-    });
 }
 
 function n3_to_jsonld(n3) {

@@ -20,6 +20,8 @@ var PROV_DERIVED = "http://www.w3.org/ns/prov#wasDerivedFrom";
 
 var NextNode = 0;
 
+module.exports = ShExMapGraph;
+
 // Load each schema on demand.
 function schemaPromise (typeToShape, key, fromto) {
 
@@ -148,48 +150,4 @@ function dumpTriples (triples) {
 	else console.warn("@base <" + base + ">.\n" + result);
     });
 }
-
-var myTypeToShape = { // CMUMPS_path is just documentation.
-  "Order-101":    { from: null, to: null, targetType: null, CMUMPS_path: "orders" },
-  "101_03":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/qa_event_date-101" },
-  "101_05":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/status_change-101" },
-  "101_11":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/order_required_data-101" },
-  "Result-63_07": { from: "CMUMPS_result.shex", to: "FHIR_DiagnosticReport.shex", targetType: "DiagnosticReport", CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
-  // "11_07":     { from: null, to: null, targetType: null, CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
-  "2":            { from: null, to: null, targetType: null, CMUMPS_path: "demographics" },
-  "2_03":         { from: null, to: null, targetType: null, CMUMPS_path: "demographics/medical_record_type-2" },
-  "2_4":          { from: null, to: null, targetType: null, CMUMPS_path: "demographics/user_altering_patient_record-2" },
-  "Patient_Appointment-44_2": { from: null, to: null, targetType: null, CMUMPS_path: "appointments" },
-  "52":           { from: null, to: null, targetType: null, CMUMPS_path: "medsop" },
-  "52_00":        { from: null, to: null, targetType: null, CMUMPS_path: "medsop/activity_log-52" },
-  "52_01":        { from: null, to: null, targetType: null, CMUMPS_path: "medsop/fill_dates-52" },
-  "55":           { from: null, to: null, targetType: null, CMUMPS_path: "medsinp" },
-  //"63":         { from: "patient_labs_cmumps.shex", to: "patient_labs_fhir.shex", targetType: null, CMUMPS_path: "labs" },
-  "Lab_Result-63": { from: null, to: null, targetType: null, CMUMPS_path: "labs" },
-  "Clinical_Chemistry-63_04": { from: "CMUMPS_clinical_chemistry.shex", to: "FHIR_DiagnosticOrder.shex", targetType: "DiagnosticOrder", CMUMPS_path: "labs/clinical_chemistry-63" },
-  // "63_04":     { from: null, to: null, targetType: null, CMUMPS_path: "labs/clinical_chemistry-63" },
-  "63_832":       { from: null, to: null, targetType: null, CMUMPS_path: "labs/performing_lab_disclosures-63_04" },
-  "8810":         { from: null, to: null, targetType: null, CMUMPS_path: "allergies" },
-  "Medication_Profile-8810_3": { from: null, to: null, targetType: null, CMUMPS_path: "allergies/drug_allergy-8810" },
-  "Patient-2":    { from: null, to: null, targetType: null, CMUMPS_path: "patient" },
-}
-
-function HokukahuMapper (fromGraph, fromFormat, toFormat) {
-    var myBase = "http://hokukahu.com/schema/" + fromFormat + "#";
-    var fhir = require("./targets/" + toFormat);
-    var cmumpsIDPredicate = "http://hokukahu.com/schema/" + fromFormat + "#identifier";
-    var myCreateRootBase = "urn:local:" + toFormat + ":";
-    function makeTargetNode (key, s) {
-	return myCreateRootBase + myTypeToShape[key].targetType + ":" +
-	    N3Util.getLiteralValue(fromGraph.find(s, cmumpsIDPredicate, null)[0].object);
-    }
-    return ShExMapGraph(fromGraph, myTypeToShape, myBase,
-			fhir.staticBindings, makeTargetNode, fhir.targetFixup);
-}
-
-module.exports = {
-    ShExMapPerson:function (g) { return HokukahuMapper(g, "cmumpss", "fhir"); },
-    now:now,
-    type2shape:myTypeToShape
-};
 
