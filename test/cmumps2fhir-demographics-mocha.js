@@ -10,8 +10,9 @@ var sinon = require('sinon');
 var _ = require('underscore');
 var fs = require('fs');
 
-var test = require('./common-test');
 var compFactory = require('../components/cmumps2fhir-demographics');
+var logger = require('../src/logger');
+var test = require('./common-test');
 
 var testFile = __dirname + '/../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
 
@@ -36,9 +37,9 @@ describe('cmumps2fhir-demographics', function() {
         });
 
         it('should return empty object if input data is empty', function() {
-            sinon.stub(console, 'warn');
+            sinon.stub(logger, 'warn');
             expect(compFactory.updater({})).to.be.empty;
-            console.warn.restore();
+            logger.warn.restore();
         });
 
         it('should convert patient demographics to fhir', function() {
@@ -47,7 +48,7 @@ describe('cmumps2fhir-demographics', function() {
             var translation = compFactory.updater(parsedData);
             translation.should.not.be.empty;
             translation.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
-                                            'birthDate', 'address','birthDate');
+                                            'birthDate', 'address', 'maritalStatus');
             translation.resourceType.should.equal('Patient');
         });
 
@@ -61,10 +62,7 @@ describe('cmumps2fhir-demographics', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            sinon.stub(console, 'log');
             var translation = compFactory.updater(parsedData, cmumpsFile, fhirFile);
-            console.log.restore();
-
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
@@ -110,15 +108,12 @@ describe('cmumps2fhir-demographics', function() {
                     done.vnid.should.equal('');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
-                                                  'birthDate', 'address','birthDate');
+                                                  'birthDate', 'address','maritalStatus');
                     done.data.resourceType.should.equal('Patient');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
     
-                }, function(fail) {
-                    console.log('fail: ',fail);
-                    throw Error(fail);
                 });
             });
        });

@@ -1,0 +1,47 @@
+{
+  "properties": {},
+  "inports": {},
+  "outports": {},
+  "groups": [],
+  "processes": {
+    "core/Repeat_r3cvm": {
+      "component": "core/Repeat",
+      "metadata": {
+        "label": "Repeat",
+        "x": 612,
+        "y": 396,
+        "width": 72,
+        "height": 72
+      }
+    },
+    "core/Output_ii6h0": {
+      "component": "core/Output",
+      "metadata": {
+        "label": "Output",
+        "x": 792,
+        "y": 396,
+        "width": 72,
+        "height": 72
+      }
+    }
+  },
+  "connections": [
+    {
+      "src": {
+        "process": "core/Repeat_r3cvm",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "core/Output_ii6h0",
+        "port": "in"
+      }
+    },
+    {
+      "data": "Aloha",
+      "tgt": {
+        "process": "core/Repeat_r3cvm",
+        "port": "in"
+      }
+    }
+  ]
+}

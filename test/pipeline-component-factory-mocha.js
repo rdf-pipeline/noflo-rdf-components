@@ -229,6 +229,8 @@ describe('pipeline-component-factory', function() {
                 node.should.be.an('object');
                 node.wrapper.should.exist;
                 node.wrapper.should.be.an('object');
+                node.profiler.should.exist;
+                node.profiler.should.be.an('object');
 
                 // Send some test data to the port 
                 test.sendData(node, 'input', expectedPayload);
