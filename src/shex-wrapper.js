@@ -43,6 +43,7 @@ module.exports = function(nodeDef) {
 /**
  * RDF Pipeline SHEX wrapper fRunUpdater API as documented here:
  *    https://github.com/rdf-pipeline/noflo-rdf-pipeline/wiki/Wrapper-API
+ * This component json-ld on the input port and produces json-ld on the output port
  *
  * @param nodeDef
  * @param vni a virtual node instance
