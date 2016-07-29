@@ -34,11 +34,12 @@ function translatePrescription(input, cmumps_file, fhir_file) {
         throw Error("No patient prescription data to translate!");
     }
 
-    var prescription = cmumps2fhir(input,
-                                   undefined, // no extraction 
-                                   translator.translatePrescriptionsFhir,
-                                   cmumps_file,
-                                   fhir_file);
+    var prescription = cmumps2fhir.call(this,
+                                        input,
+                                        undefined, // no extraction 
+                                        translator.translatePrescriptionsFhir,
+                                        cmumps_file,
+                                        fhir_file);
 
     return prescription;
 }  

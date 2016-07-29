@@ -30,11 +30,12 @@ function cmumps2fhirProcedures(data, cmumps_file, fhir_file) {
         throw Error("PatientProcedures requires data to translate!");
     }
 
-    var procedures = cmumps2fhir(data,
-                                 extractor.extractProcedures,
-                                 translator.translateProceduresFhir,
-                                 cmumps_file,
-                                 fhir_file);
+    var procedures = cmumps2fhir.call(this,
+                                      data,
+                                      extractor.extractProcedures,
+                                      translator.translateProceduresFhir,
+                                      cmumps_file,
+                                      fhir_file);
 
     // How many procedures do we have?
     if (! _.isEmpty(procedures)) {

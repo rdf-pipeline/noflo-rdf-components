@@ -8,7 +8,8 @@ var readline = require('readline');
 var xslt4node = require('xslt4node');
 var first=true;
 
-var logger = require('../src/logger');
+var compHelper = require('../src/component-helper');
+var createLm = require('../src/create-lm');
 var createState = require('../src/create-state');
 var wrapper = require('../src/javascript-wrapper');
 
@@ -32,8 +33,6 @@ module.exports = wrapper(xmlToRdf);
  */
 function xmlToRdf(sources, classpath, transform, outdir) {
 
-    logger.debug('Enter', {arguments: arguments, nodeInstance: this.nodeInstance});
-
     if (_.isUndefined(sources) || _.isUndefined(transform) || _.isUndefined(outdir)) {
         throw Error("Xml-to-rdf component expects sources, fhir-xml-to-rdf xslt, and outdir parameters!");
     }
@@ -49,10 +48,20 @@ function xmlToRdf(sources, classpath, transform, outdir) {
         first = false;
     }
 
-    var promiseFactories =  _.map( sources, function( source ) {
-        return _.partial( processSource, source, classpath, transform, outdir );
-    });
-    var results = Promise.resolve( executeSequentially( promiseFactories ) );
+    var results;
+    if (_.isArray(sources) && sources.length > 1) { 
+        // multiple sources - execute them in sequence to throttle the promise execution
+        // This path will resolve to an array for each of the RDF result files
+        var promiseFactories =  _.map(sources, function(source) {
+            return _.partial(processSource, source, classpath, transform, outdir);
+        });
+        results = Promise.resolve(executeSequentially(promiseFactories));
+    } else {
+        // Have a single source - go ahead and process it 
+        // This path will resolve to a single RDF file, not an array.
+        var result = processSource(sources[0].toString(), classpath, transform, outdir);
+        results = Promise.resolve(result); 
+    }
 
     return Promise.resolve(results);
 }
@@ -68,11 +77,11 @@ function executeSequentially(promiseFactories) {
     var result = Promise.resolve();
     var results = [];
     promiseFactories.forEach(function (promiseFactory, index) {
-       result = result.then( promiseFactory );
-       results.push( result );
+       result = result.then(promiseFactory);
+       results.push(result);
     });
 
-    return Promise.all( results );
+    return Promise.all(results);
 }
 
 /**
@@ -86,7 +95,7 @@ function executeSequentially(promiseFactories) {
  */
 function processSource(source, classpath, transform, outdir) { 
  
-    return new Promise( function(resolve, reject) { 
+    return new Promise(function(resolve, reject) { 
         var fileName = '';
 
         // Use a stream to avoid reading the xml all into memory at once
@@ -107,7 +116,7 @@ function processSource(source, classpath, transform, outdir) {
             }
 
             // Do we have a fhir resource ID?
-            if (line.match(/^<id value=\"urn\:local\:fhir\:/)) {
+            if (line.match(/^<id value=/)) {
 
                 // extract the ID URI
                 var uri = line.match(/^<id value=\"([A-Za-z0-9\:\-_]+).*/);
@@ -122,10 +131,8 @@ function processSource(source, classpath, transform, outdir) {
                        });
 
                     // Write the file
-                    fileName = outdir+uri[1]+'.ttl';
+                    fileName = outdir + 'rdf-fhir-'+ uri[1] + '-' + createLm() + '.ttl';
                     fs.writeFileSync(fileName, rdf);
-                    logger.debug('wrote file', {fileName: fileName, nodeInstance: this.nodeInstance});
- 
                     resolve(fileName);
                 }
             }
