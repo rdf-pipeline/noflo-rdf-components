@@ -39,15 +39,11 @@ module.exports = wrapper(throttler);
  * @return a hash with the next elements to be processed.
  */
 function throttler(throttle_size, file_envvar, encoding) {
-
     var node = this.nodeInstance;
     if (_.isUndefined(node.throttle)) node['throttle'] = {}; 
 
     // Get the number of hash elements being requested
-    var throttleSize = parseInt(throttle_size);
-    if (isNaN(throttleSize))
-        throw Error("Throttle requires an integer throttle_size!  Received: '" +
-                    throttle_size + "'");
+    var throttleSize = _.isFinite(throttle_size) ? +throttle_size : 1;
 
     // Read the file if we haven't got any pending data e.g., first time
     if (_.isEmpty(node.throttle)) { 
