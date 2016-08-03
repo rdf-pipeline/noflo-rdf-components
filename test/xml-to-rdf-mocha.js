@@ -113,7 +113,7 @@ describe('xml-to-rdf', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'componentName');
                     done.vnid.should.equal('');
                     done.data.should.be.a('string');
                     done.data.should.contain('/tmp/rdf-fhir-urn:local:fhir:Patient:2-000007-');
@@ -121,6 +121,7 @@ describe('xml-to-rdf', function() {
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('node5');
 
                     // Now check the file
                     var results = fs.readFileSync(done.data, 'utf8');
@@ -179,7 +180,7 @@ describe('xml-to-rdf', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'componentName');
                     done.vnid.should.equal('');
                     done.data.should.be.a('string');
                     done.data.should.contain('/tmp/rdf-fhir-urn:local:fhir:MedicationDispense:52-7810413-');
@@ -187,6 +188,7 @@ describe('xml-to-rdf', function() {
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('node5');
 
                     // Now check the file
                     var results = fs.readFileSync(done.data, 'utf8');
@@ -245,7 +247,7 @@ describe('xml-to-rdf', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'componentName');
                     done.vnid.should.equal('');
                     done.data.should.be.an('array');
                     done.data.should.have.length(2);
@@ -258,6 +260,7 @@ describe('xml-to-rdf', function() {
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('node5');
 
                     // Now check the file
                     var results = fs.readFileSync(done.data[0], 'utf8');

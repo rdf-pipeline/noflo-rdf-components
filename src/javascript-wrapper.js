@@ -6,7 +6,6 @@ var _ = require('underscore');
 var util = require('util');
 var logger = require('./logger');
 var createLm = require('./create-lm');
-var createState = require('./create-state');
 var factory = require('./pipeline-component-factory');
 var wrapperHelper = require('./wrapper-helper');
 
