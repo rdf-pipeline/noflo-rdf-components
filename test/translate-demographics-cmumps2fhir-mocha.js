@@ -120,7 +120,8 @@ describe('translate-demographics-cmumps2fhir', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'graphUri');
+                    done.should.have.all.keys('vnid','data','groupLm','lm',
+                                              'stale','error', 'componentName', 'graphUri');
                     done.vnid.should.equal('cmumpss:Patient-2:2-000007');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
@@ -130,6 +131,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                     expect(done.stale).to.be.undefined;
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
                     done.graphUri.startsWith('urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir').should.be.true;
     
                 }, function(fail) {
@@ -174,11 +176,13 @@ describe('translate-demographics-cmumps2fhir', function() {
 
               }).then(function(done) {
                   done.should.be.an('object');
-                  done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'graphUri');
+                  done.should.have.all.keys('vnid','data','groupLm','lm',
+                                            'stale','error', 'componentName', 'graphUri');
                   done.vnid.should.equal('cmumpss:Patient-2:2-000007');
                   done.data.should.be.an('object');
                   done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
                                                 'birthDate', 'address', 'maritalStatus');
+                  done.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
                   done.graphUri.should.equal('urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007');
 
                   return new Promise(function(done2) {
@@ -192,10 +196,13 @@ describe('translate-demographics-cmumps2fhir', function() {
                    }).then(function(done2) {
 
                       done2.vnid.should.equal('cmumpss:Patient-2:2-000008');
-                      done2.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'graphUri');
+                      done2.should.have.all.keys('vnid','data','groupLm','lm',
+                                                 'stale','error', 'componentName', 'graphUri');
+                      done2.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
                       done2.graphUri.should.equal('urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000008');
 
                       done.vnid.should.equal('cmumpss:Patient-2:2-000007');
+                      done.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
                       done.graphUri.should.equal('urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007');
                    });
 

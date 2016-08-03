@@ -208,13 +208,14 @@ describe('javascript-wrapper', function() {
                     }).then(function(done) {
                         done.should.be.an('object');
                         done.should.have.keys('vnid', 'data', 'error', 'stale', 
-                                              'groupLm', 'lm');
+                                              'groupLm', 'lm', 'componentName');
                         done.vnid.should.equal('');
                         done.data.should.equal("alpha and omega");
                         expect(done.error).to.be.undefined;
                         expect(done.stale).to.be.undefined;
                         expect(done.groupLm).to.be.undefined;
                         done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                        done.componentName.should.equal('node3');
                     });
                 });
             });

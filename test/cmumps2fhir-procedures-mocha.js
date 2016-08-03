@@ -107,7 +107,8 @@ describe('cmumps2fhir-procedures', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'graphUri');
+                    done.should.have.all.keys('vnid','data','groupLm','lm',
+                                              'stale','error','componentName', 'graphUri');
                     done.vnid.should.equal('');
                     done.data.should.be.an('array');
                     done.data.should.have.length(1);
@@ -117,6 +118,7 @@ describe('cmumps2fhir-procedures', function() {
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('rdf-components/cmumps2fhir-procedures');
                     done.graphUri.should.equal('urn:local:rdf-components%2Fcmumps2fhir-procedures:Procedure:Procedure-1074046');
                 });
            });

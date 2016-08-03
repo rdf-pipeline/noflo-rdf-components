@@ -30,21 +30,24 @@ module.exports = function(payload, socketIndex) {
 
      try { 
          var portName = this.name;
-         var outputPorts = this.nodeInstance.outPorts;
+         var nodeInstance = this.nodeInstance;
+         var outputPorts = nodeInstance.outPorts;
 
          logger.debug('Enter', {
              port: portName,
              socketIndex: socketIndex,
              payload: util.inspect(payload),
-             nodeInstance: this.nodeInstance
+             nodeInstance: nodeInstance
          });
 
          var vnid = payload.vnid || '';
-         var vni = this.nodeInstance.vni(vnid);
+         var vni = nodeInstance.vni(vnid);
 
          // Get the old & new input state for port and the new payload
          var lastInputState = vni.inputStates(portName, socketIndex);
-         var inputState = (_.isUndefined(payload.vnid)) ? createState(vnid, payload) : payload;
+         var inputState = (_.isUndefined(payload.vnid)) ? 
+             createState(vnid, payload, undefined, undefined, undefined, undefined, nodeInstance.componentName) 
+             : payload;
  
          // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
          var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
@@ -56,10 +59,10 @@ module.exports = function(payload, socketIndex) {
          setDefaultMetadata(vni, inputState);
 
          if (vnid) {
-             runUpdater(this.nodeInstance, vni, isStale, payload, profiler);
+             runUpdater(nodeInstance, vni, isStale, payload, profiler);
          } else {
-             this.nodeInstance.forEachVni(function(vni) {
-                 runUpdater(this.nodeInstance, vni, isStale, payload, profiler);
+             nodeInstance.forEachVni(function(vni) {
+                 runUpdater(nodeInstance, vni, isStale, payload, profiler);
              }, this);
          }
      } catch(e) {
