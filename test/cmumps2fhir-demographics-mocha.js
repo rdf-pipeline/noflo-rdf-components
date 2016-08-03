@@ -104,7 +104,8 @@ describe('cmumps2fhir-demographics', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'graphUri');
+                    done.should.have.all.keys('vnid','data','groupLm','lm',
+                                              'stale','error', 'componentName', 'graphUri');
                     done.vnid.should.equal('');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
@@ -113,6 +114,7 @@ describe('cmumps2fhir-demographics', function() {
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('rdf-components/cmumps2fhir-demographics');
                     done.graphUri.should.equal('urn:local:rdf-components%2Fcmumps2fhir-demographics:Patient:2-000007');
                 });
             });

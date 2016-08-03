@@ -19,10 +19,11 @@ var createLm = require('./create-lm');
  * @param lm (optional) the last modified timestamp (Lm) for the object. 
  *           See https://github.com/rdf-pipeline/framework/wiki/LM for more details.
  *           If the lm is undefined, a new lm will be generated.
+ * @param componentName the name of the component to which this state belongs
  *
  * @return the newly created state object.
  */ 
-module.exports = function(vnid, data, lm, error, stale, groupLm) { 
+module.exports = function(vnid, data, lm, error, stale, groupLm, componentName) { 
 
        if (_.isUndefined(vnid)) {
            throw new Error("Unable to create state because no vnid was provided");
@@ -36,7 +37,8 @@ module.exports = function(vnid, data, lm, error, stale, groupLm) {
                     error: undefined,
                     stale: undefined,
                     groupLm: undefined,
-                    lm: undefined };
+                    lm: undefined,
+                    componentName: componentName || '' };
 
        } 
 
@@ -47,7 +49,19 @@ module.exports = function(vnid, data, lm, error, stale, groupLm) {
                 error: error,
                 stale: stale,
                 groupLm: groupLm,
-                lm: lm || createLm() };
+                lm: lm || createLm(),
+                componentName: componentName || '' };
 };
 
-module.exports.STATE_KEYS = ['vnid', 'data', 'error', 'stale', 'groupLm', 'lm'];
+module.exports.STATE_KEYS = ['vnid', 'data', 'error', 'stale', 'groupLm', 'lm', 'componentName'];
+
+module.exports.clearMetadata = function(state) {
+    if (!_.isEmpty(state)) {
+        var self = this;
+        _.keys(state).forEach(function(key) {
+            if (!_.contains(self.STATE_KEYS, key)) {
+                delete state[key];
+            }
+        });
+    }
+}
