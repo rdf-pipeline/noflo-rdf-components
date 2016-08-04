@@ -113,18 +113,18 @@ describe('xml-to-rdf', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'componentName');
                     done.vnid.should.equal('');
-                    done.data.should.be.an('array');
-                    done.data.should.have.length(1);
-                    done.data[0].should.contain('urn:local:fhir:Patient:2-000007.ttl');
+                    done.data.should.be.a('string');
+                    done.data.should.contain('/tmp/rdf-fhir-urn:local:fhir:Patient:2-000007-');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('node5');
 
                     // Now check the file
-                    var results = fs.readFileSync(done.data[0], 'utf8');
+                    var results = fs.readFileSync(done.data, 'utf8');
                     results.should.contain('fhir:Patient');
                     results.should.contain('fhir:Identifier');
                     results.should.contain('fhir:HumanName');
@@ -180,18 +180,18 @@ describe('xml-to-rdf', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'componentName');
                     done.vnid.should.equal('');
-                    done.data.should.be.an('array');
-                    done.data.should.have.length(1);
-                    done.data[0].should.contain('urn:local:fhir:MedicationDispense:52-7810413.ttl');
+                    done.data.should.be.a('string');
+                    done.data.should.contain('/tmp/rdf-fhir-urn:local:fhir:MedicationDispense:52-7810413-');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('node5');
 
                     // Now check the file
-                    var results = fs.readFileSync(done.data[0], 'utf8');
+                    var results = fs.readFileSync(done.data, 'utf8');
                     results.should.contain('fhir:MedicationDispense');
                     results.should.contain('fhir:Identifier');
                     results.should.contain('fhir:MedicationDispense.authorizingPrescription'); 
@@ -247,19 +247,20 @@ describe('xml-to-rdf', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                    done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'componentName');
                     done.vnid.should.equal('');
                     done.data.should.be.an('array');
                     done.data.should.have.length(2);
 
                     var doneData = done.data.toString();
-                    doneData.should.contain('urn:local:fhir:Procedure:Procedure-1074046.ttl');
-                    doneData.should.contain('urn:local:fhir:Procedure:Procedure-1277097.ttl');
+                    doneData.should.contain('/tmp/rdf-fhir-urn:local:fhir:Procedure:Procedure-1074046-');
+                    doneData.should.contain('/tmp/rdf-fhir-urn:local:fhir:Procedure:Procedure-1277097-');
 
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('node5');
 
                     // Now check the file
                     var results = fs.readFileSync(done.data[0], 'utf8');

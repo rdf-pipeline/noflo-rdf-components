@@ -52,18 +52,19 @@ describe('fhir-to-rdf', function() {
                 done.should.not.be.empty;
                 done.should.be.an('object');
 
-                done.should.have.all.keys('vnid','data','groupLm','lm','stale','error');
+                done.should.have.all.keys('vnid','data','groupLm','lm',
+                                          'stale','error', 'componentName');
                 done.vnid.should.equal('');
-                done.data.should.be.an('array');
-                done.data.should.have.length(1);
-                done.data[0].should.contain('urn:local:fhir:Patient:2-000007.ttl');
+                done.data.should.be.an('string');
+                done.data.startsWith('/tmp/rdf-fhir-2-000007-').should.be.true;
                 expect(done.error).to.be.undefined;
                 expect(done.stale).to.be.undefined;
                 expect(done.groupLm).to.be.undefined;
                 done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                done.componentName.should.equal('rdf-components/xml-to-rdf');
 
                 // Now check the file
-                var results = fs.readFileSync(done.data[0], 'utf8');
+                var results = fs.readFileSync(done.data, 'utf8');
                 results.should.contain('fhir:Patient');
                 results.should.contain('fhir:Identifier');
                 results.should.contain('fhir:HumanName');

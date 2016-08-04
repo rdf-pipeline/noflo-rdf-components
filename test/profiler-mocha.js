@@ -4,6 +4,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
+var stubs = require('./common-stubs');
 var test = require('./common-test');
 var profiler = require('../src/profiler');
 var jswrapper = require('../src/javascript-wrapper');
@@ -179,7 +180,10 @@ describe("profiler", function() {
 
            return new Promise(function(done) {
                test.onOutPortData(node, 'output', done);
-               test.sendData(node, 'input', "test input to log");
+
+               return stubs.promiseLater().then(function(done){
+                   test.sendData(node, 'input', "test input to log");
+               });
 
            }).then(function(done) {
                done.data.should.equal('success');

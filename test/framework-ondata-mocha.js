@@ -607,10 +607,11 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
                // Should have sent an output state with error flag sent
                logger.error.restore();
                done.should.be.an('object'); 
-               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm');
+               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm', 'componentName');
                done.error.should.be.true;
                expect(done.stale).to.be.undefined;
                expect(done.groupLm).to.be.undefined;
+               done.componentName.should.equal('');
 
             }, function(fail) { 
                // Not currently executed since we get the output port data before the error data

@@ -45,7 +45,9 @@ function fhirJsonToXmlFile(fhir, outdir) {
            var cleanFhir = filterAttribute(fhirObject, 'extension');
 
            // convert the object to xml, write to a file, and return the file name
-           return writeToXmlFile(outdir, fhirObject.resourceType, fhirJsonToXml.toXML(cleanFhir)); 
+           var filename = xmlFileName(outdir, fhirObject);
+           fs.writeFileSync(filename, fhirJsonToXml.toXML(cleanFhir).toString()); 
+           return filename;
       }); 
 
    } else { 
@@ -54,7 +56,9 @@ function fhirJsonToXmlFile(fhir, outdir) {
        var cleanFhir = filterAttribute(fhir, 'extension');
 
        // convert the fhir object to xml, write to a file, and return the file name
-       xmlFileNames = [writeToXmlFile(outdir, fhir.resourceType, fhirJsonToXml.toXML(cleanFhir))]; 
+       var filename = xmlFileName(outdir, fhir);
+       fs.writeFileSync(filename, fhirJsonToXml.toXML(cleanFhir).toString()); 
+       xmlFileNames = [filename];
    } 
 
    // console.log('FHIR JSON to XML returning ',xmlFileNames,'\n');
@@ -81,11 +85,12 @@ function filterAttribute(object, attributeName) {
  * @param outdir output directory path
  * @param fhir fhir object to be written
  */
-function writeToXmlFile(outdir, resourceType, fhirXml) { 
-    var xmlFileName = _.isUndefined(resourceType) ?  outdir+'fhir-'+'-'+createLm()+'.xml' :
-        outdir+'fhir-'+resourceType+'-'+createLm()+'.xml';
-    fs.writeFileSync(xmlFileName, fhirXml.toString());
-    logger.debug('wrote file', {xmlFileName: xmlFileName, nodeInstance: this.nodeInstance});
+function xmlFileName(outdir, fhir) { 
+    var resourceType = fhir.resourceType +':' || '';
+    var resourceId = fhir.id + '-' || '';
 
-    return xmlFileName; 
+    var filename = outdir + 'fhir-' + resourceType + resourceId + createLm() + '.xml';
+
+    logger.debug('writing to file', {xmlFileName: filename, nodeInstance: this.nodeInstance});
+    return filename; 
 }

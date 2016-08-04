@@ -33,11 +33,12 @@ function patientDemographics(data, cmumps_file, fhir_file) {
         throw Error("PatientDemographics requires data to translate!");
     }
 
-    var translation = cmumps2fhir(data,  
-                                  extractor.extractDemographics, 
-                                  translator.translateDemographicsFhir,
-                                  cmumps_file,
-                                  fhir_file);
+    var translation = cmumps2fhir.call(this,
+                                       data,  
+                                       extractor.extractDemographics, 
+                                       translator.translateDemographicsFhir,
+                                       cmumps_file,
+                                       fhir_file);
 
     return (_.isArray(translation) && translation.length === 1) ? translation[0] : translation;
 }

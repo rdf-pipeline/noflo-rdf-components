@@ -97,11 +97,23 @@ module.exports = function( node ) {
               vnid = vnid || DEFAULT_VNID;
 
               if ( _.isUndefined( this.vnis[vnid] )  ) {
-
                   // have no vni so create one with empty error & output state
+                  var componentName = _.isUndefined(this.componentName) ? '' : this.componentName;
                   this.vnis[vnid] = { 
-                      errorState: stateFactory( vnid ), 
-                      outputState: stateFactory( vnid ),
+                      errorState: stateFactory( vnid, 
+                                                undefined,  // no data yet
+                                                undefined,  // no lm yet
+                                                undefined,  // not an error
+                                                undefined,  // not stale
+                                                undefined,  // no groupLm 
+                                                componentName ),
+                      outputState: stateFactory( vnid, 
+                                                 undefined,  // no data yet
+                                                 undefined,  // no lm yet
+                                                 undefined,  // not an error
+                                                 undefined,  // not stale
+                                                 undefined,  // no groupLm 
+                                                 componentName )
                   }; 
 
                   // TODO: Add parentVni setting here
@@ -143,7 +155,9 @@ function errorState( vni, state ) {
             delete vni.errorState;
         } else { 
             // Overwrite existing state object
-            vni.errorState = _.extend(vni.errorState || {}, state);
+            var componentName = _.isUndefined(vni.nodeInstance) ? '' : vni.nodeInstance.componentName;
+            vni.errorState = _.extend(vni.errorState || {componentName: componentName}, 
+                                      state);
         }
 
         return this;
@@ -172,7 +186,9 @@ function outputState( vni, state ) {
             delete vni.outputState;
         } else { 
             // Overwrite existing state
-            vni.outputState = _.extend(vni.outputState || {}, state);
+            var componentName = _.isUndefined(vni.nodeInstance) ? '' : vni.nodeInstance.componentName;
+            vni.outputState = _.extend(vni.outputState || {componentName: componentName}, 
+                                       state);
         }
 
         return this;

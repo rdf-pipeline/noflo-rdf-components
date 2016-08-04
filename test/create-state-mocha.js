@@ -33,7 +33,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        // Check the content
        state.vnid.should.equal(testVnid);
@@ -42,6 +42,7 @@ describe("create-state", function() {
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
        expect(state.groupLm).to.be.undefined;
+       state.componentName.should.equal('');
     });
 
     it("should create a new state if given an empty vnid & data parameter", function() {
@@ -53,7 +54,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        // Check the content
        state.vnid.should.equal(testVnid);
@@ -66,6 +67,7 @@ describe("create-state", function() {
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
        expect(state.groupLm).to.be.undefined;
+       state.componentName.should.equal('');
     });
 
     it("should create a new state if given an non-empty vnid & data parameter", function() {
@@ -77,7 +79,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        // Check the content
        state.vnid.should.equal(testVnid);
@@ -90,6 +92,7 @@ describe("create-state", function() {
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
        expect(state.groupLm).to.be.undefined;
+       state.componentName.should.equal('');
     });
 
     it("should use the lm parameter if it is defined", function() {
@@ -102,7 +105,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -113,6 +116,7 @@ describe("create-state", function() {
        expect(state.error).to.be.undefined;
        expect(state.stale).to.be.undefined;
        expect(state.groupLm).to.be.undefined;
+       state.componentName.should.equal('');
     });
 
     it("should use the error flag if it is defined", function() {
@@ -126,7 +130,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -137,6 +141,7 @@ describe("create-state", function() {
        state.error.should.be.true;
        expect(state.stale).to.be.undefined;
        expect(state.groupLm).to.be.undefined;
+       state.componentName.should.equal('');
     });
     it("should use the stale flag if it is defined", function() {
 
@@ -150,7 +155,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -174,7 +179,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        // Check the data content
        state.data.should.equal(testString);
@@ -185,6 +190,7 @@ describe("create-state", function() {
        state.error.should.be.true;
        state.stale.should.be.true;
        expect(state.groupLm).to.be.undefined;
+       state.componentName.should.equal('');
     });
 
     it("should use groupLm if defined", function() {
@@ -197,7 +203,7 @@ describe("create-state", function() {
 
         // Verify we got an object with the right keys
        state.should.be.an('object');
-       state.should.have.all.keys('vnid', 'lm','data', 'error','stale', 'groupLm');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
 
        state.vnid.should.equal(testVnid);
        state.data.should.equal(testString);
@@ -207,6 +213,31 @@ describe("create-state", function() {
        // Check the LMs
        state.groupLm.should.equal(groupLm);
        state.lm.should.equal(testLm);
+       state.componentName.should.equal('');
+    });
+
+    it("should set component name if  defined", function() {
+       // Set up a test state
+       var testVnid = '1';
+       var testLm =  'LM1328113669.00000000000000001';
+       var groupLm =  'LM1328113669.00000000000000002';
+       var testString = "Some test data";
+       var componentName = "rdf/Cheers";
+       var state = createState(testVnid, testString, testLm, undefined, undefined, groupLm, componentName);
+
+        // Verify we got an object with the right keys
+       state.should.be.an('object');
+       state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
+
+       state.vnid.should.equal(testVnid);
+       state.data.should.equal(testString);
+       expect(state.error).to.be.undefined;
+       expect(state.stale).to.be.undefined;
+
+       // Check the LMs
+       state.groupLm.should.equal(groupLm);
+       state.lm.should.equal(testLm);
+       state.componentName.should.equal(componentName);
     });
 
     it("State object default keys should match exported STATE_KEYS", function() {

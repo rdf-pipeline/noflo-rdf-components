@@ -33,11 +33,12 @@ function translateProcedures(input, cmumps_file, fhir_file) {
         throw Error("No patient procedure data to translate!");
     }
 
-    var procedure = cmumps2fhir(input,
-                                undefined, // no extraction
-                                translator.translateProceduresFhir,
-                                cmumps_file,
-                                fhir_file);
+    var procedure = cmumps2fhir.call(this,
+                                     input,
+                                     undefined, // no extraction
+                                     translator.translateProceduresFhir,
+                                     cmumps_file,
+                                     fhir_file);
 
     return procedure;
 }  
