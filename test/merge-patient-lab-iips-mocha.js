@@ -85,7 +85,8 @@ describe('merge-patient-lab-iips', function() {
                     error: undefined,
                     stale: undefined,
                     groupLm: undefined,
-                    lm: 'LM1328113669.00000000000000001'
+                    lm: 'LM1328113669.00000000000000001',
+                    componentName: 'Yoda'
                 };
                 node.vni().errorState(_.clone(errorState));
                 node.vni().errorState().should.eql(errorState);
@@ -101,7 +102,8 @@ describe('merge-patient-lab-iips', function() {
                     error: undefined,
                     stale: undefined,
                     groupLm: undefined,
-                    lm: 'LM1328113669.00000000000000001'
+                    lm: 'LM1328113669.00000000000000001',
+                    componentName: 'Wookiee'
                 };
                 node.vni().errorState(_.clone(errorState));
                 var currentState = node.vni().errorState();
@@ -202,7 +204,8 @@ describe('merge-patient-lab-iips', function() {
                                     error: false,
                                     stale: undefined,
                                     groupLm: undefined,
-                                    lm: 'LM1328113669.00000000000000001' };
+                                    lm: 'LM1328113669.00000000000000001',
+                                    componentName: 'MilleniumFalcon' };
                 node.vni().outputState(_.mapObject(mergedState, _.clone));
 
                 var currentState = node.vni().outputState();
@@ -218,7 +221,8 @@ describe('merge-patient-lab-iips', function() {
                                     error: false,
                                     stale: undefined,
                                     groupLm: undefined,
-                                    lm: 'LM1328113669.00000000000000001' };
+                                    lm: 'LM1328113669.00000000000000001',
+                                    componentName: 'Chewbacca' };
                 node.vni().outputState(_.mapObject(outputState, _.clone));
 
                 // verify it's right
@@ -429,7 +433,8 @@ describe('merge-patient-lab-iips', function() {
                 console.error.restore();
                 payload.should.exist;
                 payload.should.not.be.empty;
-                payload.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm');
+                payload.should.have.all.keys('vnid', 'data', 'error', 'stale', 
+                                             'lm', 'groupLm', 'componentName');
                 payload.vnid.should.equal('');
                 payload.data.should.be.an('object');
                 payload.data.id.should.equal("001");
@@ -439,6 +444,7 @@ describe('merge-patient-lab-iips', function() {
                 expect(payload.stale).to.be.undefined;
                 expect(payload.groupLm).to.be.undefined;
                 payload.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                payload.componentName.should.equal('');
 
                 var errorState = node.vni().errorState();
                 errorState.data.toString().should.contain('Error: Unable to parse parameter');

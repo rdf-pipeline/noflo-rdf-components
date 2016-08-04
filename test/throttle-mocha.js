@@ -31,13 +31,7 @@ describe('throttle', function() {
         it("should throw an error if no arguments specified", function() {
             var node = test.createComponent(factory);
             expect(factory.updater.bind(node.vni(''))).to.throw(Error,
-                "Throttle requires an integer throttle_size!  Received: 'undefined'");
-        });
-
-        it("should throw an error if no throttle size was specified", function() {
-            var node = test.createComponent(factory);
-            expect(factory.updater.bind(node.vni(''), undefined, 'testEnvVar')).to.throw(Error,
-                "Throttle requires an integer throttle_size!  Received: 'undefined'");
+                /Throttle requires an environment variable file_envvar to specify the data to process!/);
         });
 
         it("should throw an error if no file_envvar  was specified", function() {
@@ -82,7 +76,16 @@ describe('throttle', function() {
            process.env.testEnvVar = testfile;
            var result = factory.updater.call(node.vni(''), "2", 'testEnvVar', 'UTF-8');
            result.should.not.be.empty;
-           result.should.deep.equal({ '1': '1', '2': '2' });
+           result.should.deep.equal({'1':'1', '2':'2'});
+        });
+
+        it("should default to hash size of 1 if no hash size is specified", function() {
+           var node = test.createComponent(factory);
+           var testfile = __dirname+"/data/ids.txt";
+           process.env.testEnvVar = testfile;
+           var result = factory.updater.call(node.vni(''), undefined, 'testEnvVar');
+           result.should.not.be.empty;
+           result.should.deep.equal({'1':'1'});
         });
 
     });

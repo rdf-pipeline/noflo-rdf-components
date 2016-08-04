@@ -7,6 +7,8 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
+var sinon = require('sinon');
+
 var componentFactory = require('../src/noflo-component-factory');
 
 var createState = require('../src/create-state');
@@ -16,11 +18,11 @@ var promiseOutput = require('../src/promise-output');
 var test = require('./common-test');
 
 var vniManager = require('../src/vni-manager');
+var componentName = 'enchanté';
 
 describe("vni-manager", function() {
 
     beforeEach(function() {
-
         node = test.createComponent(componentFactory({
             inPorts:{input:{
                 ondata: promiseOutput(function(payload){
@@ -141,13 +143,14 @@ describe("vni-manager", function() {
             testVni.errorState.should.exist;
             testVni.errorState.should.be.a('function');
             var errorState = testVni.errorState();
-            errorState.should.have.all.keys('vnid', 'data', 'lm', 'error', 'stale', 'groupLm');
+            errorState.should.have.all.keys('vnid', 'data', 'lm', 'error', 'stale', 'groupLm', 'componentName');
             errorState.vnid.should.equal('');
             expect(errorState.data).to.be.undefined;
             expect(errorState.lm).to.be.undefined;
             expect(errorState.error).to.be.undefined;
             expect(errorState.stale).to.be.undefined;
             expect(errorState.groupLm).to.be.undefined;
+            errorState.componentName.should.equal('');
 
             testVni.outputState.should.exist;
             testVni.outputState.should.be.a('function');
@@ -155,6 +158,7 @@ describe("vni-manager", function() {
             outputState.vnid.should.equal('');
             expect(outputState.data).to.be.undefined;
             expect(outputState.lm).to.be.undefined;
+            outputState.componentName.should.equal('');
 
             expect(testVni.parentVni).to.be.undefined;
             expect(testVni.errorState.previousLms).to.be.undefined;
@@ -232,13 +236,14 @@ describe("vni-manager", function() {
 
                 // verify error state is as expected
                 errState.should.be.an('object');
-                errState.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm');
+                errState.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
                 errState.vnid.should.equal(testVnid);
                 errState.data.should.equal(state.data);
                 errState.lm.should.equal(state.lm);
                 expect(errState.error).to.be.undefined;
                 expect(errState.stale).to.be.undefined;
                 expect(errState.groupLm).to.be.undefined;
+                errState.componentName.should.equal('');
             });
 
             it("should clear error state", function() {
@@ -287,10 +292,11 @@ describe("vni-manager", function() {
                 inputStates.should.be.an('object');
                 Object.keys(inputStates).should.have.length(1);
                 inputStates.should.have.all.keys('input');
-                inputStates.input.should.have.all.keys('vnid', 'data', 'lm', 'error', 'stale', 'groupLm');
+                inputStates.input.should.have.all.keys('vnid', 'data', 'lm', 'error', 'stale', 'groupLm', 'componentName');
                 inputStates.input.vnid.should.equal(testVnid);
                 inputStates.input.data.should.equal(testString);
                 inputStates.input.lm.should.equal(testLm); 
+                inputStates.input.componentName.should.equal('');
                 expect(inputStates.input.error).to.be.undefined;
                 expect(inputStates.input.stale).to.be.undefined;
                 expect(inputStates.input.groupLm).to.be.undefined;
@@ -343,13 +349,14 @@ describe("vni-manager", function() {
                 // Test get state finds the expected output state
                 var outState = testVni.outputState();
                 outState.should.be.an('object');
-                outState.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm');
+                outState.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 'groupLm', 'componentName');
                 outState.vnid.should.equal(testVnid);
                 outState.data.should.equal(state.data);
                 outState.lm.should.equal(state.lm);
                 expect(outState.error).to.be.undefined;
                 expect(outState.stale).to.be.undefined;
                 expect(outState.groupLm).to.be.undefined;
+                outState.componentName.should.equal('');
             });
 
             it("should clear outputState", function() {
@@ -428,6 +435,48 @@ describe("vni-manager", function() {
             Object.keys(node.vnis).should.have.length(0);
         });
 
+    });
+
+    describe('functional behavior', function() {
+
+        it('should get vni with input, output, and error state for a component in a noflo network', function() {
+            var attributeName = 'MeadowFarmCows';
+            var attributeValue = 'Brindle and Bessie, Jenny and Boss';
+
+            return test.createNetwork(
+                 {rdfObject: 'rdf-components/object',
+                  omega: 'core/Output'}
+
+           ).then(function(network) {
+                var rdfObject = network.processes.rdfObject.component;
+                var omega = network.processes.omega.component;
+
+                return new Promise(function(done, fail) {
+
+                    test.onOutPortData(omega, 'out', done);
+
+                    network.graph.addEdge('rdfObject', 'output', 'omega', 'in');
+
+                    sinon.stub(console,'log');
+                    network.graph.addInitial(attributeName, 'rdfObject', 'key');
+                    network.graph.addInitial(attributeValue, 'rdfObject', 'value');
+
+                }).then(function(done) {
+                    console.log.restore();
+                    done.should.be.an('object');
+                    done.vnid.should.equal('');
+                    expect(done.error).to.be.undefined;
+                    expect(done.stale).to.be.undefined;
+                    expect(done.groupLm).to.be.undefined;
+                    done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    done.componentName.should.equal('rdf-components/object');
+                }, function(fail) {
+                    console.error(fail);
+                    console.log.restore();
+                    throw Error(fail);
+                });
+            });
+        });
     });
 
 });
