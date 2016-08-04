@@ -4,7 +4,6 @@ var _ = require('underscore');
 
 var translator = require('translators').procedures;
 var cmumps2fhir = require('./cmumps2fhir');
-var compHelper = require('../src/component-helper');
 var logger = require('../src/logger');
 var wrapper = require('../src/translation-wrapper');
 

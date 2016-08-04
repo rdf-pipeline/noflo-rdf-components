@@ -120,8 +120,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm',
-                                              'stale','error', 'componentName', 'graphUri');
+                    done.should.include.keys('vnid','data','groupLm','lm','stale','error', 'componentName', 'graphUri');
                     done.vnid.should.equal('cmumpss:Patient-2:2-000007');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
@@ -176,8 +175,8 @@ describe('translate-demographics-cmumps2fhir', function() {
 
               }).then(function(done) {
                   done.should.be.an('object');
-                  done.should.have.all.keys('vnid','data','groupLm','lm',
-                                            'stale','error', 'componentName', 'graphUri');
+                  done.should.include.keys('vnid','data','groupLm','lm','stale','error', 
+                                           'componentName', 'graphUri');
                   done.vnid.should.equal('cmumpss:Patient-2:2-000007');
                   done.data.should.be.an('object');
                   done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
@@ -194,10 +193,9 @@ describe('translate-demographics-cmumps2fhir', function() {
                       network.graph.addInitial(parsedData2, 'repeaterNode', 'in');
 
                    }).then(function(done2) {
-
                       done2.vnid.should.equal('cmumpss:Patient-2:2-000008');
-                      done2.should.have.all.keys('vnid','data','groupLm','lm',
-                                                 'stale','error', 'componentName', 'graphUri');
+                      done2.should.include.keys('vnid','data','groupLm','lm','stale','error', 
+                                                 'componentName', 'graphUri');
                       done2.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
                       done2.graphUri.should.equal('urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000008');
 
