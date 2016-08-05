@@ -11,9 +11,12 @@ var stackTrace = require('stack-trace');
 module.exports = new winston.Logger({
     transports: [
         new winston.transports.Console({
-            level: 'warn'
+            name: 'console',
+            level: 'warn',
+            colorize: true
         }),
         new winston.transports.File({
+            name: 'rdf-components',
             filename: 'rdf-components.log',
             level: 'info'
         })
