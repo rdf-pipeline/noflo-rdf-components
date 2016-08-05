@@ -119,8 +119,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
                     done.should.not.be.empty;
                     done.should.be.an('object');
 
-                    done.should.have.all.keys('vnid','data','groupLm','lm',
-                                              'stale','error', 'componentName', 'graphUri');
+                    done.should.include.keys('vnid','data','groupLm','lm','stale','error', 'componentName', 'graphUri');
                     done.vnid.should.equal('cmumpss:Prescription-52:52-40863');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType','identifier','status','patient',
