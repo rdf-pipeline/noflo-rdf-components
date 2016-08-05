@@ -94,11 +94,17 @@ function execute(method, url, headers, body, parameters, input) {
         method: t_method ? t_method(data) : 'GET',
         headers: _.omit(http_headers, _.isEmpty)
     });
-    var prot = options.protocol == 'https:' ? https : http;
 
     logger.debug('options', {options: options, nodeInstance: this.nodeInstance});
 
+    return promiseThrottledContent(options, t_body ? t_body(data) : null);
+}
+
+var promiseThrottledContent = throttlePromise(promiseContent);
+
+function promiseContent(options, body) {
     return new Promise(function(resolve, reject) {
+        var prot = options.protocol == 'https:' ? https : http;
         var req = prot.request(options, function(res){
             res.setEncoding('utf8');
             var buffer = [];
@@ -112,7 +118,37 @@ function execute(method, url, headers, body, parameters, input) {
                 }
             }).on('error', reject);
         }).on('error', reject);
-        if (t_body) req.write(t_body(data));
+        if (body) req.write(body);
         req.end();
     });
+}
+
+function throttlePromise(fn, limit) {
+    var max = limit || 1;
+    var currently = 0;
+    var queue = [];
+    var next = function(){
+        if (currently < max && queue.length) {
+            currently++;
+            queue.shift().call();
+        }
+    };
+    return function(/* arguments */) {
+        var context = this;
+        var args = arguments;
+        return new Promise(function(callback){
+            queue.push(callback);
+            next();
+        }).then(function(){
+            return fn.apply(context, args);
+        }).then(function(result){
+            currently--;
+            next();
+            return result;
+        }, function(error){
+            currently--;
+            next();
+            return Promise.reject(error);
+        });
+    };
 }
