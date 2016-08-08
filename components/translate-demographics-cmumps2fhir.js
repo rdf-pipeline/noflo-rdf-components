@@ -5,7 +5,6 @@ var util = require('util');
 
 var translator = require('translators').demographics;
 var cmumps2fhir = require('./cmumps2fhir');
-var compHelper = require('../src/component-helper');
 var logger = require('../src/logger');
 var wrapper = require('../src/translation-wrapper');
 
