@@ -1,0 +1,18 @@
+# File:  list-patient-ids.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
+# List patient IDs
+#
+# This query depends on metadata in mGraph: 
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:local:mGraph>
+
+select distinct ?patientId { 
+  graph mGraph: { 
+    ?s a meta:Graph ;
+      meta:patientId ?patientId .
+  } }
+
