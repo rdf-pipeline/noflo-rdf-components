@@ -12,6 +12,10 @@ module.exports = wrapper(funnel);
 /**
  * Funnels a single input into the pipeline one at a time, and queues the rest
  * Fires the next one when it receives the id that has just finished executing.
+ * WARNING: This will only work when the input is guaranteed to be unique, i.e., 
+ * never receiving the same ID more than once. When possible, it should be modified to 
+ * better distinguish between the two port connections, perhaps by sniffing the data 
+ * to distinguish them.
  *
  * @param input Either an id, to be queued and sent to the output when it is its turn.
  *              The input value will be stored as a patientId attribute in the VNI 
