@@ -1,0 +1,12 @@
+# File:  list-all-graphs.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
+# List all graphs in the repository
+
+select distinct ?g {
+  graph ?g { ?s ?p ?v . }
+        }
+order by ?g
+

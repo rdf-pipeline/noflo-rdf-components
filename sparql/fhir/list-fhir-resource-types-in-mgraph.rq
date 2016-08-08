@@ -1,0 +1,24 @@
+# File:  list-fhir-resource-types-in-mgraph.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
+# List FHIR Resources in mGraph (the metadata graph).
+# If an individual graph holds other FHIR resources this query
+# will not find them.
+#
+# This queries uses metadata in the mGraph: graph to
+# count patient graphs by FHIR resource type.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:local:mGraph>
+
+      select distinct ?fhirResourceType { 
+        graph mGraph: { 
+          ?resourceGraph a meta:Graph ;
+            meta:fhirResourceType ?fhirResourceType .
+        } 
+      }
+order by ?fhirResourceType
+
+

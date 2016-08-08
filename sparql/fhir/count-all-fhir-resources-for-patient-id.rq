@@ -1,0 +1,37 @@
+# File:  count-all-fhir-resources-for-patient-id.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
+# Count All FHIR Resources for Patient ID -- even those
+# that do not have their own graph listed in mGraph.
+#
+# This queries uses metadata in the mGraph: graph to
+# count patient graphs by FHIR resource type.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:local:mGraph>
+PREFIX fhir: <http://hl7.org/fhir/>
+
+select ?fhirResourceType (count(?resource) as ?nResources) {
+  select distinct ?fhirResourceType ?resource { {
+      select distinct ?resourceGraph { 
+        bind( "2-1007041" as ?patientId ) .
+        graph mGraph: { 
+          ?resourceGraph a meta:Graph ;
+            meta:patientId ?patientId ;
+            meta:fhirResourceType ?anyFhirResourceType .
+        } 
+      }
+    }
+    bind( str(fhir:) as ?fhirPrefix ) .
+    graph ?resourceGraph {
+      ?resource a ?fhirResourceType .
+    }
+    filter( strstarts(str(?fhirResourceType), ?fhirPrefix) ) .
+  }
+}
+group by ?fhirResourceType
+order by ?fhirResourceType
+
+

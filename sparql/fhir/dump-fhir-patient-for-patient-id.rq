@@ -1,0 +1,31 @@
+# File:  dump-fhir-patient-for-patient-id.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
+# Dump FHIR Patient triples for a patient ID.
+# The patient ID is hard-coded into the "bind" statement below.
+#
+# This query depends on metadata in the mGraph: graph.
+
+PREFIX meta: <urn:meta#>
+PREFIX mGraph: <urn:local:mGraph>
+PREFIX fhir: <http://hl7.org/fhir/>
+
+construct { ?s ?p ?v }
+where {
+select distinct * { {
+  select distinct ?graph { 
+    bind( "1000919" as ?patientId ) .
+    graph mGraph: { 
+      ?graph a meta:Graph ;
+        meta:patientId ?patientId ;
+        meta:fhirResourceType fhir:Patient .
+    } }
+  }
+  graph ?graph {
+    ?s ?p ?v . 
+  }
+}
+}
+

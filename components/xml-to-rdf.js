@@ -8,7 +8,6 @@ var readline = require('readline');
 var xslt4node = require('xslt4node');
 var first=true;
 
-var compHelper = require('../src/component-helper');
 var createLm = require('../src/create-lm');
 var createState = require('../src/create-state');
 var wrapper = require('../src/javascript-wrapper');
