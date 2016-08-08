@@ -1,7 +1,6 @@
 // simple-splitter.js
 var _ = require('underscore');
 
-var helper = require('../src/component-helper');
 var wrapper = require('../src/split-wrapper');
 
 module.exports = wrapper(updater);

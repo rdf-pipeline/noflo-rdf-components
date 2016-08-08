@@ -1,7 +1,6 @@
 // simple-join.js
 var _ = require('underscore');
 
-var helper = require('../src/component-helper');
 var wrapper = require('../src/join-wrapper');
 
 module.exports = wrapper(updater);

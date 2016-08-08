@@ -55,6 +55,9 @@ module.exports = function(vnid, data, lm, error, stale, groupLm, componentName) 
 
 module.exports.STATE_KEYS = ['vnid', 'data', 'error', 'stale', 'groupLm', 'lm', 'componentName'];
 
+/**
+ * Clear all metadata in the specified state
+ */
 module.exports.clearMetadata = function(state) {
     if (!_.isEmpty(state)) {
         var self = this;
@@ -64,4 +67,18 @@ module.exports.clearMetadata = function(state) {
             }
         });
     }
+}
+
+/**
+ * Copy the metadata from one state to another state
+ * 
+ * @param from state from which metadata should be copied
+ * @param to state to which metadata should be copied
+ */
+module.exports.copyMetadata = function(from, to) {
+    var self = this;
+    _.keys(from).forEach(function(key) {
+         if (!_.contains(self.STATE_KEYS, key))
+             to[key] = from[key];
+    });
 }
