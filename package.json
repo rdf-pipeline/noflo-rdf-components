@@ -82,6 +82,7 @@
       "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
       "fhir-json-to-xml": "./components/fhir-json-to-xml.js",
       "file-node": "./components/file-node.js",
+      "funnel": "./components/funnel.js",
       "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
       "http-delivery": "./components/http-delivery.js",
