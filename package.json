@@ -80,6 +80,7 @@
       "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
       "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
       "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
+      "confluence": "./components/confluence.js",
       "fhir-json-to-xml": "./components/fhir-json-to-xml.js",
       "file-node": "./components/file-node.js",
       "funnel": "./components/funnel.js",
