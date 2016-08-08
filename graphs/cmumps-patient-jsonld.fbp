@@ -1,4 +1,4 @@
-# chcs-patient-jsonld.fbp
+# cmumps-patient-jsonld.fbp
 
 # Takes a patient ID and returns JSON-LD.
 
@@ -6,7 +6,7 @@
 INPORT=setPatientID.VALUE:PATIENT_ID
 INPORT=setAuthority.VALUE:AUTHORITY
 INPORT=setDataset.VALUE:DATASET
-OUTPORT=parseJson.OUT:OUTPUT
+OUTPORT=parseJson.OUTPUT:OUTPUT
 
 # Initial Information Packets (IIP)
 'patientid' -> KEY setPatientID(rdf-components/object)
@@ -15,13 +15,14 @@ OUTPORT=parseJson.OUT:OUTPUT
 'http://{+authority}/patient_graph{?dataset,datatype,patientid}' -> URL request
 
 # Default request URL parameters
-'authority=10.255.241.50:8080,dataset=chcs-ab,datatype=all' -> IN parameters(adapters/PropStringToObject) OUT -> PARAMETERS request
+'10.255.241.50:8080' -> VALUE setAuthority
+'datatype=all' -> IN parameters(adapters/PropStringToObject) OUT -> PARAMETERS request
 
 # Request Headers
 'Accept=application/json' -> IN propStringToObject(adapters/PropStringToObject) OUT -> HEADERS request
 
 # With patientID execute request and parse the result as JSON
-setPatientID OUTPUT -> INPUT request OUTPUT -> IN parseJson(strings/ParseJson)
+setPatientID OUTPUT -> INPUT request OUTPUT -> INPUT parseJson(rdf-components/parse-json)
 
 # Error Handling echos errors to console.log
 error(core/Repeat) OUT -> IN output(core/Output)

@@ -14,6 +14,7 @@ var inputStates = require('../src/input-states');
 var createLm = require('../src/create-lm');
 
 describe('input-states', function() {
+    this.timeout(3500);
     var node, network;
     beforeEach(function(){
         var getComponent = componentFactory({
@@ -71,9 +72,6 @@ describe('input-states', function() {
         }).then(function(nw){
             network = nw;
         });
-    });
-    afterEach(function(){
-        network.stop();
     });
     it('should exist as a function', function() {
         node.vni().inputStates.should.be.a('function');

@@ -1,0 +1,49 @@
+# generated on  2016-05-23T17:00:49.327-07:00
+
+@prefix Patient: <http://hl7.org/fhir/Patient> .
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xhtml: <http://www.w3.org/1999/xhtml> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema> .
+@base <http://this-fhir-server/fhir/> .
+
+<urn:local:fhir:Patient:2-000007> a fhir:Patient;
+   fhir:Patient.id [ fhir:value "urn:local:fhir:Patient:2-000007" ];
+   fhir:Patient.identifier [ 
+      a fhir:Identifier;
+      fhir:Identifier.use [ fhir:value "usual" ];
+      fhir:Identifier.type [ 
+         a fhir:CodeableConcept;
+         fhir:CodeableConcept.coding [ 
+            a fhir:Coding;
+            fhir:Coding.code [ fhir:value "cmumpss" ];
+            fhir:Coding.display [ fhir:value "cmumpss" ];
+          ];
+         fhir:CodeableConcept.text [ fhir:value "777777777" ]
+       ];
+      fhir:Identifier.value [ fhir:value "777777777" ];
+    ];
+   fhir:Patient.name [ 
+      a fhir:HumanName;
+      fhir:HumanName.use [ fhir:value "usual" ];
+      fhir:HumanName.family [ fhir:value "BUNNY" ];
+      fhir:HumanName.given [ fhir:value "BUGS DOC" ];
+    ];
+   fhir:Patient.gender [ fhir:value "male" ];
+   fhir:Patient.birthDate [ fhir:value "01-01-1990" ];
+   fhir:Patient.address [ 
+      a fhir:Address;
+      fhir:Address.type [ fhir:value "postal" ];
+      fhir:Address.line [ fhir:value "100 MAIN ST" ];
+      fhir:Address.city [ fhir:value "ANYTOWN" ];
+    ];
+   fhir:Patient.maritalStatus [ 
+      a fhir:CodeableConcept;
+      fhir:CodeableConcept.coding [ 
+         a fhir:Coding;
+         fhir:Coding.system [ fhir:value "http://hl7.org/fhir/marital-status" ];
+         fhir:Coding.code [ fhir:value "D" ];
+         fhir:Coding.display [ fhir:value "D" ];
+       ];
+      fhir:CodeableConcept.text [ fhir:value "D" ]
+    ];
+ .

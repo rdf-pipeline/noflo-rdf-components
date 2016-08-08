@@ -28,7 +28,9 @@ describe('rdf-construct subgraph', function() {
         }]
     };
     it("should parse text/turtle", function() {
+        this.timeout(3250);
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             res.end([
                 '@prefix foaf: <http://xmlns.com/foaf/0.1/> .',
@@ -48,10 +50,12 @@ describe('rdf-construct subgraph', function() {
                 test.onOutPortData(network.processes.jsonld.component, 'output', done);
                 network.graph.addInitial("urn:test:graph", 'construct', 'source_graph_uri');
             });
-        }).should.eventually.have.property('@id', "http://dbpedia.org/resource/John_Lennon").notify(server.close.bind(server));
+        }).should.eventually.have.property('data').that.has.property('@id', "http://dbpedia.org/resource/John_Lennon");
     });
     it("should parse text/turtle into JSON LD", function() {
+        this.timeout(3250);
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             res.end([
                 '@prefix foaf: <http://xmlns.com/foaf/0.1/> .',
@@ -69,9 +73,10 @@ describe('rdf-construct subgraph', function() {
                 test.onOutPortData(network.processes.construct.component, 'output', done);
                 network.graph.addInitial("urn:test:graph", 'construct', 'source_graph_uri');
             });
-        }).should.eventually.have.property('@id', "http://dbpedia.org/resource/John_Lennon").notify(server.close.bind(server));
+        }).should.eventually.have.property('data').that.has.property('@id', "http://dbpedia.org/resource/John_Lennon");
     });
     xit("should round trip jsonld through SPARQL service", function() {
+        this.timeout(3000);
         if (!process.env['rdf-auth-file']) {
             process.env['rdf-auth-file'] = path.join(os.tmpdir(), 'rdf-auth');
         }
@@ -95,6 +100,6 @@ describe('rdf-construct subgraph', function() {
                     network.graph.addInitial("urn:test:graph", 'construct', 'source_graph_uri');
                 });
             });
-        }).should.eventually.have.property('@id', "http://dbpedia.org/resource/John_Lennon");
+        }).should.eventually.have.property('data').that.has.property('@id', "http://dbpedia.org/resource/John_Lennon");
     });
 });

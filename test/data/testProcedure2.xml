@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Procedure xmlns="http://hl7.org/fhir">
+<id value="urn:local:fhir:Procedure:Procedure-1277097"/>
+<identifier>
+<use value="usual"/>
+<type>
+<coding>
+<code value="cmumpss"/>
+<display value="cmumpss"/>
+</coding>
+<text value="1277097"/>
+</type>
+<value value="Procedure/1277097"/>
+</identifier>
+<subject>
+<reference value="Patient/2-0000007"/>
+<display value="BUNNY,BUGS DOC"/>
+</subject>
+<status value="completed"/>
+<category>
+<coding>
+<system value="cmumps"/>
+<version value="0.0.1"/>
+<code value="cmumps"/>
+<display value="HDDConcept-1450368"/>
+<userSelected value="false"/>
+</coding>
+<text value="HDDConcept-1450368"/>
+</category>
+<code>
+<coding>
+<system value="cmumps"/>
+<version value="0.0.1"/>
+<code value="cmumps"/>
+<display value="HDDConcept-1450368"/>
+<userSelected value="false"/>
+</coding>
+<text value="HDDConcept-1450368"/>
+</code>
+<performedDateTime value="1990-01-01T00:00:00-00:00"/>
+<encounter>
+<display value="Encounter Procedure"/>
+</encounter>
+</Procedure>

@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 
-var assert = chai.asert;
+var assert = chai.assert;
 var expect = chai.expect;
 chai.should();
 
@@ -52,7 +52,7 @@ describe('html-2-objects-compare', function() {
     });
 
     it("should  generate the correct comparison file when called with good input data", function() {
-
+        this.timeout(2750);
         var filePath = 'test/data/comparison.html';
         var expectedFilePath = 'test/data/expected-comparison.html';
 
@@ -95,8 +95,7 @@ describe('html-2-objects-compare', function() {
 
             }).then(function(done) {
 
-                // Stop network & verify we got the output state we expect
-                network.stop();
+                // verify we got the output state we expect
 
                 done.vnid.should.equal('001');
                 expect(done.error).to.be.undefined;
@@ -125,16 +124,13 @@ describe('html-2-objects-compare', function() {
                         fs.close(fd);
                     });
                 });
-            }, function(fail) {
-               network.stop();
-               assert.fail(fail);
             });  
         }); 
 
     });
 
     it("should fail when called with no title", function() {
-
+        this.timeout(2750);
         return commonTest.createNetwork(
             { node1: 'core/Repeat', 
               node2: 'core/Repeat', 
@@ -170,15 +166,10 @@ describe('html-2-objects-compare', function() {
 
             }).then(function(done) {
 
-               // Stop network & verify we got the output state we expect
-               network.stop();
+               // verify we got the output state we expect
                done.vnid.should.equal('001');
                expect(done.data).to.be.undefined;
                done.error.should.be.true;
-
-            }, function(fail) {
-               network.stop();
-               assert.fail(fail);
             });  
         }); 
     });

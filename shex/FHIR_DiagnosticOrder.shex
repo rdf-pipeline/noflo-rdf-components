@@ -1,0 +1,103 @@
+PREFIX fhir: <http://hl7.org/fhir/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX map: <http://shex.io/extensions/Map/#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX fm: <http://hokukahu.com/map/>
+BASE <http://hl7.org/fhir/shapes/>
+
+start = <DiagnosticOrder>
+
+PREFIX : <http://hl7.org/fhir/DiagnosticOrder.>
+<DiagnosticOrder> {
+  a                                   [fhir:DiagnosticOrder]?,
+  :subject           { fhir:reference @<Patient> },
+  :orderer           { fhir:reference @<Practitioner> }?,
+  :identifier                         @<Identifier>*,
+  :specimen          { fhir:reference @<Specimen> }?,
+  :issued            { fhir:value     LITERAL %map:{ fm:apparentDate %} },
+  :item {
+    :item.code { a                    [fhir:CodeableConcept]?,
+      :coding { a                     [fhir:Coding]?,
+        :system      { fhir:value     LITERAL %map:{ fm:container.codesystem %} },
+        :code        { fhir:value     LITERAL %map:{ fm:container.type %} },
+      }*
+    }
+  }*
+}
+
+PREFIX : <http://hl7.org/fhir/DiagnosticReport.>
+<DiagnosticReport> {
+  a                                   [fhir:DiagnosticReport]?,
+  :identifier                         @<Identifier>?,
+  :status            { fhir:value     ["final"] },
+  :issued            { fhir:value     LITERAL %map:{ fm:diagRpt.issued %} },
+  :request           { fhir:reference @<DiagnosticOrder> }?,
+  :result            { fhir:reference @<Observation> },
+}
+
+PREFIX : <http://hl7.org/fhir/Observation.>
+<Observation> {
+  a                                   [fhir:Observation]?,
+  :code
+  { a                                 [fhir:CodeableConcept]?,
+    :coding { a                       [fhir:Coding]?,
+      :system        { fhir:value     LITERAL %map:{ fm:Observation.codesystem %} },
+      :code          { fhir:value     LITERAL %map:{ fm:Observation.code %} },
+    }*
+  }?
+}
+
+PREFIX : <http://hl7.org/fhir/Specimen.>
+<Specimen> {
+  :status            { fhir:value     ["available"] },
+  :subject           { fhir:reference @<Patient> }?,
+  :type { a                           [fhir:CodeableConcept]?,
+    :coding { a                       [fhir:Coding]?,
+      :system        { fhir:value     LITERAL %map:{ fm:specimen.codesystem %} },
+      :code          { fhir:value     LITERAL %map:{ fm:specimen.type %} },
+    }*
+  },
+  :receivedTime      { fhir:value     LITERAL %map:{ fm:specimen.receivedTime %} },
+  :container {
+    :container.type { a               [fhir:CodeableConcept]?,
+      :coding { a                     [fhir:Coding]?,
+        :system      { fhir:value     LITERAL %map:{ fm:container.codesystem %} },
+        :code        { fhir:value     LITERAL %map:{ fm:container.type %} },
+      }*
+    },
+  },
+}
+
+PREFIX : <http://hl7.org/fhir/Identifier.>
+<Identifier> {
+  a                                   [fhir:Identifier],
+  :use               { fhir:value     ["usual"] },
+  :system            { fhir:value     LITERAL %map:{ fm:order.idsystem %} },
+  :value             { fhir:value     LITERAL %map:{ fm:order.identifier %} }
+}
+
+PREFIX : <http://hl7.org/fhir/CodeableConcept.>
+<CodeableConcept> {
+  a                                   [fhir:CodeableConcept]?,
+  :coding                             @<Coding>*
+}
+
+PREFIX : <http://hl7.org/fhir/Coding.>
+<Coding> {
+  a                                   [fhir:Coding]?,
+  :system            { fhir:value     LITERAL },
+  :code              { fhir:value     LITERAL },
+  :display           { fhir:value     LITERAL }?
+}
+
+PREFIX : <http://hl7.org/fhir/Patient.>
+<Patient> {
+  :identifier {
+    a [fhir:Identifier],
+    fhir:Identifier.system    { fhir:value LITERAL %map:{ fm:subject.idsystem %} }, # hard-coded for cmumps
+    fhir:Identifier.value     { fhir:value LITERAL %map:{ fm:subject.identifier %} }
+  }
+}
+
+<Practitioner> {}
+

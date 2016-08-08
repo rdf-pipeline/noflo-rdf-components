@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Patient xmlns="http://hl7.org/fhir">
+<id value="urn:local:fhir:Patient:2-000007"/>
+<identifier>
+<use value="usual"/>
+<type>
+<coding>
+<code value="cmumpss"/>
+<display value="cmumpss"/>
+</coding>
+<text value="777777777"/>
+</type>
+<value value="777777777"/>
+</identifier>
+<name>
+<use value="usual"/>
+<family value="BUNNY"/>
+<given value="BUGS DOC"/>
+</name>
+<gender value="male"/>
+<birthDate value="01-01-1990"/>
+<address>
+<type value="postal"/>
+<line value="100 MAIN ST"/>
+<city value="ANYTOWN"/>
+</address>
+<maritalStatus>
+<coding>
+<system value="http://hl7.org/fhir/marital-status"/>
+<code value="D"/>
+<display value="D"/>
+</coding>
+<text value="D"/>
+</maritalStatus>
+</Patient>

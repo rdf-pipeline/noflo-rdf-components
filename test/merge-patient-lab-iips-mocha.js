@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 
-var assert = chai.asert;
+var assert = chai.assert;
 var expect = chai.expect;
 
 var chaiAsPromised = require('chai-as-promised');
@@ -83,6 +83,8 @@ describe('merge-patient-lab-iips', function() {
                     vnid: '',
                     data: Error('Setting an error message'),
                     error: undefined,
+                    stale: undefined,
+                    groupLm: undefined,
                     lm: 'LM1328113669.00000000000000001'
                 };
                 node.vni().errorState(_.clone(errorState));
@@ -97,6 +99,8 @@ describe('merge-patient-lab-iips', function() {
                     vnid: '',
                     data: Error('Setting an error message'),
                     error: undefined,
+                    stale: undefined,
+                    groupLm: undefined,
                     lm: 'LM1328113669.00000000000000001'
                 };
                 node.vni().errorState(_.clone(errorState));
@@ -157,6 +161,8 @@ describe('merge-patient-lab-iips', function() {
                     vnid: '001',
                     data: { id: '001', name: 'Alice', dob: '1969-01-23' },
                     error: undefined,
+                    stale: undefined,
+                    groupLm: undefined,
                     lm: 'LM1328113669.00000000000000001'
                 };
                 node.vni().inputStates({'patient': _.mapObject(patientState, _.clone)});
@@ -174,7 +180,7 @@ describe('merge-patient-lab-iips', function() {
 
                 // verify it
                 test.verifyState(node.vni().inputStates('patient'), 
-                                  patientState.vnid, newData, patientState.error);
+                                 patientState.vnid, newData, patientState.error);
             });
         });
 
@@ -194,6 +200,8 @@ describe('merge-patient-lab-iips', function() {
                                     data: { id: '001', name: 'Alice', dob: '1979-01-23', 
                                             glucose: '75',  date: '2012-02-01' },
                                     error: false,
+                                    stale: undefined,
+                                    groupLm: undefined,
                                     lm: 'LM1328113669.00000000000000001' };
                 node.vni().outputState(_.mapObject(mergedState, _.clone));
 
@@ -208,6 +216,8 @@ describe('merge-patient-lab-iips', function() {
                                     data: { id: '001', name: 'Alice', dob: '1979-01-23',
                                             glucose: '75', date: '2012-02-01' },
                                     error: false,
+                                    stale: undefined,
+                                    groupLm: undefined,
                                     lm: 'LM1328113669.00000000000000001' };
                 node.vni().outputState(_.mapObject(outputState, _.clone));
 
@@ -223,12 +233,15 @@ describe('merge-patient-lab-iips', function() {
                 newError = true;
                 currentState.error = newError;
 
+                newStale = false;
+                currentState.stale = newStale;
+
                 currentState.lm = 'LM1328113771.00000000000000000';
                 node.vni().outputState(currentState);
 
                 // verify it
                 test.verifyState(node.vni().outputState(), 
-                                  outputState.vnid, newData, newError);
+                                 outputState.vnid, newData, newError, newStale);
 
             });
         });
@@ -318,7 +331,7 @@ describe('merge-patient-lab-iips', function() {
 
             stubs.promiseLater().then(function(){
                 return node.vni().inputStates('patient');
-            }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['vnid', 'data', 'error', 'lm'])); 
+            }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['vnid', 'data', 'error', 'lm', 'stale'])); 
         });
 
         it("should have patient input state data after input", function() {
@@ -349,32 +362,53 @@ describe('merge-patient-lab-iips', function() {
         });
 
         it("should have patient and labwork output state after input ports processing", function() {
-            var node = test.createComponent(compFactory);
-            return new Promise(function(done, fail){
-                test.onOutPortData(node, 'error', fail);
-                test.onOutPortData(node, 'output', done);
-                test.sendData(node, 'patient',
-                                     {id: '001',  name: 'Alice', dob: '1979-01-23' });
-                test.sendData(node,'labwork',
-                                     {id: '001',  glucose: '75',  date: '2012-02-01'});
-             }).then(function(payload){
-                payload.should.exist;
-                payload.should.not.be.empty;
-                payload.should.have.ownProperty('vnid');
-                payload.vnid.should.equal('');
-                payload.should.be.an('object');
-                payload.should.have.ownProperty('data');
-                payload.data.should.be.an('object');
-                payload.data.should.have.all.keys('id', 'name', 'dob', 'glucose', 'date');
-                payload.data.id.should.equal('001');
-                payload.data.name.should.equal('Alice');
-                payload.data.dob.should.equal('1979-01-23');
-                payload.data.glucose.should.equal('75');
-                payload.data.date.should.equal('2012-02-01');
-             });
+
+            this.timeout(3250);
+            return test.createNetwork(
+                { node1: 'core/Repeat',
+                  node2: 'core/Repeat',
+                  node3: { getComponent: compFactory }
+            }).then(function(network) {
+
+                return new Promise(function(done, fail) {
+
+                    // True noflo component - not facade
+                    var node = network.processes.node3.component;
+    
+                    test.onOutPortData(node, 'output', done);
+                    test.onOutPortData(node, 'error', fail);
+    
+                    network.graph.addEdge('node1', 'out', 'node3', 'patient');
+                    network.graph.addEdge('node2', 'out', 'node3', 'labwork');
+
+                    network.graph.addInitial({id: '001', name: 'Alice', dob: '1979-01-23'}, 'node1', 'in');
+                    network.graph.addInitial({id: '001', glucose: '75', date: '2012-02-01'}, 'node2', 'in');
+
+                }).then(function(done) {
+
+                    // verify we got the output state we expect
+ 
+                    done.should.exist;
+                    done.should.not.be.empty;
+                    done.should.have.ownProperty('vnid');
+                    done.vnid.should.equal('');
+                    done.should.be.an('object');
+                    done.should.have.ownProperty('data');
+
+                    var data = done.data;
+                    data.should.be.an('object');
+                    data.should.have.all.keys('id', 'name', 'dob', 'glucose', 'date');
+                    data.id.should.equal('001');
+                    data.name.should.equal('Alice');
+                    data.dob.should.equal('1979-01-23');
+                    data.glucose.should.equal('75');
+                    data.date.should.equal('2012-02-01');
+                });
+            });
         });
 
         it("should handle JSON parse errors", function() {
+            this.timeout(2500);
             var node = test.createComponent(compFactory);
             sinon.stub(console, 'error');
             return new Promise(function(done, fail){
@@ -395,17 +429,19 @@ describe('merge-patient-lab-iips', function() {
                 console.error.restore();
                 payload.should.exist;
                 payload.should.not.be.empty;
-                payload.should.have.all.keys('vnid', 'data', 'error', 'lm');
+                payload.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm');
                 payload.vnid.should.equal('');
                 payload.data.should.be.an('object');
                 payload.data.id.should.equal("001");
                 payload.data.name.should.equal("David");
                 payload.data.dob.should.equal("1959-01-23");
                 payload.error.should.be.true;
+                expect(payload.stale).to.be.undefined;
+                expect(payload.groupLm).to.be.undefined;
                 payload.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
 
                 var errorState = node.vni().errorState();
-                expect(errorState.data.startsWith('Error: Unable to parse parameter')).to.be.true;
+                errorState.data.toString().should.contain('Error: Unable to parse parameter');
              }, function(fail) {
 
                 console.error.restore();

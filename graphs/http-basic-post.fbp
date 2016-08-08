@@ -1,0 +1,39 @@
+# http-basic-post.fbp
+
+# Takes content and POSTs it to the URL given.
+# The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
+
+# Exports
+INPORT=request.URL:URL
+INPORT=request.HEADERS:HEADERS
+INPORT=request.PARAMETERS:PARAMETERS
+INPORT=phaser.INPUT:INPUT
+INPORT=authFile.KEY:AUTH_FILE_ENV
+INPORT=request.BODY:BODY
+INPORT=setContentType.VALUE:TYPE
+OUTPORT=error.OUT:ERROR
+OUTPORT=request.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'POST'          -> METHOD request(rdf-components/request-template)
+'Authorization' -> KEY setAuthorization(rdf-components/object)
+'^\s*(\S+)\s*$' -> PATTERN basic(strings/Replace)
+'Basic $1'      -> REPLACEMENT basic
+'Content-Type'  -> KEY setContentType(rdf-components/object) OUTPUT -> HEADERS request
+
+# Set the default headers in the request
+'' -> VALUE setAuthorization OUTPUT -> HEADERS request
+
+# Read AUTH_FILE_ENV file content to set the Basic Authorization header
+authFile(core/ReadEnv) OUT -> IN readAuth(filesystem/ReadFile) OUT -> IN basic OUT -> VALUE setAuthorization
+
+# Wait until the optional authFile is read before executing the request
+authFile OUT            -> REGISTER phaser(rdf-components/phaser)
+setAuthorization OUTPUT -> ARRIVE phaser
+phaser OUTPUT -> INPUT request
+
+# Reduce down to a common error port
+request ERROR -> IN error
+setContentType ERROR -> IN error
+setAuthorization ERROR -> IN error
+phaser ERROR -> IN error(core/Repeat)

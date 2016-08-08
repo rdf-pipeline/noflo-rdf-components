@@ -36,12 +36,15 @@ module.exports.outPorts = {
  * @param handler a function
  * @param payloads hash of portNames to payloads
  */
-function wrapHandler(handler /* arguments */) {
+function wrapHandler(handler /* args */) {
     var node = this.nodeInstance || this;
     var args = _.toArray(arguments).slice(1);
-    return Promise.resolve(this).then(function(context){
-        return handler.apply(context, args);
-    }).then(sendOutput.bind(node), sendError.bind(node));
+    try {
+        Promise.resolve(handler.apply(this, args))
+            .then(sendOutput.bind(node), sendError.bind(node));
+    } catch(e) {
+        sendError.call(node, e);
+    }
 }
 
 /**

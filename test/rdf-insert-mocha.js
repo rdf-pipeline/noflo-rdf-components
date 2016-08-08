@@ -34,7 +34,9 @@ describe('rdf-insert subgraph', function() {
         '<http://dbpedia.org/resource/John_Lennon> <http://xmlns.com/foaf/0.1/name> "John Lennon" .\n' +
         '}\n';
     it("should POST jsonld as SPARQL INSERT", function() {
+        this.timeout(4000);
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             var body = [];
             req.on('data', function(chunk) {
@@ -65,12 +67,18 @@ describe('rdf-insert subgraph', function() {
                 network.graph.addInitial('INSERT DATA {\n{{#each tokens}}{{{this}}}{{/each}}\n}', 'request', 'body');
                 network.graph.addInitial(john, 'loadJson', 'input');
             }).then(function(sparql){
-                return sparql.replace(/\s+/g,'\n').trim();
+                if (_.isString(sparql)) return sparql.replace(/#.*|\s+/g,'\n').trim();
+                else if (_.isString(sparql.data)) return _.defaults({
+                    data: sparql.data.replace(/#.*|\s+/g,'\n').trim()
+                }, sparql);
+                else return sparql;
             });
-        }).should.become(sparql.replace(/\s+/g,'\n').trim()).notify(server.close.bind(server));
+        }).should.eventually.have.property('data', sparql.replace(/#.*|\s+/g,'\n').trim());
     });
     it("should POST RDF Graph as SPARQL INSERT using the default graph", function() {
+        this.timeout(4000);
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             var body = [];
             req.on('data', function(chunk) {
@@ -93,12 +101,18 @@ describe('rdf-insert subgraph', function() {
                 network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
                 network.graph.addInitial(john, 'load', 'input');
             }).then(function(sparql){
-                return _.isString(sparql) ? sparql.replace(/#.*|\s+/g,'\n').trim() : sparql;
+                if (_.isString(sparql)) return sparql.replace(/#.*|\s+/g,'\n').trim();
+                else if (_.isString(sparql.data)) return _.defaults({
+                    data: sparql.data.replace(/#.*|\s+/g,'\n').trim()
+                }, sparql);
+                else return sparql;
             });
-        }).should.become(sparql.replace(/#.*|\s+/g,'\n').trim()).notify(server.close.bind(server));
+        }).should.eventually.have.property('data', sparql.replace(/#.*|\s+/g,'\n').trim());
     });
     it("should POST jsonld as SPARQL INSERT using the default graph", function() {
+        this.timeout(3750);
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             var body = [];
             req.on('data', function(chunk) {
@@ -119,17 +133,24 @@ describe('rdf-insert subgraph', function() {
                 network.graph.addInitial("http://localhost:" + port + "/", 'insert', 'sparql_endpoint');
                 network.graph.addInitial(john, 'insert', 'parsed_jsonld');
             }).then(function(sparql){
-                return _.isString(sparql) ? sparql.replace(/#.*|\s+/g,'\n').trim() : sparql;
+                if (_.isString(sparql)) return sparql.replace(/#.*|\s+/g,'\n').trim();
+                else if (_.isString(sparql.data)) return _.defaults({
+                    data: sparql.data.replace(/#.*|\s+/g,'\n').trim()
+                }, sparql);
+                else return sparql;
             });
-        }).should.become(sparql.replace(/#.*|\s+/g,'\n').trim()).notify(server.close.bind(server));
+        }).should.eventually.have.property('data', sparql.replace(/#.*|\s+/g,'\n').trim());
     });
     it("should POST RDF Graph using the provided credentials", function() {
+        this.timeout(3250);
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             res.end(req.headers.authorization);
         });
         server.listen(port);
         var authFileName = path.join(os.tmpdir(), 'temp-rdf-insert-auth');
+        afterEach(_.once(fs.unlink.bind(fs, authFileName)));
         return test.createNetwork({
             load: "rdf-components/rdf-load",
             insert: "rdf-components/rdf-insert"
@@ -144,18 +165,18 @@ describe('rdf-insert subgraph', function() {
                     network.graph.addInitial(john, 'load', 'input');
                 });
             });
-        }).should.become('Basic QWxhZGRpbjpPcGVuU2VzYW1l').notify(function(){
-            server.close();
-            fs.unlink(authFileName);
-        });
+        }).should.eventually.have.property('data', 'Basic QWxhZGRpbjpPcGVuU2VzYW1l');
     });
     it("should POST jsonld using the provided credentials", function() {
+        this.timeout(3250);
         var server = http.createServer();
+        afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {
             res.end(req.headers.authorization);
         });
         server.listen(port);
         var authFileName = path.join(os.tmpdir(), 'temp-rdf-insert-auth');
+        afterEach(_.once(fs.unlink.bind(fs, authFileName)));
         return test.createNetwork({
             insert: "rdf-components/rdf-insert-jsonld"
         }).then(function(network){
@@ -168,9 +189,6 @@ describe('rdf-insert subgraph', function() {
                     network.graph.addInitial(john, 'insert', 'parsed_jsonld');
                 });
             });
-        }).should.become('Basic QWxhZGRpbjpPcGVuU2VzYW1l').notify(function(){
-            server.close();
-            fs.unlink(authFileName);
-        });
+        }).should.eventually.have.property('data', 'Basic QWxhZGRpbjpPcGVuU2VzYW1l');
     });
 });
