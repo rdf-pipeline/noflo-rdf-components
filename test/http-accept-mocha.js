@@ -90,4 +90,28 @@ describe('http-accept', function() {
             });
         }).should.become(202);
     });
+    it("should parse JSON object", function() {
+        this.timeout(2750);
+        return test.createNetwork({
+            accept: "rdf-components/http-accept-json"
+        }).then(function(network){
+            return new Promise(function(done, fail) {
+                var error = noflo.internalSocket.createSocket();
+                var output = noflo.internalSocket.createSocket();
+                network.processes.accept.component.outPorts.output.attach(output);
+                output.on('data', done);
+                network.graph.addInitial(1337, 'accept', 'listen');
+                var req = http.request({
+                    method: 'POST',
+                    port: 1337,
+                    path: '/',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                req.write(JSON.stringify('Hello "World"'));
+                req.end();
+            });
+        }).should.eventually.have.property("data", 'Hello "World"');
+    });
 });
