@@ -56,6 +56,7 @@
       "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
       "fhir-to-rdf": "./graphs/fhir-to-rdf.fbp",
       "fire-throttle": "./graphs/fire-throttle.fbp",
+      "http-accept-json": "./graphs/http-accept-json.fbp",
       "http-accept-server": "./graphs/http-accept-server.fbp",
       "http-basic-post": "./graphs/http-basic-post.fbp",
       "http-delivery-server": "./graphs/http-delivery-server.fbp",
