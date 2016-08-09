@@ -25,12 +25,18 @@ var shexiface = require("../shex/shexiface");
 module.exports = function(nodeDef) {
     return factory({
         inPorts: _.isArray(nodeDef.inPorts) ?
-            nodeDef.inPorts.reduce(function(map, obj) {
+            nodeDef.inPorts.map(function(obj) {
                 if (_.isObject(obj)) {
                     return obj;
                 }
                 return {[obj]: {dataType: obj == 'input' ? 'all' : 'string'}};
-            }, {}) : nodeDef.inPorts || {
+            }).reduce(function(a,b){
+                return _.extend(a, b);
+            }, {
+                input: {
+                    dataType: 'all'
+                }
+            }) : nodeDef.inPorts || {
                 input: {
                     dataType: 'all'
                 }
@@ -43,7 +49,7 @@ module.exports = function(nodeDef) {
 /**
  * RDF Pipeline SHEX wrapper fRunUpdater API as documented here:
  *    https://github.com/rdf-pipeline/noflo-rdf-pipeline/wiki/Wrapper-API
- * This component json-ld on the input port and produces json-ld on the output port
+ * This component takes json-ld on the input port and produces json-ld on the output port
  *
  * @param nodeDef
  * @param vni a virtual node instance
@@ -53,7 +59,7 @@ function fRunUpdater(nodeDef, vni) {
     return new Promise(function(resolve) {
         var input = vni.inputStates('input').data;
         if (nodeDef.preprocess)
-            resolve(nodeDef.preprocess(input));
+            resolve(nodeDef.preprocess.call(vni, input));
         else
             resolve(input);
     }).then(jsonld_to_n3).then(function shexmap(fromGraph) {
@@ -65,7 +71,7 @@ function fRunUpdater(nodeDef, vni) {
         });
     }).then(n3_to_jsonld).then(function(json) {
         if (nodeDef.postprocess)
-            return nodeDef.postprocess(json);
+            return nodeDef.postprocess.call(vni, json);
         else
             return json;
     }).then(function(json) {
@@ -84,7 +90,8 @@ function jsonld_to_n3(json) {
                 inGraph.addTriple({
                     subject: toN3(triple.subject),
                     predicate: toN3(triple.predicate),
-                    object: toN3(triple.object)
+                    object: toN3(triple.object),
+                    graph: graphName == '@default' ? undefined : graphName
                 });
             });
         });
@@ -101,13 +108,16 @@ function n3_to_jsonld(n3) {
     return new Promise(function(resolve) {
         resolve(n3.find(null, null, null));
     }).then(function(triples) {
-        return jsonld.fromRDF({'@default': triples.map(function(triple) {
-            return {
+        return jsonld.fromRDF(triples.reduce(function(dataset, triple) {
+            var graph = triple.graph || '@default';
+            dataset[graph] = dataset[graph] || [];
+            dataset[graph].push({
                 subject: fromN3(triple.subject),
                 predicate: fromN3(triple.predicate),
                 object: fromN3(triple.object)
-            };
-        })}, {});
+            });
+            return dataset;
+        }, {'@default': []}), {});
     }).then(function(json) {
         return json;
     });

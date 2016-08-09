@@ -46,7 +46,9 @@ module.exports = wrapper({
     makeTargetNode: makeTargetNode,
     targetFixup: fhir.targetFixup,
     myTypeToShape: myTypeToShape,
-    preprocess: preprocess
+    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph'],
+    preprocess: preprocess,
+    postprocess: postprocess
 });
 
 function makeTargetNode (fromGraph, key, s) {
@@ -92,6 +94,42 @@ function preprocess(data) {
     return parsedData;
 }
 
+function postprocess(jsonld) {
+    var target_graph = this.inputStates('target_graph');
+    if (!target_graph) return jsonld;
+    var meta_graph = this.inputStates('meta_graph');
+    var source_graph = this.inputStates('source_graph');
+    var typeAndPatient = target_graph.data.match(/.*:([^:]*):([^:]*)$/);
+    if (meta_graph) return {
+        '@context': graphContext,
+        '@default': [
+            {'@id': target_graph.data},
+            {'@id': meta_graph.data}
+        ],
+        [target_graph.data]: jsonld['@default'],
+        [meta_graph.data]: [
+            {
+                '@id': target_graph.data,
+                '@type': 'meta:Graph',
+                'meta:patientId': typeAndPatient[2],
+                'meta:fhirResourceType': 'fhir:' + typeAndPatient[1],
+                'prov:wasDerivedFrom': source_graph && source_graph.data,
+                'prov:generatedAtTime': {
+                    '@value': new Date().toISOString(),
+                    '@type': 'xsd:dateTime'
+                },
+                'meta:translatedBy': this.nodeInstance.componentName
+            }
+        ]
+    }; else return {
+        '@context': graphContext,
+        '@default': [
+            {'@id': target_graph.data}
+        ],
+        [target_graph.data]: jsonld['@default']
+    };
+}
+
 /**
  * Deep map the source attributes to a new target attribute in the object
  *
@@ -118,6 +156,7 @@ function normalizeAttribute(object, sourceKeys, targetKey) {
 
 var graphContext = {
     "@context": {
+        "meta": "urn:meta#",
         "loinc": "http://hokukahu.com/schema/loinc#",
         "hptc": "http://hokukahu.com/schema/hptc#",
         "cpt": "http://hokukahu.com/schema/cpt#",
@@ -127,6 +166,7 @@ var graphContext = {
         "nddf": "http://hokukahu.com/schema/nddf#",
         "@vocab": "http://hokukahu.com/schema/cmumpss#",
         "cmumpss": "http://hokukahu.com/schema/cmumpss#",
+        "prov": "http://www.w3.org/ns/prov#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "@base": "http://hokukahu.com/systems/cmumps-1/",
         "_id": "@id",

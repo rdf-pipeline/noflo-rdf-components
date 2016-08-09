@@ -1,6 +1,9 @@
 // shex-cmumps-to-rdf-mocha.js
 
 var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
+chai.should();
+chai.use(chaiAsPromised);
 
 var assert = chai.assert;
 var expect = chai.expect;
@@ -74,7 +77,7 @@ describe('shex-cmumps-to-rdf', function() {
                 test.onOutPortData(network.processes.shex.component, 'error', done);
                 network.graph.addInitial('', 'shex', 'input');
             }).catch(fail);
-        });
+        }).should.eventually.have.deep.property('data.message').string("requires cmumps data");
     }); 
 
     it('should throw an error if passed invalid JSON', function() {
@@ -85,7 +88,7 @@ describe('shex-cmumps-to-rdf', function() {
                 test.onOutPortData(network.processes.shex.component, 'error', done);
                 network.graph.addInitial('A bad JSON String', 'shex', 'input');
             }).catch(fail);
-        });
+        }).should.eventually.have.deep.property('data.message').string("unable to parse input");
     }); 
 
     it('should throw an error if passed input data with no context', function() {
@@ -101,7 +104,7 @@ describe('shex-cmumps-to-rdf', function() {
                     }]
                 }, 'shex', 'input');
             }).catch(fail);
-        });
+        }).should.eventually.have.deep.property('data.message').string("expects @context");
     }); 
 
     it('should throw an error if passed input data with no graph', function() {
@@ -114,7 +117,7 @@ describe('shex-cmumps-to-rdf', function() {
                     "@context": "https://hokukahu.com/rdf-pipeline/fake-data/context.jsonld"
                 }, 'shex', 'input');
             }).catch(fail);
-        });
+        }).should.eventually.have.deep.property('data.message').match(/expects.*graph/);
     }); 
 
     it('should process good input data', function() {
@@ -140,6 +143,32 @@ describe('shex-cmumps-to-rdf', function() {
             output.should.contain('"type": "fhir:Identifier"');
             output.should.contain('fhir:value');
             output.should.contain('fhir:reference');
+        });
+    });
+
+    it('should set target graph', function() {
+        this.timeout(5000);
+        var target = "urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007";
+        return new Promise(function(done, fail) {
+            test.createNetwork({
+                shex: "rdf-components/shex-cmumps-to-rdf"
+            }).then(function(network) {
+                network.graph.addInitial(target, 'shex', 'target_graph');
+                network.graph.addInitial("urn:local:graph:source", 'shex', 'source_graph');
+                network.graph.addInitial("urn:local:mGraph", 'shex', 'meta_graph');
+                var data = JSON.parse(fs.readFileSync(testFile));
+                test.onOutPortData(network.processes.shex.component, 'output', function(output) {
+                    if (!output.error) done(output.data);
+                });
+                test.onOutPortData(network.processes.shex.component, 'error', fail);
+                network.graph.addInitial(data, 'shex', 'input');
+            }).catch(fail);
+        }).then(function(jsonld) {
+            jsonld['@default'].map(function(graphs) {
+                return graphs['@id'];
+            }).should.have.members([target, "urn:local:mGraph"]);
+            jsonld["urn:local:mGraph"][0].should.have.property('@id', target);
+            _.keys(jsonld["urn:local:mGraph"][0]).should.have.members(['@id', '@type', 'meta:patientId', 'meta:fhirResourceType', 'prov:wasDerivedFrom', 'prov:generatedAtTime', 'meta:translatedBy']);
         });
     });
 
