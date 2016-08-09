@@ -226,4 +226,33 @@ describe('noflo-component-factory', function() {
             test.sendData(node, 'input', "isTranslator?");
         }).should.become("isTranslator? true");
     });
+    it("should have nodeInstance isTransient flag that defaults to false", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.isTransient);
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "isTransient?");
+        }).should.become("isTransient? false");
+    });
+    it("should have isTransient flag that can be set to true", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                isTransient: true,
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.isTransient);
+                        }
+                    }
+                }
+            }));
+            test.sendData(node, 'input', "isTransient?");
+        }).should.become("isTransient? true");
+    });
 });

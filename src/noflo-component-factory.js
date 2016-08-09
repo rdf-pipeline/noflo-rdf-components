@@ -38,6 +38,7 @@ module.exports = function(nodeDef, callback){
             inPorts: _.mapObject(nodeDef.inPorts, changeMulti2Addressable)
         });
         node.isTranslator = _.isUndefined(nodeDef.isTranslator) ? false : nodeDef.isTranslator;
+        node.isTransient = _.isUndefined(nodeDef.isTransient) ? false : nodeDef.isTransient;
         triggerPortDataEvents(node.outPorts);
         var facade = access(node);
         registerPorts(node.outPorts, facade.outPorts, nodeDef.outPorts);

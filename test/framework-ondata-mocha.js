@@ -950,5 +950,119 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
 
         });
 
+        it("should NOT clear non-transient node VNIs after sending output state downstream", function() {
+            var nodeInstance;
+            var testData = "Buongiorno!";
+            return test.createNetwork({
+                testNode: {getComponent: factory({
+                                                   inPorts: {input: {}}, 
+                                                   outPorts: {output: {}},
+                                                   isTransient: false 
+                                                 },
+                                                 {fRunUpdater: function(vni,input) { 
+                                                      nodeInstance = vni.nodeInstance;
+                                                      vni.outputState({data: testData, 
+                                                                       lm: createLm()}); 
+                                                 }}
+                )} 
+            }).then(function(network){
+
+                 var testNode = network.processes.testNode.component;
+
+                 return new Promise(function(done, fail) {
+
+		     test.onOutPortData(testNode, 'output', done);
+		     test.onOutPortData(testNode, 'error', fail);
+
+                     network.graph.addInitial("init data", 'testNode', 'input');
+                 }).then(function(done) {
+                     test.verifyState(done, '', testData);
+
+                     // Verify VNIs have been cleared
+                     expect(nodeInstance).to.not.be.empty;
+                     nodeInstance.vnis.should.be.an('object');
+                     nodeInstance.vnis.should.not.be.empty;
+                 });
+            });
+        });
+
+        it("should clear transient node VNIs after sending output state downstream", function() {
+            var nodeInstance;
+            var testData = "Ciao!";
+            return test.createNetwork({
+                testNode: {getComponent: factory({
+                                                   inPorts: {input: {}}, 
+                                                   outPorts: {output: {}},
+                                                   isTransient: true
+                                                 },
+                                                 {fRunUpdater: function(vni,input) { 
+                                                      nodeInstance = vni.nodeInstance;
+                                                      vni.outputState({data: testData, 
+                                                                       lm: createLm()}); 
+                                                 }}
+                )} 
+            }).then(function(network){
+
+                 var testNode = network.processes.testNode.component;
+
+                 return new Promise(function(done, fail) {
+
+		     test.onOutPortData(testNode, 'output', done);
+		     test.onOutPortData(testNode, 'error', fail);
+
+                     network.graph.addInitial("init data", 'testNode', 'input');
+                 }).then(function(done) {
+                     test.verifyState(done, '', testData);
+
+                     // Verify VNIs have been cleared
+                     expect(nodeInstance).to.not.be.empty;
+                     nodeInstance.vnis.should.be.an('object');
+                     nodeInstance.vnis.should.be.empty;
+                 });
+            });
+        });
+
+        it("should clear transient node VNIs after sending the output state without affecting downstream node state", function() {
+            var nodeInstance;
+            var testData = "Arrivederci!";
+            return test.createNetwork({
+                testNode: {getComponent: factory({
+                                                   inPorts: {input: {}}, 
+                                                   outPorts: {output: {}},
+                                                   isTransient: true
+                                                 },
+                                                 {fRunUpdater: function(vni,input) { 
+                                                      nodeInstance = vni.nodeInstance;
+                                                      vni.outputState({data: testData, 
+                                                                       lm: createLm()}); 
+                                                 }}
+                )},
+                downstreamNode: 'rdf-components/vni-data-output' 
+            }).then(function(network){
+
+                 var testNode = network.processes.testNode.component;
+                 var downstreamNode = network.processes.downstreamNode.component;
+
+                 return new Promise(function(done, fail) {
+
+                     network.graph.addEdge('testNode', 'output', 'downstreamNode', 'in');
+
+		     test.onOutPortData(downstreamNode, 'out', done);
+		     // test.onOutPortData(downstreamNode, 'error', fail);
+
+                     sinon.stub(console,'log');
+                     network.graph.addInitial("init data", 'testNode', 'input');
+                 }).then(function(done) {
+                     console.log.restore();
+                     done.should.equal(testData);
+
+                     // Verify VNIs have been cleared
+                     expect(nodeInstance).to.not.be.empty;
+                     nodeInstance.vnis.should.be.an('object');
+                     nodeInstance.vnis.should.be.empty;
+                 });
+            });
+        });
+
     });
 });

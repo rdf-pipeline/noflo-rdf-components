@@ -312,13 +312,18 @@ function handleOutput( port, lastLm, state ) {
 
         // Got any edges out of this port? 
         if (port.listAttached().length > 0) {
+            var nodeInstance = port.nodeInstance;
             logger.debug('sending state', {
                 state: util.inspect(state,{depth:1}),
-                nodeInstance: port.nodeInstance
+                nodeInstance: nodeInstance
             });
 
             port.send( state );
             port.disconnect();
+
+            if (nodeInstance.isTransient) { 
+                 nodeInstance.deleteAllVnis();
+            }
             return true;
         }  
     } 
