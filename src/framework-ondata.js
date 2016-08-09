@@ -115,7 +115,7 @@ function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
                     lastOutputLm = undefined;  // got a new error so force sending output
                  }
 
-                 handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
+                 handleOutput(vni, outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error,  lastErrorState);
 
                  profiler.stopUpdate(updateStart, vni.outputState().error);
@@ -133,7 +133,7 @@ function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
                  stateChange(vni.outputState, lastOutputLm, false);
                  stateChange(vni.errorState, lastErrorState, true);
 
-                 handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
+                 handleOutput(vni, outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error, lastErrorState);
                   
                  // If we haven't already processed the rejected error, do it now
@@ -213,7 +213,7 @@ function handleError( vni, port, lastErrorState  ) {
            vni.errorState( state );
          } 
 
-        if ( (! handleOutput( port, lastErrorState.lm, state )) && state.data )  { 
+        if ( (! handleOutput(vni, port, lastErrorState.lm, state)) && state.data)  { 
             // State was not sent on to an attached port, and we do have error data
             // so go ahead and log it for debugging/support use.
             if ( state.data.stack ) { 
@@ -270,7 +270,7 @@ function handleStaleOutput(vni, outputPort, lastInputStateLm) {
     var outputState = vni.outputState();
     outputState.stale = true;
     vni.outputState(outputState);
-    handleOutput(outputPort, lastInputStateLm, vni.outputState());
+    handleOutput(vni, outputPort, lastInputStateLm, vni.outputState());
 }
 
 /**
@@ -298,6 +298,7 @@ function haveStaleInput(vni) {
  * Checks if state is new or not.  If it is new, it sends it down stream to any attached 
  * nodes; if there are no attached nodes, the state data will be logged.
  *
+ * @param the current VNI
  * @param port an output port, which may or may not be attached to something down stream
  * @param lastLm last recorded state lm
  * @param state an error or output state to be sent down stream or logged
@@ -305,7 +306,7 @@ function haveStaleInput(vni) {
  * @return true if the data was sent to an attached port on a down stream node;
  *         false if the data was not sent on
  */
-function handleOutput( port, lastLm, state ) {
+function handleOutput(vni, port, lastLm, state ) {
 
     // Do we have a new state or an error flag set? 
     if ( lastLm !== state.lm || state.error ) { 
@@ -322,8 +323,9 @@ function handleOutput( port, lastLm, state ) {
             port.disconnect();
 
             if (nodeInstance.isTransient) { 
-                 nodeInstance.deleteAllVnis();
+                vni.delete();
             }
+
             return true;
         }  
     } 
