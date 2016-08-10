@@ -1,5 +1,4 @@
-// throttle-mocha.js
-// throttle component tests
+// file-loader-mocha.js
 
 var chai = require('chai');
 var expect = chai.expect;
@@ -11,9 +10,9 @@ var fs = require('fs');
 var os = require('os');
 
 var test = require('./common-test');
-var factory = require('../components/throttle');
+var factory = require('../components/file-loader');
 
-describe('throttle', function() {
+describe('file-loader', function() {
 
     it("should exist as a function", function() {
         factory.should.exist;
@@ -31,61 +30,52 @@ describe('throttle', function() {
         it("should throw an error if no arguments specified", function() {
             var node = test.createComponent(factory);
             expect(factory.updater.bind(node.vni(''))).to.throw(Error,
-                /Throttle requires an environment variable file_envvar to specify the data to process!/);
+                /File-loader requires a file environment variable with file to load!/);
         });
 
         it("should throw an error if no file_envvar  was specified", function() {
             var node = test.createComponent(factory);
-            expect(factory.updater.bind(node.vni(''), 3, undefined)).to.throw(Error,
-                /Throttle requires an environment variable file_envvar to specify the data to process!/);
+            expect(factory.updater.bind(node.vni(''), undefined, 'UTF-8')).to.throw(Error,
+                /File-loader requires a file environment variable with file to load!/);
         });
 
         it("should throw an error if file_envvar environment variable does not exist", function() {
             var node = test.createComponent(factory);
-            expect(factory.updater.bind(node.vni(''), 3, 'throttleEnvVar')).to.throw(Error,
-                "Throttle environment variable throttleEnvVar is not defined!");
+            expect(factory.updater.bind(node.vni(''), 'floadEnvVar')).to.throw(Error,
+                "File-loader environment variable floadEnvVar is not defined!");
         });
 
         it("should throw an error if file_envvar does not contain path to an  existing file", function() {
             var node = test.createComponent(factory);
-            process.env.throttleEnvVar = '/tmp/Non-existent-file.txt';
-            expect(factory.updater.bind(node.vni(''), 3, 'throttleEnvVar')).to.throw(Error,
+            process.env.floadEnvVar = '/tmp/Non-existent-file.txt';
+            expect(factory.updater.bind(node.vni(''), 'floadEnvVar')).to.throw(Error,
                    "ENOENT: no such file or directory, open '/tmp/Non-existent-file.txt'");
         });
 
         it("should log a warning if file_envvar referenced file has no content", function() {
             var testfile = os.tmpdir() + './testfile.txt';
             fs.writeFile(testfile, '', function() { 
-                process.env.throttleEnvVar = testfile;
+                process.env.floadEnvVar = testfile;
                 var node = test.createComponent(factory);
                 
                 var warning;
                 sinon.stub(logger,'warn', function(message) {
                     warning = message;
                 });
-                var result = factory.updater.call(node.vni(''), "1", 'throttleEnvVar');
+                var result = factory.updater.call(node.vni(''), 'floadEnvVar');
                 logger.warn.restore();
 		warning.should.be.a('string');
-		warning.should.equal("No data found in " + process.env.throttleEnvVar);
+		warning.should.equal("No data found in " + process.env.floadEnvVar);
            });
         });
 
-        it("should output a hash of throttle_size", function() {
+        it("should output a hash of file content", function() {
            var node = test.createComponent(factory);
            var testfile = __dirname+"/data/ids.txt";
-           process.env.throttleEnvVar = testfile;
-           var result = factory.updater.call(node.vni(''), "2", 'throttleEnvVar', 'UTF-8');
+           process.env.floadEnvVar = testfile;
+           var result = factory.updater.call(node.vni(''), 'floadEnvVar', 'UTF-8');
            result.should.not.be.empty;
-           result.should.deep.equal({'1':'1', '2':'2'});
-        });
-
-        it("should default to hash size of 1 if no hash size is specified", function() {
-           var node = test.createComponent(factory);
-           var testfile = __dirname+"/data/ids.txt";
-           process.env.throttleEnvVar = testfile;
-           var result = factory.updater.call(node.vni(''), undefined, 'throttleEnvVar');
-           result.should.not.be.empty;
-           result.should.deep.equal({'1':'1'});
+           result.should.deep.equal({'1':'1', '2':'2', '3': '3'});
         });
 
     });
@@ -94,37 +84,33 @@ describe('throttle', function() {
 
         it('should run in  a noflo network', function() {
             this.timeout(3000);
-            var testsize = 1;
             var testfile = __dirname+"/data/ids.txt";
-            process.env.throttleEnvVar = testfile;
+            process.env.floadEnvVar = testfile;
 
             return test.createNetwork(
-                 { filevar: 'core/Repeat',
-                   throttlesize: 'core/Repeat',
-                   throttle: 'rdf-components/throttle' }
+                 { fileLoader: 'rdf-components/file-loader' }
 
            ).then(function(network) {
-                var filevar = network.processes.filevar.component;
-                var throttlesize = network.processes.throttlesize.component;
-                var throttle = network.processes.throttle.component;
+                // var filevar = network.processes.filevar.component;
+                var fileLoader = network.processes.fileLoader.component;
 
                 return new Promise(function(done, fail) {
 
-                    test.onOutPortData(throttle, 'output', done);
+                    test.onOutPortData(fileLoader, 'output', done);
 
-                    network.graph.addEdge('filevar', 'out', 'throttle', 'file_envvar');
-                    network.graph.addEdge('throttlesize', 'out', 
-                                          'throttle', 'throttle_size');
+                    // network.graph.addEdge('filevar', 'out', 'throttle', 'file_envvar');
 
-                    network.graph.addInitial('throttleEnvVar', 'filevar', 'in');
-                    network.graph.addInitial(testsize, 'throttlesize', 'in');
+                    network.graph.addInitial('floadEnvVar', 'fileLoader', 'file_envvar');
 
                 }).then(function(done) {
                     done.should.be.an('object');
+                    done.should.include.keys('vnid', 'lm','data','error','stale', 'groupLm');
                     done.vnid.should.equal('1');
                     done.data.should.equal('1');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
+                    var lmComponents = done.lm.match(/^LM(\d+)\.(\d+)$/);
+                    lmComponents.should.have.length(3);
                 });
             }); 
         });

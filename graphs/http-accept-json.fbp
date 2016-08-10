@@ -1,0 +1,23 @@
+# http-accept-json.fbp
+
+# Extracts the request body as a JSON and produces a 202 Accepted response.
+
+# Exports
+INPORT=accept.LIMIT:LIMIT
+INPORT=webserver.LISTEN:LISTEN
+OUTPORT=parseJson.OUTPUT:OUTPUT
+
+# Initial Information Packets (IIP)
+'utf-8' -> ENCODING accept(rdf-components/http-accept)
+'application/json' -> TYPE accept
+
+# When a request comes in sent it to the accept node and parse the body
+webserver(webserver/Server) REQUEST -> INPUT accept
+accept ACCEPTED -> IN response(webserver/SendResponse)
+accept REJECTED -> IN response
+accept OUTPUT -> INPUT parseJson(rdf-components/parse-json)
+
+# Error handling echos errors to console.log
+accept ERROR -> IN error
+parseJson ERROR -> IN error
+error(core/Repeat) OUT -> IN output(core/Output)
