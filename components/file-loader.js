@@ -13,12 +13,10 @@ module.exports = wrapper(loader);
  * each line. For example, given a file with values 1, 2, 3, 4, this 
  * component would output a hash that reads {"1": "1", "2": "2", "3":"3", "4":"4"}.  
  *
- * This component uses the split-wrapper, so after the hash is returned, the 
- * wrapper will split the hash into one send for every hash element.  Thus in the
- * example above, the first time through, it will actually send two packets.  
- * The first packet will contain "1", and the second packet will contain "2".
- * The second time through, a packet of "3" would be sent.  The third time,
- * a packet of "4" would be sent.
+ * This component uses the split-wrapper, so after the hash is returned, the
+ * wrapper will split the hash into one VNI for each hash element.  Thus in the
+ * example above, the first VNI packet will contain "1", and the second will       
+ * contain "2"; the third time, "3", etc.
  *
  * This component is typically placed at the front of a pipeline to 
  * to feed the load-balancer. 
