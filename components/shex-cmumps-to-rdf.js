@@ -10,12 +10,56 @@ var fs = require('fs');
 var util = require('util');
 
 var logger = require('../src/logger');
-var shexiface = require("../shex/shexiface");
-var wrapper = require('../src/javascript-wrapper');
+var wrapper = require('../src/shex-wrapper');
+var fhir = require("../shex/targets/fhir");
 
-module.exports = wrapper( updater );
+var myTypeToShape = { // CMUMPS_path is just documentation.
+  "Order-101":    { from: null, to: null, targetType: null, CMUMPS_path: "orders" },
+  "101_03":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/qa_event_date-101" },
+  "101_05":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/status_change-101" },
+  "101_11":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/order_required_data-101" },
+  "Result-63_07": { from: "CMUMPS_result.shex", to: "FHIR_DiagnosticReport.shex", targetType: "DiagnosticReport", CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
+  // "11_07":     { from: null, to: null, targetType: null, CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
+  "2":            { from: null, to: null, targetType: null, CMUMPS_path: "demographics" },
+  "2_03":         { from: null, to: null, targetType: null, CMUMPS_path: "demographics/medical_record_type-2" },
+  "2_4":          { from: null, to: null, targetType: null, CMUMPS_path: "demographics/user_altering_patient_record-2" },
+  "Patient_Appointment-44_2": { from: null, to: null, targetType: null, CMUMPS_path: "appointments" },
+  "52":           { from: null, to: null, targetType: null, CMUMPS_path: "medsop" },
+  "52_00":        { from: null, to: null, targetType: null, CMUMPS_path: "medsop/activity_log-52" },
+  "52_01":        { from: null, to: null, targetType: null, CMUMPS_path: "medsop/fill_dates-52" },
+  "55":           { from: null, to: null, targetType: null, CMUMPS_path: "medsinp" },
+  //"63":         { from: "patient_labs_cmumps.shex", to: "patient_labs_fhir.shex", targetType: null, CMUMPS_path: "labs" },
+  "Lab_Result-63": { from: null, to: null, targetType: null, CMUMPS_path: "labs" },
+  "Clinical_Chemistry-63_04": { from: "CMUMPS_clinical_chemistry.shex", to: "FHIR_DiagnosticOrder.shex", targetType: "DiagnosticOrder", CMUMPS_path: "labs/clinical_chemistry-63" },
+  // "63_04":     { from: null, to: null, targetType: null, CMUMPS_path: "labs/clinical_chemistry-63" },
+  "63_832":       { from: null, to: null, targetType: null, CMUMPS_path: "labs/performing_lab_disclosures-63_04" },
+  "8810":         { from: null, to: null, targetType: null, CMUMPS_path: "allergies" },
+  "Medication_Profile-8810_3": { from: null, to: null, targetType: null, CMUMPS_path: "allergies/drug_allergy-8810" },
+  "Patient-2":    { from: null, to: null, targetType: null, CMUMPS_path: "patient" },
+}
 
-function updater(data) {
+module.exports = wrapper({
+    fromFormat: "cmumpss",
+    toFormat: "fhir",
+    myBase: "http://hokukahu.com/schema/cmumpss#",
+    staticBindings: fhir.staticBindings,
+    makeTargetNode: makeTargetNode,
+    targetFixup: fhir.targetFixup,
+    myTypeToShape: myTypeToShape,
+    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph'],
+    preprocess: preprocess,
+    postprocess: postprocess
+});
+
+function makeTargetNode (fromGraph, key, s) {
+    var cmumpsIDPredicate = "http://hokukahu.com/schema/cmumpss#identifier";
+	var namespace = "urn:local:fhir:" + myTypeToShape[key].targetType + ":";
+	var object = fromGraph.find(s, cmumpsIDPredicate, null)[0].object;
+	var value = /^"([^]*)"/.exec(object)[1];
+	return namespace + value;
+}
+
+function preprocess(data) {
 
    logger.debug('Enter', {nodeInstance: this.nodeInstance});
        // console.log('data: ',util.inspect(data, {depth:null})+'\n');logger.debug
@@ -38,7 +82,7 @@ function updater(data) {
     parsedData["@context"] = graphContext["@context"];
     parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
         // Filter to known types for cleaned.jsonld, 2.1 w, 4.2 w/o
-        return ob.type.substr('cmumpss:'.length) in shexiface.type2shape;
+        return ob.type.substr('cmumpss:'.length) in myTypeToShape;
     });  
 
     // normalize the identifer attribute - deep map any id or _id attribute to 
@@ -47,55 +91,43 @@ function updater(data) {
                        ["id", "_id"],
                         "identifier");
 
-    var parser = N3.Parser();
-    var inGraph = N3.Store();
+    return parsedData;
+}
 
-    return new Promise( function( resolve, reject ) {
-
-        jsonld.toRDF(parsedData, {format: 'application/nquads'}, function(error, nquads) {
-	    if (error) {
-                return reject(error);
+function postprocess(jsonld) {
+    var target_graph = this.inputStates('target_graph');
+    if (!target_graph) return jsonld;
+    var meta_graph = this.inputStates('meta_graph');
+    var source_graph = this.inputStates('source_graph');
+    var typeAndPatient = target_graph.data.match(/.*:([^:]*):([^:]*)$/);
+    if (meta_graph) return {
+        '@context': graphContext,
+        '@default': [
+            {'@id': target_graph.data},
+            {'@id': meta_graph.data}
+        ],
+        [target_graph.data]: jsonld['@default'],
+        [meta_graph.data]: [
+            {
+                '@id': target_graph.data,
+                '@type': 'meta:Graph',
+                'meta:patientId': typeAndPatient[2],
+                'meta:fhirResourceType': 'fhir:' + typeAndPatient[1],
+                'prov:wasDerivedFrom': source_graph && source_graph.data,
+                'prov:generatedAtTime': {
+                    '@value': new Date().toISOString(),
+                    '@type': 'xsd:dateTime'
+                },
+                'meta:translatedBy': this.nodeInstance.componentName
             }
-
-	    parser.parse(nquads, function (error, triple, prefixes) {
-	        if (error) {
-                    return reject(error);
-                }
-
-                if (triple) {
-                    inGraph.addTriple(triple);
-                } else {
-                    shexiface.ShExMapPerson(inGraph).then(function (dataAndLog) {
-
-		        // resolve(dataAndLog.data); !! if you're content with a N3.Store, resolve here.
-		        var writer = N3.Writer({ 
-                            prefixes: {
-		                fhir: "http://hl7.org/fhir/",
-		                cmumps: "http://hokukahu.com/systems/cmumps-1/",
-		                xs: "http://www.w3.org/2001/XMLSchema#",
-		                prov: "http://www.w3.org/ns/prov#"
-		            } 
-                        });
-
-		        dataAndLog.data.find(null, null, null).forEach(function (t) {
-		            writer.addTriple(t);
-		        });
-
-		        writer.end(function (error, result) {
-		            if (error) {
-                                reject(error);
-		            } else {
-                                resolve(result);
-                            }
-		        });		
-
-	            }).catch(function (e) {
-		        reject(e);
-	            });
-	        }
-	    });
-        });
-    });
+        ]
+    }; else return {
+        '@context': graphContext,
+        '@default': [
+            {'@id': target_graph.data}
+        ],
+        [target_graph.data]: jsonld['@default']
+    };
 }
 
 /**
@@ -124,6 +156,7 @@ function normalizeAttribute(object, sourceKeys, targetKey) {
 
 var graphContext = {
     "@context": {
+        "meta": "urn:meta#",
         "loinc": "http://hokukahu.com/schema/loinc#",
         "hptc": "http://hokukahu.com/schema/hptc#",
         "cpt": "http://hokukahu.com/schema/cpt#",
@@ -133,6 +166,7 @@ var graphContext = {
         "nddf": "http://hokukahu.com/schema/nddf#",
         "@vocab": "http://hokukahu.com/schema/cmumpss#",
         "cmumpss": "http://hokukahu.com/schema/cmumpss#",
+        "prov": "http://www.w3.org/ns/prov#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "@base": "http://hokukahu.com/systems/cmumps-1/",
         "_id": "@id",

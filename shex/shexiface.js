@@ -14,64 +14,29 @@ var ShExDir = __dirname+"/";
 var start = Date.now();
 
 var RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-var PATCH_ME = "tag:eric@w3.org,2016:PatchMe";
 
 // constants
 var PROV_DERIVED = "http://www.w3.org/ns/prov#wasDerivedFrom";
-var BASE = "http://hokukahu.com/schema/cmumpss#";
 
-var TYPE_TO_SHAPE = {
-  "Order-101":    { from: null, to: null, FHIR_type: null, CMUMPS_path: "orders" },
-  "101_03":       { from: null, to: null, FHIR_type: null, CMUMPS_path: "orders/qa_event_date-101" },
-  "101_05":       { from: null, to: null, FHIR_type: null, CMUMPS_path: "orders/status_change-101" },
-  "101_11":       { from: null, to: null, FHIR_type: null, CMUMPS_path: "orders/order_required_data-101" },
-  "Result-63_07": { from: "CMUMPS_result.shex", to: "FHIR_DiagnosticReport.shex", FHIR_type: "DiagnosticReport", CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
-  // "11_07":     { from: null, to: null, FHIR_type: null, CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
-  "2":            { from: null, to: null, FHIR_type: null, CMUMPS_path: "demographics" },
-  "2_03":         { from: null, to: null, FHIR_type: null, CMUMPS_path: "demographics/medical_record_type-2" },
-  "2_4":          { from: null, to: null, FHIR_type: null, CMUMPS_path: "demographics/user_altering_patient_record-2" },
-  "Patient_Appointment-44_2": { from: null, to: null, FHIR_type: null, CMUMPS_path: "appointments" },
-  "52":           { from: null, to: null, FHIR_type: null, CMUMPS_path: "medsop" },
-  "52_00":        { from: null, to: null, FHIR_type: null, CMUMPS_path: "medsop/activity_log-52" },
-  "52_01":        { from: null, to: null, FHIR_type: null, CMUMPS_path: "medsop/fill_dates-52" },
-  "55":           { from: null, to: null, FHIR_type: null, CMUMPS_path: "medsinp" },
-  //"63":         { from: "patient_labs_cmumps.shex", to: "patient_labs_fhir.shex", FHIR_type: null, CMUMPS_path: "labs" },
-  "Lab_Result-63": { from: null, to: null, FHIR_type: null, CMUMPS_path: "labs" },
-  "Clinical_Chemistry-63_04": { from: "CMUMPS_clinical_chemistry.shex", to: "FHIR_DiagnosticOrder.shex", FHIR_type: "DiagnosticOrder", CMUMPS_path: "labs/clinical_chemistry-63" },
-  // "63_04":     { from: null, to: null, FHIR_type: null, CMUMPS_path: "labs/clinical_chemistry-63" },
-  "63_832":       { from: null, to: null, FHIR_type: null, CMUMPS_path: "labs/performing_lab_disclosures-63_04" },
-  "8810":         { from: null, to: null, FHIR_type: null, CMUMPS_path: "allergies" },
-  "Medication_Profile-8810_3": { from: null, to: null, FHIR_type: null, CMUMPS_path: "allergies/drug_allergy-8810" },
-  "Patient-2":    { from: null, to: null, FHIR_type: null, CMUMPS_path: "patient" },
-}
-
-// constants like code systems, etc.
-var STATIC_BINDINGS = { 
-    "http://hokukahu.com/map/subject.idsystem":       "\"urn:local:fhir:Patient:\"",
-    "http://hokukahu.com/map/order.idsystem":         "\"urn:local:fhir:DiagnosticOrder\"",
-    "http://hokukahu.com/map/specimen.codesystem":    "\"urn:local:fhir:Specimen/\"",
-    "http://hokukahu.com/map/container.codesystem":   "\"urn:local:fhir:Container/\"",
-    "http://hokukahu.com/map/Observation.codesystem": "\"urn:local:fhir:Observation/\"",
-};
-
-var CreateRootBase = "urn:local:fhir:";
 var NextNode = 0;
 
+module.exports = ShExMapGraph;
+
 // Load each schema on demand.
-function schemaPromise (key, fromto) {
+function schemaPromise (typeToShape, key, fromto) {
 
     var saveAs = fromto + "Ob";
-    if (!(saveAs in TYPE_TO_SHAPE[key])) {
+    if (!(saveAs in typeToShape[key])) {
 
-        TYPE_TO_SHAPE[key][saveAs] = new Promise(function (resolve, reject) { 
+        typeToShape[key][saveAs] = new Promise(function (resolve, reject) { 
 
-            var txt = fs.readFile(ShExDir + TYPE_TO_SHAPE[key][fromto], "utf-8", function (err, res) {
+            var txt = fs.readFile(ShExDir + typeToShape[key][fromto], "utf-8", function (err, res) {
 	        if (err) {
                     return reject(err);
                 }
 
 	        try {
-	            // now("loaded TYPE_TO_SHAPE[" + key + "][" + saveAs + "]");
+	            // now("loaded typeToShape[" + key + "][" + saveAs + "]");
 	            return resolve(ShEx.Parser().parse(res));
 	        } catch (e) {
 	            reject(e);
@@ -80,33 +45,30 @@ function schemaPromise (key, fromto) {
         });
     }
 
-    return TYPE_TO_SHAPE[key][saveAs];
+    return typeToShape[key][saveAs];
 }
 
-function ShExMapPerson (fromGraph) {
+function ShExMapGraph (fromGraph, typeToShape, base, staticBindings, makeTargetNode, targetFixup) {
     var toGraph = N3.Store();
     var typeArcs = fromGraph.find(null, RDF_TYPE, null);
     // now("got " + typeArcs.length + " type arcs");
 
     return Promise.all(typeArcs.reduce(function (ret, typeArc) {
 
-        var key = typeArc.object.substr(BASE.length);
+        var key = typeArc.object.substr(base.length);
 
-        if (key in TYPE_TO_SHAPE && TYPE_TO_SHAPE[key].from && TYPE_TO_SHAPE[key].to) {
+        if (key in typeToShape && typeToShape[key].from && typeToShape[key].to) {
             return ret.concat(Promise.all([
-	        schemaPromise(key, "from"),
-	        schemaPromise(key, "to")
+	        schemaPromise(typeToShape, key, "from"),
+	        schemaPromise(typeToShape, key, "to")
             ]).then(function (schemas) {
 
-                var nodeID = N3Util.getLiteralValue(fromGraph.find(typeArc.subject, 
-                                                                   "http://hokukahu.com/schema/cmumpss#identifier", null)[0].object);
-	        var toNode = CreateRootBase + TYPE_TO_SHAPE[key].FHIR_type + ":" + nodeID;
+	        var toNode = makeTargetNode(key, typeArc.subject);
 
-	        //if above fails, use this? CreateRootBase + TYPE_TO_SHAPE[key].FHIR_type + ":" + NextNode;
 	        if (mapLoadedShapes (schemas[0], schemas[1], 
                                      fromGraph, toGraph, 
                                      typeArc.subject, toNode, 
-                                     STATIC_BINDINGS)) {
+                                     staticBindings)) {
 	            NextNode++;
 	            toGraph.addTriple({subject: toNode, 
                                        predicate: PROV_DERIVED, 
@@ -118,38 +80,16 @@ function ShExMapPerson (fromGraph) {
 	        }
             }));
         } else {
-            var ent = TYPE_TO_SHAPE[key];
+            var ent = typeToShape[key];
             // console.warn("ignoring " + key, 
-            //              key in TYPE_TO_SHAPE, ent ? TYPE_TO_SHAPE[key].from !== null : null, ent ? TYPE_TO_SHAPE[key].to !== null : null);
+            //              key in typeToShape, ent ? typeToShape[key].from !== null : null, ent ? typeToShape[key].to !== null : null);
         }
 
         return ret;
     }, [])).then(function (log) {
-          patchIdentifierLinks(toGraph);
+          targetFixup(toGraph);
           // now("Shexiface processed", log.length, " Diagnostic records.");
           return {data:toGraph, log:log};
-    });
-}
-
-function patchIdentifierLinks (graph) {
-
-    graph.find(null, "http://hl7.org/fhir/link", PATCH_ME).forEach(function (patchArc) {
-        graph.find(null, null, patchArc.subject).forEach(function (referentArc) {
-            graph.find(referentArc.subject, RDF_TYPE, null).forEach(function (referentTypeArc) {
-	        graph.find(patchArc.subject, "http://hl7.org/fhir/Identifier.value", null).forEach(function (idValueArc) {
-
-	            graph.find(idValueArc.object, 
-                               "http://hl7.org/fhir/value", null).forEach(function (idValueValueArc) {
-	                graph.removeTriple(patchArc);
-	                patchArc.object = CreateRootBase + 
-                                          referentTypeArc.object.substr("http://hl7.org/fhir/".length) + 
-                                          ":" + N3Util.getLiteralValue(idValueValueArc.object);
-	                graph.addTriple(patchArc);
-	            });
-
-	        });
-            });
-        });
     });
 }
 
@@ -159,13 +99,13 @@ function nextBNode () {
 }
 
 function mapLoadedShapes(fromSchema, toSchema, fromGraph, toGraph, fromNode, toNode, staticBindings) {
-
     // prepare validator
     var validator = ShExValidator.construct(fromSchema);
     Mapper.register(validator);
 
-    // run validator
-    if (!validator.validate(fromGraph, fromNode, null)) {
+  // run validator
+    var val = validator.validate(fromGraph, fromNode, null);
+    if ("errors" in val) {
         return false;
     }
 
@@ -189,5 +129,25 @@ function now() {
     return console.warn.apply(console, args);
 }
 
-module.exports = { ShExMapPerson:ShExMapPerson, now:now, type2shape:TYPE_TO_SHAPE };
+function dumpTriples (triples) {
+    var base = 'http://hokukahu.com/systems/cmumps-1/';
+    var writer = N3.Writer({
+	prefixes: {
+	    '': 'http://hokukahu.com/schema/cmumpss#',
+	    xsd: 'http://www.w3.org/2001/XMLSchema#',
+	    rdfs: 'http://www.w3.org/2000/01/rdf-schema#'
+	}
+    });
+    triples.forEach(t => {
+	['subject', 'predicate', 'object'].forEach(term => {
+	    if (t[term].startsWith(base))
+		t[term] = t[term].substr(base.length);
+	});
+	writer.addTriple(t);
+    })
+    writer.end(function (error, result) {
+	if (error) throw (error)
+	else console.warn("@base <" + base + ">.\n" + result);
+    });
+}
 
