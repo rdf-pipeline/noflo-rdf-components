@@ -156,6 +156,42 @@ describe('confluence', function() {
 
         });
 
+        it('should gracefully handle duplicate, late input', function() {
+            var node = test.createComponent(factory);
+
+            var hash = { 1:"Seals",
+                         2: "Crofts"};
+
+            var seals = "seals is done";
+            var crofts = "crofts is done";
+            var again = "here we go again";
+
+            var vni = node.vni('');
+            vni.inputStates({'metadata_key': stateFactory('', 'id'),
+                             'hash': stateFactory('', hash),
+                             'input': stateFactory('1', seals)});
+            stateFactory.addMetadata(vni.inputStates('hash'), {id: 'Summer-Breeze-1'});
+            stateFactory.addMetadata(vni.inputStates('input'), {id: 'Summer-Breeze-1'});
+
+            // Complete Seals 
+            var result = factory.updater.call(vni, hash, seals, 'id');
+            expect(result).to.be.undefined;
+
+            // Complete Crofts
+            vni.inputStates({'input': stateFactory('2', crofts)});
+            result = factory.updater.call(vni, hash, crofts, 'id');
+            result.should.equal('Completed processing Summer-Breeze-1');
+
+            // Now send another input for this same id
+            vni.inputStates({'input': stateFactory('1', again)});
+            sinon.stub(logger, "warn", function(message) { 
+                logger.warn.restore();
+                message.startsWith("\nAlready processed").should.be.true;
+            });
+            result = factory.updater.call(vni, hash, again, 'id');
+            expect(result).to.be.undefined;
+        });
+
         it('should match a multi element hash with task on different VNIs and return result', function() {
             var node = test.createComponent(factory);
 
@@ -256,10 +292,86 @@ describe('confluence', function() {
             stateFactory.addMetadata(tyler_vni.inputStates('input'), {id: id2});
             result = factory.updater.call(tyler_vni, hash2, tyler, 'id');
             result.should.equal('Completed processing Twenty-One Pilots');
+            expect(default_vni.nodeInstance.confluence.completionHash).to.be.undefined;
 
         });
 
-        it('should throw an error if it receives a second hash before first is finished', function() {
+        it('should handle pending input', function() {
+            var node = test.createComponent(factory);
+
+            var hash1 = {1: {first: "paul", last: "simon"},
+                         2: {first: "art", last: "garfunkel"}};
+            var paul = "paul solo";
+            var art = "art solo";
+            var id1 = "Simon & Garfunkel";
+
+            var hash2 = {1: {first: "josh", last: "dun"},
+                         2: {first: "tyler", last: "joseph"}};
+            var josh = "josh out";
+            var tyler = "tyler out";
+            var id2 = 'Twenty-One Pilots';
+
+            var default_vni = node.vni('');
+
+            // First hash
+            default_vni.inputStates({'metadata_key': stateFactory('', 'id'),
+                                     'hash': stateFactory('', hash1)});
+            stateFactory.addMetadata(default_vni.inputStates('hash'), 
+                                     {id: id1});
+
+            var paul_vni = node.vni('paul');
+            paul_vni.inputStates({'input': stateFactory('1', paul)});
+            stateFactory.addMetadata(paul_vni.inputStates('input'), {id: id1});
+            var result = factory.updater.call(paul_vni, hash1, paul, 'id');
+            expect(result).to.be.undefined;
+            default_vni.nodeInstance.confluence.completionHash.should.deep.equal({ 
+                '1': { first: 'paul', last: 'simon'},
+                '2': { first: 'art', last: 'garfunkel', pending: true },
+                key: 'Simon & Garfunkel' });
+
+            // Set up the next VNI for Simon & Garfunkel
+            var art_vni = node.vni('art');
+            art_vni.inputStates({'input': stateFactory('2', art)});
+            stateFactory.addMetadata(art_vni.inputStates('input'), {id: id1});
+
+            // Send first input from the second hash (21 Pilots), but keep hash for Simon & Garfunkel
+            // since it's still processing.  This simulates a common out of order data issue in noflo
+            var josh_vni = node.vni('josh');
+            josh_vni.inputStates({'input': stateFactory('1', josh)});
+            stateFactory.addMetadata(josh_vni.inputStates('input'), {id: id2});
+            result = factory.updater.call(josh_vni, hash1, josh, 'id');
+            expect(result).to.be.undefined;
+            default_vni.nodeInstance.confluence.pendingInput.should.deep.equal(['1']);
+            default_vni.nodeInstance.confluence.completionHash.should.deep.equal({ 
+                '1': { first: 'paul', last: 'simon'},
+                '2': { first: 'art', last: 'garfunkel', pending: true },
+                key: 'Simon & Garfunkel' });
+
+            // Finish up the first hash
+            result = factory.updater.call(art_vni, hash1, art, 'id');
+            result.should.equal('Completed processing Simon & Garfunkel');
+            default_vni.nodeInstance.confluence.pendingInput.should.deep.equal(['1']);
+            expect(default_vni.nodeInstance.confluence.completionHash).to.be.undefined;
+
+            // Now update to the second hash, but we'll keep the old art input 
+            // again, pretty common scenario since data arrives in any order
+            default_vni.inputStates({'hash': stateFactory('', hash2)});
+            stateFactory.addMetadata(default_vni.inputStates('hash'), 
+                                     {id: id2});
+            result = factory.updater.call(default_vni, hash2, art, 'id');
+            expect(result).to.be.undefined;
+            expect(default_vni.nodeInstance.confluence.completionHash).to.be.undefined;
+
+            var tyler_vni = node.vni('tyler');
+            tyler_vni.inputStates({'input': stateFactory('2', tyler)});
+            stateFactory.addMetadata(tyler_vni.inputStates('input'), {id: id2});
+            result = factory.updater.call(tyler_vni, hash2, tyler, 'id');
+            result.should.equal('Completed processing Twenty-One Pilots');
+            expect(default_vni.nodeInstance.confluence.completionHash).to.be.undefined;
+
+        });
+
+        it.skip('should throw an error if it receives a second hash before first is finished', function() {
             var node = test.createComponent(factory);
 
             var hash1 = {1: {first: "paul", last: "simon"},
@@ -303,7 +415,7 @@ describe('confluence', function() {
 
     });
 
-    describe('functional behavior', function() {
+    describe.skip('functional behavior', function() {
 
         it('should run in a noflo network', function() {
 

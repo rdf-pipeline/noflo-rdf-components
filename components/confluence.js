@@ -46,6 +46,7 @@ function updater(hash, input, metadata_key) {
    // Get the input parameter's input state and this particular completed task id. 
    // This id might be an id for a patient procedure or description
    var inputState = this.inputStates('input');
+   if (_.isUndefined(inputState)) return;  // have hash but no input - wait for input
    var inputId = inputState[metadata_key];
    if (invalidKeyValue(inputId)) {
        throw Error('Confluence requires a metadata key on the input VNI to identify the completed task!');
@@ -71,7 +72,6 @@ function updater(hash, input, metadata_key) {
 
    // If we have no completion hash yet, or the hash is newer than the input
    if (_.isUndefined(confluence.completionHash) || hashState.lm > inputState.lm) {
-
        // Create a copy of the hash in the nodeInstance and set the pending
        // flag on each hash entry to true, indicating we have not received the data yet.
        var parsedHash = (_.isString(hash)) ? JSON.parse(hash) : hash;
@@ -86,7 +86,6 @@ function updater(hash, input, metadata_key) {
        // Now that we have the hash, do we have any pending input to apply?
        // This would be from inputs received before we received the hash
        if (!_.isUndefined(confluence.pendingInput)) {
-
            logger.debug('\nGOT PENDING INPUT DATA:',confluence.pendingInput);
            confluence.pendingInput.forEach(function(vnid) { 
                logger.debug('\napplying pending data for ',vnid);
@@ -94,6 +93,7 @@ function updater(hash, input, metadata_key) {
                    !_.isUndefined(confluence.completionHash[vnid].pending)) {
                    delete confluence.completionHash[vnid].pending;
                } else logger.debug("VNID",vnid,"IS NOT IN HASH!");
+
            });
            confluence.pendingInput = undefined;
        } 
