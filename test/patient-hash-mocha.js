@@ -43,6 +43,40 @@ describe("patient-hash", function() {
             logger.warn.restore();
         });
 
+        it("should throw an error if given no demographic data", function() {
+            var prescriptionType = "cmumpss:Prescription-52";
+            var prescriptionId = "52-7810414";
+            var prescription = { _id: prescriptionId,
+                                 type: prescriptionType,
+                                 label: 'B636181',
+                                 'rx_-52': 'B636181',
+                                 'patient-52': { id: '2-000007', label: 'BUNNY, BUGS' },
+                                 'provider-52': { id: '6-11111', label: 'DUCK,DONALD' },
+                                 'drug-52':
+                                  { id: '50-3621',
+                                    label: 'RECLIPSEN TAB 28-DAY (DESOGEN EQ)',
+                                    sameAs: 'nddf:cdc017616',
+                                    sameAsLabel: 'RECLIPSEN 28 DAY TABLET' },
+                                 'qty-52': '169',
+                                 'days_supply-52': '84',
+                                 'refills-52': '0',
+                                 'logged_by-52': { id: '3-11111', label: 'DUCK,DONALD' }
+                               };
+            var prescriptionId = prescriptionType + ':' + prescriptionId;
+
+            var testdata = 
+                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
+                  "@graph": [ prescription ]}; 
+
+            // Invoke component updater
+            var node = test.createComponent(factory);
+            var vni = node.vni('');
+            sinon.stub(logger, 'warn');
+            expect(factory.updater.bind(vni, testdata)).to.throw(Error,
+                /No patient demographics found!/);
+            logger.warn.restore();
+        });
+
         it("should generate a hash if given only demographic data", function() {
             var demographicsType = "cmumpss:Patient-2";
             var patientId = "2-000007";

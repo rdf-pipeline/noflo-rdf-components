@@ -821,7 +821,7 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
             });
         });
 
-        it("should handle multiple metadata values for same key by creating an array of the values", function() {
+        it("should handle multiple metadata values for same key", function() {
             var testId = "test identifier";
             var count = 0;
             var testdata = "more data";
@@ -868,7 +868,7 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
                          network.graph.addInitial("second data", 'node1', 'input');
                      }).then(function(done2) {
                          test.verifyState(done2, '', testdata);
-                         done2.id.should.deep.equal([testId+'1', testId+'2']); // verify we have an array of values
+                         done2.id.should.equal(testId+'2'); // verify we have an array of values
 
                          return new Promise(function(done3) {
                              test.onOutPortData(node2, 'output', done3);
@@ -876,7 +876,7 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
 
                          }).then(function(done3) {
                              test.verifyState(done3, '', testdata);
-                             done3.id.should.deep.equal([testId+'1', testId+'2', testId+'3']); // verify the array grew
+                             done3.id.should.deep.equal(testId+'3'); // verify the array grew
                          });
 
                      });
