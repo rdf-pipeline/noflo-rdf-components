@@ -56,10 +56,10 @@ function updater(hash, input, metadata_key) {
    this.nodeInstance.confluence = this.nodeInstance.confluence || {completed: []};
    var confluence = this.nodeInstance.confluence;
 
-   // Is this input for a hash tha was already completed?
+   // Is this input for a hash that was already completed?
    if (_.indexOf(confluence.completed, inputId) != -1) {
        // Got a late message for a patient we finished with already
-       logger.warn('\nAlready processed ',inputId,'; completed Ids:',confluence.completed,'\n');
+       logger.warn('\nAlready processed ',inputState,'; completed Ids:',confluence.completed,'\n');
        return;
    }
 
@@ -119,6 +119,7 @@ function updater(hash, input, metadata_key) {
        (!_.isUndefined(confluence.completionHash[inputState.vnid].pending))) {
            logger.info('CLEAR Pending Flag for ',inputState.vnid);
            delete confluence.completionHash[inputState.vnid].pending;
+           this.delete();
    } else {
        logger.info('Vnid',inputState.vnid,'is not pending.');
    }
