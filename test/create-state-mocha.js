@@ -9,10 +9,13 @@ var chai = require('chai');
 var should = chai.should();
 var expect = chai.expect;
 
+var sinon = require('sinon');
+
 var test = require('./common-test');
 var stateFactory = require('../src/create-state');
+var logger = require('../src/logger');
 
-describe("create-state", function() {
+describe("Create-state API", function() {
 
     it("should exist as a function", function() {
         stateFactory.should.exist;
@@ -248,7 +251,76 @@ describe("create-state", function() {
         Object.keys(state).should.deep.equal(stateFactory.STATE_KEYS); 
     });
 
-    describe("clearMetadata", function() {
+  });
+
+  describe("State metadata APIs", function() {
+
+    describe("#addMetadata", function() {
+        it("should throw an error if no parameter is provided", function() {
+            expect(stateFactory.addMetadata).to.throw(Error, 
+                   /AddMetadata API requires an object with the attributes to be added!/);
+        });
+
+        it("should warn if undefined state was provided", function(done) {
+            sinon.stub(logger, 'warn', function(message) {
+                // Should get warning message 
+                if (message === 'Attempted to add metadata to an invalid state.')
+                    done();
+                else 
+                    throw Error('Unexpected warning message:',message);
+            });
+            stateFactory.addMetadata(undefined, {id: "Charlie Chaplin"});
+            logger.warn.restore();
+        });
+
+        it("should warn if empty state was provided", function(done) {
+            sinon.stub(logger, 'warn', function(message) {
+                // Should get warning message 
+                if (message === 'Attempted to add metadata to an invalid state.')
+                    done();
+                else 
+                    throw Error('Unexpected warning message:',message);
+            });
+            stateFactory.addMetadata({}, {id: "Buster Keaton"});
+            logger.warn.restore();
+        });
+
+        it("should add a single metadata attribute to a valid state", function() {
+            // Set up a test state
+            var testVnid = ''; // constant input (IIP)
+            var testString = "The Little Tramp";
+            var state = stateFactory(testVnid, testString);
+            state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 
+                                       'groupLm', 'componentName');
+            test.verifyState(state, '', testString);
+            state.componentName.should.equal('');
+
+            var id = 'Charlie Chaplin';
+            stateFactory.addMetadata(state, {id: id});
+            test.verifyState(state, '', testString);
+            state.id.should.equal(id);
+        });
+
+        it("should add multiple metadata attributes to a valid state", function() {
+            // Set up a test state
+            var testVnid = ''; // constant input (IIP)
+            var testString = "Who's on First?";
+            var state = stateFactory(testVnid, testString);
+            state.should.have.all.keys('vnid', 'lm','data', 'error', 'stale', 
+                                       'groupLm', 'componentName');
+            test.verifyState(state, '', testString);
+            state.componentName.should.equal('');
+
+            var id1 = 'Abbott';
+            var id2 = 'Costello';
+            stateFactory.addMetadata(state, {id1: id1, id2: id2});
+            test.verifyState(state, '', testString);
+            state.id1.should.equal(id1);
+            state.id2.should.equal(id2);
+        });
+    });
+
+    describe("#clearMetadata", function() {
 
         it("should not change the state if there is no metadata to clear", function() {
             // Set up a test state
@@ -314,7 +386,7 @@ describe("create-state", function() {
         });
     });
 
-    describe("copyMetadata", function() {
+    describe("#copyMetadata", function() {
 
         it("should not change the to state if there is no metadata to copy", function() {
             // Set up a test from state

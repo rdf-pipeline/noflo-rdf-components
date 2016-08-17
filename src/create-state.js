@@ -5,6 +5,7 @@
 var _ = require('underscore');
 
 var createLm = require('./create-lm');
+var logger = require('./logger');
 
 /**
  * Constructs and returns a new State object
@@ -55,6 +56,22 @@ module.exports = function(vnid, data, lm, error, stale, groupLm, componentName) 
 
 module.exports.STATE_KEYS = ['vnid', 'data', 'error', 'stale', 'groupLm', 'lm', 'componentName'];
 
+/** 
+ * Add metadata to a state object
+ */
+module.exports.addMetadata = function(state, metadata) {
+
+    if (!_.isObject(metadata)) throw Error('AddMetadata API requires an object with the attributes to be added!');
+
+    if (_.isEmpty(state)) {
+        logger.warn('Attempted to add metadata to an invalid state.');
+    } else {
+         _.mapObject(metadata, function(val, key) {
+             state[key] = val; 
+         });
+    }
+}
+
 /**
  * Clear all metadata in the specified state
  */
@@ -80,5 +97,5 @@ module.exports.copyMetadata = function(from, to) {
     _.keys(from).forEach(function(key) {
          if (!_.contains(self.STATE_KEYS, key))
              to[key] = from[key];
-    });
+	     });
 }
