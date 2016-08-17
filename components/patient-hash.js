@@ -76,6 +76,7 @@ function patientHash(patient_json, translator_components, metadata_key) {
     }
 
     var patientDemographics = extractor.extractDemographics(patient); 
+    if (_.isEmpty(patientDemographics)) throw Error("No patient demographics found!");
     var patientId = _.isArray(patientDemographics) ? patientDemographics[0]._id : patientDemographics._id;
     var self = this;
     _.each(translators, function(translator, type) { 

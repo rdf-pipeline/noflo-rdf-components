@@ -128,30 +128,39 @@ describe('confluence', function() {
             var john = "john is done";
             var george = "george is done";
 
+            // Set up the hash & metadata key on default VNI
             var vni = node.vni('');
             vni.inputStates({'metadata_key': stateFactory('', 'id'),
-                             'hash': stateFactory('', hash),
-                             'input': stateFactory('1', ringo)});
+                             'hash': stateFactory('', hash)});
             stateFactory.addMetadata(vni.inputStates('hash'), {id: 'Abbey-Rd-1'});
-            stateFactory.addMetadata(vni.inputStates('input'), {id: 'Abbey-Rd-1'});
+            var result = factory.updater.call(vni, hash, undefined, 'id');
 
-            // Complete ringo
-            var result = factory.updater.call(vni, hash, ringo, 'id');
+            // Call with the ringo input
+            var vni_ringo = node.vni('1');
+            vni_ringo.inputStates({'input': stateFactory('1', ringo)});
+            stateFactory.addMetadata(vni_ringo.inputStates('input'), {id: 'Abbey-Rd-1'});
+            var result = factory.updater.call(vni_ringo, hash, ringo, 'id');
             expect(result).to.be.undefined;
 
             // Complete John (deliberately out of order in hash)
-            vni.inputStates({'input': stateFactory('3', john)});
-            result = factory.updater.call(vni, hash, john, 'id');
+            var vni_john = node.vni('3');
+            vni_john.inputStates({'input': stateFactory('3', john)});
+            stateFactory.addMetadata(vni_john.inputStates('input'), {id: 'Abbey-Rd-1'});
+            result = factory.updater.call(vni_john, hash, john, 'id');
             expect(result).to.be.undefined;
 
             // Complete George 
-            vni.inputStates({'input': stateFactory('4', george)});
-            result = factory.updater.call(vni, hash, george, 'id');
+            var vni_george = node.vni('4');
+            vni_george.inputStates({'input': stateFactory('4', george)});
+            stateFactory.addMetadata(vni_george.inputStates('input'), {id: 'Abbey-Rd-1'});
+            result = factory.updater.call(vni_george, hash, george, 'id');
             expect(result).to.be.undefined;
 
             // Complete Paul 
-            vni.inputStates({'input': stateFactory('2', paul)});
-            result = factory.updater.call(vni,  hash, paul, 'id');
+            var vni_paul = node.vni('2');
+            vni_paul.inputStates({'input': stateFactory('2', paul)});
+            stateFactory.addMetadata(vni_paul.inputStates('input'), {id: 'Abbey-Rd-1'});
+            result = factory.updater.call(vni_paul,  hash, paul, 'id'); 
             result.should.equal('Completed processing Abbey-Rd-1');
 
         });
@@ -168,27 +177,32 @@ describe('confluence', function() {
 
             var vni = node.vni('');
             vni.inputStates({'metadata_key': stateFactory('', 'id'),
-                             'hash': stateFactory('', hash),
-                             'input': stateFactory('1', seals)});
+                             'hash': stateFactory('', hash)});
             stateFactory.addMetadata(vni.inputStates('hash'), {id: 'Summer-Breeze-1'});
-            stateFactory.addMetadata(vni.inputStates('input'), {id: 'Summer-Breeze-1'});
 
             // Complete Seals 
-            var result = factory.updater.call(vni, hash, seals, 'id');
+            var vni_seals = node.vni('1');
+            vni_seals.inputStates({'input': stateFactory('1', seals)});
+            stateFactory.addMetadata(vni_seals.inputStates('input'), {id: 'Summer-Breeze-1'});
+            var result = factory.updater.call(vni_seals, hash, seals, 'id');
             expect(result).to.be.undefined;
 
             // Complete Crofts
-            vni.inputStates({'input': stateFactory('2', crofts)});
-            result = factory.updater.call(vni, hash, crofts, 'id');
+            var vni_crofts = node.vni('2');
+            vni_crofts.inputStates({'input': stateFactory('2', crofts)});
+            stateFactory.addMetadata(vni_crofts.inputStates('input'), {id: 'Summer-Breeze-1'});
+            result = factory.updater.call(vni_crofts, hash, crofts, 'id');
             result.should.equal('Completed processing Summer-Breeze-1');
 
-            // Now send another input for this same id
-            vni.inputStates({'input': stateFactory('1', again)});
+            // Now resend an input for this same id
+            var vni_again = node.vni('1');
+            vni_again.inputStates({'input': stateFactory('1', again)});
+            stateFactory.addMetadata(vni_again.inputStates('input'), {id: 'Summer-Breeze-1'});
             sinon.stub(logger, "warn", function(message) { 
                 logger.warn.restore();
                 message.startsWith("\nAlready processed").should.be.true;
             });
-            result = factory.updater.call(vni, hash, again, 'id');
+            result = factory.updater.call(vni_again, hash, again, 'id');
             expect(result).to.be.undefined;
         });
 
@@ -371,51 +385,9 @@ describe('confluence', function() {
 
         });
 
-        it.skip('should throw an error if it receives a second hash before first is finished', function() {
-            var node = test.createComponent(factory);
-
-            var hash1 = {1: {first: "paul", last: "simon"},
-                         2: {first: "art", last: "garfunkel"}};
-            var paul = "paul solo";
-            var art = "art solo";
-            var id1 = "Simon & Garfunkel";
-
-            var hash2 = {1: {first: "josh", last: "dun"},
-                         2: {first: "tyler", last: "joseph"}};
-            var josh = "josh out";
-            var tyler = "tyler out";
-            var id2 = 'Twenty-One Pilots';
-
-
-            var default_vni = node.vni('');
-            default_vni.inputStates({'metadata_key': stateFactory('', 'id'),
-                                     'hash': stateFactory('', hash1)});
-            stateFactory.addMetadata(default_vni.inputStates('hash'), 
-                                     {id: id1});
-
-            var paul_vni = node.vni('paul');
-            paul_vni.inputStates({'input': stateFactory('1', paul)});
-            stateFactory.addMetadata(paul_vni.inputStates('input'), {id: id1});
-            var result = factory.updater.call(paul_vni, hash1, paul, 'id');
-            expect(result).to.be.undefined;
-
-            // Now send a new hash, even though first is not done yet
-            default_vni.inputStates({'metadata_key': stateFactory('', 'id'),
-                                     'hash': stateFactory('', hash2)});
-            stateFactory.addMetadata(default_vni.inputStates('hash'), 
-                                     {id: id2});
-
-            var josh_vni = node.vni('josh');
-            josh_vni.inputStates({'input': stateFactory('1', josh)});
-            stateFactory.addMetadata(josh_vni.inputStates('input'), {id: id2});
-	    expect(factory.updater.bind(josh_vni, hash2, josh, 'id')).to.throw(Error,
-	           /Confluence received a new hash before the last one was finished!/);
-
-        });
-
     });
 
-    describe.skip('functional behavior', function() {
+    describe('functional behavior', function() {
 
         it('should run in a noflo network', function() {
 
@@ -461,6 +433,7 @@ describe('confluence', function() {
                     done.should.be.an('object');
                     done.data.should.equal('Completed processing 2-000007');
                     done.patientId.should.equal('2-000007'); 
+                    expect(confluence.vnis).to.be.undefined;
                 }, function(fail) {
                     logger.warn.restore();
                     console.error(fail);
