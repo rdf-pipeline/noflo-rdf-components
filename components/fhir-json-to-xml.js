@@ -10,7 +10,9 @@ var logger = require('../src/logger');
 var createLm = require('../src/create-lm');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(fhirJsonToXmlFile);
+module.exports = wrapper({isTransient: true,
+                          updater: fhirJsonToXmlFile});
+
 
 /**
  * Given a fhir object with one or more records, converts it to XML and writes each 
