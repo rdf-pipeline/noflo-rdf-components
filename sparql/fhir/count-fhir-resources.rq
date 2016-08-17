@@ -1,0 +1,21 @@
+# File:  count-fhir-resources.rq
+# If you make changes to this query, please check them into
+# github under noflo-rdf-components/sparql/fhir
+###########################################################
+#
+# Count FHIR Resources.
+
+PREFIX fhir: <http://hl7.org/fhir/>
+
+select ?fhirResourceType (count(?resource) as ?nResources) {
+  select distinct ?fhirResourceType ?resource { 
+    bind( str(fhir:) as ?fhirPrefix ) .
+    graph ?resourceGraph {
+      ?resource a ?fhirResourceType .
+    }
+    filter( strstarts(str(?fhirResourceType), ?fhirPrefix) ) .
+  }
+}
+group by ?fhirResourceType
+order by ?fhirResourceType
+
