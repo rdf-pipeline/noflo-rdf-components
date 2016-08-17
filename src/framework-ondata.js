@@ -48,7 +48,7 @@ module.exports = function(payload, socketIndex) {
          var inputState = (_.isUndefined(payload.vnid)) ? 
              createState(vnid, payload, undefined, undefined, undefined, undefined, nodeInstance.componentName) 
              : payload;
- 
+
          // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
          var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
 
@@ -489,7 +489,11 @@ function shouldRunUpdater(vni, isStale) {
 }
 
 /**
- * Set default output metadata by appending input state metadata to the outputState 
+ * Set default output metadata by appending input state metadata to the outputState
+ * so it gets passed on to downstream nodes.
+ */
+/**
+ * Set default output metadata by appending input state metadata to the outputState
  * so it gets passed on to downstream nodes.
  */
 function setDefaultMetadata(vni, inputState) {
@@ -501,37 +505,7 @@ function setDefaultMetadata(vni, inputState) {
     // Walk through list of keys looking for non-standard state keys - those will be metadata.
     inputKeys.forEach(function(key) {
         if (!_.contains(createState.STATE_KEYS, key)) {
-
-            // Found a metadata key - do we already know about it on the output? 
-            if (_.contains(outputKeys, key)) { 
-
-                // We already have an entry for this metadata key.  
-                var metadata = outputState[key];
-                if (_.isArray(metadata) && !_.contains(metadata, inputState[key])) {
-                    // Metadata is an array - push this value onto it with any earlier values
-                    // So downstream node can see them all
-                    logger.debug('Framework found multiple metadata values for ',key);
-                    metadata.push(inputState[key]);
-                    metadata = _.uniq(metadata);
-
-                } else if ((!_.isArray(metadata)) && (metadata !== inputState[key])) {
-                    // Metadata is currently a single value and we have two different values for it
-
-                    // Is either the new value or the old value undefined?  If so, keep whatever the new value is
-                    if (_.isUndefined(inputState[key]) || _.isUndefined(metadata)) { 
-                        vni.outputState({[key]: inputState[key]});
-
-                    } else { 
-                        // Have two different values for the same metadata key -> make an array with them
-                        logger.debug('Framework has two metadata values for ',key);
-                        var metadataArray = [metadata, inputState[key]];
-                        vni.outputState({[key]: metadataArray});
-                    }
-                }
-            } else {  
-                // First time we've seen this metadata key - add it to the output state
-                vni.outputState({[key]: inputState[key]});
-            }
+            vni.outputState({[key]: inputState[key]});
         }
     });
 }
