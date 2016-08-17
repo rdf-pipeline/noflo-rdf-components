@@ -12,7 +12,8 @@ var createLm = require('../src/create-lm');
 var createState = require('../src/create-state');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(xmlToRdf);
+module.exports = wrapper({isTransient: true,
+                          updater: xmlToRdf});
 
 /**
  * Perform an xslt transform converting the xml to RDF turtle format using
