@@ -9,6 +9,7 @@ var logger = require('../src/logger');
 var wrapper = require('../src/translation-wrapper');
 
 module.exports = wrapper({isTranslator: true, 
+                          isTransient: true,
                           updater: translateDemographics});
 
 /** 

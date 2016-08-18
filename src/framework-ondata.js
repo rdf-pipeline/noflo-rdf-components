@@ -48,7 +48,7 @@ module.exports = function(payload, socketIndex) {
          var inputState = (_.isUndefined(payload.vnid)) ? 
              createState(vnid, payload, undefined, undefined, undefined, undefined, nodeInstance.componentName) 
              : payload;
- 
+
          // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
          var isStale = handleStaleData(vni, lastInputState, inputState, outputPorts.output);
 
@@ -115,7 +115,7 @@ function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
                     lastOutputLm = undefined;  // got a new error so force sending output
                  }
 
-                 handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
+                 handleOutput(vni, outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error,  lastErrorState);
 
                  profiler.stopUpdate(updateStart, vni.outputState().error);
@@ -133,7 +133,7 @@ function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
                  stateChange(vni.outputState, lastOutputLm, false);
                  stateChange(vni.errorState, lastErrorState, true);
 
-                 handleOutput(outputPorts.output, lastOutputLm, vni.outputState());
+                 handleOutput(vni, outputPorts.output, lastOutputLm, vni.outputState());
                  handleError(vni, outputPorts.error, lastErrorState);
                   
                  // If we haven't already processed the rejected error, do it now
@@ -213,7 +213,7 @@ function handleError( vni, port, lastErrorState  ) {
            vni.errorState( state );
          } 
 
-        if ( (! handleOutput( port, lastErrorState.lm, state )) && state.data )  { 
+        if ( (! handleOutput(vni, port, lastErrorState.lm, state)) && state.data)  { 
             // State was not sent on to an attached port, and we do have error data
             // so go ahead and log it for debugging/support use.
             if ( state.data.stack ) { 
@@ -270,7 +270,7 @@ function handleStaleOutput(vni, outputPort, lastInputStateLm) {
     var outputState = vni.outputState();
     outputState.stale = true;
     vni.outputState(outputState);
-    handleOutput(outputPort, lastInputStateLm, vni.outputState());
+    handleOutput(vni, outputPort, lastInputStateLm, vni.outputState());
 }
 
 /**
@@ -298,6 +298,7 @@ function haveStaleInput(vni) {
  * Checks if state is new or not.  If it is new, it sends it down stream to any attached 
  * nodes; if there are no attached nodes, the state data will be logged.
  *
+ * @param the current VNI
  * @param port an output port, which may or may not be attached to something down stream
  * @param lastLm last recorded state lm
  * @param state an error or output state to be sent down stream or logged
@@ -305,20 +306,26 @@ function haveStaleInput(vni) {
  * @return true if the data was sent to an attached port on a down stream node;
  *         false if the data was not sent on
  */
-function handleOutput( port, lastLm, state ) {
+function handleOutput(vni, port, lastLm, state ) {
 
     // Do we have a new state or an error flag set? 
     if ( lastLm !== state.lm || state.error ) { 
 
         // Got any edges out of this port? 
         if (port.listAttached().length > 0) {
+            var nodeInstance = port.nodeInstance;
             logger.debug('sending state', {
                 state: util.inspect(state,{depth:1}),
-                nodeInstance: port.nodeInstance
+                nodeInstance: nodeInstance
             });
 
             port.send( state );
             port.disconnect();
+
+            if (nodeInstance.isTransient) { 
+                vni.delete();
+            }
+
             return true;
         }  
     } 
@@ -482,7 +489,11 @@ function shouldRunUpdater(vni, isStale) {
 }
 
 /**
- * Set default output metadata by appending input state metadata to the outputState 
+ * Set default output metadata by appending input state metadata to the outputState
+ * so it gets passed on to downstream nodes.
+ */
+/**
+ * Set default output metadata by appending input state metadata to the outputState
  * so it gets passed on to downstream nodes.
  */
 function setDefaultMetadata(vni, inputState) {
@@ -494,37 +505,7 @@ function setDefaultMetadata(vni, inputState) {
     // Walk through list of keys looking for non-standard state keys - those will be metadata.
     inputKeys.forEach(function(key) {
         if (!_.contains(createState.STATE_KEYS, key)) {
-
-            // Found a metadata key - do we already know about it on the output? 
-            if (_.contains(outputKeys, key)) { 
-
-                // We already have an entry for this metadata key.  
-                var metadata = outputState[key];
-                if (_.isArray(metadata) && !_.contains(metadata, inputState[key])) {
-                    // Metadata is an array - push this value onto it with any earlier values
-                    // So downstream node can see them all
-                    logger.debug('Framework found multiple metadata values for ',key);
-                    metadata.push(inputState[key]);
-                    metadata = _.uniq(metadata);
-
-                } else if ((!_.isArray(metadata)) && (metadata !== inputState[key])) {
-                    // Metadata is currently a single value and we have two different values for it
-
-                    // Is either the new value or the old value undefined?  If so, keep whatever the new value is
-                    if (_.isUndefined(inputState[key]) || _.isUndefined(metadata)) { 
-                        vni.outputState({[key]: inputState[key]});
-
-                    } else { 
-                        // Have two different values for the same metadata key -> make an array with them
-                        logger.debug('Framework has two metadata values for ',key);
-                        var metadataArray = [metadata, inputState[key]];
-                        vni.outputState({[key]: metadataArray});
-                    }
-                }
-            } else {  
-                // First time we've seen this metadata key - add it to the output state
-                vni.outputState({[key]: inputState[key]});
-            }
+            vni.outputState({[key]: inputState[key]});
         }
     });
 }
