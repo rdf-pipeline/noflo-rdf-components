@@ -104,7 +104,7 @@ function postprocess(jsonld) {
         {
             '@context': graphContext,
             '@id': target_graph.data,
-            '@graph': jsonld['@graph']
+            '@graph': jsonld
         },
         {
             '@context': graphContext,
@@ -127,7 +127,7 @@ function postprocess(jsonld) {
     ]; else return {
         '@context': graphContext,
         '@id': target_graph.data,
-        '@graph': jsonld['@graph']
+        '@graph': jsonld
     };
 }
 

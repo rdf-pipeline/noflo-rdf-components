@@ -171,6 +171,10 @@ describe('shex-cmumps-to-rdf', function() {
             }).should.have.members([target, "urn:local:mGraph"]);
             jsonld[0].should.have.property('@id', target);
             _.keys(jsonld[1]['@graph'][0]).should.have.members(['@id', '@type', 'meta:patientId', 'meta:fhirResourceType', 'prov:wasDerivedFrom', 'prov:generatedAtTime', 'meta:translatedBy']);
+            return JSON.stringify(jsonld, null, 2);
+        }).then(function(output) {
+            output.should.contain('urn:local:fhir:DiagnosticReport:');
+            output.should.contain('urn:local:fhir:DiagnosticOrder');
         });
     });
 
