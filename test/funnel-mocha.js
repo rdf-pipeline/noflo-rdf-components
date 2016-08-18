@@ -8,6 +8,7 @@ var sinon = require('sinon');
 
 var test = require('./common-test');
 var factory = require('../components/funnel');
+var logger = require('../src/logger');
 
 describe('funnel', function() {
 
@@ -161,6 +162,7 @@ describe('funnel', function() {
                     network.graph.addEdge('extractPatientId', 'out', 'funnel', 'input');
 
                     sinon.stub(console,'log');
+                    sinon.stub(logger,'warn');
                     network.graph.addInitial('patientId', 'extractPatientId', 'key');
                     network.graph.addInitial('patientId', 'funnel', 'metadata_key');
                     network.graph.addInitial(input1, 'funnel', 'input');
@@ -172,6 +174,7 @@ describe('funnel', function() {
                         network.graph.addInitial(input2, 'funnel', 'input');
                     }).then(function(done2) {
                         console.log.restore();
+                        logger.warn.restore();
                         test.verifyState(done2, '', input2);
                         done2.componentName.should.equal('rdf-components/funnel');
                         done2.patientId.should.equal(input2);
