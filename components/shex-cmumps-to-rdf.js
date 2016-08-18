@@ -100,33 +100,34 @@ function postprocess(jsonld) {
     var meta_graph = this.inputStates('meta_graph');
     var source_graph = this.inputStates('source_graph');
     var typeAndPatient = target_graph.data.match(/.*:([^:]*):([^:]*)$/);
-    if (meta_graph) return {
+    if (meta_graph) return [
+        {
+            '@context': graphContext,
+            '@id': target_graph.data,
+            '@graph': jsonld['@graph']
+        },
+        {
+            '@context': graphContext,
+            '@id': meta_graph.data,
+            '@graph': [
+                {
+                    '@id': target_graph.data,
+                    '@type': 'meta:Graph',
+                    'meta:patientId': typeAndPatient[2],
+                    'meta:fhirResourceType': 'fhir:' + typeAndPatient[1],
+                    'prov:wasDerivedFrom': source_graph && source_graph.data,
+                    'prov:generatedAtTime': {
+                        '@value': new Date().toISOString(),
+                        '@type': 'xsd:dateTime'
+                    },
+                    'meta:translatedBy': this.nodeInstance.componentName
+                }
+            ]
+        }
+    ]; else return {
         '@context': graphContext,
-        '@default': [
-            {'@id': target_graph.data},
-            {'@id': meta_graph.data}
-        ],
-        [target_graph.data]: jsonld['@default'],
-        [meta_graph.data]: [
-            {
-                '@id': target_graph.data,
-                '@type': 'meta:Graph',
-                'meta:patientId': typeAndPatient[2],
-                'meta:fhirResourceType': 'fhir:' + typeAndPatient[1],
-                'prov:wasDerivedFrom': source_graph && source_graph.data,
-                'prov:generatedAtTime': {
-                    '@value': new Date().toISOString(),
-                    '@type': 'xsd:dateTime'
-                },
-                'meta:translatedBy': this.nodeInstance.componentName
-            }
-        ]
-    }; else return {
-        '@context': graphContext,
-        '@default': [
-            {'@id': target_graph.data}
-        ],
-        [target_graph.data]: jsonld['@default']
+        '@id': target_graph.data,
+        '@graph': jsonld['@graph']
     };
 }
 
