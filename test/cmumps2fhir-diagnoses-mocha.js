@@ -1,4 +1,4 @@
-// cmumps2fhir-prescriptions-mocha.js
+// cmumps2fhir-diagnoses-mocha.js
 
 var chai = require('chai');
 
@@ -10,13 +10,13 @@ var sinon = require('sinon');
 var _ = require('underscore');
 var fs = require('fs');
 
-var factory = require('../components/cmumps2fhir-prescriptions');
+var factory = require('../components/cmumps2fhir-diagnoses');
 var logger = require('../src/logger');
 var test = require('./common-test');
 
-var testFile = __dirname + '/../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
+var testFile = __dirname + '/data/cmumps-patient7.jsonld';
 
-describe('cmumpsfhir-prescriptions', function() {
+describe('cmumpsfhir-diagnoses', function() {
     it('should exist as a function', function() {
         factory.should.exist;
         factory.should.be.a('function');
@@ -32,7 +32,7 @@ describe('cmumpsfhir-prescriptions', function() {
 
         it('should throw an error if data is undefined', function() {
             expect(factory.updater.bind(this, undefined)).to.throw(Error,
-                /Cmumps2fhir prescriptions component requires data to translate!/);
+                /Cmumps2fhir diagnoses component requires data to translate!/);
         });
 
         it('should return undefined if data is empty', function() {
@@ -42,18 +42,25 @@ describe('cmumpsfhir-prescriptions', function() {
             logger.warn.restore();
         });
 
-        it('should convert patient prescriptions to fhir', function() {
+        it('should convert patient diagnoses to fhir', function() {
             var node = test.createComponent(factory);
+            var vni = node.vni('');
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-            var translation = factory.updater.call(node.vni(''),parsedData);
 
+            // Call the updater
+            sinon.stub(console, 'log');
+            var translation = factory.updater.call(vni,parsedData);
+            console.log.restore();
+
+            // validate results
             translation.should.not.be.empty;
             translation.should.be.an('array');
-            translation.should.have.length(6);
-            translation[0].should.include.keys('resourceType','identifier','status','patient',
-                                               'quantity','dispenser','dosageInstruction');
-            translation[0].resourceType.should.equal('MedicationDispense');
+            translation.should.have.length(3);
+            translation[0].should.include.keys('resourceType','identifier','status','code',
+                                               'subject', 'category', 'conclusion',
+                                               'codedDiagnosis');
+            translation[0].resourceType.should.equal('DiagnosticReport');
         });
 
         it('should write data to the specified intermediate files', function() {
@@ -66,7 +73,10 @@ describe('cmumpsfhir-prescriptions', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
+            sinon.stub(console, 'log');
             var translation = factory.updater.call(node.vni(''), parsedData, cmumpsFile, fhirFile);
+            console.log.restore(); 
+
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
@@ -78,12 +88,12 @@ describe('cmumpsfhir-prescriptions', function() {
 
     describe('functional behavior', function() {
        
-       it('should convert patient prescriptions to fhir in a noflo network', function() {
+       it('should convert patient diagnoses to fhir in a noflo network', function() {
            this.timeout(3000);
            return test.createNetwork(
                 { cmumpsFile: 'core/Repeat',
                   fhirFile: 'core/Repeat',
-                  translator: 'rdf-components/cmumps2fhir-prescriptions'
+                  translator: 'rdf-components/cmumps2fhir-diagnoses'
             }).then(function(network) {
                 return new Promise(function(done, fail) {
 
@@ -98,12 +108,14 @@ describe('cmumpsfhir-prescriptions', function() {
                     network.graph.addEdge('fhirFile', 'out', 'translator', 'fhir_file');
 
                     var data = fs.readFileSync(testFile, 'utf-8');
+
+                    sinon.stub(console, 'log');
                     network.graph.addInitial(data, 'translator', 'data');
                     network.graph.addInitial('', 'cmumpsFile', 'in');
                     network.graph.addInitial('', 'fhirFile', 'in');
 
-
                 }).then(function(done) {
+                    console.log.restore();
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');
@@ -112,14 +124,15 @@ describe('cmumpsfhir-prescriptions', function() {
                                               'stale','error', 'componentName', 'graphUri');
                     done.vnid.should.equal('');
                     done.data.should.be.an('array');
-                    done.data.should.have.length(6);
-                    done.data[0].should.include.keys('resourceType','identifier','status','patient',
-                                                     'quantity','dispenser','dosageInstruction');
-                    done.data[0].resourceType.should.equal('MedicationDispense');
+                    done.data.should.have.length(3);
+                    done.data[0].should.include.keys('resourceType','identifier','status','code',
+                                                'subject', 'category', 'conclusion',
+                                                'codedDiagnosis');
+                    done.data[0].resourceType.should.equal('DiagnosticReport');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                    done.componentName.should.equal('rdf-components/cmumps2fhir-prescriptions');
+                    done.componentName.should.equal('rdf-components/cmumps2fhir-diagnoses');
                     expect(done.graphUri).to.be.undefined;
                 });
            });

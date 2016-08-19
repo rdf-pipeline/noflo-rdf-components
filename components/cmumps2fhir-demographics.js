@@ -30,7 +30,7 @@ function patientDemographics(data, cmumps_file, fhir_file) {
     // console.log('data: ',util.inspect(data,{depth:null})+'\n');
 
     if (_.isUndefined(data)) { 
-        throw Error("PatientDemographics requires data to translate!");
+        throw Error("Cmumps2fhir demographics component requires data to translate!");
     }
 
     var translation = cmumps2fhir.call(this,

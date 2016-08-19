@@ -35,14 +35,13 @@ describe('translate-prescriptions-cmumps2fhir', function() {
 
         it('should throw an error if data is undefined', function() {
             var node = test.createComponent(factory);
-            expect(factory.updater.bind(node.vni(), undefined)).to.throw(Error,
+            expect(factory.updater.bind(node.vni(''), undefined)).to.throw(Error,
                 /No patient prescription data to translate!/);
         });
 
         it('should return undefined if data is empty', function() {
             var node = test.createComponent(factory);
-            var result = factory.updater.call(node.vni(), {});
-            expect(factory.updater({})).to.be.undefined;
+            expect(factory.updater.call(node.vni(''), {})).to.be.undefined;
         });
 
         it('should convert patient prescriptions to fhir', function() {
@@ -50,7 +49,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
             var prescriptions = extractor.extractPrescriptions(parsedData);
-            var translation = factory.updater.call(node.vni(), prescriptions);
+            var translation = factory.updater.call(node.vni(''), prescriptions);
             translation.should.not.be.empty;
             translation.should.be.an('array');
             translation.should.have.length(3);
@@ -71,7 +70,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            var translation = factory.updater.call(node.vni(), prescriptions, cmumpsFile, fhirFile);
+            var translation = factory.updater.call(node.vni(''), prescriptions, cmumpsFile, fhirFile);
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
@@ -110,11 +109,13 @@ describe('translate-prescriptions-cmumps2fhir', function() {
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
+                    sinon.stub(logger, 'warn');
                     network.graph.addInitial(parsedData, 'repeaterNode', 'in');
                     network.graph.addInitial('', 'cmumpsFileNode', 'in');
                     network.graph.addInitial('', 'fhirFileNode', 'in');
 
                 }).then(function(done) {
+                    logger.warn.restore();
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');
@@ -133,6 +134,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
                     done.graphUri.startsWith('urn:local:rdf-components%2Ftranslate-prescription-cmumps2fhir').should.be.true;
 
                 }, function(fail) {
+                    logger.warn.restore();
                     console.error('fail: ',fail);
                     throw Error(fail);
                 });

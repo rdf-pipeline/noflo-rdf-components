@@ -42,11 +42,14 @@ function patientHash(patient_json, translator_components, metadata_key) {
     // Ensure that we have translators for demographics, prescriptions, and procedures 
     //  - either those specified or the default ones
     translators = translators || {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
+                                  diagnosis: 'rdf-components/translate-diagnosis-cmumps2fhir',
                                   labs: 'rdf-components/shex-cmumps-to-rdf',
                                   prescription: 'rdf-components/translate-prescription-cmumps2fhir',
                                   procedure: 'rdf-components/translate-procedure-cmumps2fhir'};
-    if (_.difference(Object.keys(translators), ['demographics', 'labs', 'prescription', 'procedure']).length > 0 ) {
-        throw Error("Unknown translation. Supported translators are: 'demographics', 'prescriptions', 'procedures'.");
+
+    if (_.difference(Object.keys(translators), ['demographics', 'diagnosis', 
+                                                'labs', 'prescription', 'procedure']).length > 0 ) {
+        throw Error("Unknown translation. Supported translators are: 'demographics', 'diagnosis', 'prescriptions', 'procedures'.");
     }
 
     var patient = _.isString(patient_json) ? JSON.parse(patient_json) : patient_json;
@@ -85,6 +88,11 @@ function patientHash(patient_json, translator_components, metadata_key) {
                   addToHash(patientDemographics, translator);
                   break;
               }
+              case 'diagnosis': {
+                  addToHash(extractor.extractDiagnoses(patient), translator);
+                  break;
+              }
+
               case 'labs': {
                   if ( _.isEmpty(patientDemographics)) { 
                       logger.debug('No patient ID available for labs processing in this data set!');
