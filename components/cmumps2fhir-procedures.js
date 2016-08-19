@@ -27,7 +27,7 @@ function cmumps2fhirProcedures(data, cmumps_file, fhir_file) {
     // console.log('data: ',util.inspect(data,{depth:null})+'\n');
 
     if (_.isUndefined(data)) {
-        throw Error("PatientProcedures requires data to translate!");
+        throw Error("Cmumps2fhir procedures component requires data to translate!");
     }
 
     var procedures = cmumps2fhir.call(this,

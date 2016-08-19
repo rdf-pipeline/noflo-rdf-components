@@ -33,13 +33,13 @@ describe('cmumps2fhir-demographics', function() {
 
         it('should throw an error if input data is undefined', function() {
             expect(factory.updater.bind(this, undefined)).to.throw(Error,
-                /PatientDemographics requires data to translate!/);
+                /Cmumps2fhir demographics component requires data to translate!/);
         });
 
-        it('should return empty object if input data is empty', function() {
+        it('should return undefined if data is empty', function() {
             var node = test.createComponent(factory);
             sinon.stub(logger, 'warn');
-            expect(factory.updater.call(node.vni(), {})).to.be.empty;
+            expect(factory.updater.call(node.vni(''), {})).to.be.undefined;
             logger.warn.restore();
         });
 
@@ -47,7 +47,7 @@ describe('cmumps2fhir-demographics', function() {
             var node = test.createComponent(factory);
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-            var translation = factory.updater.call(node.vni(), parsedData);
+            var translation = factory.updater.call(node.vni(''), parsedData);
             translation.should.not.be.empty;
             translation.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
                                             'birthDate', 'address', 'maritalStatus');
@@ -64,7 +64,7 @@ describe('cmumps2fhir-demographics', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            var translation = factory.updater.call(node.vni(), parsedData, cmumpsFile, fhirFile);
+            var translation = factory.updater.call(node.vni(''), parsedData, cmumpsFile, fhirFile);
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist

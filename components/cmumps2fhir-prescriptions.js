@@ -28,7 +28,7 @@ function cmumps2fhirPrescriptions(data, cmumps_file, fhir_file) {
         // console.log('data: ',util.inspect(data,{depth:null})+'\n');
 
     if (_.isUndefined(data)) {
-        throw Error("PatientPrescriptions requires data to translate!");
+        throw Error("Cmumps2fhir prescriptions component requires data to translate!");
     }
 
     var prescriptions = cmumps2fhir.call(this,

@@ -35,15 +35,13 @@ describe('translate-demographics-cmumps2fhir', function() {
 
         it('should throw an error if input data is undefined', function() {
             var node = test.createComponent(factory);
-            expect(factory.updater.bind(node.vni(), undefined)).to.throw(Error,
+            expect(factory.updater.bind(node.vni(''), undefined)).to.throw(Error,
                 /No patient demographics data to translate!/);
         });
 
         it('should return empty object if input data is empty', function() {
             var node = test.createComponent(factory);
-            sinon.stub(logger, 'warn');
-            expect(factory.updater.call(node.vni(), {})).to.be.empty;
-            logger.warn.restore();
+            expect(factory.updater.call(node.vni(''), {})).to.be.empty;
         });
 
         it('should convert patient demographics to fhir', function() {
@@ -51,7 +49,7 @@ describe('translate-demographics-cmumps2fhir', function() {
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
             var demographics = extractor.extractDemographics(parsedData);
-            var translation = factory.updater.call(node.vni(), demographics);
+            var translation = factory.updater.call(node.vni(''), demographics);
             translation.should.not.be.empty;
             translation.should.be.an('array');
             translation.should.have.length(1);
@@ -72,7 +70,7 @@ describe('translate-demographics-cmumps2fhir', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            var translation = factory.updater.call(node.vni(), demographics, cmumpsFile, fhirFile);
+            var translation = factory.updater.call(node.vni(''), demographics, cmumpsFile, fhirFile);
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
@@ -111,11 +109,13 @@ describe('translate-demographics-cmumps2fhir', function() {
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
+                    sinon.stub(logger, 'warn');
                     network.graph.addInitial(parsedData, 'repeaterNode', 'in');
                     network.graph.addInitial('', 'cmumpsFileNode', 'in');
                     network.graph.addInitial('', 'fhirFileNode', 'in');
 
                 }).then(function(done) {
+                    logger.warn.restore();
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');
@@ -168,7 +168,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                   var testFile = __dirname + '/data/cmumps-patient7.jsonld';
                   var data = fs.readFileSync(testFile);
                   var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-
+                  sinon.stub(logger, 'warn');
                   network.graph.addInitial(parsedData, 'repeaterNode', 'in');
                   network.graph.addInitial('', 'cmumpsFileNode', 'in');
                   network.graph.addInitial('', 'fhirFileNode', 'in');
@@ -193,6 +193,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                       network.graph.addInitial(parsedData2, 'repeaterNode', 'in');
 
                    }).then(function(done2) {
+                      logger.warn.restore();
                       done2.vnid.should.equal('cmumpss:Patient-2:2-000008');
                       done2.should.include.keys('vnid','data','groupLm','lm','stale','error', 
                                                  'componentName', 'graphUri');

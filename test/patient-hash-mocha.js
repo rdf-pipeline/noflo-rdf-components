@@ -39,7 +39,7 @@ describe("patient-hash", function() {
                                        {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
                                         bizarro: 'rdf-components/bizarro'}
                               )).to.throw(Error,
-                /Unknown translation. Supported translators are: 'demographics', 'prescriptions', 'procedures'./);
+                /Unknown translation. Supported translators are: 'demographics', 'diagnosis', 'prescriptions', 'procedures'./);
             logger.warn.restore();
         });
 
@@ -352,6 +352,9 @@ describe("patient-hash", function() {
                     done.data.should.be.an('object');
                     done.data.should.have.keys('cmumpss:Patient-2:2-000007', 
                                                'PatientRecord:2-000007',
+                                               'cmumpss:Kg_Patient_Diagnosis-100417:100417-4559064',
+                                               'cmumpss:Kg_Patient_Diagnosis-100417:100417-4562039',
+                                               'cmumpss:Kg_Patient_Diagnosis-100417:100417-4568875',
                                                'cmumpss:Prescription-52:52-40863',
                                                'cmumpss:Prescription-52:52-7810413',
                                                'cmumpss:Prescription-52:52-7810414',
