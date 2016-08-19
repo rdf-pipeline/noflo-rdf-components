@@ -82,6 +82,7 @@
       "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
       "cmumps2fhir-procedures": "./components/cmumps2fhir-procedures.js",
       "confluence": "./components/confluence.js",
+      "extract-metadatum": "./components/extract-metadatum.js",
       "fhir-json-to-xml": "./components/fhir-json-to-xml.js",
       "file-loader": "./components/file-loader.js",
       "file-node": "./components/file-node.js",
