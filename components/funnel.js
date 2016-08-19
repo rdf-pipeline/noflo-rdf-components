@@ -48,6 +48,7 @@ function funnel(input, metadata_key) {
         node.funnel.executed = 0;
         node.funnel.queue = []; 
         node.funnel.executing = '';
+        node.funnel.startTime = Date.now();
     }
 
     var funnel = node.funnel;
@@ -62,7 +63,6 @@ function funnel(input, metadata_key) {
     if (funnel.executing === funnelInput) { 
 
        // Just finished executing - ready for the next one
-       console.log('Finished executing ',funnel.executing);
        logger.info('Completed processing id:',funnel.executing);
        funnel.executed++;
        if (funnel.queue.length > 0) { 
@@ -73,6 +73,7 @@ function funnel(input, metadata_key) {
            console.log('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
                        'funnel sending:', funnel.executing, 
+                       '\n' + funnel.queue.length + ' ids in the queue' +
                        '\nfunnel queue:',funnel.queue,
                        '\n********************************************************************\n');
            logger.info('Processing id:',funnel.executing);
@@ -80,9 +81,10 @@ function funnel(input, metadata_key) {
 
         } else {
            funnel.executing = '';
-           console.log('\n********************************************************************\n'+
+           var elapsedTime = msToString(Date.now() - funnel.startTime);
+           logger.warn('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
-                       'Nothing left in funnel.\n' +
+                       'Nothing left in funnel.  Elapsed time: ' + elapsedTime +
                        '\n********************************************************************\n');
         }
 
@@ -92,6 +94,7 @@ function funnel(input, metadata_key) {
            console.log('\n********************************************************************\n'+
                        'Completed execution '+ funnel.executed +' ids\n' +
                        'funnel sending:', funnel.executing, 
+                       '\n' + funnel.queue.length + ' ids remaining in the queue' +
                        '\nfunnel queue:',funnel.queue,
                        '\n********************************************************************\n');
            logger.info('Processing id:',funnel.executing);
@@ -109,4 +112,18 @@ function funnel(input, metadata_key) {
            } 
        }
     } 
+}
+
+/**
+ * Given a time in milliseconds, generate a human readable string 
+ * breaking it into days, hours, minutes, seconds.
+ */
+function msToString(ms) {
+    var seconds = ms/1000;
+    var days = Math.floor((seconds % 31536000) / 86400); 
+    var hours = Math.floor(((seconds % 31536000) % 86400) / 3600);
+    var minutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
+    var seconds = (((seconds % 31536000) % 86400) % 3600) % 60;
+    return days + " days " + hours + " hours " 
+                   + minutes + " minutes " + seconds + " seconds";
 }
