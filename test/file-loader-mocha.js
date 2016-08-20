@@ -10,6 +10,7 @@ var fs = require('fs');
 var os = require('os');
 
 var test = require('./common-test');
+var logger = require('../src/logger');
 var factory = require('../components/file-loader');
 
 describe('file-loader', function() {
@@ -53,20 +54,20 @@ describe('file-loader', function() {
         });
 
         it("should log a warning if file_envvar referenced file has no content", function() {
-            var testfile = os.tmpdir() + './testfile.txt';
-            fs.writeFile(testfile, '', function() { 
-                process.env.floadEnvVar = testfile;
-                var node = test.createComponent(factory);
+            var testfile = '/tmp/testfile.txt';
+            fs.writeFileSync(testfile, '');
+            process.env.floadEnvVar = testfile;
+
+            var node = test.createComponent(factory);
                 
-                var warning;
-                sinon.stub(logger,'warn', function(message) {
-                    warning = message;
-                });
-                var result = factory.updater.call(node.vni(''), 'floadEnvVar');
-                logger.warn.restore();
-		warning.should.be.a('string');
-		warning.should.equal("No data found in " + process.env.floadEnvVar);
-           });
+            var warning;
+            sinon.stub(logger,'warn', function(message) {
+                warning = message;
+            });
+            var result = factory.updater.call(node.vni(''), 'floadEnvVar');
+            logger.warn.restore();
+            warning.should.be.a('string');
+            warning.should.equal("No data found in " + testfile);
         });
 
         it("should output a hash of file content", function() {

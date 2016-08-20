@@ -1,0 +1,13 @@
+{
+    "female": [
+        "map-female-id-1",
+        "map-female-id-2",
+        "map-female-id-3",
+        "map-female-id-4",
+        "map-female-id-5"
+    ],
+    "male": [
+        "map-male-id-1",
+        "map-male-id-2"
+    ]
+}
