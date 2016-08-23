@@ -12,6 +12,7 @@ var util = require('util');
 var logger = require('../src/logger');
 var wrapper = require('../src/shex-wrapper');
 var fhir = require("../shex/targets/fhir");
+var CMUMPS_NS = "http://hokukahu.com/schema/cmumpss#";
 
 var myTypeToShape = { // CMUMPS_path is just documentation.
   "Order-101":    { from: null, to: null, targetType: null, CMUMPS_path: "orders" },
@@ -41,7 +42,7 @@ var myTypeToShape = { // CMUMPS_path is just documentation.
 module.exports = wrapper({
     fromFormat: "cmumpss",
     toFormat: "fhir",
-    myBase: "http://hokukahu.com/schema/cmumpss#",
+    myBase: CMUMPS_NS,
     staticBindings: fhir.staticBindings,
     makeTargetNode: makeTargetNode,
     targetFixup: fhir.targetFixup,
@@ -81,6 +82,7 @@ function preprocess(data) {
 
 
     var cmumpss_prefix = this.inputStates('cmumpss_prefix') || {data: 'cmumpss'};
+    graphContext["@context"][cmumpss_prefix] = CMUMPS_NS;
     parsedData["@context"] = graphContext["@context"];
     parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
         // Filter to known types for cleaned.jsonld, 2.1 w, 4.2 w/o
@@ -167,8 +169,8 @@ var graphContext = {
         "icd9cm": "http://hokukahu.com/schema/icd9cm#",
         "npi": "http://hokukahu.com/schema/npi#",
         "nddf": "http://hokukahu.com/schema/nddf#",
-        "@vocab": "http://hokukahu.com/schema/cmumpss#",
-        "cmumpss": "http://hokukahu.com/schema/cmumpss#",
+        "@vocab": CMUMPS_NS,
+        "cmumpss": CMUMPS_NS,
         "prov": "http://www.w3.org/ns/prov#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "@base": "http://hokukahu.com/systems/cmumps-1/",
