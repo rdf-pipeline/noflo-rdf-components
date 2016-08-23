@@ -127,6 +127,7 @@ describe('shex-cmumps-to-rdf', function() {
                 shex: "rdf-components/shex-cmumps-to-rdf",
                 jsonld: "rdf-components/frame-jsonld"
             }).then(function(network) {
+                network.graph.addInitial('cmumpss', 'shex', 'cmumpss_prefix');
                 network.graph.addInitial(graphContext, 'jsonld', 'context');
                 network.graph.addEdge('shex', 'output', 'jsonld', 'json');
                 var data = JSON.parse(fs.readFileSync(testFile));
@@ -155,6 +156,7 @@ describe('shex-cmumps-to-rdf', function() {
             test.createNetwork({
                 shex: "rdf-components/shex-cmumps-to-rdf"
             }).then(function(network) {
+                network.graph.addInitial('cmumpss', 'shex', 'cmumpss_prefix');
                 network.graph.addInitial(target, 'shex', 'target_graph');
                 network.graph.addInitial("urn:local:graph:source", 'shex', 'source_graph');
                 network.graph.addInitial("urn:local:mGraph", 'shex', 'meta_graph');

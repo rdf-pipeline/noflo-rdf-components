@@ -46,7 +46,7 @@ module.exports = wrapper({
     makeTargetNode: makeTargetNode,
     targetFixup: fhir.targetFixup,
     myTypeToShape: myTypeToShape,
-    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph'],
+    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph', 'cmumpss_prefix'],
     preprocess: preprocess,
     postprocess: postprocess
 });
@@ -79,10 +79,12 @@ function preprocess(data) {
         throw new Error("shex-cmumps-to-rdf component expects @context and @graph specification on input data!");
     }
 
+
+    var cmumpss_prefix = this.inputStates('cmumpss_prefix') || {data: 'cmumpss'};
     parsedData["@context"] = graphContext["@context"];
     parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
         // Filter to known types for cleaned.jsonld, 2.1 w, 4.2 w/o
-        return ob.type.substr('cmumpss:'.length) in myTypeToShape;
+        return ob.type.substr(1 + cmumpss_prefix.data.length) in myTypeToShape;
     });  
 
     // normalize the identifer attribute - deep map any id or _id attribute to 
