@@ -106,7 +106,7 @@ function postprocess(jsonld) {
             {'@id': target_graph.data},
             {'@id': meta_graph.data}
         ],
-        [target_graph.data]: jsonld['@default'],
+        [target_graph.data]: _.isUndefined(jsonld['@default']) ? jsonld : jsonld['@default'],
         [meta_graph.data]: [
             {
                 '@id': target_graph.data,
@@ -126,7 +126,7 @@ function postprocess(jsonld) {
         '@default': [
             {'@id': target_graph.data}
         ],
-        [target_graph.data]: jsonld['@default']
+        [target_graph.data]: _.isUndefined(jsonld['@default']) ? jsonld : jsonld['@default']
     };
 }
 
