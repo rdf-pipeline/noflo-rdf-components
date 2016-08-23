@@ -127,16 +127,19 @@ describe('shex-cmumps-to-rdf', function() {
                 shex: "rdf-components/shex-cmumps-to-rdf",
                 jsonld: "rdf-components/frame-jsonld"
             }).then(function(network) {
+                network.graph.addInitial('cmumpss', 'shex', 'cmumpss_prefix');
                 network.graph.addInitial(graphContext, 'jsonld', 'context');
                 network.graph.addEdge('shex', 'output', 'jsonld', 'json');
                 var data = JSON.parse(fs.readFileSync(testFile));
                 test.onOutPortData(network.processes.jsonld.component, 'output', function(output) {
-                    if (!output.error) done(JSON.stringify(output, null, 2));
+                    if (!output.error) done(output.data);
                 });
                 test.onOutPortData(network.processes.shex.component, 'error', fail);
                 test.onOutPortData(network.processes.jsonld.component, 'error', fail);
                 network.graph.addInitial(data, 'shex', 'input');
             }).catch(fail);
+        }).then(function(jsonld) {
+            return JSON.stringify(jsonld, null, 2);
         }).then(function(output) {
             output.should.contain('urn:local:fhir:DiagnosticReport:');
             output.should.contain('urn:local:fhir:DiagnosticOrder');
@@ -153,6 +156,7 @@ describe('shex-cmumps-to-rdf', function() {
             test.createNetwork({
                 shex: "rdf-components/shex-cmumps-to-rdf"
             }).then(function(network) {
+                network.graph.addInitial('cmumpss', 'shex', 'cmumpss_prefix');
                 network.graph.addInitial(target, 'shex', 'target_graph');
                 network.graph.addInitial("urn:local:graph:source", 'shex', 'source_graph');
                 network.graph.addInitial("urn:local:mGraph", 'shex', 'meta_graph');
@@ -164,11 +168,15 @@ describe('shex-cmumps-to-rdf', function() {
                 network.graph.addInitial(data, 'shex', 'input');
             }).catch(fail);
         }).then(function(jsonld) {
-            jsonld['@default'].map(function(graphs) {
+            jsonld.map(function(graphs) {
                 return graphs['@id'];
             }).should.have.members([target, "urn:local:mGraph"]);
-            jsonld["urn:local:mGraph"][0].should.have.property('@id', target);
-            _.keys(jsonld["urn:local:mGraph"][0]).should.have.members(['@id', '@type', 'meta:patientId', 'meta:fhirResourceType', 'prov:wasDerivedFrom', 'prov:generatedAtTime', 'meta:translatedBy']);
+            jsonld[0].should.have.property('@id', target);
+            _.keys(jsonld[1]['@graph'][0]).should.have.members(['@id', '@type', 'meta:patientId', 'meta:fhirResourceType', 'prov:wasDerivedFrom', 'prov:generatedAtTime', 'meta:translatedBy']);
+            return JSON.stringify(jsonld, null, 2);
+        }).then(function(output) {
+            output.should.contain('urn:local:fhir:DiagnosticReport:');
+            output.should.contain('urn:local:fhir:DiagnosticOrder');
         });
     });
 

@@ -12,6 +12,7 @@ var util = require('util');
 var logger = require('../src/logger');
 var wrapper = require('../src/shex-wrapper');
 var fhir = require("../shex/targets/fhir");
+var CMUMPS_NS = "http://hokukahu.com/schema/cmumpss#";
 
 var myTypeToShape = { // CMUMPS_path is just documentation.
   "Order-101":    { from: null, to: null, targetType: null, CMUMPS_path: "orders" },
@@ -41,12 +42,12 @@ var myTypeToShape = { // CMUMPS_path is just documentation.
 module.exports = wrapper({
     fromFormat: "cmumpss",
     toFormat: "fhir",
-    myBase: "http://hokukahu.com/schema/cmumpss#",
+    myBase: CMUMPS_NS,
     staticBindings: fhir.staticBindings,
     makeTargetNode: makeTargetNode,
     targetFixup: fhir.targetFixup,
     myTypeToShape: myTypeToShape,
-    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph'],
+    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph', 'cmumpss_prefix'],
     preprocess: preprocess,
     postprocess: postprocess
 });
@@ -79,10 +80,13 @@ function preprocess(data) {
         throw new Error("shex-cmumps-to-rdf component expects @context and @graph specification on input data!");
     }
 
+
+    var cmumpss_prefix = this.inputStates('cmumpss_prefix') || {data: 'cmumpss'};
+    graphContext["@context"][cmumpss_prefix] = CMUMPS_NS;
     parsedData["@context"] = graphContext["@context"];
     parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
         // Filter to known types for cleaned.jsonld, 2.1 w, 4.2 w/o
-        return ob.type.substr('cmumpss:'.length) in myTypeToShape;
+        return ob.type.substr(1 + cmumpss_prefix.data.length) in myTypeToShape;
     });  
 
     // normalize the identifer attribute - deep map any id or _id attribute to 
@@ -100,33 +104,34 @@ function postprocess(jsonld) {
     var meta_graph = this.inputStates('meta_graph');
     var source_graph = this.inputStates('source_graph');
     var typeAndPatient = target_graph.data.match(/.*:([^:]*):([^:]*)$/);
-    if (meta_graph) return {
+    if (meta_graph) return [
+        {
+            '@context': graphContext,
+            '@id': target_graph.data,
+            '@graph': jsonld
+        },
+        {
+            '@context': graphContext,
+            '@id': meta_graph.data,
+            '@graph': [
+                {
+                    '@id': target_graph.data,
+                    '@type': 'meta:Graph',
+                    'meta:patientId': typeAndPatient[2],
+                    'meta:fhirResourceType': 'fhir:' + typeAndPatient[1],
+                    'prov:wasDerivedFrom': source_graph && source_graph.data,
+                    'prov:generatedAtTime': {
+                        '@value': new Date().toISOString(),
+                        '@type': 'xsd:dateTime'
+                    },
+                    'meta:translatedBy': this.nodeInstance.componentName
+                }
+            ]
+        }
+    ]; else return {
         '@context': graphContext,
-        '@default': [
-            {'@id': target_graph.data},
-            {'@id': meta_graph.data}
-        ],
-        [target_graph.data]: jsonld['@default'],
-        [meta_graph.data]: [
-            {
-                '@id': target_graph.data,
-                '@type': 'meta:Graph',
-                'meta:patientId': typeAndPatient[2],
-                'meta:fhirResourceType': 'fhir:' + typeAndPatient[1],
-                'prov:wasDerivedFrom': source_graph && source_graph.data,
-                'prov:generatedAtTime': {
-                    '@value': new Date().toISOString(),
-                    '@type': 'xsd:dateTime'
-                },
-                'meta:translatedBy': this.nodeInstance.componentName
-            }
-        ]
-    }; else return {
-        '@context': graphContext,
-        '@default': [
-            {'@id': target_graph.data}
-        ],
-        [target_graph.data]: jsonld['@default']
+        '@id': target_graph.data,
+        '@graph': jsonld
     };
 }
 
@@ -164,8 +169,8 @@ var graphContext = {
         "icd9cm": "http://hokukahu.com/schema/icd9cm#",
         "npi": "http://hokukahu.com/schema/npi#",
         "nddf": "http://hokukahu.com/schema/nddf#",
-        "@vocab": "http://hokukahu.com/schema/cmumpss#",
-        "cmumpss": "http://hokukahu.com/schema/cmumpss#",
+        "@vocab": CMUMPS_NS,
+        "cmumpss": CMUMPS_NS,
         "prov": "http://www.w3.org/ns/prov#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "@base": "http://hokukahu.com/systems/cmumps-1/",
