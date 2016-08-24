@@ -3,7 +3,11 @@ var _ = require('underscore');
 
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(idMapper);
+module.exports = wrapper({description: "Maps one ID into another, using the map; all ids must have an entry in the map.",
+                          icon: 'arrows-h',
+                          isTransient: true,
+                          updater: idMapper});
+
 
 /**
  * Maps the specified id to another value using the specified map.
