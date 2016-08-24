@@ -10,11 +10,15 @@ var stateFactory = require('../src/create-state');
 var logger = require('../src/logger');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(patientHash);
+module.exports = wrapper({description: "Given CMUMPS JSON patient data, builds a hash object of each "+
+                                       "demographic, medication, procedure, and diagnosis, using the "+
+                                       "resource ID as the key for each.",
+                          icon: 'share-alt',
+                          updater: patientHash});
 
 /**
- * Given a collection patient resoruces, extract the demographics, medications, & procedures,
- * mapping them into a hash by resource ID.  This component is useful in setting up the patient
+ * Given a collection of CMUMPS patient JSON, maps the demographics, medications, diagnoses, & procedures
+ * into a hash by resource ID for each.  This component is useful in setting up the patient
  * resources for use by translation wrapper components that will perform the actual translation.
  *
  * @this VNI context
@@ -79,8 +83,19 @@ function patientHash(patient_json, translator_components, metadata_key) {
     }
 
     var patientDemographics = extractor.extractDemographics(patient); 
-    if (_.isEmpty(patientDemographics)) throw Error("No patient demographics found!");
-    var patientId = _.isArray(patientDemographics) ? patientDemographics[0]._id : patientDemographics._id;
+    var outState = this.outputState();
+    if (_.isEmpty(patientDemographics) && _.isUndefined(outState[metadata_key])) {
+        logger.debug('No demographics; outstate = ',outState);
+        throw Error("No patient demographics found!");
+    }
+
+    var patientId;
+    if (!_.isUndefined(outState[metadata_key])) {
+       patientId = outState[metadata_key];
+    } else {
+        patientId = _.isArray(patientDemographics) ? patientDemographics[0]._id : patientDemographics._id;
+    }
+
     var self = this;
     _.each(translators, function(translator, type) { 
           switch(type) { 
@@ -117,7 +132,11 @@ function patientHash(patient_json, translator_components, metadata_key) {
          }
     });
 
-    stateFactory.addMetadata(this.outputState(), {[metadata_key]: patientId});
+    if (_.isUndefined(outState[metadata_key])) { 
+        // No metadata identifying the patient yet - put it on now. 
+        stateFactory.addMetadata(outState, {[metadata_key]: patientId});
+    }
+
     logger.debug({nodeInstance: this.nodeInstance} + ' sending hash with keys:\n',Object.keys(hash));
     return hash;
 }
