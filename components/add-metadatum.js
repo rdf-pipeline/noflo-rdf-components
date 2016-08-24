@@ -5,7 +5,10 @@ var _ = require('underscore');
 var createLm = require('../src/create-lm');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(addMetadatum);
+module.exports = wrapper({description: "Adorns a VNI with single metadata attribute.",
+                          icon: "tag",
+                          isTransient: true,
+                          updater: addMetadatum});
 
 /**
  * Adds a name/value pair as metadata to the vni
