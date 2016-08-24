@@ -6,7 +6,10 @@ var createLm = require('../src/create-lm');
 var createState = require('../src/create-state');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(addMetadata);
+module.exports = wrapper({description: "Adorns a VNI with multiple metadata attributes.",
+                          icon: "tags",
+                          isTransient: true,
+                          updater: addMetadata});
 
 /**
  * Adds all attributes of the specified metadata object as custom metadata to the vni. 
