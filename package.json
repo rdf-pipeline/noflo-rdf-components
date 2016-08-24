@@ -93,6 +93,7 @@
       "http-accept": "./components/http-accept.js",
       "http-delivery": "./components/http-delivery.js",
       "id-mapper": "./components/id-mapper.js",
+      "id-hash-mapper": "./components/id-hash-mapper.js",
       "json-file-node": "./components/json-file-node.js",
       "json-pointer": "./components/json-pointer.js",
       "js-node": "./components/js-node.js",

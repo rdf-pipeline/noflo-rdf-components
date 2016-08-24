@@ -33,11 +33,12 @@ function loader(file_envvar, encoding) {
 
     var filename = getFilename(file_envvar);
     
-    var ids = fs.readFileSync(filename, encoding).toString().split("\n");
+    var ids = fs.readFileSync(filename, encoding).toString(); 
     if (_.isEmpty(ids)) {
-        logger.warn('No data found in', process.env.file_envvar);
+        logger.warn('No data found in ' +  filename);
         return;
     }
+    ids = ids.split("\n");
 
     // Build a hash with the correct number of elements
     var hash = {};
