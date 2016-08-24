@@ -92,6 +92,7 @@
       "html-2-objects-compare": "./components/html-2-objects-compare.js",
       "http-accept": "./components/http-accept.js",
       "http-delivery": "./components/http-delivery.js",
+      "id-hash-mapper": "./components/id-hash-mapper.js",
       "id-mapper": "./components/id-mapper.js",
       "json-file-node": "./components/json-file-node.js",
       "json-pointer": "./components/json-pointer.js",
