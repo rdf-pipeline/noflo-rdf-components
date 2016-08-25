@@ -59,6 +59,7 @@ describe('cmumps-patient-jsonld subgraph', function() {
         }).should.eventually.have.property('data', "/patient_graph?dataset=alt&datatype=all&patientid=1000004");
     });
     xit("should GET remote jsonld for patient 1000004", function() {
+        expect(process.env.CMUMPS_AUTHORITY).to.exist;
         return test.createNetwork({
             cmumps: "rdf-components/cmumps-patient-jsonld"
         }).then(function(network){
@@ -66,6 +67,7 @@ describe('cmumps-patient-jsonld subgraph', function() {
             network.processes.cmumps.component.outPorts.output.attach(output);
             return new Promise(function(done) {
                 output.on('data', done);
+                network.graph.addInitial(process.env.CMUMPS_AUTHORITY, 'cmumps', 'authority');
                 network.graph.addInitial(dataset, 'cmumps', 'dataset');
                 network.graph.addInitial('1000004', 'cmumps', 'patient_id');
             });
