@@ -108,6 +108,7 @@
       "rdf-jsonld": "./components/rdf-jsonld.js",
       "rdf-ntriples": "./components/rdf-ntriples.js",
       "read-content": "./components/read-content.js",
+      "repeat-data": "./components/repeat-data.js",
       "replace-substring": "./components/replace-substring.js",
       "request-template": "./components/request-template.js",
       "round-robin": "./components/round-robin.js",

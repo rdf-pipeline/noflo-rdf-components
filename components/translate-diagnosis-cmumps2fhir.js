@@ -9,7 +9,9 @@ var cmumps2fhir = require('./cmumps2fhir');
 var logger = require('../src/logger');
 var wrapper = require('../src/translation-wrapper');
 
-module.exports = wrapper({isTranslator: true,
+module.exports = wrapper({description: "Translates a CMUMPS diagnosis into FHIR",
+                          icon: 'language',
+                          isTranslator: true,
                           isTransient: true,
                           updater: translateDiagnosis});
 

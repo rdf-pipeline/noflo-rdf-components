@@ -137,7 +137,7 @@ describe('translate-diagnosis-cmumps2fhir', function() {
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.componentName.should.equal('rdf-components/translate-diagnosis-cmumps2fhir');
                     done.patientId.should.equal('2-000007');
-                    done.graphUri.startsWith('urn:local:rdf-components%2Ftranslate-diagnosis-cmumps2fhir').should.be.true;
+                    done.graphUri.startsWith('urn:local:2-000007:rdf-components%2Ftranslate-diagnosis-cmumps2fhir:DiagnosticReport:100417-4559064');
 
                 }, function(fail) {
                     logger.warn.restore();

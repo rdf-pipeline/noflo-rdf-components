@@ -10,7 +10,9 @@ var logger = require('../src/logger');
 var cmumps2fhir = require('./cmumps2fhir');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(cmumps2fhirPrescriptions);
+module.exports = wrapper({description: "Extracts CMUMPS prescriptions from a dataset and translates them into FHIR",
+                          icon: 'language',
+                          updater: cmumps2fhirPrescriptions});
 
 /** 
  * Extracts the patient medications from a cmumps graph and translates it to FHIR format.

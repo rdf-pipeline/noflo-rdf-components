@@ -76,34 +76,37 @@ module.exports = function(data, extractor, translator, cmumpsFile, fhirFile) {
  *         had one; will return undefined if there is no id
  */
 function graphUri(translation) {
-     var translated;
-     if (_.isArray(translation)) {
-         // Not supporting graph URI metadata on arrays of translations at this time
-         if (translation.length != 1) return;
-         translated = translation[0];
-     } else {
-         translated = translation;
-     }
+     var id, type, translated;
+     var state = this.outputState();
 
-    var id = translated.id || translated._id;
-    var type = translated.resourceType || translated.type;
+     if (_.isArray(translation) && translation.length > 0) {
+
+          // Not supporting graph URI metadata on arrays of translations at this time
+         if (translation.length != 1) return;   
+         translated = translation[0]; 
+
+      } else {
+         translated = translation;
+      }
+
+      id = translated.id || translated._id;
+      type = translated.resourceType || translated.type;
+
     if (!(_.isUndefined(id) || _.isUndefined(type)))  {
 
         var translator = this.nodeInstance.componentName || 'unknown-translator';
         var resourceId = encodeURI(type + ":" + id);
-        var uri = 'urn:local:' + encodeURIComponent(translator) + ':' + resourceId;
 
-        var outputState = this.outputState();
-        if (_.isUndefined(outputState['graphUri'])) {
-            // first graph ID we've seen - use it
-            return uri;
-        } else if (outputState['graphUri'] !== uri) {
-            // Already have a graph ID - make an array of them
-            return [outputState['graphUri'], uri];
+        var uri;
+
+        // TODO: Replace the hard coded patientID with a metadata key
+        if (_.isUndefined(state.patientId)) {
+            uri = 'urn:local:' + encodeURIComponent(translator) + ':' + resourceId;
         } else {
-            // graph ID matches what we already have. Just return it
-            return uri;
+            uri = 'urn:local:' + state.patientId + ':' + encodeURIComponent(translator) + ':' + resourceId;
         }
+
+        return uri;
     } else { 
         logger.debug("Unable to build a graph URI because translation resource id or type is missing! Input was: ",translation);
     }

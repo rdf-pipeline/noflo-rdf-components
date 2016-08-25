@@ -10,7 +10,9 @@ var cmumps2fhir = require('./cmumps2fhir');
 var logger = require('../src/logger');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(patientDemographics);
+module.exports = wrapper({description: "Extracts a CMUMPS demographic record from a dataset and translates it into FHIR",
+                          icon: 'language',
+                          updater: patientDemographics});
 
 /** 
  * Given patient data, extracts the patient demographics and translates

@@ -11,6 +11,7 @@ var _ = require('underscore');
 var fs = require('fs');
 
 var componentFactory = require('../src/noflo-component-factory');
+var stateFactory = require('../src/create-state');
 var vniManager = require('../src/vni-manager');
 
 var extractor = require('translators').cmumps;
@@ -141,6 +142,70 @@ describe('cmumps2fhir', function() {
         fs.accessSync(fhirFile, fs.F_OK);
     });
 
+    it("should generate a graph URI with patient id and resource type metadata if they are available", function() {
+
+        // get simple test patient data
+        var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+        var data = fs.readFileSync(testFile);
+        var parsedData = JSON.parse(data); 
+
+        var node = test.createComponent(componentFactory({}, vniManager));
+
+        // Create a VNI for this patient and put patientId and resourceType metadata on it
+        var patientId = "PatientId-2468";
+        var vni = node.vni(patientId);
+        vni.nodeInstance = {"componentName": "rdf/procedure-translator"};
+ 
+        var outState = stateFactory(patientId);
+        stateFactory.addMetadata(outState, 
+                                 {"patientId": patientId,
+                                  "resourceType": "Procedure"});
+        vni.outputState(outState);
+
+        var results = cmumps2fhir.call(vni, 
+                                       parsedData, 
+                                       extractor.extractProcedures,
+                                       translator.translateProceduresFhir);
+
+        results.should.be.an('array');
+        results[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
+                                       'status', 'dateReported', 'verified', 'provider');
+
+        vni.outputState().graphUri.should.equal('urn:local:PatientId-2468:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
+
+    });
+
+    it("should generate a graph URI with patient id metadata if it is available", function() {
+
+        // get simple test patient data
+        var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+        var data = fs.readFileSync(testFile);
+        var parsedData = JSON.parse(data); 
+
+        var node = test.createComponent(componentFactory({}, vniManager));
+
+        // Create a VNI for this patient and put patientId and resourceType metadata on it
+        var patientId = "PatientId-8642";
+        var vni = node.vni(patientId);
+        vni.nodeInstance = {"componentName": "rdf/procedure-translator"};
+ 
+        var outState = stateFactory(patientId);
+        stateFactory.addMetadata(outState, 
+                                 {"patientId": patientId});
+        vni.outputState(outState);
+
+        var results = cmumps2fhir.call(vni, 
+                                       parsedData, 
+                                       extractor.extractProcedures,
+                                       translator.translateProceduresFhir);
+
+        results.should.be.an('array');
+        results[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
+                                       'status', 'dateReported', 'verified', 'provider');
+
+        vni.outputState().graphUri.should.equal('urn:local:PatientId-8642:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
+    });
+
     it("should keep the same graph id for translator if it does not change", function() {
 
         // get simple test patient data
@@ -183,7 +248,7 @@ describe('cmumps2fhir', function() {
         vni.outputState().graphUri.should.equal('urn:local:rdf%2Ftest-translator:Patient:2-000007');
     });
 
-    it("should make an array of graph id metadata if multiple ids for translator components", function() {
+    it("should update to the most recent translator metadata when generating a graphUri", function() {
 
         // get simple test patient data
         var testFile = __dirname + '/data/cmumps-patient7.jsonld';
@@ -192,8 +257,10 @@ describe('cmumps2fhir', function() {
 
         // extract and translate the patient demographics to fhir. 
         var node = test.createComponent(componentFactory({}, vniManager));
+
         var vni = node.vni('');
         vni.nodeInstance = {"componentName": "rdf/demographics-translator"};
+ 
         var results = cmumps2fhir.call(vni, 
                                        parsedData, 
                                        extractor.extractDemographics,
@@ -216,8 +283,7 @@ describe('cmumps2fhir', function() {
         results2.should.be.an('array');
         results2[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
                                         'status', 'dateReported', 'verified', 'provider');
-        vni.outputState().graphUri.should.deep.equal(['urn:local:rdf%2Fdemographics-translator:Patient:2-000007',
-     'urn:local:rdf%2Fprocedure-translator:Procedure:Procedure-1074046']);
+        vni.outputState().graphUri.should.equal('urn:local:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
 
     });
 
