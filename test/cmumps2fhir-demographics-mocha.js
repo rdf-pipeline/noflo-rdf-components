@@ -75,7 +75,7 @@ describe('cmumps2fhir-demographics', function() {
 
     describe('functional behavior', function() {
        it('should convert patient demographics to fhir in a noflo network', function() {
-           this.timeout(3000);
+           this.timeout(4000);
            return test.createNetwork(
                 { cmumpsFile: 'core/Repeat',
                   fhirFile: 'core/Repeat',

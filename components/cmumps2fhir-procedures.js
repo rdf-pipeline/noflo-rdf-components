@@ -9,7 +9,9 @@ var logger = require('../src/logger');
 var cmumps2fhir = require('./cmumps2fhir');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(cmumps2fhirProcedures);
+module.exports = wrapper({description: "Extracts CMUMPS procedures from a dataset and translates them into FHIR",
+                          icon: 'language',
+                          updater: cmumps2fhirProcedures});
 
 /** 
  * Extracts the patient cmumpsProcedures from a cmumps graph and translates it to FHIR format.

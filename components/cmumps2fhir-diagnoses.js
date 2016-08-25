@@ -8,7 +8,9 @@ var translator = require('translators').diagnoses;
 var cmumps2fhir = require('./cmumps2fhir');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(cmumps2fhirDiagnoses);
+module.exports = wrapper({description: "Extracts CMUMPS diagnoses from a dataset and translates them into FHIR",
+                          icon: 'language',
+                          updater: cmumps2fhirDiagnoses});
 
 /** 
  * Extracts the patient diagnoses from a cmumps graph and translates it to FHIR format.
