@@ -78,6 +78,7 @@
     "components": {
       "add-metadata": "./components/add-metadata.js",
       "add-metadatum": "./components/add-metadatum.js",
+      "and-gate": "./components/and-gate.js",
       "cmumps2fhir-demographics": "./components/cmumps2fhir-demographics.js",
       "cmumps2fhir-diagnoses": "./components/cmumps2fhir-diagnoses.js",
       "cmumps2fhir-prescriptions": "./components/cmumps2fhir-prescriptions.js",
