@@ -3,7 +3,12 @@ var _ = require('underscore');
 
 var wrapper = require('../src/split-wrapper');
 
-module.exports = wrapper(updater);
+module.exports = wrapper({description: "splits a vnid hash, sending each of its elements "+
+                                       "one at a time for parallel processing.  This component "+
+                                       "should be matched with a join.",
+                          icon: 'share-alt',
+                          updater: updater});
+
 
 /**
  * Custom updater for the splitter.  This one doesn't do much but the programmer could manipulate

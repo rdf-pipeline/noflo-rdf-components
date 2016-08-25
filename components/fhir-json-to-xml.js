@@ -10,7 +10,9 @@ var logger = require('../src/logger');
 var createLm = require('../src/create-lm');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper({isTransient: true,
+module.exports = wrapper({description: "Converts FHIR JSON data to FHIR XML",
+                          icon: 'exchange',
+                          isTransient: true,
                           updater: fhirJsonToXmlFile});
 
 

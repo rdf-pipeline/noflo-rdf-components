@@ -6,7 +6,9 @@ var util = require('util');
 var logger = require('../src/logger');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(updater);
+module.exports = wrapper({description: "Given a hash, waits until it receives input corresponding to each element in the hash before continuing.",
+                          icon: 'th-list',
+                          updater: updater});
 
 /**
  * Similar to a join, confluence allows for synchronizing the completion of multiple inputs.  It takes

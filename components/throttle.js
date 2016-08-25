@@ -6,7 +6,9 @@ var fs = require('fs');
 var logger = require('../src/logger.js');
 var wrapper = require('../src/split-wrapper.js');
 
-module.exports = wrapper(throttler);
+module.exports = wrapper({description: "Regulates the flow of input to the next component; can trigger sending multiple packets at a time.",
+                          icon: 'filter',
+                          updater: throttler});
 
 /** 
  * Reads a file with one record per line, and outputs a hash with the 

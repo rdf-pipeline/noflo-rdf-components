@@ -5,7 +5,7 @@ var _ = require('underscore');
 var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "Extracts the specified metadata attribute from the VNI.",
-                          icon: "hand-grab-o",
+                          icon: "download",
                           isTransient: true,
                           updater: extractMetadatum});
 

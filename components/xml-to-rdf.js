@@ -12,7 +12,9 @@ var createLm = require('../src/create-lm');
 var createState = require('../src/create-state');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper({isTransient: true,
+module.exports = wrapper({description: "Converts FHIR XML data to FHIR RDF",
+                          icon: 'exchange',
+                          isTransient: true,
                           updater: xmlToRdf});
 
 /**

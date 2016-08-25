@@ -13,6 +13,7 @@ var componentFactory = require('../src/noflo-component-factory');
  */
 module.exports = componentFactory({
     description: "Takes the value of the get pointer for some input and sets that value on the input at the set pointer. If there is not set pointer provided, this will return the get pointer value, otherwise it will return the input object.",
+    icon: 'location-arrow',
     outPorts: promiseOutput.outPorts,
     inPorts: {
         get: {

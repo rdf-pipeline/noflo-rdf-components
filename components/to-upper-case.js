@@ -3,7 +3,9 @@ var _ = require('underscore');
 
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper(toUpperCase);
+module.exports = wrapper({description: "Converts a string to upper case",
+                          icon: 'arrow-up',
+                          updater: toUpperCase});
 
 function toUpperCase(string) {
 
