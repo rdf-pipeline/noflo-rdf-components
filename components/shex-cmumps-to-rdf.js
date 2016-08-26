@@ -82,7 +82,7 @@ function preprocess(data) {
 
 
     var cmumpss_prefix = this.inputStates('cmumpss_prefix') || {data: 'cmumpss'};
-    graphContext["@context"][cmumpss_prefix] = CMUMPS_NS;
+    graphContext["@context"][cmumpss_prefix.data] = CMUMPS_NS;
     parsedData["@context"] = graphContext["@context"];
     parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
         // Filter to known types for cleaned.jsonld, 2.1 w, 4.2 w/o
