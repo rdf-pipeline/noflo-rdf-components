@@ -6,7 +6,10 @@ var fs = require('fs');
 var logger = require('../src/logger.js');
 var wrapper = require('../src/split-wrapper.js');
 
-module.exports = wrapper(loader);
+module.exports = wrapper({description: "Reads a file, one line at a time, and sends each "+
+                                       "line number and its content to the next component",
+                          icon: 'upload',
+                          updater: loader});
 
 /** 
  * Reads a file with one record per line, and outputs a hash with the 

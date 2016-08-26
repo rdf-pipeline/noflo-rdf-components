@@ -7,7 +7,11 @@ var stateFactory = require('../src/create-state.js');
 var logger = require('../src/logger.js');
 var wrapper = require('../src/javascript-wrapper.js');
 
-module.exports = wrapper(funnel);
+module.exports = wrapper({description: "Builds a queue of input, and feeds each input, " +
+                                       "one at a time through the funnel, waiting for a " +
+                                       "completion signal before sending the next one.",
+                          icon: "filter",
+                          updater: funnel});
 
 /**
  * Funnels a single input into the pipeline one at a time, and queues the rest

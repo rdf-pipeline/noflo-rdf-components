@@ -3,7 +3,11 @@ var _ = require('underscore');
 
 var wrapper = require('../src/join-wrapper');
 
-module.exports = wrapper(updater);
+module.exports = wrapper({description: "Given a hash, waits until it receives input "+
+                                       "corresponding to each element in the hash before "+
+                                       "returning a result.",
+                          icon: 'list',
+                          updater: updater});
 
 /**
  * Simple join component updater.  This component can be used to make final changes to either 

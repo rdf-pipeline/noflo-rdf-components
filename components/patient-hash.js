@@ -13,7 +13,7 @@ var wrapper = require('../src/javascript-wrapper');
 module.exports = wrapper({description: "Given CMUMPS JSON patient data, builds a hash object of each "+
                                        "demographic, medication, procedure, and diagnosis, using the "+
                                        "resource ID as the key for each.",
-                          icon: 'share-alt',
+                          icon: 'share-alt-square',
                           updater: patientHash});
 
 /**
