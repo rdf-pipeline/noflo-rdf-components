@@ -170,8 +170,8 @@ function hashCode(id) {
 
 // @this vni context
 function sendIt(id) { 
-    var state = stateFactory(id, // use id as the new vnid
-                             id, // id is also the data payload 
+    var state = stateFactory('',     
+                             id, 
                              lm(),
                              undefined, // no error
                              undefined, // not stale

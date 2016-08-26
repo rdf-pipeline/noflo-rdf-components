@@ -76,7 +76,7 @@ describe('id-mapper', function() {
 
             }).then(function(done) {
 
-                done.vnid.should.equal('F-5');
+                done.vnid.should.equal('');
                 done.data.should.equal('F-5');
                 expect(done.error).to.be.undefined;
                 expect(done.stale).to.be.undefined;
@@ -110,7 +110,7 @@ describe('id-mapper', function() {
 
             }).then(function(done) {
 
-                done.vnid.should.equal('M-2');
+                done.vnid.should.equal('');
                 done.data.should.equal('M-2');
                 expect(done.error).to.be.undefined;
                 expect(done.stale).to.be.undefined;
@@ -144,7 +144,7 @@ describe('id-mapper', function() {
 
             }).then(function(done) {
 
-                done.vnid.should.equal('M-2');
+                done.vnid.should.equal('');
                 done.data.should.equal('M-2');
                 expect(done.error).to.be.undefined;
                 expect(done.stale).to.be.undefined;
@@ -173,7 +173,7 @@ describe('id-mapper', function() {
 
             }).then(function(done) {
 
-                done.vnid.should.equal('M-3');
+                done.vnid.should.equal('');
                 done.data.should.equal('M-3');
                 expect(done.error).to.be.undefined;
                 expect(done.stale).to.be.undefined;
@@ -205,7 +205,7 @@ describe('id-mapper', function() {
 
             }).then(function(done) {
 
-                done.vnid.should.equal('M-1');
+                done.vnid.should.equal('');
                 done.data.should.equal('M-1');
                 expect(done.error).to.be.undefined;
                 expect(done.stale).to.be.undefined;
@@ -262,7 +262,7 @@ describe('id-mapper', function() {
                     done.should.have.all.keys('vnid','data','lm','stale',
                                               'error', 'groupLm', 'componentName');
 
-                    done.vnid.should.equal('M-2');
+                    done.vnid.should.equal('');
                     done.data.should.equal('M-2');
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
