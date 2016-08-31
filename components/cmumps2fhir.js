@@ -101,9 +101,9 @@ function graphUri(translation) {
 
         // TODO: Replace the hard coded patientID with a metadata key
         if (_.isUndefined(state.patientId)) {
-            uri = 'urn:local:' + encodeURIComponent(translator) + ':' + resourceId;
+            uri = 'urn:local:fhir::' + encodeURIComponent(translator) + ':' + resourceId;
         } else {
-            uri = 'urn:local:' + state.patientId + ':' + encodeURIComponent(translator) + ':' + resourceId;
+            uri = 'urn:local:fhir:' + encodeURIComponent(state.patientId) + ':' + encodeURIComponent(translator) + ':' + resourceId;
         }
 
         return uri;

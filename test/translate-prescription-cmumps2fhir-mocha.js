@@ -131,7 +131,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.componentName.should.equal('rdf-components/translate-prescription-cmumps2fhir');
-                    done.graphUri.should.equal('urn:local:2-000007:rdf-components%2Ftranslate-prescription-cmumps2fhir:MedicationDispense:52-40863');
+                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-prescription-cmumps2fhir:MedicationDispense:52-40863');
 
                 }, function(fail) {
                     logger.warn.restore();

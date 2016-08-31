@@ -171,7 +171,7 @@ describe('cmumps2fhir', function() {
         results[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
                                        'status', 'dateReported', 'verified', 'provider');
 
-        vni.outputState().graphUri.should.equal('urn:local:PatientId-2468:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
+        vni.outputState().graphUri.should.equal('urn:local:fhir:PatientId-2468:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
 
     });
 
@@ -203,7 +203,7 @@ describe('cmumps2fhir', function() {
         results[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
                                        'status', 'dateReported', 'verified', 'provider');
 
-        vni.outputState().graphUri.should.equal('urn:local:PatientId-8642:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
+        vni.outputState().graphUri.should.equal('urn:local:fhir:PatientId-8642:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
     });
 
     it("should keep the same graph id for translator if it does not change", function() {
@@ -230,7 +230,7 @@ describe('cmumps2fhir', function() {
                                                                 code: 'D',
                                                                 display: 'D' }],
                                                     text: 'D' });
-        vni.outputState().graphUri.should.equal('urn:local:rdf%2Ftest-translator:Patient:2-000007');
+        vni.outputState().graphUri.should.equal('urn:local:fhir::rdf%2Ftest-translator:Patient:2-000007');
 
         // Now call it again with updated marital status
         var patientData = parsedData['@graph'][0];
@@ -245,7 +245,7 @@ describe('cmumps2fhir', function() {
                                                                 code: 'M',
                                                                 display: 'M' } ],
                                                       text: 'M' });
-        vni.outputState().graphUri.should.equal('urn:local:rdf%2Ftest-translator:Patient:2-000007');
+        vni.outputState().graphUri.should.equal('urn:local:fhir::rdf%2Ftest-translator:Patient:2-000007');
     });
 
     it("should update to the most recent translator metadata when generating a graphUri", function() {
@@ -270,7 +270,7 @@ describe('cmumps2fhir', function() {
         results.should.be.an('array');
         results[0].should.include.keys('resourceType', 'identifier', 'name', 'gender',
                                     'birthDate', 'address', 'maritalStatus');
-        vni.outputState().graphUri.should.equal('urn:local:rdf%2Fdemographics-translator:Patient:2-000007');
+        vni.outputState().graphUri.should.equal('urn:local:fhir::rdf%2Fdemographics-translator:Patient:2-000007');
 
         // Now we'll do procedure translation
         vni.nodeInstance = {"componentName": "rdf/procedure-translator"};
@@ -283,10 +283,8 @@ describe('cmumps2fhir', function() {
         results2.should.be.an('array');
         results2[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
                                         'status', 'dateReported', 'verified', 'provider');
-        vni.outputState().graphUri.should.equal('urn:local:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
+        vni.outputState().graphUri.should.equal('urn:local:fhir::rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
 
     });
 
 });
-
-

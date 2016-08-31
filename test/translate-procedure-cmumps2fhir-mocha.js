@@ -130,7 +130,7 @@ describe('translate-procedure-cmumps2fhir', function() {
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.componentName.should.equal('rdf-components/translate-procedure-cmumps2fhir');
-                    done.graphUri.should.equal('urn:local:2-000007:rdf-components%2Ftranslate-procedure-cmumps2fhir:Procedure:Procedure-1074046');
+                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-procedure-cmumps2fhir:Procedure:Procedure-1074046');
                 }, function(fail) {
                     logger.warn.restore();
                     console.error('fail: ',fail);
