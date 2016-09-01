@@ -115,7 +115,7 @@ describe('cmumps2fhir-demographics', function() {
                     expect(done.stale).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.componentName.should.equal('rdf-components/cmumps2fhir-demographics');
-                    done.graphUri.should.equal('urn:local:rdf-components%2Fcmumps2fhir-demographics:Patient:2-000007');
+                    done.graphUri.should.equal('urn:local:fhir::rdf-components%2Fcmumps2fhir-demographics:Patient:2-000007');
                 });
             });
        });
