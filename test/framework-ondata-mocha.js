@@ -17,6 +17,8 @@ var noflo = require('noflo');
 var createLm = require('../src/create-lm');
 var framework_ondata = require('../src/framework-ondata');
 var factory = require('../src/pipeline-component-factory');
+var jswrapper = require('../src/javascript-wrapper');
+var stateFactory = require('../src/create-state');
 var logger = require('../src/logger');
 var test = require('./common-test');
 
@@ -298,6 +300,166 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
             return sendDataAndVerify(node, 0);
         });
 
+        it("should fail gracefully when fRunUpdater throws an exception.", function() {
+
+            var inData = "A bit of input data";
+            var executedFRunUpdater = "fRunUpdater failed!!!";
+
+            // Define the fRunUpdater that framework should invoke
+            var fRunUpdater = function(vni) { 
+                throw new Error(executedFRunUpdater);
+            }
+
+            // Create a pipeline component and get the node instance for it
+            var wrapper = { fRunUpdater: fRunUpdater };
+            var node = test.createComponent(
+                factory({
+                          description: "Test Description",
+                          inPorts: {
+                              input: {
+                                  datatype: 'string',
+                                  description: "a string port",
+                                  required: true
+                              }
+                          }
+                        }, 
+                        wrapper)
+           );
+
+            // Send data to the input port and verify that the fRunUpdater function is called.
+            // We use a promise here because this section is asynchronous
+            return new Promise(function(done) { 
+    
+                test.onOutPortData(node, 'output', done);
+                sinon.stub(logger, 'error');
+                sinon.stub(console, 'error');
+                test.sendData(node, 'input', inData);
+
+            }).then(function(done) { 
+               // Should have sent an output state with error flag sent
+               console.error.restore();
+               logger.error.restore();
+               done.should.be.an('object'); 
+               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm', 'componentName');
+               done.error.should.be.true;
+               expect(done.stale).to.be.undefined;
+               expect(done.groupLm).to.be.undefined;
+               done.componentName.should.equal('');
+            });
+        });
+
+        it("should send error state when fRunUpdater fails.", function() {
+
+            var inData = "A bit of input data";
+            var executedFRunUpdater = "fRunUpdater failed!!!";
+
+            // Define the fRunUpdater that framework should invoke
+            var fRunUpdater = function(vni) { 
+                throw new Error(executedFRunUpdater);
+            }
+
+            // Create a pipeline component and get the node instance for it
+            var wrapper = { fRunUpdater: fRunUpdater };
+            var node = test.createComponent(
+                factory({
+                          description: "Test Description",
+                          inPorts: {
+                              input: {
+                                  datatype: 'string',
+                                  description: "a string port",
+                                  required: true
+                              }
+                          }
+                        }, 
+                        wrapper)
+           );
+
+            // Send data to the input port and verify that the fRunUpdater function is called.
+            // We use a promise here because this section is asynchronous
+            return new Promise(function(done, fail) { 
+    
+                test.onOutPortData(node, 'error', fail);
+
+                sinon.stub(logger, 'error');
+                test.sendData(node, 'input', inData);
+
+            }).then(function(done) { 
+               logger.error.restore();
+               assert.fail('This test hould not be listening for output state');
+      
+            }, function(fail) { 
+               // Not currently executed since we get the output port data before the error data
+               logger.error.restore();
+               fail.should.be.an('object'); 
+               fail.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm', 'componentName');
+               fail.data.toString().should.equal('Error: '+executedFRunUpdater);
+               expect(fail.error).to.be.undefined;
+               expect(fail.stale).to.be.undefined;
+               expect(fail.groupLm).to.be.undefined;
+               var lmComponents = fail.lm.match(/^LM(\d+)\.(\d+)$/);
+               lmComponents.should.have.length(3);
+            });
+        });
+
+        it("should catch exception when fRunUpdater post processing fails.", function() {
+
+            var inData = "A bit of input data";
+            var executedFRunUpdater = "fRunUpdater success!!!";
+    
+            // Define the fRunUpdater that framework should invoke
+            var fRunUpdater = function(vni) { 
+                // Make the output state undefined - this should cause the framework processing to fail
+                vni.outputState(undefined);
+            }
+
+            // Create a pipeline component and get the node instance for it
+            var wrapper = { fRunUpdater: fRunUpdater };
+            var node = test.createComponent(
+                factory({
+                          description: "Test Description",
+                          inPorts: {
+                              input: {
+                                  datatype: 'string',
+                                  description: "a string port",
+                                  required: true
+                              }
+                          }
+                        }, 
+                        wrapper)
+           );
+
+            return new Promise(function(done, fail) { 
+
+                test.onOutPortData(node, 'output', fail);
+                test.onOutPortData(node, 'error', fail);
+
+                var logBuffer = '';
+                sinon.stub(logger, 'error', function (message) {
+                    logBuffer += message;
+                }); 
+
+                test.sendData(node, 'input', inData);
+                setTimeout(function() { 
+                                if (-1 < logBuffer.indexOf("unable to process fRunUpdater results!")) {
+                                    done();
+                                }
+                            }, 
+                            1000);
+
+            }).then(function(done) { 
+               // Should go through here after the timeout
+               logger.error.restore();
+            }, function(fail) { 
+               logger.error.restore();
+               throw Error(fail);
+            });
+        });
+
+
+    });
+
+    describe("functional noflo network behavior", function() {
+
         it("should manage multiple port node vni state, fRunUpdater invocation, & output state", function() {
             this.timeout(2750);
             var input1 = 'Uno';
@@ -321,8 +483,8 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
             var wrapper = { fRunUpdater: fRunUpdater };
               
             return test.createNetwork({ node1: 'core/Repeat', // input node to test node 3
-                                         node2: 'core/Repeat', // input node to test node 3
-                                         node3: { 
+                                        node2: 'core/Repeat', // input node to test node 3
+                                        node3: { 
                                              getComponent: factory({ 
                                                  description: "Test Description",
                                                  inPorts: {
@@ -389,7 +551,7 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
             // Create a pipeline component and get the node instance for it
             var wrapper = { fRunUpdater: fRunUpdater };
             return test.createNetwork({ node1: 'core/Repeat', // input node to test node 3
-                                         node2: { 
+                                        node2: { 
                                              getComponent: factory({ 
                                                  description: "Test Description",
                                                  inPorts: {
@@ -559,125 +721,6 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
                    done.vnid.should.equal(''); 
                    done.data.should.equal(executedFRunUpdater);
                 });
-            });
-        });
-
-        it("should fail gracefully when fRunUpdater throws an exception.", function() {
-
-            var inData = "A bit of input data";
-            var executedFRunUpdater = "fRunUpdater failed!!!";
-
-            // Define the fRunUpdater that framework should invoke
-            var fRunUpdater = function(vni) { 
-                throw new Error(executedFRunUpdater);
-            }
-
-            // Create a pipeline component and get the node instance for it
-            var wrapper = { fRunUpdater: fRunUpdater };
-            var node = test.createComponent(
-                factory({
-                          description: "Test Description",
-                          inPorts: {
-                              input: {
-                                  datatype: 'string',
-                                  description: "a string port",
-                                  required: true
-                              }
-                          }
-                        }, 
-                        wrapper)
-           );
-
-            var logBuffer = '';
-            // Hide expected console error message from test output
-            sinon.stub(logger, 'error', function (message) {
-                 logBuffer += message;
-            }); 
-
-            // Send data to the input port and verify that the fRunUpdater function is called.
-            // We use a promise here because this section is asynchronous
-            return new Promise(function(done, fail) { 
-    
-                test.onOutPortData(node, 'output', done);
-                test.onOutPortData(node, 'error', fail);
-
-                test.sendData(node, 'input', inData);
-
-            }).then(function(done) { 
-               // Should have sent an output state with error flag sent
-               logger.error.restore();
-               done.should.be.an('object'); 
-               done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm', 'componentName');
-               done.error.should.be.true;
-               expect(done.stale).to.be.undefined;
-               expect(done.groupLm).to.be.undefined;
-               done.componentName.should.equal('');
-
-            }, function(fail) { 
-               // Not currently executed since we get the output port data before the error data
-               logger.error.restore();
-               fail.should.be.an('object'); 
-               fail.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm');
-               fail.data.toString().should.equal('Error: '+executedFRunUpdater);
-            });
-        });
-
-        it("should catch exception when fRunUpdater post processing fails.", function() {
-
-            var inData = "A bit of input data";
-            var executedFRunUpdater = "fRunUpdater success!!!";
-    
-            // Define the fRunUpdater that framework should invoke
-            var fRunUpdater = function(vni) { 
-                // Make the output state undefined - this should cause the framework processing to fail
-                vni.outputState(undefined);
-            }
-
-            // Create a pipeline component and get the node instance for it
-            var wrapper = { fRunUpdater: fRunUpdater };
-            var node = test.createComponent(
-                factory({
-                          description: "Test Description",
-                          inPorts: {
-                              input: {
-                                  datatype: 'string',
-                                  description: "a string port",
-                                  required: true
-                              }
-                          }
-                        }, 
-                        wrapper)
-           );
-
-            return new Promise(function(done, fail) { 
-
-                test.onOutPortData(node, 'output', fail);
-                test.onOutPortData(node, 'error', fail);
-
-                var logBuffer = '';
-                // Hide expected console error message from test output
-                sinon.stub(logger, 'error', function (message) {
-                    logBuffer += message;
-                }); 
-
-                sinon.stub(console,'error');
-
-                test.sendData(node, 'input', inData);
-                setTimeout(function() { 
-                                if (-1 < logBuffer.indexOf("unable to process fRunUpdater results!")) {
-                                    done();
-                                }
-                            }, 
-                            1000);
-
-            }).then(function(done) { 
-               // Should go through here after the timeout
-               logger.error.restore();
-               console.error.restore();
-            }, function(fail) { 
-               logger.error.restore();
-               console.error.restore();
-               throw Error(fail);
             });
         });
 
@@ -1103,6 +1146,72 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
                      vnids.should.have.length(5); // we should still have 5 other VNIs that were created
                  });
             });
+        });
+
+        it("should not call the updater if input is in error state", function(done) {
+
+            return test.createNetwork({testNode: jswrapper({updater: function(input) {
+                                               assert.fail('Updater should not be called!');
+                                      }})
+            }).then(function(network){
+ 
+                var testNode = network.processes.testNode.component;
+                sinon.stub(logger, 'debug', function (message) {
+                    if ( message === 'testNode is not ready for to run updater yet.') { 
+                        logger.debug.restore();
+                        done();
+                    }
+                }); 
+
+                var badState = stateFactory('', 
+                                            'tres mal', 
+                                            createLm(),  // lm
+                                            true);       // set error flag
+                test.sendData(testNode, 'input', badState);
+            });
+        });
+
+        it("should not change lm when output state changes to error state", function() {
+    
+            var goodJson = '{"One": "Thing1", "Two":"Thing2"}';
+            var badJson = '{ Cat: In the Hat}';
+
+            return test.createNetwork({
+                parseJson: 'rdf-components/parse-json'
+            }).then(function(network){
+
+                var parseJson = network.processes.parseJson.component;
+
+                return new Promise(function(first) {
+
+                    // Listen for results while we send some good json to the network
+                    test.onOutPortData(parseJson, 'output', first);
+
+                    sinon.stub(console, 'error');
+                    network.graph.addInitial(goodJson, 'parseJson', 'input');
+                }).then(function(first) {
+
+                    // Verify we got the expected good state
+                    var parsedJson = JSON.parse(goodJson);
+                    test.verifyState(first, '', parsedJson);
+
+                    // Now send some bad json
+                    return new Promise(function(second) {
+                        test.onOutPortData(parseJson, 'output', second);
+                        network.graph.addInitial(badJson, 'parseJson', 'input');
+
+                    }).then(function(second) {
+                        console.error.restore();
+
+                        // Verify we have the original data with the error flag set to true
+                        test.verifyState(second, '', parsedJson, true);
+
+                        // Verify the timestamp is unchanged
+                        second.lm.should.equal(first.lm);
+                    });
+                });
+            });
+ 
         });
     });
 });

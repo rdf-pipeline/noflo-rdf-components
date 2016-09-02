@@ -46,7 +46,7 @@ module.exports = function(payload, socketIndex) {
          // Get the old & new input state for port and the new payload
          var lastInputState = vni.inputStates(portName, socketIndex);
          var inputState = (_.isUndefined(payload.vnid)) ? 
-             createState(vnid, payload, undefined, undefined, undefined, undefined, nodeInstance.componentName) 
+             createState(vnid, payload, createLm(), undefined, undefined, undefined, nodeInstance.componentName) 
              : payload;
 
          // Check if it's stale and if so, hande setting output flag and sending it on downstream if appropriate
@@ -125,7 +125,7 @@ function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
                  // fRunUpdater/updater failed 
                  if (isInitState(vni.errorState)) { 
                      // fRunUpdater/updater has not already set an error state - use the rejected info
-                     changeStateData(vni.errorState, rejected);
+                     vni.errorState({data: rejected, lm: createLm()});
                  }
 
                  setOutputErrorFlag(vni, true); 
@@ -139,16 +139,10 @@ function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
                  // If we haven't already processed the rejected error, do it now
                  if ( rejected !== vni.errorState().data) { 
                      lastErrorState = _.clone(vni.errorState());   
-                     changeStateData(vni.errorState, rejected);
+                     vni.errorState({data: rejected, lm: createLm()});
                      if (stateChange(vni.errorState, lastErrorState, true )) { 
                          lastErrorState.lm = undefined; 
                      } 
-                     handleError(vni, outputPorts.error, lastErrorState);
-                 }
-
-                 if (rejected !== vni.errorState().data) { 
-                     lastErrorState = _.clone(vni.errorState());   
-                     changeStateData(vni.errorState, rejected);
                      handleError(vni, outputPorts.error, lastErrorState);
                  }
 
@@ -161,24 +155,15 @@ function runUpdater(nodeInstance, vni, isStale, payload, profiler) {
                  logger.error(err);
              }); 
          } // have an fRunUpdater
-     } // not ready for fRunUpdater yet
+     } else {
+        // not ready for fRunUpdater yet
+        logger.debug(nodeInstance.nodeName+' is not ready for to run updater yet.');
+     }
 };
 
 /*******************************************************************************/
 /* Error & Output State handling                                               */
 /*******************************************************************************/                 
-
-/**
- * change state data to the specified newData value
- *
- * @param stateFacade a getter/setterfunction for the current state
- */ 
-function changeStateData( stateFacade, newData ) { 
-    var currentState = stateFacade();
-    currentState.data = newData;
-    currentState.lm = createLm();
-    stateFacade( currentState );
-}
 
 /**
  * Clears the state data field by setting it to undefined.  

@@ -69,11 +69,15 @@ describe('split-wrapper', function() {
                     commonTest.sendData(node, 'vnid_hash', {"1":"one"});
 
                 }).then(function(done) {
+
                     done.should.be.an('object');
                     done.vnid.should.equal('1');
                     done.data.should.equal('one');
+                    expect(done.error).to.be.undefined;
+                    expect(done.stale).to.be.undefined;
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+
                 }, function(fail) {
                     assert.isNotOk(fail);
                 });
