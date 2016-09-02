@@ -124,6 +124,7 @@
       "translate-prescription-cmumps2fhir": "./components/translate-prescription-cmumps2fhir.js",
       "translate-procedure-cmumps2fhir": "./components/translate-procedure-cmumps2fhir.js",
       "xml-to-rdf": "./components/xml-to-rdf.js",
+      "write-content": "./components/write-content.js",
       "zip": "./components/zip.js"
     }
   }
