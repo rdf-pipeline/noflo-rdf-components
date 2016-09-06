@@ -1,6 +1,8 @@
 # ag-sparql-federate.fbp
 
 # Executes a SPARQL query against a dynamic federation of AllegroGraph repositories
+# Creates a federation of stores session using the AllegroGraph HTTP Protocol
+# See http://franz.com/agraph/support/documentation/current/http-protocol.html#post-session
 
 # Exports
 INPORT=createSession.URL:TARGET_URL
