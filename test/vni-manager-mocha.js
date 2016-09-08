@@ -10,6 +10,7 @@ var should = chai.should();
 var sinon = require('sinon');
 
 var componentFactory = require('../src/noflo-component-factory');
+var pipelineFactory = require('../src/pipeline-component-factory');
 
 var createState = require('../src/create-state');
 var inputStates = require('../src/input-states');
@@ -192,6 +193,135 @@ describe("vni-manager", function() {
             expect(testVni.parentVni).to.be.undefined;
             expect(testVni.errorState.previousLms).to.be.undefined;
             expect(testVni.outputState.previousLms).to.be.undefined;
+        });
+
+        describe("#clearTransientInputs", function() {
+
+            it("should clear packet input on a VNI", function(done) {
+
+                var présenter = "Puis-je me présenter";
+
+                return test.createNetwork(
+
+                    { inputNode: 'core/Repeat',
+                      leNode: 
+                         pipelineFactory({ 
+                             description: "Un p'tit node avec un edge",
+                             inPorts: {
+                                 input: {
+                                     datatype: 'string',
+                                     required: true
+                                 }
+                             }
+                          },
+                          {fRunUpdater: function(vni) {
+                               // verify we have the correct state on the VNI input port
+                               test.verifyState(vni.inputStates()['input'], '', présenter);
+
+                               // Clear the non-IIP port state(s), i.e., the input port state
+                               vni.clearTransientInputs();
+                               expect(vni.inputStates()['input']).to.be.undefined;
+
+                               done();
+                          }
+                         })
+
+                }).then(function(network) {
+
+                    var leNode = network.processes.leNode.component;
+                    network.graph.addEdge('inputNode', 'out', 'leNode', 'input');
+                    network.graph.addInitial(présenter, 'inputNode', 'in');
+
+                });
+            });
+
+            it("should not fail if socket is not initialized yet", function(done) {
+
+                var enchanté = "Enchanté de faire votre connaissance";
+
+                return test.createNetwork(
+
+                    { leNode: 
+                         pipelineFactory({ 
+                             description: "Un p'tit node sans l'edge",
+                             inPorts: {
+                                 input: {
+                                     datatype: 'string',
+                                     required: true
+                                 }
+                             }
+                          },
+                          {fRunUpdater: function(vni) {
+                               // verify we have the correct state on the VNI input port
+                               test.verifyState(vni.inputStates()['input'], '', enchanté);
+
+                               // Clear the non-IIP port state(s); since our only input port is an IIP,
+                               // this should does nothing - state should remain as is.
+                               vni.clearTransientInputs();
+                               test.verifyState(vni.inputStates()['input'], '', enchanté);
+
+                               done();
+                          }
+                         })
+
+                }).then(function(network) {
+
+                    var leNode = network.processes.leNode.component;
+                    network.graph.addInitial(enchanté, 'leNode', 'input');
+
+                });
+            });
+
+
+            it("should clear mixed IIP & packet input on a VNI", function(done) {
+
+                var présenter = "Puis-je me présenter";
+                var enchanté = "Enchanté de faire votre connaissance";
+
+                return test.createNetwork(
+
+                    { inputNode: 'core/Repeat',
+                      leNode: 
+                         pipelineFactory({ 
+                             description: "Un p'tit node avec un edge et un IIP",
+                             inPorts: {
+                                 input: {
+                                     datatype: 'string',
+                                     required: true,
+                                     multi: true
+                                 }
+                             }
+                          },
+                          {fRunUpdater: function(vni) {
+
+                               // verify we have the correct state on the VNI input port
+                               var inputStates = vni.inputStates()['input'];
+                               inputStates.should.be.an('array');
+                               inputStates.should.have.length(2);
+
+                               // Since we have both IIP and edge, we should clear both
+                               vni.clearTransientInputs();
+
+                               inputStates = vni.inputStates()['input'];
+                               inputStates.should.be.an('array');
+                               inputStates.should.have.length(2);
+                               expect(inputStates[0]).to.be.undefined;
+                               expect(inputStates[1]).to.be.undefined;
+              
+                               done();
+                           }
+                         })
+
+                }).then(function(network) {
+
+                    var leNode = network.processes.leNode.component;
+                    network.graph.addEdge('inputNode', 'out', 'leNode', 'input');
+
+                    network.graph.addInitial(enchanté, 'leNode', 'input'); // send IIP
+                    network.graph.addInitial(présenter, 'inputNode', 'in'); // feed inputNode which has edge to leNode
+
+                });
+            });
         });
 
         describe("#delete", function() {

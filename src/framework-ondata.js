@@ -308,7 +308,11 @@ function handleOutput(vni, port, lastLm, state ) {
             port.disconnect();
 
             if (nodeInstance.isTransient) { 
-                vni.delete();
+                if (vni.vnid === '') { 
+                    vni.clearTransientInputs();
+                } else {
+                    vni.delete();
+                }
             }
 
             return true;

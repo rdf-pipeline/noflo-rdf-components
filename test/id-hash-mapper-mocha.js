@@ -6,6 +6,8 @@ var assert = chai.assert;
 var expect = chai.expect;
 var should = chai.should();
 
+var sinon = require('sinon');
+
 var _ = require('underscore');
 var fs = require('fs');
 var os = require('os');
@@ -68,25 +70,8 @@ describe('id-mapper', function() {
             var node = test.createComponent(factory);
             process.env.mapFileEnvVar = __dirname + '/data/id-hash-map.json';
 
-            return new Promise(function(done, fail) {
-
-                test.onOutPortData(node, 'output', done);
-                var result = factory.updater.call(node.vni(''), '1', 'mapFileEnvVar');
-                expect(result).to.be.undefined;
-
-            }).then(function(done) {
-
-                done.vnid.should.equal('');
-                done.data.should.equal('F-5');
-                expect(done.error).to.be.undefined;
-                expect(done.stale).to.be.undefined;
-                done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-               
-            }, function(fail) {
-                console.log('fail: ',fail);
-                assert.fail(fail);
-            });
+            var result = factory.updater.call(node.vni(''), '1', 'mapFileEnvVar');
+            result.should.equal('F-5');
         });
 
         it("should map to a new id using a single json pointer and input to control the id pool", function() { 
@@ -100,27 +85,10 @@ describe('id-mapper', function() {
  
             var jsonPtr = '[ "/@graph/0/sex-2/label" ]';
 
-            return new Promise(function(done, fail) {
-
-                test.onOutPortData(node, 'output', done);
-                var result = factory.updater.call(node.vni(''), 
-                                                  '1', 'mapFileEnvVar',
-                                                  input, jsonPtr );
-                expect(result).to.be.undefined;
-
-            }).then(function(done) {
-
-                done.vnid.should.equal('');
-                done.data.should.equal('M-2');
-                expect(done.error).to.be.undefined;
-                expect(done.stale).to.be.undefined;
-                done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-               
-            }, function(fail) {
-                console.log('fail: ',fail);
-                assert.fail(fail);
-            });
+            var result = factory.updater.call(node.vni(''), 
+                                              '1', 'mapFileEnvVar',
+                                              input, jsonPtr );
+            result.should.equal('M-2');
         });
  
         it("should map to a new id using a multi-element array of json pointers and input to control the id pool", function() { 
@@ -134,27 +102,10 @@ describe('id-mapper', function() {
  
             var jsonPtrs = '[ "/@graph/0/sex-1/label",  "/@graph/0/sex-2/label", "/@graph/0/gender/label" ]';
 
-            return new Promise(function(done, fail) {
-
-                test.onOutPortData(node, 'output', done);
-                var result = factory.updater.call(node.vni(''), 
-                                                  '1', 'mapFileEnvVar',
-                                                  input, jsonPtrs );
-                expect(result).to.be.undefined;
-
-            }).then(function(done) {
-
-                done.vnid.should.equal('');
-                done.data.should.equal('M-2');
-                expect(done.error).to.be.undefined;
-                expect(done.stale).to.be.undefined;
-                done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-               
-            }, function(fail) {
-                console.log('fail: ',fail);
-                assert.fail(fail);
-            });
+            var result = factory.updater.call(node.vni(''), 
+                                              '1', 'mapFileEnvVar',
+                                              input, jsonPtrs );
+            result.should.equal('M-2');
         });
  
         it("should map to a new id if json pointer is present, though input is not", function() { 
@@ -163,27 +114,10 @@ describe('id-mapper', function() {
 
             var jsonPtrs = '[ "/@graph/0/sex-1/label",  "/@graph/0/sex-2/label", "/@graph/0/gender/label" ]';
 
-            return new Promise(function(done, fail) {
-
-                test.onOutPortData(node, 'output', done);
-                var result = factory.updater.call(node.vni(''), 
-                                                  'ID-4', 'mapFileEnvVar',
-                                                  undefined, jsonPtrs );
-                expect(result).to.be.undefined;
-
-            }).then(function(done) {
-
-                done.vnid.should.equal('');
-                done.data.should.equal('M-3');
-                expect(done.error).to.be.undefined;
-                expect(done.stale).to.be.undefined;
-                done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-               
-            }, function(fail) {
-                console.log('fail: ',fail);
-                assert.fail(fail);
-            });
+            var result = factory.updater.call(node.vni(''), 
+                                              'ID-4', 'mapFileEnvVar',
+                                               undefined, jsonPtrs );
+            result.should.equal('M-3');
         });
 
         it("should map to a new id even if input is present, but json pointer is empty", function() { 
@@ -195,35 +129,18 @@ describe('id-mapper', function() {
             var data = fs.readFileSync(testFile);
             var input = JSON.parse(data);
  
-            return new Promise(function(done, fail) {
-
-                test.onOutPortData(node, 'output', done);
-                var result = factory.updater.call(node.vni(''), 
-                                                  'PatientId-123', 'mapFileEnvVar',
-                                                  input, '' );
-                expect(result).to.be.undefined;
-
-            }).then(function(done) {
-
-                done.vnid.should.equal('');
-                done.data.should.equal('M-1');
-                expect(done.error).to.be.undefined;
-                expect(done.stale).to.be.undefined;
-                done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-               
-            }, function(fail) {
-                console.log('fail: ',fail);
-                assert.fail(fail);
-            }); 
+            var result = factory.updater.call(node.vni(''), 
+                                              'PatientId-123', 'mapFileEnvVar',
+                                              input, '' );
+            result.should.equal('M-1');
         });
- 
 
    });
 
    describe('functional behavior', function() {
-       this.timeout(2750);
-       it('should map ids using the hash in a noflo network', function() {
+       this.timeout(3000);
+
+       it('should map an id using the hash in a noflo network', function() {
            return test.createNetwork(
                 { readInputFile: 'filesystem/ReadFile',
                   parseJson: 'strings/ParseJson',
@@ -257,23 +174,61 @@ describe('id-mapper', function() {
 
                 }).then(function(done) {
 
-                    done.should.be.an('object');
-
-                    done.should.have.all.keys('vnid','data','lm','stale',
-                                              'error', 'groupLm', 'componentName');
-
-                    done.vnid.should.equal('');
-                    done.data.should.equal('M-2');
-                    expect(done.error).to.be.undefined;
-                    expect(done.stale).to.be.undefined;
-                    done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                    done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-
-                }, function(fail) {
-                    console.log('fail: ',fail);
-                    assert.fail(fail);
+                    test.verifyState(done, '', 'M-2');
                 });
            });
        }); 
+
+       it('should map multiple Ids in a noflo network', function() {
+           return test.createNetwork(
+                { readInputFile: 'filesystem/ReadFile',
+                  parseJson: 'strings/ParseJson',
+                  mapper: { getComponent: factory }
+            }).then(function(network) {
+
+                // True noflo component - not facade
+                var readInputFile = network.processes.readInputFile.component;
+                var parseJson = network.processes.parseJson.component;
+                var mapper = network.processes.mapper.component;
+
+                return new Promise(function(done, fail) {
+
+                    test.onOutPortData(mapper, 'output', done);
+
+                    process.env.mapFileEnvVar = __dirname + '/data/id-hash-map.json';
+
+                    network.graph.addEdge('readInputFile', 'out', 'parseJson', 'in');
+                    network.graph.addEdge('parseJson', 'out', 'mapper', 'input');
+
+                    var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+                    network.graph.addInitial(testFile, 'readInputFile', 'in'); 
+
+                    network.graph.addInitial('2-000007', 'mapper', 'id');
+                    network.graph.addInitial('[ "/@graph/0/sex-2/label" ]', 'mapper', 'json_pointers');
+
+                    network.graph.addInitial('mapFileEnvVar', 'mapper', 'mapfile_envvar');
+
+                }).then(function(done) {
+
+                    test.verifyState(done, '', 'M-3');
+
+                    return new Promise(function(done2, fail2) {
+
+                        // Now that we've processed one patient, try processing the next 
+                        test.onOutPortData(mapper, 'output', done2);
+                        network.graph.addInitial('2-000008', 'mapper', 'id');
+ 
+                        var testFile2 = __dirname + '/data/cmumps-patient8.jsonld';
+                        network.graph.addInitial(testFile2, 'readInputFile', 'in'); 
+
+                    }).then(function(done2) {
+
+                        test.verifyState(done, '', 'M-2');
+                    });
+
+                });
+           });
+       }); 
+
    });
 });
