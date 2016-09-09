@@ -1138,10 +1138,7 @@ describe("framework-ondata", function() {
                      // Verify VNI has been cleared
                      expect(nodeInstance).to.not.be.empty;
                      nodeInstance.vnis.should.be.an('object');
-
-                     var states = nodeInstance.vni('1').inputStates(); 
-                     states.should.have.all.keys('input');
-                     expect(states.input).to.be.undefined;
+                     Object.keys(nodeInstance.vnis).should.be.empty;
                  });
             });
         });
@@ -1204,14 +1201,15 @@ describe("framework-ondata", function() {
                      // Verify we got the correct state which drew from both IIP and non IIP state data
                      test.verifyState(done, '1', 'Salve! Come va? Addio!');
 
-                     // Now verify that the non IIP input state was cleared by the framework
+
+                     // Verify we have only the blank VNI now
+                     nodeInstance.vnis.should.have.all.keys('');
+
+                     // verify that the blank VNI is there and has the IIP state only
                      var defaultStates = nodeInstance.vni('').inputStates(); 
+                     defaultStates.should.have.all.keys('iip', 'input');
                      expect(defaultStates.input).to.be.undefined;
                      test.verifyState(defaultStates.iip, '', iipData);
-
-                     var vni1States = nodeInstance.vni('1').inputStates(); 
-                     expect(vni1States.input).to.be.undefined;
-                     test.verifyState(vni1States.iip, '', iipData);
 
                  }, function(fail) {
                      console.error(fail);

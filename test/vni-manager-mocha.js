@@ -19,7 +19,6 @@ var promiseOutput = require('../src/promise-output');
 var test = require('./common-test');
 
 var vniManager = require('../src/vni-manager');
-var componentName = 'enchanté';
 
 describe("vni-manager", function() {
 
@@ -199,14 +198,14 @@ describe("vni-manager", function() {
 
             it("should clear packet input on a VNI", function(done) {
 
-                var présenter = "Puis-je me présenter";
+                var introduction = "May I introduce myself?";
 
                 return test.createNetwork(
 
                     { inputNode: 'core/Repeat',
                       leNode: 
                          pipelineFactory({ 
-                             description: "Un p'tit node avec un edge",
+                             description: "A node with an edge",
                              inPorts: {
                                  input: {
                                      datatype: 'string',
@@ -216,7 +215,7 @@ describe("vni-manager", function() {
                           },
                           {fRunUpdater: function(vni) {
                                // verify we have the correct state on the VNI input port
-                               test.verifyState(vni.inputStates()['input'], '', présenter);
+                               test.verifyState(vni.inputStates()['input'], '', introduction);
 
                                // Clear the non-IIP port state(s), i.e., the input port state
                                vni.clearTransientInputs();
@@ -230,20 +229,20 @@ describe("vni-manager", function() {
 
                     var leNode = network.processes.leNode.component;
                     network.graph.addEdge('inputNode', 'out', 'leNode', 'input');
-                    network.graph.addInitial(présenter, 'inputNode', 'in');
+                    network.graph.addInitial(introduction, 'inputNode', 'in');
 
                 });
             });
 
             it("should not fail if socket is not initialized yet", function(done) {
 
-                var enchanté = "Enchanté de faire votre connaissance";
+                var pleasedToMeetYou = "Pleased to meet you";
 
                 return test.createNetwork(
 
                     { leNode: 
                          pipelineFactory({ 
-                             description: "Un p'tit node sans l'edge",
+                             description: "a node with no input edge",
                              inPorts: {
                                  input: {
                                      datatype: 'string',
@@ -253,12 +252,12 @@ describe("vni-manager", function() {
                           },
                           {fRunUpdater: function(vni) {
                                // verify we have the correct state on the VNI input port
-                               test.verifyState(vni.inputStates()['input'], '', enchanté);
+                               test.verifyState(vni.inputStates()['input'], '', pleasedToMeetYou);
 
                                // Clear the non-IIP port state(s); since our only input port is an IIP,
                                // this should does nothing - state should remain as is.
                                vni.clearTransientInputs();
-                               test.verifyState(vni.inputStates()['input'], '', enchanté);
+                               test.verifyState(vni.inputStates()['input'], '', pleasedToMeetYou);
 
                                done();
                           }
@@ -267,7 +266,7 @@ describe("vni-manager", function() {
                 }).then(function(network) {
 
                     var leNode = network.processes.leNode.component;
-                    network.graph.addInitial(enchanté, 'leNode', 'input');
+                    network.graph.addInitial(pleasedToMeetYou, 'leNode', 'input');
 
                 });
             });
@@ -275,15 +274,15 @@ describe("vni-manager", function() {
 
             it("should clear mixed IIP & packet input on a VNI", function(done) {
 
-                var présenter = "Puis-je me présenter";
-                var enchanté = "Enchanté de faire votre connaissance";
+                var introduction = "introduction";
+                var response = "Pleased to meet you";
 
                 return test.createNetwork(
 
                     { inputNode: 'core/Repeat',
                       leNode: 
                          pipelineFactory({ 
-                             description: "Un p'tit node avec un edge et un IIP",
+                             description: "node with an edge and IIP",
                              inPorts: {
                                  input: {
                                      datatype: 'string',
@@ -300,6 +299,7 @@ describe("vni-manager", function() {
                                inputStates.should.have.length(2);
 
                                // Since we have both IIP and edge, we should clear both
+                               // Note: We might want to change this policy in the future
                                vni.clearTransientInputs();
 
                                inputStates = vni.inputStates()['input'];
@@ -317,8 +317,8 @@ describe("vni-manager", function() {
                     var leNode = network.processes.leNode.component;
                     network.graph.addEdge('inputNode', 'out', 'leNode', 'input');
 
-                    network.graph.addInitial(enchanté, 'leNode', 'input'); // send IIP
-                    network.graph.addInitial(présenter, 'inputNode', 'in'); // feed inputNode which has edge to leNode
+                    network.graph.addInitial(response, 'leNode', 'input'); // send IIP
+                    network.graph.addInitial(introduction, 'inputNode', 'in'); // feed inputNode which has edge to leNode
 
                 });
             });
