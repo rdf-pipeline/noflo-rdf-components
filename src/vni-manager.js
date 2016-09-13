@@ -39,19 +39,19 @@ module.exports = function( node ) {
     _.extend( node, 
         {
 
-            /**
-             * Calls fn for each known vni in the system
-             *
-             * @this node instance
-             * @return node instance node for easy chaining
-             */
-            forEachVni: function(fn, thisArg) {
-                var vnids = _.keys(this.vnis);
-                for (var i=0,n=vnids.length; i<n; i++) {
-                    fn.call(thisArg, this.vni(vnids[i]), vnids[i], this);
-                }
-                return this;
-            },
+          /**
+           * Calls fn for each known vni in the system
+           *
+           * @this node instance
+           * @return node instance node for easy chaining
+           */
+          forEachVni: function(fn, thisArg) {
+              var vnids = _.keys(this.vnis);
+              for (var i=0,n=vnids.length; i<n; i++) {
+                  fn.call(thisArg, this.vni(vnids[i]), vnids[i], this);
+              }
+              return this;
+          },
 
           /**
            * Delete all vnis assiciated with the node instance.
@@ -122,6 +122,7 @@ module.exports = function( node ) {
               var that = this; // save current node context to reference in facade
               return {
                   vnid: vnid,
+                  clearTransientInputs: _.bind(clearTransientInputs, this, this.vnis[vnid]),
                   delete: _.bind( this.deleteVni, this, vnid ),
                   inputStates: _.partial( inputStates, this, vnid ), 
                   errorState: _.partial( errorState, this.vnis[vnid] ), 
@@ -136,10 +137,29 @@ module.exports = function( node ) {
 } // module export
 
 /**
+ * Clear non single IIP input states
+ * TODO: Revisit this to support multiple mixed connections of IIP and packet input
+ *
+ * @this node instance
+ *
+ * @return this node instance for easy chaining
+ */
+function clearTransientInputs(vni) {
+
+    var states = vni.inputStates;
+    var self=this;
+    _.forEach(self.inPorts, function(port) {
+        if (!port.isSingleIIP()) {
+            delete states[port.name];
+        }
+    });
+
+    return this;
+}
+
+/**
  * Get/Merge error state on the vni
  * 
- * @this vni context 
- *
  * @param vni vni whose state should be set or retrieved
  * @param state error state to be set
  *
@@ -169,8 +189,6 @@ function errorState( vni, state ) {
 
 /**
  * Get/Merge output state on the vni
- * 
- * @this vni context 
  * 
  * @param vni vni whose state should be set or retrieved
  * @param state output state to be set

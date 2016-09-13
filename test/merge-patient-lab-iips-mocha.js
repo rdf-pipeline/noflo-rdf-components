@@ -57,7 +57,8 @@ describe('merge-patient-lab-iips', function() {
             var vni = node.vni();
 
             expect(vni).to.be.an('object');
-            vni.should.have.all.keys('vnid', 'delete', 'errorState', 
+            vni.should.have.all.keys('vnid', 'clearTransientInputs',
+                                     'delete', 'errorState', 
                                       'inputStates', 'outputState', 'nodeInstance');
 
             vni.vnid.should.be.a('string');
