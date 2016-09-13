@@ -71,7 +71,7 @@ module.exports = function(nodeDef, wrapper, ondata) {
  * callback function invoked by the noflo component factory to allow us to initialize the
  * pipeline node instance with RDF pipeline specific data e.g., vni facade & wrapper.
  * 
- * @param node facade to be initialized
+ * @param facade node facade to be initialized
  */
 var pipelineNodeInit = function(wrapper, facade) { 
     vniManager(facade);
