@@ -125,7 +125,7 @@ describe('translate-diagnosis-cmumps2fhir', function() {
                     done.should.be.an('object');
                     done.should.include.keys('vnid','data','groupLm','lm','stale','error', 
                                              'componentName', 'graphUri');
-                    done.vnid.should.equal('cmumpss:Kg_Patient_Diagnosis-100417:100417-4559064');
+                    done.vnid.should.equal('cmumpss:Kg_Patient_Diagnosis-100417:2-000007:100417-4559064');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType','identifier','status','code',
                                                   'subject', 'category', 'conclusion',

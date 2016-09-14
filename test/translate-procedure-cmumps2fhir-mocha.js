@@ -120,7 +120,7 @@ describe('translate-procedure-cmumps2fhir', function() {
                     done.should.be.an('object');
 
                     done.should.include.keys('vnid','data','groupLm','lm','stale','error', 'componentName', 'graphUri');
-                    done.vnid.should.equal('Procedure:Procedure-1074046');
+                    done.vnid.should.equal('Procedure:2-000007:Procedure-1074046');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'subject', 'status',
                                                      'category', 'code', 'performedDateTime', 'encounter');
