@@ -102,51 +102,52 @@ describe("patient-hash", function() {
 
 	    hash.should.be.an('object');
 
-            var demographicsId = demographicsType+':'+patientId;
-            var shexId = 'PatientRecord:'+patientId;
-            hash.should.have.keys(demographicsId, shexId);
+            var demographicsId = demographicsType+':'+patientId+':'+patientId;
+            hash.should.have.keys(demographicsId);
 
             hash[demographicsId].should.be.an('object');
             hash[demographicsId].should.have.keys('data', 'translateBy');
             hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-cmumps2fhir');
             hash[demographicsId].data.should.deep.equal(demographics);
 
-	    hash[shexId].should.be.an('object');
-	    hash[shexId].should.have.keys('data', 'translateBy');
-	    hash[shexId].data.should.deep.equal(testdata);
-	    hash[shexId].translateBy.should.equal('rdf-components/shex-cmumps-to-rdf');
-
             vni.outputState().patientId.should.equal(patientId);
         });
 
-        it("should generate a hash if given lab & demographics data", function() {
-
+        it("should generate a hash if given diagnosis & demographics data", function() {
             var demographicsType = "cmumpss:Patient-2";
             var patientId = "2-000007";
             var demographics = { "type": demographicsType,
                                  "_id": patientId  };
-            var demographicsId = demographicsType + ':' + patientId;
 
-            var labType = "cmumpss:Lab_Result-63";
-            var labId = "2-000007";
-            var lab = { "type": labType, 
-                        "_id": "63-000007",
-                        "label": "BUNNY,BUGS",
-                        "patient-63": {
-                            "id": "2-000007",
-                            "label": "BUNNY,BUGS"
-                        },
-                        "clinical_chemistry-63": [
-                            { "date_time_specimen_taken-63_04": {
-                                "type": "xsd:dateTime",
-                                "value": "1990-01-01T00:00:00"
-                            }}
-                        ]};
-            var labId = 'PatientRecord:' + labId;
+            var demographicsId = demographicsType + ':' + patientId + ':' + patientId;
+
+            var diagnosisType = "cmumpss:Kg_Patient_Diagnosis-100417";
+            var diagnosisId = "100417-4559064";
+            var diagnosis = {
+                "_id": "100417-4559064",
+                "type": "cmumpss:Kg_Patient_Diagnosis-100417",
+                "label": "27642;OTHER EXAMINATION DEFINED POPULATION",
+                "problem-100417": "27642;OTHER EXAMINATION DEFINED POPULATION",
+                "patient-100417": {
+                    "id": "2-000007",
+                    "label": "BUNNY,BUGS"
+                },
+                "status-100417": "Active",
+                "location-100417": {
+                    "id": "44-154",
+                    "label": "OPTOMETRY ANY HEALTH CLINIC"
+                },
+                "date_of_onset-100417": {
+                    "value": "1990-01-01",
+                    "type": "xsd:date"
+                },
+                "diagnosis-100417": "V70.5 H"
+            };
+            diagnosisId = diagnosisType + ':' + patientId + ':' + diagnosisId;
 
             var testdata = 
                 { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
-                  "@graph": [ demographics, lab ]}; 
+                  "@graph": [ demographics,  diagnosis ]}; 
 
             // Invoke component updater
             var node = test.createComponent(factory);
@@ -155,18 +156,18 @@ describe("patient-hash", function() {
             var hash = factory.updater.call(vni, testdata);
             logger.warn.restore();
 
-	    hash.should.be.an('object');
-            hash.should.have.all.keys( demographicsId, labId);
+            Object.keys(hash).should.have.length(2); 
+            hash.should.have.all.keys( demographicsId, diagnosisId);
 
             hash[demographicsId].should.be.an('object');
             hash[demographicsId].should.have.keys('data', 'translateBy');
             hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-cmumps2fhir');
             hash[demographicsId].data.should.deep.equal(demographics);
             
-	    hash[labId].should.be.an('object');
-	    hash[labId].should.have.keys('data', 'translateBy');
-	    hash[labId].data.should.deep.equal(testdata);
-	    hash[labId].translateBy.should.equal('rdf-components/shex-cmumps-to-rdf');
+            hash[diagnosisId].should.be.an('object');
+            hash[diagnosisId].should.have.keys('data', 'translateBy');
+            hash[diagnosisId].translateBy.should.equal('rdf-components/translate-diagnosis-cmumps2fhir');
+            hash[diagnosisId].data.should.deep.equal(diagnosis);
 
             vni.outputState().patientId.should.equal(patientId);
         });
@@ -177,8 +178,7 @@ describe("patient-hash", function() {
             var demographics = { "type": demographicsType,
                                  "_id": patientId  };
 
-            var demographicsId = demographicsType + ':' + patientId;
-            var shexId = 'PatientRecord:'+patientId;
+            var demographicsId = demographicsType + ':' + patientId + ':' + patientId;
 
             var prescriptionType = "cmumpss:Prescription-52";
             var prescriptionId = "52-7810414";
@@ -198,7 +198,7 @@ describe("patient-hash", function() {
                                  'refills-52': '0',
                                  'logged_by-52': { id: '3-11111', label: 'DUCK,DONALD' }
                                };
-            var prescriptionId = prescriptionType + ':' + prescriptionId;
+            prescriptionId = prescriptionType + ':' + patientId + ':' + prescriptionId;
 
             var testdata = 
                 { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
@@ -211,8 +211,8 @@ describe("patient-hash", function() {
             var hash = factory.updater.call(vni, testdata);
             logger.warn.restore();
 
-            Object.keys(hash).should.have.length(3); // will have demographics, prescription & lab (for shex)
-            hash.should.have.all.keys( demographicsId, prescriptionId, shexId);
+            Object.keys(hash).should.have.length(2); // will have demographics, prescription 
+            hash.should.have.all.keys( demographicsId, prescriptionId);
 
             hash[demographicsId].should.be.an('object');
             hash[demographicsId].should.have.keys('data', 'translateBy');
@@ -233,8 +233,7 @@ describe("patient-hash", function() {
             var demographics = { "type": demographicsType,
                                  "_id": patientId  };
 
-            var demographicsId = demographicsType + ':' + patientId;
-            var shexId = 'PatientRecord:'+patientId;
+            var demographicsId = demographicsType + ':' + patientId + ':' + patientId;
 
             var procedureId = "Procedure-1074046";
             var procedureType = 'Procedure';
@@ -251,7 +250,7 @@ describe("patient-hash", function() {
                 verified: true,
                 provider: { id: 'Provider-41200034', label: 'MOUSE, MICKEY' } 
             };
-            var procedureId = procedureType+':'+procedureId;
+            procedureId = procedureType+':' + patientId + ':' + procedureId;
 
             var testdata = 
                 { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
@@ -264,7 +263,7 @@ describe("patient-hash", function() {
             var hash = factory.updater.call(vni, testdata);
             logger.warn.restore();
 
-            hash.should.have.all.keys( demographicsId, shexId, procedureId);
+            hash.should.have.all.keys( demographicsId, procedureId);
 
             hash[procedureId].should.be.an('object');
             hash[procedureId].should.have.keys('data', 'translateBy');
@@ -285,8 +284,7 @@ describe("patient-hash", function() {
                                  "zip_code-2": "60040",
                                  "state-2": "NY/USA",
                                  "label": "BUNNY,BUGS" };
-            var demographicsId = demographicsType+':'+patientId;
-            var shexId = 'PatientRecord:'+patientId;
+            var demographicsId = demographicsType+':' + patientId + ':' + patientId;
 
             var testdata = 
                 { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
@@ -294,7 +292,6 @@ describe("patient-hash", function() {
 
             var customTranslators = {
                 demographics: 'rdf-components/custom-demographics-translator',
-                labs: 'rdf-components/custom-labs-translator',
                 prescription: 'rdf-components/custom-prescription-translator',
                 procedure: 'rdf-components/custom-procedure-translator'}
 
@@ -308,17 +305,12 @@ describe("patient-hash", function() {
 
 	    hash.should.be.an('object');
 
-            hash.should.have.keys(demographicsId, shexId);
+            hash.should.have.keys(demographicsId);
 
             hash[demographicsId].should.be.an('object');
             hash[demographicsId].should.have.keys('data', 'translateBy');
             hash[demographicsId].translateBy.should.equal(customTranslators.demographics);
             hash[demographicsId].data.should.deep.equal(demographics);
-
-	    hash[shexId].should.be.an('object');
-	    hash[shexId].should.have.keys('data', 'translateBy');
-	    hash[shexId].translateBy.should.equal(customTranslators.labs);
-	    hash[shexId].data.should.deep.equal(testdata);
 
             vni.outputState().patientId.should.equal(patientId);
          });
@@ -350,22 +342,21 @@ describe("patient-hash", function() {
                     logger.warn.restore();
                     done.vnid.should.equal('');
                     done.data.should.be.an('object');
-                    done.data.should.have.keys('cmumpss:Patient-2:2-000007', 
-                                               'PatientRecord:2-000007',
-                                               'cmumpss:Kg_Patient_Diagnosis-100417:100417-4559064',
-                                               'cmumpss:Kg_Patient_Diagnosis-100417:100417-4562039',
-                                               'cmumpss:Kg_Patient_Diagnosis-100417:100417-4568875',
-                                               'cmumpss:Prescription-52:52-40863',
-                                               'cmumpss:Prescription-52:52-7810413',
-                                               'cmumpss:Prescription-52:52-7810414',
-                                               'Procedure:Procedure-1074046');
+                    done.data.should.have.keys('cmumpss:Patient-2:2-000007:2-000007', 
+                                               'cmumpss:Kg_Patient_Diagnosis-100417:2-000007:100417-4559064',
+                                               'cmumpss:Kg_Patient_Diagnosis-100417:2-000007:100417-4562039',
+                                               'cmumpss:Kg_Patient_Diagnosis-100417:2-000007:100417-4568875',
+                                               'cmumpss:Prescription-52:2-000007:52-40863',
+                                               'cmumpss:Prescription-52:2-000007:52-7810413',
+                                               'cmumpss:Prescription-52:2-000007:52-7810414',
+                                               'Procedure:2-000007:Procedure-1074046');
                     Object.keys(done.data).forEach( function(key) { 
                         done.data[key].should.have.keys('data', 'translateBy');
                     });
                     expect(done.error).to.be.undefined;
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
-                    done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3); 
+		    done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3); 
                     done.patientId.should.equal('2-000007'); // verify patient ID metadata is there
                 });
             });

@@ -32,8 +32,8 @@ module.exports = wrapper({description: "Given CMUMPS JSON patient data, builds a
  * @return the patient resource hash
  */
 function patientHash(patient_json, translator_components, metadata_key) {
-
     logger.debug('Enter', {nodeInstance: this.nodeInstance});
+
     if (_.isEmpty(patient_json)) throw Error('Patient hash component found no patient json!');
 
     if (_.isEmpty(metadata_key) || !_.isString(metadata_key)) {
@@ -47,23 +47,24 @@ function patientHash(patient_json, translator_components, metadata_key) {
     //  - either those specified or the default ones
     translators = translators || {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
                                   diagnosis: 'rdf-components/translate-diagnosis-cmumps2fhir',
-                                  labs: 'rdf-components/shex-cmumps-to-rdf',
                                   prescription: 'rdf-components/translate-prescription-cmumps2fhir',
                                   procedure: 'rdf-components/translate-procedure-cmumps2fhir'};
 
     if (_.difference(Object.keys(translators), ['demographics', 'diagnosis', 
-                                                'labs', 'prescription', 'procedure']).length > 0 ) {
+                                                'prescription', 'procedure']).length > 0 ) {
         throw Error("Unknown translation. Supported translators are: 'demographics', 'diagnosis', 'prescriptions', 'procedures'.");
     }
 
     var patient = _.isString(patient_json) ? JSON.parse(patient_json) : patient_json;
 
     var hash = {};
-    var addToHash = function(resources, translator) {
+    var addToHash = function(resources, translator, patientId) {
         if (!_.isEmpty(resources)) { 
             var resourceIds = [];
             var addResource = function(resource) { 
-                var id = resource.type + ':' + resource._id;
+
+                var id = resource.type + ':' + patientId + ':' + resource._id;
+
                 if (_.find(resourceIds, function(resourceId) { return id == resourceId })) {
                     logger.warn('found multiple resources for ',id);
                     return;
@@ -100,33 +101,19 @@ function patientHash(patient_json, translator_components, metadata_key) {
     _.each(translators, function(translator, type) { 
           switch(type) { 
               case 'demographics': {
-                  addToHash(patientDemographics, translator);
+                  addToHash(patientDemographics, translator, patientId);
                   break;
               }
               case 'diagnosis': {
-                  addToHash(extractor.extractDiagnoses(patient), translator);
-                  break;
-              }
-
-              case 'labs': {
-                  if ( _.isEmpty(patientDemographics)) { 
-                      logger.debug('No patient ID available for labs processing in this data set!');
-                      var id = 'PatientRecord:'+createLm();
-                      hash[id] = {data: patient, translateBy: translator};
-                  } else { 
-                      var id = 'PatientRecord:' + patientId;
-
-                      // Current shex translator expects entire patient record
-                      hash[id] = {data: patient, translateBy: translator};
-                  }
+                  addToHash(extractor.extractDiagnoses(patient), translator, patientId);
                   break;
               }
               case 'prescription': {
-                  addToHash(extractor.extractMedications(patient), translator);
+                  addToHash(extractor.extractMedications(patient), translator, patientId);
                   break;
               }
               case 'procedure': {
-                  addToHash(extractor.extractProcedures(patient), translator);
+                  addToHash(extractor.extractProcedures(patient), translator, patientId);
                   break;
               }
          }
