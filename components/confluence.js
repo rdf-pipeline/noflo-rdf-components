@@ -8,6 +8,7 @@ var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "Given a hash, waits until it receives input corresponding to each element in the hash before continuing.",
                           icon: 'th-list',
+                          transient: true,
                           updater: updater});
 
 /**
@@ -134,6 +135,9 @@ function updater(hash, input, metadata_key) {
        logger.info('\n******************************************************************\n'+
                    'EXIT CONFLUENCE WITH COMPLETE HASH FOR '+hashId+'!'+ 
                    '\n******************************************************************\n');
+       if (this.vnid === '')  {
+           this.clearTransientInputs();
+       }
        return 'Completed processing ' + hashId;
    }
 

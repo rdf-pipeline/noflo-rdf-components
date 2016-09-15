@@ -46,7 +46,9 @@ function facadePort(nodeInstance, port, portName) {
         send: port.send.bind(port),
         sendIt: sendIt.bind(port),
         disconnect: port.disconnect.bind(port)
-    } : {});
+    } : {
+        isSingleIIP: isSingleIIP.bind(port)
+    });
 }
 
 /**
@@ -68,4 +70,21 @@ function isOutPort(port) {
 function sendIt(data) { 
     this.send(data);
     this.disconnect();
+}
+
+/**
+ * returns true if the port has a single IIP input, false if not.
+ */
+function isSingleIIP() { 
+
+    // If no sockets, we are likely in the process of initialization.  
+    if (_.isUndefined(this.sockets)) return false;
+
+    // If one socket, there is only one input.  Is it an IIP?
+    if (this.sockets.length === 1) {
+        // If no from, then this is an IIP. 
+        return _.isUndefined(this.sockets[0].from);
+    }
+
+    return false;
 }
