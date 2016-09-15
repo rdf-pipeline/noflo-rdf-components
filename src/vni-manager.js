@@ -140,7 +140,12 @@ module.exports = function( node ) {
 
 /**
  * Clear input states that are NOT a single IIP state
- * TODO: Revisit this to support multiple mixed connections of IIP and packet input
+ * 
+ * NOTE: USE WITH CARE.  THIS API WILL NOT WORK CORRECTLY IF USED
+ *          - IN A PIPELINE WITH MULTIPLE PATIENTS PROCESSED IN PARALLEL
+ *          - IN A SUBGRAPH
+ *       IT NEEDS REVISITING TO SUPPORT MIXED IIP AND PACKET INPUTS
+ * REVISIT WHEN WE DO A PROPER SPLIT/JOIN IMPLEMENTATION!!!
  *
  * @this node instance
  *
