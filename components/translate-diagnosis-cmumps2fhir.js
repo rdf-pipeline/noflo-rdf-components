@@ -12,7 +12,6 @@ var wrapper = require('../src/translation-wrapper');
 module.exports = wrapper({description: "Translates a CMUMPS diagnosis into FHIR",
                           icon: 'language',
                           isTranslator: true,
-                          isTransient: true,
                           updater: translateDiagnosis});
 
 /**

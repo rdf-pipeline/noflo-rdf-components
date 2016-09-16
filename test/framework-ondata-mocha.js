@@ -17,9 +17,11 @@ var noflo = require('noflo');
 var createLm = require('../src/create-lm');
 var framework_ondata = require('../src/framework-ondata');
 var factory = require('../src/pipeline-component-factory');
+var logger = require('../src/logger');
 var jswrapper = require('../src/javascript-wrapper');
 var stateFactory = require('../src/create-state');
-var logger = require('../src/logger');
+var vniManager = require('../src/vni-manager');
+
 var test = require('./common-test');
 
 describe("framework-ondata", function() {
@@ -65,7 +67,7 @@ describe("framework-ondata", function() {
                 
             });
 
-should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updater.');
+            should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updater.');
         });
 
         it("should manage single port node vni state, fRunUpdater invocation, & output state", function() {
@@ -469,8 +471,9 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function(vni) { 
                 // Verify this is vni context
-                vni.should.have.all.keys(
-                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'nodeInstance');
+                vni.should.have.all.keys( 'vnid', 'clearTransientInputs', 
+                                          'delete', 'inputStates', 'errorState', 
+                                          'outputState', 'nodeInstance');
                 
                 test.verifyState(vni.inputStates('input1'), '', input1);
                 test.verifyState(vni.inputStates('input2'), '', input2);
@@ -535,9 +538,10 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
             // Define the fRunUpdater that framework should invoke
             var fRunUpdater = function(vni) { 
 
-                vni.should.have.all.keys(
-                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'nodeInstance');
-                
+                vni.should.have.all.keys( 'vnid', 'clearTransientInputs', 
+                                          'delete', 'inputStates', 'errorState', 
+                                          'outputState', 'nodeInstance');
+
                 test.verifyState(vni.inputStates('reqport'), '', requiredPortData);
 
                 // Verify we got no state on the optional port
@@ -666,8 +670,9 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
             var fRunUpdater = function(vni) { 
 
                 // Verify this is vni context
-                vni.should.have.all.keys(
-                    'vnid', 'delete', 'inputStates', 'errorState', 'outputState', 'nodeInstance');
+                vni.should.have.all.keys( 'vnid', 'clearTransientInputs', 
+                                          'delete', 'inputStates', 'errorState', 
+                                          'outputState', 'nodeInstance');
                 
                 // Get the input states
                 var states = vni.inputStates('input');
@@ -995,17 +1000,26 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
 
         it("should NOT clear non-transient node VNI after sending output state downstream", function() {
             var nodeInstance;
-            var testData = "Buongiorno!";
+            var initData = "Buongiorno!";
+            var testData = "Fino alla prossima volta";
             return test.createNetwork({
                 testNode: {getComponent: factory({
                                                    inPorts: {input: {}}, 
                                                    outPorts: {output: {}},
-                                                   isTransient: false 
+                                                   transient: false 
                                                  },
                                                  {fRunUpdater: function(vni,input) { 
+
+                                                      // verify we have the default VNI with expected state
                                                       nodeInstance = vni.nodeInstance;
-                                                      vni.outputState({data: testData, 
+                                                      nodeInstance.vnis.should.have.all.keys(''); 
+                                                      test.verifyState(nodeInstance.vni('').inputStates()['input'], 
+                                                                       '', initData);
+
+                                                      // Set an output state
+                                                      vni.outputState({data: initData + ' ' + testData, 
                                                                        lm: createLm()}); 
+                                                      return initData + ' ' + testData;
                                                  }}
                 )} 
             }).then(function(network){
@@ -1017,26 +1031,27 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
 		     test.onOutPortData(testNode, 'output', done);
 		     test.onOutPortData(testNode, 'error', fail);
 
-                     network.graph.addInitial("init data", 'testNode', 'input');
+                     network.graph.addInitial(initData, 'testNode', 'input');
                  }).then(function(done) {
-                     test.verifyState(done, '', testData);
+                     test.verifyState(done, '', "Buongiorno! Fino alla prossima volta");
 
-                     // Verify VNI has been cleared
+                     // Verify VNI has not been cleared
                      expect(nodeInstance).to.not.be.empty;
                      nodeInstance.vnis.should.be.an('object');
-                     nodeInstance.vnis.should.not.be.empty;
+                     nodeInstance.vnis.should.have.all.keys(''); // should have default VNI
                  });
             });
         });
 
-        it("should clear transient node VNI after sending output state downstream", function() {
+        it("should not clear default VNI IIPs after sending output state downstream", function() {
             var nodeInstance;
+            var initData = "Buongiorno";
             var testData = "Ciao!";
             return test.createNetwork({
                 testNode: {getComponent: factory({
                                                    inPorts: {input: {}}, 
                                                    outPorts: {output: {}},
-                                                   isTransient: true
+                                                   transient: true
                                                  },
                                                  {fRunUpdater: function(vni,input) { 
                                                       nodeInstance = vni.nodeInstance;
@@ -1048,102 +1063,157 @@ should.be.rejectedWith('No wrapper fRunUpdater function found!  Cannot run updat
 
                  var testNode = network.processes.testNode.component;
 
-                 return new Promise(function(done, fail) {
+                 return new Promise(function(done) {
 
 		     test.onOutPortData(testNode, 'output', done);
-		     test.onOutPortData(testNode, 'error', fail);
 
-                     network.graph.addInitial("init data", 'testNode', 'input');
+                     network.graph.addInitial(initData, 'testNode', 'input');
                  }).then(function(done) {
                      test.verifyState(done, '', testData);
 
-                     // Verify VNI has been cleared
                      expect(nodeInstance).to.not.be.empty;
                      nodeInstance.vnis.should.be.an('object');
-                     nodeInstance.vnis.should.be.empty;
+                     nodeInstance.vnis.should.have.all.keys('');
+
+                     // Verify input IIP is still there
+                     var vni = nodeInstance.vni('');
+                     test.verifyState(vni.inputStates()['input'], '', initData);
                  });
             });
         });
 
         it("should clear transient node VNI after sending the output state without affecting downstream node state", function() {
             var nodeInstance;
-            var testData = "Arrivederci!";
+            var initData = "Buon pomeriggio!";
+            var downstreamData = "Arrivederci!";
             return test.createNetwork({
                 testNode: {getComponent: factory({
                                                    inPorts: {input: {}}, 
                                                    outPorts: {output: {}},
-                                                   isTransient: true
+                                                   transient: true
                                                  },
                                                  {fRunUpdater: function(vni,input) { 
-                                                      nodeInstance = vni.nodeInstance;
-                                                      vni.outputState({data: testData, 
+                                                      vni.outputState({vnid: '1',
+                                                                       data: input, 
                                                                        lm: createLm()}); 
                                                  }}
                 )},
-                downstreamNode: 'rdf-components/vni-data-output' 
-            }).then(function(network){
+                downstreamNode: {getComponent: factory({inPorts: {input: {}},
+                                                        outPorts: {output: {}},
+                                                        transient: true
+                                                       },
+                                                       {fRunUpdater: function(vni, args) { 
 
-                 var testNode = network.processes.testNode.component;
-                 var downstreamNode = network.processes.downstreamNode.component;
+                                                         nodeInstance = vni.nodeInstance;
+                                                         nodeInstance.vnis.should.be.an('object');
+                                                         nodeInstance.vnis.should.have.all.keys('1'); 
 
-                 return new Promise(function(done, fail) {
+                                                         var inputStates = vni.inputStates();
+                                                         inputStates.should.have.all.keys('input');
 
-                     network.graph.addEdge('testNode', 'output', 'downstreamNode', 'in');
+                                                         test.verifyState(inputStates.input, '1', initData);
 
-		     test.onOutPortData(downstreamNode, 'out', done);
-
-                     sinon.stub(console,'log');
-                     network.graph.addInitial("init data", 'testNode', 'input');
-
-                 }).then(function(done) {
-                     console.log.restore();
-                     done.should.equal(testData);
-
-                     // Verify VNI has been cleared
-                     expect(nodeInstance).to.not.be.empty;
-                     nodeInstance.vnis.should.be.an('object');
-                     nodeInstance.vnis.should.be.empty;
-                 });
-            });
-        });
-
-        it("should clear only the current VNI in a transient node with multiple VNIs", function() {
-            var nodeInstance;
-            var testData = "Addio!";
-            return test.createNetwork({
-                testNode: {getComponent: factory({
-                                                   inPorts: {input: {}}, 
-                                                   outPorts: {output: {}},
-                                                   isTransient: true
-                                                 },
-                                                 {fRunUpdater: function(vni,input) { 
-                                                      nodeInstance = vni.nodeInstance;
-                                                      // create 5 VNIs in addition to our default '' vni
-                                                      for (var i=1; i <= input; i++) {
-                                                          nodeInstance.vni(i);
-                                                      }
-                                                      vni.outputState({data: testData, 
-                                                                       lm: createLm()}); 
+                                                         vni.outputState({vnid:'1',
+                                                                          data: inputStates.input.data + 
+                                                                                ' ' + downstreamData,
+                                                                          lm: createLm()});    
                                                  }}
                 )}
             }).then(function(network){
 
                  var testNode = network.processes.testNode.component;
+                 var downstreamNode = network.processes.downstreamNode.component;
 
-                 return new Promise(function(done, fail) {
+                 return new Promise(function(done) {
 
-		     test.onOutPortData(testNode, 'output', done);
+                     network.graph.addEdge('testNode', 'output', 'downstreamNode', 'input');
 
-                     network.graph.addInitial(5, 'testNode', 'input');
+		     test.onOutPortData(downstreamNode, 'output', done);
+
+                     network.graph.addInitial(initData, 'testNode', 'input');
+
                  }).then(function(done) {
-                     test.verifyState(done, '', testData);
+                     test.verifyState(done, '1', 'Buon pomeriggio! Arrivederci!');
 
-                     // Verify default VNI has been cleared
+                     // Verify VNI has been cleared
                      expect(nodeInstance).to.not.be.empty;
                      nodeInstance.vnis.should.be.an('object');
-                     var vnids = Object.keys(nodeInstance.vnis);
-                     vnids.should.not.contain(''); // no default VNI
-                     vnids.should.have.length(5); // we should still have 5 other VNIs that were created
+                     Object.keys(nodeInstance.vnis).should.be.empty;
+                 });
+            });
+        });
+
+        it("should clear only the current VNI in a transient node with multiple VNIs", function() {
+
+            var initData = "Salve!";
+            var iipData = "Come va?";
+            var targetData = "Addio!";
+
+            var nodeInstance;
+
+            return test.createNetwork({
+                initNode: {getComponent: factory({inPorts: {input: {}}, 
+                                                    outPorts: {output: {}},
+                                                    transient: true
+                                                   },
+                                                   {fRunUpdater: function(vni, input) { 
+                                                       // Send output on vnid 1, not ''
+                                                       vni.outputState({vnid:'1',
+                                                                        data: input,  // Salve!
+                                                                        lm: createLm()});  
+                                                   }}
+                          )},
+                targetNode: {getComponent: factory({inPorts: {input: {},
+                                                                iip: {}}, 
+                                                      outPorts: {output: {}},
+                                                      transient: true
+                                                     },
+                                                     {fRunUpdater: function(vni, args) { 
+
+                                                         nodeInstance = vni.nodeInstance;
+                                                         nodeInstance.vnis.should.be.an('object');
+                                                         nodeInstance.vnis.should.have.all.keys('', '1'); 
+
+                                                         var inputStates = vni.inputStates();
+                                                         inputStates.should.have.all.keys('input', 'iip');
+
+                                                         test.verifyState(inputStates.input, '1', initData);
+                                                         test.verifyState(inputStates.iip, '', iipData);
+
+                                                         vni.outputState({vnid:'1',
+                                                                          data: inputStates.input.data + 
+                                                                                ' ' + inputStates.iip.data + 
+                                                                                ' ' + targetData,
+                                                                          lm: createLm()});    
+                                                 }}
+                )}
+            }).then(function(network){
+                 var targetNode = network.processes.targetNode.component;
+                 network.graph.addEdge('initNode', 'output', 'targetNode', 'input');
+
+                 return new Promise(function(done, fail) {
+                     test.onOutPortData(targetNode, 'output', done);
+
+                     network.graph.addInitial(iipData, 'targetNode', 'iip');
+                     network.graph.addInitial(initData, 'initNode', 'input');
+
+                 }).then(function(done) {
+                     // Verify we got the correct state which drew from both IIP and non IIP state data
+                     test.verifyState(done, '1', 'Salve! Come va? Addio!');
+
+
+                     // Verify we have only the blank VNI now
+                     nodeInstance.vnis.should.have.all.keys('');
+
+                     // verify that the blank VNI is there and has the IIP state only
+                     var defaultStates = nodeInstance.vni('').inputStates(); 
+                     defaultStates.should.have.all.keys('iip', 'input');
+                     expect(defaultStates.input).to.be.undefined;
+                     test.verifyState(defaultStates.iip, '', iipData);
+
+                 }, function(fail) {
+                     console.error(fail);
+                     throw Error(fail);
                  });
             });
         });

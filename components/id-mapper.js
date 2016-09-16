@@ -5,7 +5,6 @@ var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "Maps one ID into another, using the map; all ids must have an entry in the map.",
                           icon: 'arrows-h',
-                          isTransient: true,
                           updater: idMapper});
 
 

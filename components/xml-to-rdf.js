@@ -14,7 +14,6 @@ var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "Converts FHIR XML data to FHIR RDF",
                           icon: 'exchange',
-                          isTransient: true,
                           updater: xmlToRdf});
 
 /**

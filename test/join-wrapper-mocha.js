@@ -109,8 +109,9 @@ describe('join-wrapper', function() {
             it("should call updater with VNI context", function() {
                 var handler;
                 var updater = function(hash, input) {
-                   this.should.have.all.keys('vnid', 'delete', 'inputStates',
-                                              'errorState', 'outputState', 'nodeInstance');
+                   this.should.have.all.keys('vnid', 'clearTransientInputs',
+                                             'delete', 'inputStates',
+                                             'errorState', 'outputState', 'nodeInstance');
                    handler('success');
                 };
                 var node =

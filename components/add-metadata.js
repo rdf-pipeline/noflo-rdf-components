@@ -8,7 +8,6 @@ var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "Adorns a VNI with multiple metadata attributes.",
                           icon: "tags",
-                          isTransient: true,
                           updater: addMetadata});
 
 /**

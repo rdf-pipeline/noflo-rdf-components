@@ -13,7 +13,6 @@ module.exports = wrapper({description: "Maps one id into another, using a json p
                                        + "field in the json input to determine the mapped id; "+
                                        + "this map does not require one entry per id.",
                           icon: 'map',
-                          isTransient: true,
                           updater: updater});
 
 /**
@@ -83,8 +82,10 @@ function updater(id, mapfile_envvar, input, json_pointers) {
         var pool = node.idHashMap[hashKey];
         if (!_.isEmpty(pool)) {
             var index = hashCode(id) % pool.length;
-            sendIt.call(this, pool[index]);
-            return;
+            if (this.nodeInstance.transient && this.vnid === '')  {
+                this.clearTransientInputs();
+            }
+            return pool[index];
         }
     } 
 
@@ -100,8 +101,10 @@ function updater(id, mapfile_envvar, input, json_pointers) {
 
     var index = hashCode(id) % allIds.length;
 
-    sendIt.call(this, allIds[index]);
-    return;
+    if (this.nodeInstance.transient && this.vnid === '')  {
+        this.clearTransientInputs();
+    }
+    return allIds[index];
 }
 
 /**
@@ -166,16 +169,4 @@ function hashCode(id) {
     }
 
     return Math.abs(hash);
-}
-
-// @this vni context
-function sendIt(id) { 
-    var state = stateFactory('',     
-                             id, 
-                             lm(),
-                             undefined, // no error
-                             undefined, // not stale
-                             lm());
-    stateFactory.copyMetadata(this.outputState(), state);
-    this.nodeInstance.outPorts.output.sendIt(state);
 }

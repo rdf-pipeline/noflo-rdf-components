@@ -1,6 +1,7 @@
 // noflo-component-factory-mocha.js
 
 var chai = require('chai');
+var expect = chai.expect;
 var chaiAsPromised = require('chai-as-promised');
 chai.should();
 chai.use(chaiAsPromised);
@@ -211,6 +212,7 @@ describe('noflo-component-factory', function() {
             test.sendData(node, 'input', "isTranslator?");
         }).should.become("isTranslator? false");
     });
+
     it("should have isTranslator flag that can be set to true", function() {
         return new Promise(function(done){
             var node = test.createComponent(componentFactory({
@@ -223,36 +225,159 @@ describe('noflo-component-factory', function() {
                     }
                 }
             }));
+
             test.sendData(node, 'input', "isTranslator?");
         }).should.become("isTranslator? true");
     });
-    it("should have nodeInstance isTransient flag that defaults to false", function() {
+
+    it("should have nodeInstance transient flag that defaults to false", function() {
         return new Promise(function(done){
             var node = test.createComponent(componentFactory({
                 inPorts:{
                     input:{
                         ondata: function(payload) {
-                            done(payload + ' ' + this.nodeInstance.isTransient);
+                            done(payload + ' ' + this.nodeInstance.transient);
                         }
                     }
                 }
             }));
-            test.sendData(node, 'input', "isTransient?");
-        }).should.become("isTransient? false");
+
+            test.sendData(node, 'input', "transient?");
+        }).should.become("transient? false");
     });
-    it("should have isTransient flag that can be set to true", function() {
+
+    it("should have transient flag that can be set to true", function() {
         return new Promise(function(done){
             var node = test.createComponent(componentFactory({
-                isTransient: true,
+                transient: true,
                 inPorts:{
                     input:{
                         ondata: function(payload) {
-                            done(payload + ' ' + this.nodeInstance.isTransient);
+                            done(payload + ' ' + this.nodeInstance.transient);
                         }
                     }
                 }
             }));
-            test.sendData(node, 'input', "isTransient?");
-        }).should.become("isTransient? true");
+
+            test.sendData(node, 'input', "transient?");
+        }).should.become("transient? true");
+    });
+
+    it("should have nodeInstance transient flag that defaults to false", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                transient: false,
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.transient);
+                        }
+                    }
+                }
+            }));
+
+            test.sendData(node, 'input', "transient?");
+        }).should.become("transient? false");
+    });
+
+    it("should set transient flag to global pipeline transient setting if no node flag exists", function() {
+        return new Promise(function(done){
+            process['nofloGraph'] = {properties: {
+                                         rdfPipeline: {transient: true} 
+                                     }
+            };
+
+            var node = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.transient);
+                        }
+                    }
+                }
+            }));
+
+            test.sendData(node, 'input', "transient?");
+        }).should.become("transient? true");
+    });
+
+    it("should override global pipeline transient setting with the node setting if both exist", function() {
+        return new Promise(function(done){
+            process['nofloGraph'] = {properties: {
+                                         rdfPipeline: {transient: false} 
+                                     }
+            };
+
+            var node = test.createComponent(componentFactory({
+                transient: true,
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            done(payload + ' ' + this.nodeInstance.transient);
+                        }
+                    }
+                }
+            }));
+
+            test.sendData(node, 'input', "transient?");
+        }).should.become("transient? true");
+    });
+    it("should have an isSingleIIP function that returns false if port is configured with an edge only", function() {
+        return test.createNetwork(
+            { inputNode: 'core/Repeat',
+              testNode: componentFactory({inPorts:{
+                            input:{
+                                ondata: function(payload) {
+                                    expect(this.isSingleIIP()).to.be.false;
+                                    done();
+                                }
+                            }
+                        }
+              })
+        }).then(function(network) {
+
+            network.graph.addEdge('inputNode', 'out', 'testNode', 'input');
+            network.graph.addInitial("I get no kick from champagne", 'inputNode', 'in');
+        });
+    });
+
+    it("should have isSingleIIP function that returns true if port is configured with an IIP only", function() {
+        return new Promise(function(done){
+            var node = test.createComponent(componentFactory({
+                inPorts:{
+                    input:{
+                        ondata: function(payload) {
+                            expect(this.isSingleIIP()).to.be.true;
+                            done();
+                        }
+                    }
+                }
+            }));
+
+	    test.sendData(node, 'input', "I get a kick out of you");
+        });
+    });
+
+    it("should have an isSingleIIP function that returns false if port is configured with an edge & IIP", function() {
+        var count = 0;
+        return test.createNetwork(
+            { inputNode: 'core/Repeat',
+              testNode: componentFactory({inPorts:{
+                            input:{
+                                ondata: function(payload) {
+                                    expect(this.isSingleIIP()).to.be.false;
+                                    if (++count == 2) {
+                                        done();
+                                    } 
+                                }
+                            }
+                        }
+              })
+        }).then(function(network) {
+
+            network.graph.addEdge('inputNode', 'out', 'testNode', 'input');
+            network.graph.addInitial("When I'm out on a quiet spree", 'testNode', 'input');
+            network.graph.addInitial("Fighting vainly the old ennui", 'inputNode', 'in');
+        });
     });
 });

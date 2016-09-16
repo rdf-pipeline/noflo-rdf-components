@@ -12,7 +12,6 @@ var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "Converts FHIR JSON data to FHIR XML",
                           icon: 'exchange',
-                          isTransient: true,
                           updater: fhirJsonToXmlFile});
 
 

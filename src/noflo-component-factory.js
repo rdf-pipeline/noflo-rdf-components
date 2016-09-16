@@ -40,7 +40,7 @@ module.exports = function(nodeDef, callback){
         triggerPortDataEvents(node.outPorts);
         var facade = access(node);
         facade.isTranslator = _.isUndefined(nodeDef.isTranslator) ? false : nodeDef.isTranslator;
-        facade.isTransient = _.isUndefined(nodeDef.isTransient) ? false : nodeDef.isTransient;
+        facade.transient = isTransient(nodeDef); 
         registerPorts(node.outPorts, facade.outPorts, nodeDef.outPorts);
         registerPorts(node.inPorts, facade.inPorts, nodeDef.inPorts);
         registerListeners(node, facade, nodeDef);
@@ -56,6 +56,46 @@ module.exports = function(nodeDef, callback){
         return node;
     };
 };
+
+
+/**
+ * Get the global pipeline configuration if one exists.  If no configuration exists, return
+ * an empty object.
+ */
+function pipelineProperties() { 
+    
+    // do we have access to the pipeline graph?   This should be set as a global by the noflo server
+    if (!_.isUndefined(process.nofloGraph) && !_.isUndefined(process.nofloGraph.properties)) {
+
+        // return the list of RDF Pipeline global properties if any exist
+        return process.nofloGraph.properties.rdfPipeline || {};
+    }
+ 
+    return {};
+}
+
+/**
+ * Checks the global graph properties and the node definition to determine if the node should
+ * be transient or not.
+ *
+ * @param nodeDef 
+ * @return true if the node should be transient, false if not.
+ */
+function isTransient(nodeDef) { 
+
+    // Does the node definition have a transient flag on it?  If so, use it.
+    if (!_.isUndefined(nodeDef.transient)) {
+        return nodeDef.transient; 
+    }
+
+    var properties = pipelineProperties();
+    if (!_.isUndefined(properties.transient)) {
+        return properties.transient;
+    }
+
+    // No transient flag found - default to false
+    return false;
+}
 
 /**
  * Changes the port definition to use the noflo addressable property.

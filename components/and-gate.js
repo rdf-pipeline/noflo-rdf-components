@@ -10,7 +10,6 @@ module.exports = wrapper({description: "waits for all connected edges to send in
                           inPorts:{
                               input:{multi: true}
                           },
-                          isTransient: true,
                           updater: andGate});
 
 /**
@@ -21,5 +20,8 @@ function andGate(input) {
     if (_.isEmpty(input)) return input;
 
     var result = _.unique(input);
+    if (this.nodeInstance.transient && this.vnid === '')  {
+        this.clearTransientInputs();
+    }
     return (result.length == 1) ? result[0] : result;
 }

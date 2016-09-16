@@ -6,7 +6,6 @@ var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "Similar to core/Repeat, forwards packets and metadata in the same way it receives them, but within an RDF VNI context.",
                           icon: 'forward',
-                          isTransient: true,
                           updater: repeatData});
 
 /** 
@@ -16,5 +15,8 @@ module.exports = wrapper({description: "Similar to core/Repeat, forwards packets
  * @param old_data original VNI data on component input
  */
 function repeatData(new_data, old_data) {
+    if (this.nodeInstance.transient && this.vnid === '')  {
+        this.clearTransientInputs();
+    }
     return new_data;
 }

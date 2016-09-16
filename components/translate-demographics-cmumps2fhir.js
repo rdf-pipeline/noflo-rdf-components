@@ -11,7 +11,6 @@ var wrapper = require('../src/translation-wrapper');
 module.exports = wrapper({description: "Translates a CMUMPS demographic record into FHIR",
                           icon: 'language',
                           isTranslator: true, 
-                          isTransient: true,
                           updater: translateDemographics});
 
 /** 
