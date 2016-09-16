@@ -3,6 +3,8 @@
  * Unit tests for the vni APIs defined in src/vni-manager.js
  */
 
+var _ = require('underscore');
+
 var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
@@ -10,15 +12,20 @@ var should = chai.should();
 var sinon = require('sinon');
 
 var componentFactory = require('../src/noflo-component-factory');
+var pipelineFactory = require('../src/pipeline-component-factory');
 
+var createLm = require('../src/create-lm');
 var createState = require('../src/create-state');
 var inputStates = require('../src/input-states');
+
+var profiler = require('../src/profiler');
+var vniManager = require('../src/vni-manager');
+
 var promiseOutput = require('../src/promise-output');
 
 var test = require('./common-test');
 
-var vniManager = require('../src/vni-manager');
-var componentName = 'enchanté';
+var componentName = 'enchanted';
 
 describe("vni-manager", function() {
 
@@ -477,6 +484,131 @@ describe("vni-manager", function() {
                 });
             });
         });
+
+        it("should increment & decrement the totalVnis and totalDefaultVnis counters on VNI creation and deletion", function() {
+
+            var nodeInstance;
+            var testData = "Creativity is intelligence having fun";
+            var vnisToCreate = 5;
+
+            return test.createNetwork({
+                node: {getComponent: pipelineFactory({
+                                         inPorts: {input: {}},
+                                         outPorts: {output: {}},
+                                     },
+                                     {fRunUpdater: function(vni,input) {
+                                          nodeInstance = vni.nodeInstance;
+                                          profiler.pipelineMetrics.totalDefaultVnis.should.equal(1);
+
+                                          // create 5 VNIs in addition to our default '' vni
+                                          for (var i=1; i <= input; i++) {
+                                               nodeInstance.vni(i);
+                                               profiler.pipelineMetrics.totalVnis.should.equal(i+1);
+                                          }
+
+                                          vni.outputState({data: testData,
+                                                           lm: createLm()});
+                                      }}
+                )}
+            }).then(function(network){
+
+                 var node = network.processes.node.component;
+
+                 return new Promise(function(done, fail) {
+
+                     test.onOutPortData(node, 'output', done);
+
+                     // Clear VNI counts that may have been set earlier in this test so we can get a good count
+                     _.map(profiler.pipelineMetrics,function(value, key) { 
+                         profiler.pipelineMetrics[key] = 0;
+                     });
+
+                     network.graph.addInitial(vnisToCreate, 'node', 'input');
+                 }).then(function(done) {
+                     test.verifyState(done, '', testData);
+
+                     // Verify default VNI has been cleared
+                     expect(nodeInstance).to.not.be.empty;
+                     nodeInstance.vnis.should.be.an('object');
+                     var vnids = Object.keys(nodeInstance.vnis);
+                     vnids.should.have.length(vnisToCreate+1); // default vnid plus the 5 new ones updater created
+
+                     profiler.pipelineMetrics.totalVnis.should.equal(vnids.length);
+                     profiler.pipelineMetrics.totalDefaultVnis.should.equal(1);
+
+                     // Now walk the list of VNIs deleting them and verifying that the counts decrement
+                     var vniCount = vnids.length;
+                     _.map(nodeInstance.vnis, function(value, key) { 
+                         nodeInstance.deleteVni(key); 
+                         profiler.pipelineMetrics.totalVnis.should.equal(--vniCount);
+                     });
+
+                 });
+            });
+        });
+
+        it("should decrement the totalVnis and totalDefaultVnis counters when all VNIs are deleted", function() {
+
+            var nodeInstance;
+            var testData = "The best road to progress is freedom's road.";
+            var vnisToCreate = 5;
+
+            return test.createNetwork({
+                node: {getComponent: pipelineFactory({
+                                         inPorts: {input: {}},
+                                         outPorts: {output: {}},
+                                     },
+                                     {fRunUpdater: function(vni,input) {
+                                          nodeInstance = vni.nodeInstance;
+                                          profiler.pipelineMetrics.totalDefaultVnis.should.equal(1);
+
+                                          // create 5 VNIs in addition to our default '' vni
+                                          for (var i=1; i <= input; i++) {
+                                               nodeInstance.vni(i);
+                                          }
+
+                                          profiler.pipelineMetrics.totalVnis.should.equal(input+1);
+                                          vni.outputState({data: testData,
+                                                           lm: createLm()});
+                                      }}
+                )}
+            }).then(function(network){
+
+                 var node = network.processes.node.component;
+
+                 return new Promise(function(done, fail) {
+
+                     test.onOutPortData(node, 'output', done);
+
+                     // Clear VNI counts that may have been set earlier in this test so we can get a good count
+                     _.map(profiler.pipelineMetrics,function(value, key) { 
+                         profiler.pipelineMetrics[key] = 0;
+                     });
+
+                     network.graph.addInitial(vnisToCreate, 'node', 'input');
+
+                 }).then(function(done) {
+                     test.verifyState(done, '', testData);
+
+                     // Verify default VNI has been cleared
+                     expect(nodeInstance).to.not.be.empty;
+                     nodeInstance.vnis.should.be.an('object');
+
+                     var vnids = Object.keys(nodeInstance.vnis);
+                     vnids.should.have.length(vnisToCreate+1); 
+
+                     profiler.pipelineMetrics.totalVnis.should.equal(vnids.length);
+                     profiler.pipelineMetrics.totalDefaultVnis.should.equal(1);
+
+                     nodeInstance.deleteAllVnis(); 
+
+                     profiler.pipelineMetrics.totalVnis.should.equal(0);
+                     profiler.pipelineMetrics.totalDefaultVnis.should.equal(0);
+                 });
+            });
+        });
+
+
     });
 
 });

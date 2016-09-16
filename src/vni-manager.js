@@ -4,6 +4,7 @@
 var _ = require('underscore');
 
 var inputStates = require('./input-states');
+var profiler = require('./profiler');
 var stateFactory = require('./create-state');
 
 var DEFAULT_VNID = '';
@@ -60,6 +61,10 @@ module.exports = function( node ) {
            * @return node instance node for easy chaining
            */ 
           deleteAllVnis: function() { 
+              // decrement the vni counts
+              profiler.pipelineMetrics.totalVnis -= _.keys(this.vnis).length;
+              if (!_.isUndefined(this.vnis[''])) profiler.pipelineMetrics.totalDefaultVnis--;
+
               // reassign vnis array to an empty array and let garbage collection clean up
               this.vnis = {};
               return this;
@@ -77,6 +82,8 @@ module.exports = function( node ) {
 
               if ( vnid in this.vnis ) {
                   delete this.vnis[vnid];
+                  profiler.pipelineMetrics.totalVnis--;
+                  if (vnid === '') profiler.pipelineMetrics.totalDefaultVnis--;
               } 
 
               return this;
@@ -119,6 +126,10 @@ module.exports = function( node ) {
 
 
                   // TODO: Add parentVni setting here
+
+                  // Update VNI metrics
+                  profiler.pipelineMetrics.totalVnis++;
+                  if (vnid === '') profiler.pipelineMetrics.totalDefaultVnis++;
               }
 
               var that = this; // save current node context to reference in facade
