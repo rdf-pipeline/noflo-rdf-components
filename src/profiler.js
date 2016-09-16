@@ -67,3 +67,10 @@ module.exports = function(node) {
          } // profiler
     }); // extend
 } // module export
+
+// The profiler metrics above are node specific.  Unlike the node metrics, these metrics
+// are global to the entire pipeline, including all nodes in the pipeline graph.
+module.exports.pipelineMetrics = {
+    totalDefaultVnis: 0,  
+    totalVnis: 0
+}
