@@ -5,6 +5,7 @@ var fs = require('fs');
 
 var stateFactory = require('../src/create-state.js');
 var logger = require('../src/logger.js');
+var profiler = require('../src/profiler.js');
 var wrapper = require('../src/javascript-wrapper.js');
 
 module.exports = wrapper({description: "Builds a queue of input, and feeds each input, " +
@@ -38,6 +39,8 @@ module.exports = wrapper({description: "Builds a queue of input, and feeds each 
 function funnel(input, metadata_key) {
 
     var node = this.nodeInstance;
+    var pipelineMetrics = profiler.pipelineMetrics;
+
     var metadataKey = _.isEmpty(metadata_key) ? 'funnelId' : metadata_key;
     if (!_.isString(metadataKey)) throw Error('Funnel requires a metadata key string!'); 
 
@@ -76,9 +79,11 @@ function funnel(input, metadata_key) {
            this.outputState({[metadataKey]: funnel.executing});
            console.log('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
-                       'funnel sending:', funnel.executing, 
+                       'funnel sending:' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids in the queue' +
-                       '\nfunnel queue:',funnel.queue,
+                       '\nfunnel queue:' + funnel.queue +
+                       '\n\nTotal VNIs: ' + pipelineMetrics.totalVnis +
+                       '\nDefault VNIs: ' + pipelineMetrics.totalDefaultVnis +
                        '\n********************************************************************\n');
            logger.info('Processing id:',funnel.executing);
            return funnel.executing;
@@ -89,6 +94,8 @@ function funnel(input, metadata_key) {
            logger.warn('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
                        'Nothing left in funnel.  Elapsed time: ' + elapsedTime +
+                       '\n\nTotal VNIs: ', pipelineMetrics.totalVnis, 
+                       '\nDefault VNIs: ', pipelineMetrics.totalDefaultVnis,
                        '\n********************************************************************\n');
         }
 
@@ -97,9 +104,11 @@ function funnel(input, metadata_key) {
            funnel.executing = funnelInput;
            console.log('\n********************************************************************\n'+
                        'Completed execution '+ funnel.executed +' ids\n' +
-                       'funnel sending:', funnel.executing, 
+                       'funnel sending:' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids remaining in the queue' +
-                       '\nfunnel queue:',funnel.queue,
+                       '\nfunnel queue:' + funnel.queue + 
+                       '\n\nTotal VNIs: ' + pipelineMetrics.totalVnis +
+                       '\nDefault VNIs: ' + pipelineMetrics.totalDefaultVnis +
                        '\n********************************************************************\n');
            logger.info('Processing id:',funnel.executing);
            stateFactory.clearMetadata(this.outputState());
