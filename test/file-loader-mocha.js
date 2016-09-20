@@ -69,13 +69,28 @@ describe('file-loader', function() {
            });
         });
 
-        it("should output a hash of file content", function() {
+        it("should send records on output port and return nothing", function() {
            var node = test.createComponent(factory);
            var testfile = __dirname+"/data/ids.txt";
            process.env.floadEnvVar = testfile;
+
+           var outPort = node.outPorts.output;
+           var numberOfSends = 0;
+           sinon.stub(outPort,'sendIt', function(state) {
+               numberOfSends++;
+               state.should.be.an('object');
+               state.vnid.should.equal(numberOfSends.toString());
+               state.data.should.equal(numberOfSends.toString());
+               expect(state.error).to.be.undefined;
+               expect(state.stale).to.be.undefined;
+               expect(state.groupLm).to.be.undefined;
+               state.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+           });
+
            var result = factory.updater.call(node.vni(''), 'floadEnvVar', 'UTF-8');
-           result.should.not.be.empty;
-           result.should.deep.equal({'1':'1', '2':'2', '3': '3'});
+           outPort.sendIt.restore();
+           expect(result).to.be.undefined;
+           numberOfSends.should.equal(3);
         });
 
     });
