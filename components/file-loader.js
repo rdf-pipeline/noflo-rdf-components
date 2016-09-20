@@ -3,8 +3,10 @@
 var _ = require('underscore');
 var fs = require('fs');
 
+var createLm = require('../src/create-lm.js');
+var createState = require('../src/create-state.js');
 var logger = require('../src/logger.js');
-var wrapper = require('../src/split-wrapper.js');
+var wrapper = require('../src/javascript-wrapper.js');
 
 module.exports = wrapper({description: "Reads a file, one line at a time, and sends each "+
                                        "line number and its content to the next component",
@@ -12,17 +14,10 @@ module.exports = wrapper({description: "Reads a file, one line at a time, and se
                           updater: loader});
 
 /** 
- * Reads a file with one record per line, and outputs a hash with the 
- * each line. For example, given a file with values 1, 2, 3, 4, this 
- * component would output a hash that reads {"1": "1", "2": "2", "3":"3", "4":"4"}.  
+ * Reads a file with one record per line, and sends it on to the next downstream node(s).
  *
- * This component uses the split-wrapper, so after the hash is returned, the
- * wrapper will split the hash into one VNI for each hash element.  Thus in the
- * example above, the first VNI packet will contain "1", and the second will       
- * contain "2"; the third time, "3", etc.
- *
- * This component is typically placed at the front of a pipeline to 
- * to feed the load-balancer. 
+ * This component is typically placed at the front of a pipeline to feed the load-balancer,
+ * throttle, or funnel. 
  * 
  * @this vni
  *
@@ -42,13 +37,12 @@ function loader(file_envvar, encoding) {
         return;
     }
 
-    // Build a hash with the correct number of elements
-    var hash = {};
-    for (var id=0, maxId=ids.length; id <= maxId; ++id) { 
-        if (!_.isEmpty(ids[id])) hash[id+1] = ids[id];
+    var outputPort = this.nodeInstance.outPorts.output;
+    for (var i=0, maxId=ids.length; i <= maxId; i++) { 
+        if (!_.isEmpty(ids[i])) {
+            outputPort.sendIt(createState((i+1).toString(), ids[i], createLm()));
+        }
     }
-
-    return hash; 
 }
 
 /** 
