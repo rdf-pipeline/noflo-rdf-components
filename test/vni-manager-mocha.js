@@ -20,6 +20,7 @@ var inputStates = require('../src/input-states');
 
 var profiler = require('../src/profiler');
 var vniManager = require('../src/vni-manager');
+var wrapperHelper = require('../src/wrapper-helper');
 
 var promiseOutput = require('../src/promise-output');
 
@@ -98,11 +99,11 @@ describe("vni-manager", function() {
             // Verify that node1 now has a length of one with 
             // the vni that has vnid 1
             testVni1.should.be.an('object');
-	    testVni1.vnid.should.exist;
+            testVni1.vnid.should.exist;
             testVni1.vnid.should.equal('1');
-	    testVni1.errorState.should.exist;
-	    testVni1.inputStates.should.exist;
-	    testVni1.outputState.should.exist;
+            testVni1.errorState.should.exist;
+            testVni1.inputStates.should.exist;
+            testVni1.outputState.should.exist;
             Object.keys(node1.vnis).should.have.length(1);
             node1.vnis.should.have.all.keys('1');
             
@@ -461,7 +462,6 @@ describe("vni-manager", function() {
                 return new Promise(function(done, fail) {
 
                     test.onOutPortData(omega, 'out', done);
-
                     network.graph.addEdge('rdfObject', 'output', 'omega', 'in');
 
                     sinon.stub(console,'log');
@@ -608,7 +608,286 @@ describe("vni-manager", function() {
             });
         });
 
+        describe("#clearTransientInputs", function() {
+
+            it("should not delete single IIP VNIs", function() {
+                var attributeName = 'MeadowFarm';
+                var attributeValue = 'Nelly';
+                var nodeVni;
+
+                return test.createNetwork({
+                    node: {getComponent: pipelineFactory({
+                                         inPorts: {key: {}, value: {}},
+                                         outPorts: {output: {}},
+                                     },
+                                     {fRunUpdater: function(vni) {
+                                         var updaterActuals = 
+                                             wrapperHelper.getUpdaterParameters(vni, ['key', 'value']);
+                                         var key = updaterActuals[0];
+                                         var value = updaterActuals[1];
+
+                                          // stash the VNI so we can look at it later
+                                          nodeVni = vni;
+ 
+                                          // Verify we have expected key/value states
+                                          var states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          test.verifyState(states.value, '', attributeValue);
+                                     
+                                          vni.clearTransientInputs();
+
+                                          // Verify we still have the same key/value states
+                                          states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          test.verifyState(states.value, '', attributeValue);
+
+                                          vni.outputState({data: { [key]: value},
+                                                           lm: createLm()});
+                                      }}
+                    )},
+                    omega: 'core/Output'
+
+               }).then(function(network) {
+                   var omega = network.processes.omega.component;
+                   network.graph.addEdge('node', 'output', 'omega', 'in');
+
+                   return new Promise(function(done, fail) {
+
+                       test.onOutPortData(omega, 'out', done);
+
+                       sinon.stub(console,'log');
+                       network.graph.addInitial(attributeName, 'node', 'key');
+                       network.graph.addInitial(attributeValue, 'node', 'value');
+
+                   }).then(function(done) {
+                       console.log.restore();
+                       test.verifyState(done, '', {[attributeName]: attributeValue});
+
+                       // Verify we still have the same input states on the VNI
+                       states = nodeVni.inputStates();
+                       test.verifyState(states.key, '', attributeName);
+                       test.verifyState(states.value, '', attributeValue);
+                
+                   }, function(fail) {
+                       console.error(fail);
+                       console.log.restore();
+                       throw Error(fail);
+                   });
+               });
+           });
+
+           it("should delete mixed IIP/packet VNIs", function() {
+                var attributeName = 'MeadowFarm';
+                var attributeValue = 'Brindle';
+                var nodeVni;
+
+                return test.createNetwork({
+                    repeater: 'core/Repeat',
+                    node: {getComponent: pipelineFactory({
+                                         inPorts: {key: {}, value: {}},
+                                         outPorts: {output: {}},
+                                     },
+                                     {fRunUpdater: function(vni) {
+                                         var updaterActuals = 
+                                             wrapperHelper.getUpdaterParameters(vni, ['key', 'value']);
+                                         var key = updaterActuals[0];
+                                         var value = updaterActuals[1];
+
+                                          // stash the VNI so we can look at it later
+                                          nodeVni = vni;
+ 
+                                          // Verify we have expected key/value states
+                                          var states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          test.verifyState(states.value, '', attributeValue);
+                                     
+                                          vni.clearTransientInputs();
+
+                                          // Verify we still have the same key, but value is cleared
+                                          states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          expect(states.value).to.be.undefined;
+
+                                          vni.outputState({data: { [key]: value},
+                                                           lm: createLm()});
+                                      }}
+                    )},
+                    omega: 'core/Output'
+
+               }).then(function(network) {
+                   var omega = network.processes.omega.component;
+
+                   // Set up an edge though we won't use it 
+                   network.graph.addEdge('repeater', 'out', 'node', 'value');
+
+                   network.graph.addEdge('node', 'output', 'omega', 'in');
+
+                   return new Promise(function(done, fail) {
+
+                       test.onOutPortData(omega, 'out', done);
+
+                       sinon.stub(console,'log');
+
+                       // Send IIP input to the node
+                       network.graph.addInitial(attributeName, 'node', 'key');
+                       network.graph.addInitial(attributeValue, 'node', 'value'); 
+
+                   }).then(function(done) {
+                       console.log.restore();
+                       test.verifyState(done, '', {[attributeName]: attributeValue});
+
+                       // Verify we still have the same key, but value is cleared
+                       states = nodeVni.inputStates();
+                       test.verifyState(states.key, '', attributeName);
+                       expect(states.value).to.be.undefined;
+                
+                   }, function(fail) {
+                       console.error(fail);
+                       console.log.restore();
+                       throw Error(fail);
+                   });
+               });
+           });
+
+           it("should delete single packet input VNI", function() {
+                var attributeName = 'MeadowFarm';
+                var attributeValue = 'Bessie';
+                var nodeVni;
+
+                return test.createNetwork({
+                    repeater: 'core/Repeat',
+                    node: {getComponent: pipelineFactory({
+                                         inPorts: {key: {}, value: {}},
+                                         outPorts: {output: {}},
+                                     },
+                                     {fRunUpdater: function(vni) {
+                                         var updaterActuals = 
+                                             wrapperHelper.getUpdaterParameters(vni, ['key', 'value']);
+                                         var key = updaterActuals[0];
+                                         var value = updaterActuals[1];
+
+                                          // stash the VNI so we can look at it later
+                                          nodeVni = vni;
+ 
+                                          // Verify we have expected key/value states
+                                          var states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          test.verifyState(states.value, '', attributeValue);
+                                     
+                                          vni.clearTransientInputs();
+
+                                          // Verify we still have the same key, but value is cleared
+                                          states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          expect(states.value).to.be.undefined;
+
+                                          vni.outputState({data: { [key]: value},
+                                                           lm: createLm()});
+                                      }}
+                    )},
+                    omega: 'core/Output'
+
+               }).then(function(network) {
+                   var omega = network.processes.omega.component;
+                   network.graph.addEdge('repeater', 'out', 'node', 'value');
+                   network.graph.addEdge('node', 'output', 'omega', 'in');
+
+                   return new Promise(function(done, fail) {
+
+                       test.onOutPortData(omega, 'out', done);
+
+                       sinon.stub(console,'log');
+                       network.graph.addInitial(attributeName, 'node', 'key');
+                       network.graph.addInitial(attributeValue, 'repeater', 'in');
+
+                   }).then(function(done) {
+                       console.log.restore();
+                       test.verifyState(done, '', {[attributeName]: attributeValue});
+
+                       // Verify we still have the same key, but value is cleared
+                       states = nodeVni.inputStates();
+                       test.verifyState(states.key, '', attributeName);
+                       expect(states.value).to.be.undefined;
+                
+                   }, function(fail) {
+                       console.error(fail);
+                       console.log.restore();
+                       throw Error(fail);
+                   });
+               });
+           });
+
+           it("should delete a multi packet input VNI", function() {
+                var attributeName = 'MeadowFarm';
+                var attributeValue1 = 'Jenny';
+                var attributeValue2 = 'Boss';
+                var nodeVni;
+
+                return test.createNetwork({
+                    repeater1: 'core/Repeat',
+                    repeater2: 'core/Repeat',
+                    node: {getComponent: pipelineFactory({
+                                         inPorts: {key: {}, value: {multi: true}},
+                                         outPorts: {output: {}},
+                                     },
+                                     {fRunUpdater: function(vni) {
+                                         var updaterActuals = 
+                                             wrapperHelper.getUpdaterParameters(vni, ['key', 'value']);
+                                         var key = updaterActuals[0];
+                                         var values = updaterActuals[1];
+
+                                          // stash the VNI so we can look at it later
+                                          nodeVni = vni;
+ 
+                                          // Verify we have expected key/value states
+                                          var states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          test.verifyState(states.value[0], '', attributeValue1);
+                                          test.verifyState(states.value[1], '', attributeValue2);
+
+                                          vni.clearTransientInputs();
+
+                                          // Verify that key is still there, but both values cleared
+                                          var states = vni.inputStates();
+                                          test.verifyState(states.key, '', attributeName);
+                                          expect(states.value[0]).to.be.undefined;
+                                          expect(states.value[1]).to.be.undefined;
+
+                                          vni.outputState({data: {[key]: values[0] + " & " + values[1]},
+                                                           lm: createLm()});
+                                      }}
+                    )},
+                    omega: 'core/Output'
+
+               }).then(function(network) {
+                   var omega = network.processes.omega.component;
+                   network.graph.addEdge('repeater1', 'out', 'node', 'value');
+                   network.graph.addEdge('repeater2', 'out', 'node', 'value');
+                   network.graph.addEdge('node', 'output', 'omega', 'in');
+
+                   return new Promise(function(done) {
+
+                       test.onOutPortData(omega, 'out', done);
+
+                       sinon.stub(console,'log');
+                       network.graph.addInitial(attributeName, 'node', 'key');
+                       network.graph.addInitial(attributeValue1, 'repeater1', 'in');
+                       network.graph.addInitial(attributeValue2, 'repeater2', 'in');
+
+                   }).then(function(done) {
+                       console.log.restore();
+                       test.verifyState(done, '', {[attributeName]: 'Jenny & Boss'});
+
+                       // Verify we still have the same key, but value is cleared
+                       states = nodeVni.inputStates();
+                       test.verifyState(states.key, '', attributeName);
+                       expect(states.value[0]).to.be.undefined;
+                       expect(states.value[1]).to.be.undefined;
+                   });
+               });
+
+           });
+        });
 
     });
-
 });

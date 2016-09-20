@@ -2,6 +2,7 @@
 
 var _ = require('underscore');
 
+var logger = require('../src/logger');
 var wrapper = require('../src/javascript-wrapper');
 
 module.exports = wrapper({description: "waits for all connected edges to send input, " +
@@ -20,8 +21,9 @@ function andGate(input) {
     if (_.isEmpty(input)) return input;
 
     var result = _.unique(input);
-    if (this.nodeInstance.transient && this.vnid === '')  {
-        this.clearTransientInputs();
-    }
+    this.clearTransientInputs();
+
+    logger.debug('And gate returning: ',result,
+                 ' with input states: ',this.inputStates());
     return (result.length == 1) ? result[0] : result;
 }
