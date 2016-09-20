@@ -165,10 +165,19 @@ module.exports = function( node ) {
 function clearTransientInputs(vni) {
 
     var states = vni.inputStates;
+
     var self=this;
     _.forEach(self.inPorts, function(port) {
-        if (!port.isSingleIIP()) {
-            delete states[port.name];
+
+        if (!_.isUndefined(states[port.name]) && !port.isSingleIIP()) {
+            var numPortStates = _.isArray(states[port.name]) ? states[port.name].length : 1;
+            if (numPortStates == 1) {
+                delete states[port.name];
+            } else if (numPortStates > 1) {
+                 for (var i=0; i < numPortStates; i++) {
+                     states[port.name][i] = undefined;
+                 }
+            }
         }
     });
 
