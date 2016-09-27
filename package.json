@@ -53,6 +53,7 @@
   },
   "noflo": {
     "graphs": {
+      "ag-sparql-federate": "./graphs/ag-sparql-federate.fbp",
       "cmumps-patient-jsonld": "./graphs/cmumps-patient-jsonld.fbp",
       "fhir-to-rdf": "./graphs/fhir-to-rdf.fbp",
       "fire-throttle": "./graphs/fire-throttle.fbp",
