@@ -3,6 +3,10 @@
 # Executes a SPARQL query against a dynamic federation of AllegroGraph repositories
 # Creates a federation of stores session using the AllegroGraph HTTP Protocol
 # See http://franz.com/agraph/support/documentation/current/http-protocol.html#post-session
+# This does three requests: create session, execute SPARQL, and close session.
+# The target URL is server that will execute the federated query
+# The target list file should have each URL target one its own line, one for each member of the cluster
+# The SPARQL_QUERY is a handlebar template that is populated with the INPUT object values
 
 # Exports
 INPORT=createSession.URL:TARGET_URL
