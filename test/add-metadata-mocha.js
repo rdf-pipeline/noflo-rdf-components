@@ -57,6 +57,7 @@ describe("add-metadata", function() {
     describe("functional behavior", function() {
 
         it("should add metadata in a noflo network", function() {
+	   this.timeout(3000);
            var testMetadata = {"Pei": "JFK Library", "Richardson": "Old Colony station", "Wright": "Falling Water"};
            var testData = {"Churchill": "We shape our buildings; thereafter they shape us."}; 
 
@@ -86,6 +87,7 @@ describe("add-metadata", function() {
                     network.graph.addInitial(JSON.stringify(testMetadata), 'metadata', 'input');
 
                 }).then(function(done) {
+console.log("SUCCESS\n");
                     console.log.restore();
                     done.should.be.an('object');
                     test.verifyState(done, '', testData);
@@ -94,6 +96,7 @@ describe("add-metadata", function() {
                         testMetadata[key].should.equal(done[key]);
                     });
                 }, function(fail) {
+console.log("FAILURE\n");
                     console.error(fail);
                     console.log.restore();
                     throw Error(fail);
