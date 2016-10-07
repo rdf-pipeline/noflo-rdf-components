@@ -87,7 +87,6 @@ describe("add-metadata", function() {
                     network.graph.addInitial(JSON.stringify(testMetadata), 'metadata', 'input');
 
                 }).then(function(done) {
-console.log("SUCCESS\n");
                     console.log.restore();
                     done.should.be.an('object');
                     test.verifyState(done, '', testData);
@@ -96,7 +95,6 @@ console.log("SUCCESS\n");
                         testMetadata[key].should.equal(done[key]);
                     });
                 }, function(fail) {
-console.log("FAILURE\n");
                     console.error(fail);
                     console.log.restore();
                     throw Error(fail);
