@@ -17,6 +17,7 @@ describe('repeat-data', function() {
     });
 
     it('should instantiate a noflo component', function() {
+	this.timeout(4000);
         var node = test.createComponent(factory);
         node.should.be.an('object');
         node.should.include.keys('nodeName', 'componentName', 'outPorts', 'inPorts', 'vni', 'vnis');

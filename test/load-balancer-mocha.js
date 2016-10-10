@@ -16,7 +16,7 @@ var test = require('./common-test');
 describe('load-balancer', function() {
     var port = 1337;
     it("should POST input to single target", function() {
-	this.timeout(3000);
+	this.timeout(4000);
         return new Promise(function(done, fail){
             var server = http.createServer();
             afterEach(_.once(server.close.bind(server)));
@@ -46,6 +46,7 @@ describe('load-balancer', function() {
         }).should.eventually.have.property('data', "Hello World!");
     });
     it("should distribute to multiple targets", function() {
+	this.timeout(3000);
         return new Promise(function(done, fail){
             var server = http.createServer();
             afterEach(_.once(server.close.bind(server)));

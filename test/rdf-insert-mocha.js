@@ -34,7 +34,7 @@ describe('rdf-insert subgraph', function() {
         '<http://dbpedia.org/resource/John_Lennon> <http://xmlns.com/foaf/0.1/name> "John Lennon" .\n' +
         '}\n';
     it("should POST jsonld as SPARQL INSERT", function() {
-        this.timeout(4000);
+        this.timeout(8000);
         var server = http.createServer();
         afterEach(_.once(server.close.bind(server)));
         server.on('request', function(req, res) {

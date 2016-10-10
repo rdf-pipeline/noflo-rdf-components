@@ -51,8 +51,8 @@ describe('html-2-objects-compare', function() {
         node.outPorts.error.should.be.an('object');
     });
 
-    it("should  generate the correct comparison file when called with good input data", function() {
-        this.timeout(2750);
+    it("should generate the correct comparison file when called with good input data", function() {
+        this.timeout(4000);
         var filePath = 'test/data/comparison.html';
         var expectedFilePath = 'test/data/expected-comparison.html';
 
