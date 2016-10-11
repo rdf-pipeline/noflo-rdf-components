@@ -46,6 +46,7 @@ function xmlToRdf(sources, classpath, transform, outdir) {
     // Add the classpath the first time through.  After that we'll have it.
     if (first && ! _.isUndefined(classpath)) { 
         xslt4node.addLibrary(classpath);
+        xslt4node.addOptions("-Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl");
         first = false;
     }
 
