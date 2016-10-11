@@ -58,10 +58,14 @@ describe('xml-to-rdf', function() {
         }); 
 
         it('should translate xml to rdf with good input parameters', function() {
-            var node = test.createComponent(compFactory);
 
-            // Get classpath for this operating system 
+            // Get classpath for this operating system and check it exists
             var classpath = test.saxonClasspath();
+            if (!fs.statSync(classpath).isFile()) {
+                throw Error('    Required library file ' + classpath + ' does not exist.');
+            }
+
+            var node = test.createComponent(compFactory);
 
             expect(compFactory.updater.call(node.vni(''), 
                                             ['./test/data/testPatient.xml'], 
@@ -73,7 +77,14 @@ describe('xml-to-rdf', function() {
 
    describe('functional behavior', function() {
        it('should translate patient demographics fhir xml to RDF in a noflo network', function() {
-          this.timeout(3500);
+           this.timeout(3500);
+
+           // Get classpath for this operating system and check it exists
+           var classpath = test.saxonClasspath();
+           if (!fs.statSync(classpath).isFile()) {
+               throw Error('    Required library file ' + classpath + ' does not exist.');
+           }
+
            return test.createNetwork(
                 { node1: 'core/Repeat',
                   node2: 'core/Repeat',
@@ -100,10 +111,7 @@ describe('xml-to-rdf', function() {
                     network.graph.addEdge('node4', 'out', 'node5', 'outdir');
 
                     network.graph.addInitial( ['./test/data/testPatient.xml'], 'node1', 'in');
-                    
-                    var classpath = test.saxonClasspath();
                     network.graph.addInitial(classpath, 'node2', 'in');
-
                     network.graph.addInitial('./xslt/fhir-xml-to-rdf.xsl', 'node3', 'in');
                     network.graph.addInitial('/tmp/', 'node4', 'in');
 
