@@ -20,6 +20,7 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "~5.2.0",
+    "heapdump": "^0.3.7",
     "mongodb": "^2.1.7",
     "sinon": "^1.17.2"
   },

@@ -2,9 +2,9 @@
 
 var _ = require('underscore');
 var fs = require('fs');
+var os = require('os');
 
 var stateFactory = require('../src/create-state.js');
-var logger = require('../src/logger.js');
 var profiler = require('../src/profiler.js');
 var wrapper = require('../src/javascript-wrapper.js');
 
@@ -70,7 +70,7 @@ function funnel(input, metadata_key) {
     if (funnel.executing === funnelInput) { 
 
        // Just finished executing - ready for the next one
-       logger.info('Completed processing id:',funnel.executing);
+       console.log('Completed processing id:',funnel.executing);
        funnel.executed++;
        if (funnel.queue.length > 0) { 
            // get the next one from the queue
@@ -79,23 +79,25 @@ function funnel(input, metadata_key) {
            this.outputState({[metadataKey]: funnel.executing});
            console.log('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
-                       'funnel sending:' + funnel.executing +
+                       'funnel sending: ' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids in the queue' +
-                       '\nfunnel queue:' + funnel.queue +
+                       '\nfunnel queue: ' + funnel.queue +
                        '\n\nTotal VNIs: ' + pipelineMetrics.totalVnis +
                        '\nDefault VNIs: ' + pipelineMetrics.totalDefaultVnis +
+                       '\n\nMemory Usage (free/total): ' + bytesToMB(os.freemem()) + '/' + bytesToMB(os.totalmem()) + 
                        '\n********************************************************************\n');
-           logger.info('Processing id:',funnel.executing);
+           console.log('Processing id:',funnel.executing);
            return funnel.executing;
 
         } else {
            funnel.executing = '';
            var elapsedTime = msToString(Date.now() - funnel.startTime);
-           logger.warn('\n********************************************************************\n'+
+           console.log('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
                        'Nothing left in funnel.  Elapsed time: ' + elapsedTime +
                        '\n\nTotal VNIs: ', pipelineMetrics.totalVnis, 
                        '\nDefault VNIs: ', pipelineMetrics.totalDefaultVnis,
+                       '\n\nMemory Usage (free/total): ' + bytesToMB(os.freemem()) + '/' + bytesToMB(os.totalmem()) + 
                        '\n********************************************************************\n');
         }
 
@@ -104,13 +106,14 @@ function funnel(input, metadata_key) {
            funnel.executing = funnelInput;
            console.log('\n********************************************************************\n'+
                        'Completed execution '+ funnel.executed +' ids\n' +
-                       'funnel sending:' + funnel.executing +
+                       'funnel sending: ' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids remaining in the queue' +
-                       '\nfunnel queue:' + funnel.queue + 
+                       '\nfunnel queue: ' + funnel.queue + 
                        '\n\nTotal VNIs: ' + pipelineMetrics.totalVnis +
                        '\nDefault VNIs: ' + pipelineMetrics.totalDefaultVnis +
+                       '\n\nMemory Usage (free/total): ' + bytesToMB(os.freemem()) + '/' + bytesToMB(os.totalmem()) + 
                        '\n********************************************************************\n');
-           logger.info('Processing id:',funnel.executing);
+           console.log('Processing id:',funnel.executing);
            stateFactory.clearMetadata(this.outputState());
            this.outputState({[metadataKey]: funnel.executing});
            return funnel.executing;
@@ -125,6 +128,11 @@ function funnel(input, metadata_key) {
            } 
        }
     } 
+}
+
+var BYTES_TO_MB = 1024 * 1024;
+function bytesToMB(num) {
+    return (num/BYTES_TO_MB).toFixed(2) + 'MB';
 }
 
 /**
