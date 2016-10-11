@@ -390,6 +390,7 @@ describe('confluence', function() {
     describe('functional behavior', function() {
 
         it('should run in a noflo network', function() {
+	    this.timeout(13000);
 
             var testFile = __dirname + '/data/cmumps-patient7.jsonld';
             var data = fs.readFileSync(testFile);

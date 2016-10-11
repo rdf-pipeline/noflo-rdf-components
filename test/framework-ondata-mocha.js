@@ -463,7 +463,7 @@ describe("framework-ondata", function() {
     describe("functional noflo network behavior", function() {
 
         it("should manage multiple port node vni state, fRunUpdater invocation, & output state", function() {
-            this.timeout(2750);
+            this.timeout(3000);
             var input1 = 'Uno';
             var input2 = 'Dos';
             var executedFRunUpdater = "Executed fRunUpdater API";
@@ -999,6 +999,7 @@ describe("framework-ondata", function() {
         });
 
         it("should NOT clear non-transient node VNI after sending output state downstream", function() {
+	    this.timeout(3000);
             var nodeInstance;
             var initData = "Buongiorno!";
             var testData = "Fino alla prossima volta";
@@ -1242,6 +1243,7 @@ describe("framework-ondata", function() {
         });
 
         it("should not change lm when output state changes to error state", function() {
+	    this.timeout(3000);
     
             var goodJson = '{"One": "Thing1", "Two":"Thing2"}';
             var badJson = '{ Cat: In the Hat}';

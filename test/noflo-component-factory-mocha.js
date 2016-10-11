@@ -151,6 +151,7 @@ describe('noflo-component-factory', function() {
         }).should.become(0);
     });
     it("should have a nodeName", function() {
+	this.timeout(3000);
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
@@ -175,6 +176,7 @@ describe('noflo-component-factory', function() {
         }).should.eventually.eql(instanceId);
     });
     it("should have a componentName", function() {
+	this.timeout(3000);
         var node;
         var instanceId = "testinstance";
         var factoryId = "testfactory";
@@ -323,6 +325,7 @@ describe('noflo-component-factory', function() {
         }).should.become("transient? true");
     });
     it("should have an isSingleIIP function that returns false if port is configured with an edge only", function() {
+	this.timeout(8000);
         return test.createNetwork(
             { inputNode: 'core/Repeat',
               testNode: componentFactory({inPorts:{
@@ -359,6 +362,7 @@ describe('noflo-component-factory', function() {
     });
 
     it("should have an isSingleIIP function that returns false if port is configured with an edge & IIP", function() {
+	this.timeout(8000);
         var count = 0;
         return test.createNetwork(
             { inputNode: 'core/Repeat',

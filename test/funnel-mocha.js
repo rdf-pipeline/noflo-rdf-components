@@ -110,6 +110,7 @@ describe('funnel', function() {
     describe('functional behavior', function() {
 
         it('should funnel an input with patientId metadata in a noflo network', function() {
+	    this.timeout(3000);
 
             var input1 = 'un';
             var logBuffer;
@@ -156,7 +157,6 @@ describe('funnel', function() {
         });
 
         it('should funnel 2 inputs sequentially, updating patientId metadata in a noflo network', function() {
-
             var input1 = 'un';
             var input2 = 'deux';
             var logBuffer;

@@ -448,6 +448,7 @@ describe("vni-manager", function() {
     describe('functional behavior', function() {
 
         it('should get vni with input, output, and error state for a component in a noflo network', function() {
+	    this.timeout(3000);
             var attributeName = 'MeadowFarmCows';
             var attributeValue = 'Brindle and Bessie, Jenny and Boss';
 

@@ -11,6 +11,7 @@ var test = require('./common-test');
 describe('fire-throttle', function() {
 
     it("should fire off the throttle size in a noflo network", function() {
+	this.timeout(13000);
 
         var testPort = 1339;
         var testSize = 100;

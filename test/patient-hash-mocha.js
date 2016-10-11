@@ -319,6 +319,7 @@ describe("patient-hash", function() {
     describe('functional behavior', function() {
 
         it("should execute in a noflo network", function() {
+	    this.timeout(4000);
             return test.createNetwork({ 
                 repeaterNode: 'core/Repeat',
                 patientHashNode: 'rdf-components/patient-hash'
