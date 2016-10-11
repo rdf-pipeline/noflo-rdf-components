@@ -60,7 +60,7 @@ describe('ag-sparql-federate', function() {
         }).then(function(output) {
             requests.should.eq(3);
             output.should.have.property("data", origin + "/session");
-            session.should.eq("<" + origin + "/a>+<" + origin + "/b>");
+            session.should.eq("store=<" + origin + "/a>%2B<" + origin + "/b>");
         });
     });
 });
