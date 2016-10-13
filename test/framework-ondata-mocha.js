@@ -56,13 +56,13 @@ describe("framework-ondata", function() {
                 // Send some data to the input port
                 test.onOutPortData(node, 'output', done);
                 test.onOutPortData(node, 'error', fail);
-                sinon.stub(logger, 'error');
+                logger.silence('error');
                 test.sendData(node, 'input', inData);
             }).then(function(done) { 
-                logger.error.restore();
+                logger.verbose('warn');
                 throw Error("framework did not throw error when wrapper fRunUpdater was not configured!");
             }, function(fail) { 
-                logger.error.restore();
+                logger.verbose('warn');
                 fail.toString().should.contain('Error: No wrapper fRunUpdater function found!  Cannot run updater.');
                 
             });
@@ -275,13 +275,13 @@ describe("framework-ondata", function() {
                 // We use a promise here because this section is asynchronous
                 return new Promise(function(done, fail) {
 
-                    sinon.stub(logger, 'error');
+                    logger.silence('error');
                     test.onOutPortData(node, 'error', fail);
                     test.sendData(node, 'input', inData[0]);
 
                 }).then(function(done) {
                    // Should not succeed
-                   logger.error.restore();
+                   logger.verbose('warn');
                    assert.isNotOk(done);
 
                 }, function(fail) {
@@ -289,10 +289,10 @@ describe("framework-ondata", function() {
                    fail.data.toString().should.equal('Error: '+ updaterErr);
 
                    if (count < 1) { 
-                       logger.error.restore();
+                       logger.verbose('warn');
                        return sendDataAndVerify(node, ++count);
                    } else {
-                       logger.error.restore();
+                       logger.verbose('warn');
                    }
  
                 });
@@ -333,14 +333,12 @@ describe("framework-ondata", function() {
             return new Promise(function(done) { 
     
                 test.onOutPortData(node, 'output', done);
-                sinon.stub(logger, 'error');
-                sinon.stub(console, 'error');
+                logger.silence('error');
                 test.sendData(node, 'input', inData);
 
             }).then(function(done) { 
                // Should have sent an output state with error flag sent
-               console.error.restore();
-               logger.error.restore();
+               logger.verbose('warn');
                done.should.be.an('object'); 
                done.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm', 'componentName');
                done.error.should.be.true;
@@ -382,16 +380,16 @@ describe("framework-ondata", function() {
     
                 test.onOutPortData(node, 'error', fail);
 
-                sinon.stub(logger, 'error');
+                logger.silence('error');
                 test.sendData(node, 'input', inData);
 
             }).then(function(done) { 
-               logger.error.restore();
+               logger.verbose('warn');
                assert.fail('This test hould not be listening for output state');
       
             }, function(fail) { 
                // Not currently executed since we get the output port data before the error data
-               logger.error.restore();
+               logger.verbose('warn');
                fail.should.be.an('object'); 
                fail.should.have.all.keys('vnid', 'data', 'error', 'stale', 'lm', 'groupLm', 'componentName');
                fail.data.toString().should.equal('Error: '+executedFRunUpdater);
@@ -1259,7 +1257,7 @@ describe("framework-ondata", function() {
                     // Listen for results while we send some good json to the network
                     test.onOutPortData(parseJson, 'output', first);
 
-                    sinon.stub(console, 'error');
+                    logger.silence('error');
                     network.graph.addInitial(goodJson, 'parseJson', 'input');
                 }).then(function(first) {
 
@@ -1273,7 +1271,7 @@ describe("framework-ondata", function() {
                         network.graph.addInitial(badJson, 'parseJson', 'input');
 
                     }).then(function(second) {
-                        console.error.restore();
+                        logger.verbose('warn');
 
                         // Verify we have the original data with the error flag set to true
                         test.verifyState(second, '', parsedJson, true);

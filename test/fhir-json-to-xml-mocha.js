@@ -6,7 +6,7 @@ var assert = chai.assert;
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
+var logger = require('../src/logger');
 
 var _ = require('underscore');
 var fs = require('fs');
