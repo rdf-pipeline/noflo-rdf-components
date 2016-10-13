@@ -15,7 +15,6 @@ var levels = [
 /**
  * Creates a custom logger for this package
  */
-var buffer = [];
 module.exports = {
     time: console.time.bind(console),
     timeEnd: console.timeEnd.bind(console),
@@ -30,24 +29,7 @@ module.exports = {
             if (levels.indexOf(level) >= levels.indexOf(limit))
                 this[level] = logging(console, level);
         }, this);
-    },
-    buffer: function() {
-        levels.forEach(function(level) {
-            this[level] = function(/* arguments */) {
-                buffer.push([level, arguments]);
-            };
-        }, this);
-    },
-    flush: function() {
-        buffer.forEach(function(item) {
-            var level = item[0] == 'debug' ? 'log' : item[0];
-            logging(console, level).apply(this, item[1]);
-        });
-        this.clear();
-    },
-    clear: function() {
-        buffer = [];
-    },
+    }
 };
 
 module.exports.verbose('all');
