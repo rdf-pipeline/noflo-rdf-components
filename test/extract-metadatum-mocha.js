@@ -4,8 +4,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var test = require('./common-test');
 var stateFactory = require('../src/create-state');
 var factory = require('../components/extract-metadatum');
@@ -71,7 +69,6 @@ describe('extract-metadatum', function() {
                     network.graph.addEdge('valueRepeater', 'out', 'addMetadatum', 'value');
                     network.graph.addEdge('addMetadatum', 'output', 'extractMetadatum', 'input');
 
-                    sinon.stub(console,'log');
                     network.graph.addInitial(testdata, 'alpha', 'input');
                     network.graph.addInitial(attributeName, 'addMetadatum', 'name');
                     network.graph.addInitial(attributeValue, 'valueRepeater', 'in');
@@ -79,7 +76,6 @@ describe('extract-metadatum', function() {
  
 
                 }).then(function(done) {
-                    console.log.restore();
                     done.should.be.an('object');
 
                     // verify we got the metadata attribute and metadata is also still on the VNI
@@ -88,7 +84,6 @@ describe('extract-metadatum', function() {
 
                 }, function(fail) {
                     console.error(fail);
-                    console.log.restore();
                     throw Error(fail);
                 }); 
             }); 
