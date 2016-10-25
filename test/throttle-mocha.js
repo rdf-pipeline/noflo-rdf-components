@@ -12,6 +12,7 @@ var os = require('os');
 
 var test = require('./common-test');
 var factory = require('../components/throttle');
+var logger = require('../src/logger');
 
 describe('throttle', function() {
 

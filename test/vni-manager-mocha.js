@@ -447,6 +447,7 @@ describe("vni-manager", function() {
 
         it('should get vni with input, output, and error state for a component in a noflo network', function() {
 	    this.timeout(3000);
+
             var attributeName = 'MeadowFarmCows';
             var attributeValue = 'Brindle and Bessie, Jenny and Boss';
 
@@ -479,6 +480,7 @@ describe("vni-manager", function() {
         });
 
         it("should increment & decrement the totalVnis and totalDefaultVnis counters on VNI creation and deletion", function() {
+            this.timeout(2500);
 
             var nodeInstance;
             var testData = "Creativity is intelligence having fun";
@@ -541,6 +543,7 @@ describe("vni-manager", function() {
         });
 
         it("should decrement the totalVnis and totalDefaultVnis counters when all VNIs are deleted", function() {
+            this.timeout(3000);
 
             var nodeInstance;
             var testData = "The best road to progress is freedom's road.";
@@ -604,6 +607,8 @@ describe("vni-manager", function() {
         describe("#clearTransientInputs", function() {
 
             it("should not delete single IIP VNIs", function() {
+                this.timeout(2500);
+
                 var attributeName = 'MeadowFarm';
                 var attributeValue = 'Nelly';
                 var nodeVni;
@@ -665,6 +670,8 @@ describe("vni-manager", function() {
            });
 
            it("should delete mixed IIP/packet VNIs", function() {
+                this.timeout(2500);
+
                 var attributeName = 'MeadowFarm';
                 var attributeValue = 'Brindle';
                 var nodeVni;
@@ -731,6 +738,8 @@ describe("vni-manager", function() {
            });
 
            it("should delete single packet input VNI", function() {
+                this.timeout(2500);
+
                 var attributeName = 'MeadowFarm';
                 var attributeValue = 'Bessie';
                 var nodeVni;
@@ -794,6 +803,8 @@ describe("vni-manager", function() {
            });
 
            it("should delete a multi packet input VNI", function() {
+                this.timeout(3000);
+ 
                 var attributeName = 'MeadowFarm';
                 var attributeValue1 = 'Jenny';
                 var attributeValue2 = 'Boss';

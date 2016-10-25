@@ -81,6 +81,7 @@ describe('shex-cmumps-to-rdf', function() {
     }); 
 
     it('should throw an error if passed invalid JSON', function() {
+        this.timeout(2500);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 shex: "rdf-components/shex-cmumps-to-rdf"
@@ -92,6 +93,7 @@ describe('shex-cmumps-to-rdf', function() {
     }); 
 
     it('should throw an error if passed input data with no context', function() {
+        this.timeout(2500);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 shex: "rdf-components/shex-cmumps-to-rdf"
