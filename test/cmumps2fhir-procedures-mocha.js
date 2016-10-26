@@ -5,8 +5,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var _ = require('underscore');
 var fs = require('fs');
 
@@ -38,9 +36,9 @@ describe('cmumps2fhir-procedures', function() {
 
         it('should return undefined if data is empty', function() {
             var node = test.createComponent(factory);
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             expect(factory.updater.call(node.vni(''), {})).to.be.undefined;
-            logger.warn.restore();
+            logger.verbose('warn');
         });
 
         it('should convert patient procedures to fhir', function() {

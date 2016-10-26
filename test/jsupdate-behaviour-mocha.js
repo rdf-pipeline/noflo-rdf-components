@@ -4,6 +4,7 @@ var chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 var sinon = require('sinon');
+var logger = require('../src/logger');
 
 var _ = require('underscore');
 var noflo = require('noflo');
@@ -197,10 +198,9 @@ describe("jsupdater-behaviour", function() {
     it("should not fire updater if upstream updater threw an error", function() {
         this.timeout(3750);
         return new Promise(function(done, fail){
-            sinon.stub(console, 'error', function (message) {
+            logger.silence('error');
                 // Expect error messages on this one, so keep it quiet
-            });
-            afterEach(_.once(console.error.restore.bind(console.error)));
+            afterEach(_.once(logger.verbose.bind(logger, 'warn')));
             test.createNetwork({
                 broken: jswrapper(function(input) {
                     throw Error(input);
@@ -284,10 +284,9 @@ describe("jsupdater-behaviour", function() {
     it("should send an event, but not fire updater if upstream updater did nothing, after error, after valid output", function() {
         this.timeout(4000);
         return new Promise(function(done, fail){
-            sinon.stub(console, 'error', function (message) {
+            logger.silence('error');
                 // Expect error messages on this one, so keep it quiet
-            });
-            afterEach(_.once(console.error.restore.bind(console.error)));
+            afterEach(_.once(logger.verbose.bind(logger, 'warn')));
             var count = 0;
             test.createNetwork({
                 upstream: jswrapper(function(input) {
@@ -349,10 +348,9 @@ describe("jsupdater-behaviour", function() {
     it("should not fire updater if upstream updater set an error data", function() {
         this.timeout(4500);
         return new Promise(function(done, fail){
-            sinon.stub(console, 'error', function (message) {
+            logger.silence('error');
                 // Expect error messages on this one, so keep it quiet
-            });
-            afterEach(_.once(console.error.restore.bind(console.error)));
+            afterEach(_.once(logger.verbose.bind(logger, 'warn')));
             return test.createNetwork({
                 broken: jswrapper(function(input) {
                     this.errorState({data: input});
@@ -386,10 +384,9 @@ describe("jsupdater-behaviour", function() {
     it("should not notify attached error port if an updater explicity sets the same error", function() {
         this.timeout(3500);
         return new Promise(function(done, fail){
-            sinon.stub(console, 'error', function (message) {
+            logger.silence('error');
                 // Expect error messages on this one, so keep it quiet
-            });
-            afterEach(_.once(console.error.restore.bind(console.error)));
+            afterEach(_.once(logger.verbose.bind(logger, 'warn')));
             test.createNetwork({
                 broken: jswrapper(function(input) {
                     this.errorState({data: input});

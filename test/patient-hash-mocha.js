@@ -4,7 +4,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
+var logger = require('../src/logger');
 
 var fs = require('fs');
 
@@ -33,14 +33,14 @@ describe("patient-hash", function() {
         });
 
         it("should throw an error if given an unknown translator", function() {
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             expect(factory.updater.bind(this, 
                                        {"type": "cmumpss:Patient-2", "_id": "2-000007"},
                                        {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
                                         bizarro: 'rdf-components/bizarro'}
                               )).to.throw(Error,
                 /Unknown translation. Supported translators are: 'demographics', 'diagnosis', 'prescriptions', 'procedures'./);
-            logger.warn.restore();
+            logger.verbose('warn');
         });
 
         it("should throw an error if given no demographic data", function() {
@@ -71,10 +71,10 @@ describe("patient-hash", function() {
             // Invoke component updater
             var node = test.createComponent(factory);
             var vni = node.vni('');
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             expect(factory.updater.bind(vni, testdata)).to.throw(Error,
                 /No patient demographics found!/);
-            logger.warn.restore();
+            logger.verbose('warn');
         });
 
         it("should generate a hash if given only demographic data", function() {
@@ -96,9 +96,9 @@ describe("patient-hash", function() {
             var node = test.createComponent(factory);
             var vni = node.vni('');
 
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             var hash = factory.updater.call(vni, testdata);
-            logger.warn.restore();
+            logger.verbose('warn');
 
 	    hash.should.be.an('object');
 
@@ -152,9 +152,9 @@ describe("patient-hash", function() {
             // Invoke component updater
             var node = test.createComponent(factory);
             var vni = node.vni('');
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             var hash = factory.updater.call(vni, testdata);
-            logger.warn.restore();
+            logger.verbose('warn');
 
             Object.keys(hash).should.have.length(2); 
             hash.should.have.all.keys( demographicsId, diagnosisId);
@@ -207,9 +207,9 @@ describe("patient-hash", function() {
             // Invoke component updater
             var node = test.createComponent(factory);
             var vni = node.vni('');
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             var hash = factory.updater.call(vni, testdata);
-            logger.warn.restore();
+            logger.verbose('warn');
 
             Object.keys(hash).should.have.length(2); // will have demographics, prescription 
             hash.should.have.all.keys( demographicsId, prescriptionId);
@@ -259,9 +259,9 @@ describe("patient-hash", function() {
             // Invoke component updater
             var node = test.createComponent(factory);
             var vni = node.vni('');
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             var hash = factory.updater.call(vni, testdata);
-            logger.warn.restore();
+            logger.verbose('warn');
 
             hash.should.have.all.keys( demographicsId, procedureId);
 
@@ -297,11 +297,11 @@ describe("patient-hash", function() {
 
 
             // Invoke component updater
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             var node = test.createComponent(factory);
             var vni = node.vni('');
             var hash = factory.updater.call(vni, testdata, customTranslators);
-            logger.warn.restore();
+            logger.verbose('warn');
 
 	    hash.should.be.an('object');
 
@@ -336,11 +336,11 @@ describe("patient-hash", function() {
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
-                    sinon.stub(logger, 'warn');
+                    logger.silence('warn');
                     network.graph.addInitial(parsedData, 'repeaterNode', 'in');
 
                 }).then(function(done) {
-                    logger.warn.restore();
+                    logger.verbose('warn');
                     done.vnid.should.equal('');
                     done.data.should.be.an('object');
                     done.data.should.have.keys('cmumpss:Patient-2:2-000007:2-000007', 

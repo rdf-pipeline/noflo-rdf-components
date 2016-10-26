@@ -56,7 +56,7 @@ var graphContext = {
    }
 };
 describe('shex-cmumps-to-rdf', function() {
-    logger.remove('console');
+    logger.silence();
 
     it('should exist as a function', function() {
         compFactory.should.exist;

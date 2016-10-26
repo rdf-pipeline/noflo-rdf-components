@@ -11,6 +11,16 @@ var expect = chai.expect;
 var noflo = require('noflo');
 var _ = require('underscore');
 var fs = require('fs');
+var logger = require('../src/logger');
+
+before(function() {
+    logger.silence('info');
+});
+
+after(function() {
+    logger.verbose('all');
+    logger.silence('debug');
+});
 
 module.exports = {
 

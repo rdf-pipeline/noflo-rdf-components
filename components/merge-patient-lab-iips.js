@@ -6,6 +6,7 @@
  */
 
 var _ = require('underscore');
+var logger = require('../src/logger');
 
 var jswrapper = require('../src/javascript-wrapper');
 
@@ -59,7 +60,7 @@ function jsObject( parameter ) {
         return  _.isString(parameter) ? JSON.parse(parameter) : parameter;
     } catch ( e ) { 
        var msg = "Unable to parse parameter "+parameter+": "+e;
-       console.error( msg );
+       logger.error( msg );
        throw Error( msg );
     }
 } 
