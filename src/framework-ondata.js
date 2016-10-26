@@ -43,7 +43,7 @@ module.exports = function(payload, socketIndex) {
          var vnid = payload.vnid || '';
          var vni = nodeInstance.vni(vnid);
 
-         logger.info(nodeInstance.nodeName + "(" + nodeInstance.componentName + ") processing vnid: '" + vnid + "'");
+         logger.debug(nodeInstance.nodeName + "(" + nodeInstance.componentName + ") processing vnid: '" + vnid + "'");
 
          // Get the old & new input state for port and the new payload
          var lastInputState = vni.inputStates(portName, socketIndex);
