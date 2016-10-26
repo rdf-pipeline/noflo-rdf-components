@@ -38,7 +38,7 @@ describe('http-delivery', function() {
         }).should.become("Hello World!");
     });
     it("should receive a request with a non-empty vnid", function() {
-        this.timeout(3250);
+        this.timeout(3500);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 delivery: "rdf-components/http-delivery-server"
