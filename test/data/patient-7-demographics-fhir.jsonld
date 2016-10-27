@@ -1,0 +1,50 @@
+[ { resourceType: 'Patient',
+    id: '2-000007',
+    active: true,
+    identifier: 
+     [ { use: 'usual',
+         type: 
+          { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
+            text: '777777777' },
+         value: '777777777' } ],
+    name: { use: 'usual', family: [ 'BUNNY' ], given: [ 'BUGS DOC' ] },
+    gender: 'male',
+    birthDate: '01-01-1990',
+    address: 
+     [ { line: [ '100 MAIN ST' ],
+         city: 'ANYTOWN',
+         postalCode: '60040',
+         resourceType: 'Address',
+         type: 'postal' } ],
+    maritalStatus: 
+     { coding: 
+        [ { system: 'http://hl7.org/fhir/marital-status',
+            code: 'D',
+            display: 'D' } ],
+       text: 'D' },
+    contact: 
+     [ { relationship: 
+          [ { coding: 
+               [ { system: 'cmumps',
+                   version: '0.0.1',
+                   code: 'cmumps',
+                   display: { id: '8140-20', label: 'OTHER RELATIONSHIP' },
+                   userSelected: false } ],
+              text: { id: '8140-20', label: 'OTHER RELATIONSHIP' } } ],
+         name: { use: 'usual', family: [ 'RUNNAH' ], given: [ 'ROAD' ] },
+         address: 
+          { line: [ '7000 InternalTest Boulevard' ],
+            city: 'ALBUQUERQUE',
+            state: { id: '5-17', label: 'NEW MEXICO' },
+            postalCode: '55555',
+            resourceType: 'Address',
+            type: 'postal' } } ],
+    communication: 
+     [ { coding: 
+          [ { system: 'cmumps',
+              version: '0.0.1',
+              code: 'cmumps',
+              display: 'English',
+              userSelected: false } ],
+         text: 'English' } ],
+    link: [ { type: 'replace' } ] } ]

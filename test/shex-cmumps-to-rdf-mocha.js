@@ -11,7 +11,6 @@ var should = chai.should();
 
 var _ = require('underscore');
 var fs = require('fs');
-var winston = require('winston');
 
 var logger = require('../src/logger');
 var test = require('./common-test');
