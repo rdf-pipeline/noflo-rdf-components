@@ -775,6 +775,7 @@ describe("framework-ondata", function() {
 
         // Propagates a metadata property "id" from an up stream node to down stream node.
         it("should propagate input metadata downstream", function() {
+	    this.timeout(3000);
             var testId = "test identifier";
             var testdata = "more data";
             return test.createNetwork({
@@ -818,6 +819,7 @@ describe("framework-ondata", function() {
         // sets and maintains the same metadata property "id" with same value despite multiple updater calls 
         // with different data
         it("should maintain same metadata value when received multiple times", function() {
+	    this.timeout(3000);
             var testId = "test identifier";
             var testdata = "more data";
             return test.createNetwork({

@@ -50,7 +50,7 @@ describe('add-metadatum', function() {
     describe('functional behavior', function() {
 
         it('should add metadata in a noflo network', function() {
-            this.timeout(3000);
+            this.timeout(6000);
             var attributeName = 'Cows';
             var attributeValue = 'Brindle and Bessie, Jenny and Boss';
             var testdata = '{"name": "Jenny", "address": "Meadow Farm"}';

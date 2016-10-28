@@ -57,7 +57,7 @@ describe("add-metadata", function() {
     describe("functional behavior", function() {
 
         it("should add metadata in a noflo network", function() {
-	   this.timeout(3000);
+	   this.timeout(6000);
            var testMetadata = {"Pei": "JFK Library", "Richardson": "Old Colony station", "Wright": "Falling Water"};
            var testData = {"Churchill": "We shape our buildings; thereafter they shape us."}; 
 

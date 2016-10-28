@@ -77,7 +77,7 @@ describe('xml-to-rdf', function() {
 
    describe('functional behavior', function() {
        it('should translate patient demographics fhir xml to RDF in a noflo network', function() {
-           this.timeout(3500);
+           this.timeout(5000);
 
            // Get classpath for this operating system and check it exists
            var classpath = test.saxonClasspath();
@@ -215,7 +215,7 @@ describe('xml-to-rdf', function() {
        });
 
        it('should translate patient procedures fhir xml to RDF in a noflo network', function() {
-          this.timeout(3500);
+          this.timeout(5000);
            return test.createNetwork(
                 { node1: 'core/Repeat',
                   node2: 'core/Repeat',
