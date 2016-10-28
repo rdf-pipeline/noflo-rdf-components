@@ -97,8 +97,8 @@ describe('cmumps2fhir-procedures', function() {
 
                     var data = fs.readFileSync(testFile, 'utf-8');
                     network.graph.addInitial(data, 'translator', 'data');
-                    network.graph.addInitial('', 'cmumpsFile', 'in');
-                    network.graph.addInitial('', 'fhirFile', 'in');
+                    network.graph.addInitial('/tmp/patient-7-procedures-cmumps.jsonld', 'cmumpsFile', 'in');
+                    network.graph.addInitial('/tmp/patient-7-procedures-fhir.jsonld', 'fhirFile', 'in');
 
                 }).then(function(done) {
                     done.should.exist;
