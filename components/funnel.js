@@ -1,9 +1,12 @@
 // funnel.js
 
 var _ = require('underscore');
+
 var fs = require('fs');
+var os = require('os');
 
 var stateFactory = require('../src/create-state.js');
+var format = require('../src/format.js');
 var logger = require('../src/logger.js');
 var profiler = require('../src/profiler.js');
 var wrapper = require('../src/javascript-wrapper.js');
@@ -45,9 +48,9 @@ function funnel(input, metadata_key) {
     if (!_.isString(metadataKey)) throw Error('Funnel requires a metadata key string!'); 
 
     if (_.isString(input)) 
-        console.log('\nenter funnel with input:',input);
+        logger.info('\nenter funnel with input:',input);
     else 
-        console.log('\nENTER FUNNEL WITH NON-STRING INPUT',input);
+        logger.info('\nENTER FUNNEL WITH NON-STRING INPUT',input);
 
     // Initialize the funnel state in node instance the first time through
     if (_.isUndefined(node.funnel)) {
@@ -77,13 +80,14 @@ function funnel(input, metadata_key) {
            funnel.executing =  funnel.queue.shift();
            stateFactory.clearMetadata(this.outputState());
            this.outputState({[metadataKey]: funnel.executing});
-           console.log('\n********************************************************************\n'+
+           logger.info('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
                        'funnel sending:' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids in the queue' +
                        '\nfunnel queue:' + funnel.queue +
                        '\n\nTotal VNIs: ' + pipelineMetrics.totalVnis +
                        '\nDefault VNIs: ' + pipelineMetrics.totalDefaultVnis +
+                       '\n\nMemory Usage (free/total): ' + format.bytesToMb(os.freemem()) + '/' + format.bytesToMb(os.totalmem()) +
                        '\n********************************************************************\n');
            logger.info('Processing id:',funnel.executing);
            return funnel.executing;
@@ -91,24 +95,26 @@ function funnel(input, metadata_key) {
         } else {
            funnel.executing = '';
            var elapsedTime = msToString(Date.now() - funnel.startTime);
-           logger.warn('\n********************************************************************\n'+
+           logger.info('\n********************************************************************\n'+
                        'Completed execution ' + funnel.executed +' ids\n' +
                        'Nothing left in funnel.  Elapsed time: ' + elapsedTime +
                        '\n\nTotal VNIs: ', pipelineMetrics.totalVnis, 
                        '\nDefault VNIs: ', pipelineMetrics.totalDefaultVnis,
+                       '\n\nMemory Usage (free/total): ' + format.bytesToMb(os.freemem()) + '/' + format.bytesToMb(os.totalmem()) +
                        '\n********************************************************************\n');
         }
 
     } else if (_.isEmpty(funnel.executing) && !_.isEmpty(funnelInput)) {
 
            funnel.executing = funnelInput;
-           console.log('\n********************************************************************\n'+
+           logger.info('\n********************************************************************\n'+
                        'Completed execution '+ funnel.executed +' ids\n' +
                        'funnel sending:' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids remaining in the queue' +
                        '\nfunnel queue:' + funnel.queue + 
                        '\n\nTotal VNIs: ' + pipelineMetrics.totalVnis +
                        '\nDefault VNIs: ' + pipelineMetrics.totalDefaultVnis +
+                       '\n\nMemory Usage (free/total): ' + format.bytesToMb(os.freemem()) + '/' + format.bytesToMb(os.totalmem()) +
                        '\n********************************************************************\n');
            logger.info('Processing id:',funnel.executing);
            stateFactory.clearMetadata(this.outputState());
@@ -121,7 +127,7 @@ function funnel(input, metadata_key) {
        if (!_.isEmpty(funnelInput)) { 
            if (-1 === _.indexOf(funnel.queue, funnelInput)) {
                funnel.queue.push(funnelInput);
-               console.log('funnel saved input to queue.  Funnel:',funnel);
+               logger.info('funnel saved input to queue.  Funnel:',funnel);
            } 
        }
     } 
