@@ -8,6 +8,7 @@ chai.use(chaiAsPromised);
 var http = require('http');
 var _ = require('underscore');
 var noflo = require('noflo');
+var logger = require('../src/logger');
 var test = require('./common-test');
 var httpAccept = require('../components/http-accept');
 
@@ -113,5 +114,33 @@ describe('http-accept', function() {
                 req.end();
             });
         }).should.eventually.have.property("data", 'Hello "World"');
+    });
+    it("should reject plan text", function() {
+        this.timeout(2750);
+        logger.silence('all');
+        return test.createNetwork({
+            accept: httpAccept,
+            webserver: "webserver/Server",
+            response: "webserver/SendResponse"
+        }).then(network => new Promise(function(done, fail) {
+            network.graph.addEdge('accept', 'accepted', 'response', 'in');
+            network.graph.addEdge('accept', 'rejected', 'response', 'in');
+            network.graph.addEdge('webserver', 'request', 'accept', 'input');
+            var error = noflo.internalSocket.createSocket();
+            network.processes.accept.component.outPorts.output.attach(error);
+            error.on('data', done);
+            network.graph.addInitial('application/json', 'accept', 'type');
+            network.graph.addInitial(1337, 'webserver', 'listen');
+            var req = http.request({
+                method: 'POST',
+                port: 1337,
+                path: '/',
+                headers: {
+                    'Content-Type': 'text/plain'
+                }
+            });
+            req.write('Hello "World"');
+            req.end();
+        })).should.eventually.have.property("error");
     });
 });
