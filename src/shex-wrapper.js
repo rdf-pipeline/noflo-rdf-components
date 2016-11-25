@@ -69,7 +69,7 @@ function fRunUpdater(nodeDef, vni) {
 	    ).then(function(dataAndLog) {
             return dataAndLog.data;
         });
-    }).then(n3_to_jsonld).then(function(json) {
+    }).then(n3_to_jsonld.bind(this, nodeDef.vocab)).then(function(json) {
         if (nodeDef.postprocess)
             return nodeDef.postprocess.call(vni, json);
         else
@@ -104,7 +104,7 @@ function toN3(term) {
     else return N3.Util.createLiteral(term.value, term.language || term.datatype);
 }
 
-function n3_to_jsonld(n3) {
+function n3_to_jsonld(vocab, n3) {
     return new Promise(function(resolve) {
         resolve(n3.find(null, null, null));
     }).then(function(triples) {
@@ -119,7 +119,30 @@ function n3_to_jsonld(n3) {
             return dataset;
         }, {'@default': []}), {});
     }).then(function(json) {
-        return json;
+        if (!vocab) return json;
+        var roots = _.uniq(n3.find(null, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", null)
+            .map(triple => triple.subject)
+            .filter(subject => _.isEmpty(n3.find(null, null, subject)))
+        );
+        return Promise.all(roots.map(root => {
+            return jsonld.frame(json, {
+                "@context": {
+                  "@vocab": vocab,
+                  "xsd": "http://www.w3.org/2001/XMLSchema#"
+               },
+               // find all the subjects not used as objects for the graph roots
+               "@graph": [{'@id': root}]
+            });
+        })).then(docs => {
+            return {
+                "@context": {
+                  "@vocab": vocab,
+                  "xsd": "http://www.w3.org/2001/XMLSchema#"
+               },
+               // find all the subjects not used as objects for the graph roots
+               "@graph": _.flatten(docs.map(doc => doc['@graph']), true)
+            };
+        });
     });
 }
 
