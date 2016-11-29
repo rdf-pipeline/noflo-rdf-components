@@ -40,12 +40,12 @@ toArray(adapters/PacketsToArray) OUT -> VALUE setTargetList OUTPUT -> PARAMETERS
 # Create a Federated Session
 input(core/Repeat) OUT -> INPUT createSession
 
-# Execute SPARQL
+# Execute SPARQL, first phaser will wait for a response
 'wait' -> REGISTER phaser(rdf-components/phaser)
 createSession OUTPUT -> URL executeSparql OUTPUT -> ARRIVE phaser
 input OUT -> INPUT executeSparql OUTPUT -> INPUT result
 
-# Close session
+# Close session, second phaser will wait until session is closed
 'wait' -> REGISTER result(rdf-components/phaser)
 createSession OUTPUT -> VALUE setSession OUTPUT -> INPUT phaser
 phaser OUTPUT -> INPUT closeSession OUTPUT -> ARRIVE result

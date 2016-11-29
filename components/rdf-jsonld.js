@@ -11,6 +11,7 @@ var wrapper = require('../src/javascript-wrapper.js');
  * frame on the corresponding Component.
  * @param input RDF JS Interface Graph object
  * @param frame JSON-LD Frame object
+ * @see http://json-ld.org/spec/latest/json-ld-framing/
  */
 module.exports = wrapper(function execute(input, frame) {
     return buildJSON(input).then(function(json) {

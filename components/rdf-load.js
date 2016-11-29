@@ -13,11 +13,13 @@ var wrapper = require('../src/javascript-wrapper.js');
  * @param media Media type (application/json, text/n3...) of the data to be parsed or the value 'remote' if a URI for the data is passed instead
  * @param graph Graph URI template where the parsed triples will be inserted. If it is not specified, triples will be loaded in the default graph
  * @param input RDF data to be parsed and loaded or an URI where the data will be retrieved after performing content negotiation
+ * @see https://www.w3.org/TR/rdf-interfaces/#graphs
  */
 module.exports = wrapper(function(options, media, graph, input) {
     logger.debug('Enter', this);
 
     var graphURI = graph ? graph :
+        // if input is a URL string, it is assumed to be the graphURI
         _.isString(input) && !input.match(/[^\w%-._~:\/?#\[\]@!$&'()*+,;=]/) ?
         input : undefined;
     var type = media ? media :
@@ -44,6 +46,7 @@ module.exports = wrapper(function(options, media, graph, input) {
 
 /**
  * Converts cb style async functions to promise style functions
+ * Could be rewritten to avoid this by using callbacks.
  */
 function denodeify(object, functionName /* arguments */) {
     var args = _.toArray(arguments).slice(2);

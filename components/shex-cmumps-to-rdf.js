@@ -1,5 +1,6 @@
 // shex-cmumps-to-rdf.js
 // This component converts patient medical CMUMPS lab records to FHIR RDF
+// Pre and post processing is done here, however, the bulk of the shex processing is done by the shex-wrapper, which calls the shexiface module
 
 var _ = require('underscore');
 

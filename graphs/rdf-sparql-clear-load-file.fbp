@@ -2,6 +2,9 @@
 
 # Takes RDF filename string and inserts its content into the target-graph (IRI) at the sparql-endpoint.
 # The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
+# Require the remote endpoint to have http access to this system through the
+# BASE_URL, such as http://localhost:1337/
+# If a reverse tunnel is need, maybe a command like this will help: ssh -R 1337:localhost:1337 192.168.0.1
 
 # Exports
 INPORT=sparql.SPARQL_ENDPOINT:SPARQL_ENDPOINT
