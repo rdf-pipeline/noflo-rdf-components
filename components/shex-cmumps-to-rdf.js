@@ -48,6 +48,7 @@ module.exports = wrapper({
     makeTargetNode: makeTargetNode,
     targetFixup: fhir.targetFixup,
     myTypeToShape: myTypeToShape,
+    vocab: "http://hl7.org/fhir/",
     inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph', 'cmumpss_prefix'],
     preprocess: preprocess,
     postprocess: postprocess
@@ -107,12 +108,20 @@ function postprocess(jsonld) {
     var typeAndPatient = target_graph.data.match(/.*:([^:]*):([^:]*)$/);
     if (meta_graph) return [
         {
-            '@context': graphContext,
+            '@context': {
+                "@vocab": "http://hl7.org/fhir/",
+                "xsd": "http://www.w3.org/2001/XMLSchema#"
+            },
             '@id': target_graph.data,
-            '@graph': jsonld
+            '@graph': jsonld['@graph'] || jsonld
         },
         {
-            '@context': graphContext,
+            '@context': {
+                "meta": "urn:meta#",
+                "@vocab": "http://hl7.org/fhir/",
+                "prov": "http://www.w3.org/ns/prov#",
+                "xsd": "http://www.w3.org/2001/XMLSchema#"
+            },
             '@id': meta_graph.data,
             '@graph': [
                 {
@@ -130,9 +139,12 @@ function postprocess(jsonld) {
             ]
         }
     ]; else return {
-        '@context': graphContext,
+        '@context': {
+            "@vocab": "http://hl7.org/fhir/",
+            "xsd": "http://www.w3.org/2001/XMLSchema#"
+        },
         '@id': target_graph.data,
-        '@graph': jsonld
+        '@graph': jsonld['@graph'] || jsonld
     };
 }
 
