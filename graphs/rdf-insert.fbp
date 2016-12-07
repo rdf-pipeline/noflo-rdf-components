@@ -2,6 +2,11 @@
 
 # Takes RDF JS Interface Graph and inserts it into the target-graph (IRI) at the sparql-endpoint.
 # The optional inport auth_file_env is an environment variable name that contains a file name, which contains the base64 encoded username:password to be included for HTTP Basic authentication.
+# The TARGET_GRAPH_URI port is optional and must be set before the RDF_GRAPH is serialized (possible race condition)
+# The RDF_GRAPH is serialized into sparql-update as a single command via insert-graph-tokens.ru.hbs
+# This is similar to rdf-clear-insert.fbp, but it does not reset the remote graph
+# If the SPARQL INSERT cannot handle enough triples, try using the rdf-sparql-load.fbp instead
+
 
 # Exports
 INPORT=request.URL:SPARQL_ENDPOINT

@@ -5,8 +5,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var _ = require('underscore');
 var fs = require('fs');
 
@@ -82,7 +80,7 @@ describe('translate-demographics-cmumps2fhir', function() {
 
     describe('functional behavior', function() {
        it('should convert patient demographics to fhir in a noflo network', function() {
-           this.timeout(2500);
+           this.timeout(4000);
            return test.createNetwork(
                { funnel: 'rdf-components/funnel',
                  repeatData: 'rdf-components/repeat-data',
@@ -117,8 +115,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
-                    sinon.stub(console, 'log');
-                    sinon.stub(logger, 'warn');
+                    logger.silence('warn');
 
                     network.graph.addInitial('patientId', 'funnel', 'metadata_key');
                     network.graph.addInitial('2-000007', 'funnel', 'input');
@@ -132,8 +129,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                     network.graph.addInitial('', 'fhirFile', 'in');
 
                 }).then(function(done) {
-                    logger.warn.restore();
-                    console.log.restore();
+                    logger.verbose('warn');
 
                     done.should.exist;
                     done.should.not.be.empty;
@@ -160,7 +156,7 @@ describe('translate-demographics-cmumps2fhir', function() {
        });
 
        it("should maintain state with a unique graphURI for each VNI with a distinct VNID", function() {
-           this.timeout(3000);
+           this.timeout(5000);
            return test.createNetwork(
                { funnel: 'rdf-components/funnel',
                  repeatData: 'rdf-components/repeat-data',
@@ -191,8 +187,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                   test.onOutPortData(translator, 'output', done);
                   test.onOutPortData(translator, 'error', fail);
 
-                  sinon.stub(console, 'log');
-                  sinon.stub(logger, 'warn');
+                  logger.silence('warn');
 
                   network.graph.addInitial('patientId', 'funnel', 'metadata_key');
                   network.graph.addInitial('2-000007', 'funnel', 'input');
@@ -226,8 +221,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                       network.graph.addInitial(testFile2, 'repeatData', 'new_data');
 
                    }).then(function(done2) {
-                      logger.warn.restore();
-                      console.log.restore();
+                      logger.verbose('warn');
                       done2.vnid.should.equal('cmumpss:Patient-2:2-000008:2-000008');
                       done2.should.include.keys('vnid','data','groupLm','lm','stale','error', 
                                                  'componentName', 'graphUri');

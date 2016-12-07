@@ -2,6 +2,7 @@
 
 var _ = require('underscore');
 
+var logger = require('../src/logger');
 var extractor = require('translators').cmumps;
 var translator = require('translators').diagnoses;
 
@@ -39,7 +40,7 @@ function cmumps2fhirDiagnoses(data, cmumps_file, fhir_file) {
     // How many diagnoses do we have?  
     if (! _.isEmpty(diagnoses)) {
         var numberOfDiagnoses = (_.isArray(diagnoses)) ? diagnoses.length : 1;
-        console.log('Number of Diagnoses: ',numberOfDiagnoses);
+        logger.info('Number of Diagnoses: ',numberOfDiagnoses);
     }
 
     return diagnoses;

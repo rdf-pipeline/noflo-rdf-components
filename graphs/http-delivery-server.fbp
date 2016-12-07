@@ -1,6 +1,6 @@
 # http-delivery-server.fbp
 
-# Extracts the request body as a String and produces a 202 Accepted response. Optionally, also filters on request content type.
+# Given content and type, when a request is received with a matching vnid, it is written to the response body.
 
 # Exports
 INPORT=delivery.CONTENT:CONTENT

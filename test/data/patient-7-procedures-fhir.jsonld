@@ -1,0 +1,38 @@
+[ { resourceType: 'Procedure',
+    id: 'Procedure-1074046',
+    identifier: 
+     [ { use: 'usual',
+         type: 
+          { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
+            text: '1074046' },
+         value: 'Procedure/1074046' } ],
+    subject: { reference: 'Patient/2-000007', display: 'BUNNY, BUGS' },
+    status: 'completed',
+    category: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'HDDConcept-1450368',
+            userSelected: false } ],
+       text: 'HDDConcept-1450368' },
+    code: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'HDDConcept-1450368',
+            userSelected: false } ],
+       text: 'HDDConcept-1450368' },
+    performer: 
+     [ { actor: { reference: 'Provider-41200034', display: 'MOUSE, MICKEY' },
+         role: 
+          { coding: 
+             [ { system: 'cmumps',
+                 version: '0.0.1',
+                 code: 'cmumps',
+                 display: 'provider',
+                 userSelected: false } ],
+            text: 'provider' } } ],
+    performedDateTime: '1990-01-01T00:00:00',
+    encounter: { display: 'Encounter Procedure' } } ]

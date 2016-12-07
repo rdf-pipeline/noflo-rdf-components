@@ -9,7 +9,7 @@ var assert = chai.assert;
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
+var logger = require('../src/logger');
 
 var _ = require('underscore');
 
@@ -32,10 +32,10 @@ describe('split-wrapper', function() {
                 return new Promise(function(done) {
                     var node = commonTest.createComponent(splitWrapper({ inPorts:['vnid_hash'] }));
                     commonTest.onOutPortData(node, 'output', done);
-                    sinon.stub( console, 'error');
+                    logger.silence('error');
                     commonTest.sendData(node, 'vnid_hash', "A test input string");
                 }).then(function(done) {
-                   console.error.restore();
+                   logger.verbose('warn');
                    done.should.be.an('object');
                    done.vnid.should.equal('');
                    done.error.should.be.true;

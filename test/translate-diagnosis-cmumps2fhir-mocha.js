@@ -5,8 +5,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var _ = require('underscore');
 var fs = require('fs');
 
@@ -113,13 +111,13 @@ describe('translate-diagnosis-cmumps2fhir', function() {
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
-                    sinon.stub(logger, 'warn');
+                    logger.silence('warn');
                     network.graph.addInitial(parsedData, 'repeaterNode', 'in');
                     network.graph.addInitial('', 'cmumpsFileNode', 'in');
                     network.graph.addInitial('', 'fhirFileNode', 'in');
 
                 }).then(function(done) {
-                    logger.warn.restore();
+                    logger.verbose('warn');
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');
@@ -140,7 +138,7 @@ describe('translate-diagnosis-cmumps2fhir', function() {
                     done.graphUri.startsWith('urn:local:fhir:2-000007:rdf-components%2Ftranslate-diagnosis-cmumps2fhir:DiagnosticReport:100417-4559064');
 
                 }, function(fail) {
-                    logger.warn.restore();
+                    logger.verbose('warn');
                     console.error('fail: ',fail);
                     throw Error(fail);
                 });

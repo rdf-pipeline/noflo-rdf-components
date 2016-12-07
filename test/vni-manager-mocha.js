@@ -9,8 +9,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var componentFactory = require('../src/noflo-component-factory');
 var pipelineFactory = require('../src/pipeline-component-factory');
 
@@ -449,28 +447,24 @@ describe("vni-manager", function() {
 
         it('should get vni with input, output, and error state for a component in a noflo network', function() {
 	    this.timeout(3000);
+
             var attributeName = 'MeadowFarmCows';
             var attributeValue = 'Brindle and Bessie, Jenny and Boss';
 
             return test.createNetwork(
-                 {rdfObject: 'rdf-components/object',
-                  omega: 'core/Output'}
+                 {rdfObject: 'rdf-components/object'}
 
            ).then(function(network) {
                 var rdfObject = network.processes.rdfObject.component;
-                var omega = network.processes.omega.component;
 
                 return new Promise(function(done, fail) {
 
-                    test.onOutPortData(omega, 'out', done);
-                    network.graph.addEdge('rdfObject', 'output', 'omega', 'in');
+                    test.onOutPortData(rdfObject, 'output', done);
 
-                    sinon.stub(console,'log');
                     network.graph.addInitial(attributeName, 'rdfObject', 'key');
                     network.graph.addInitial(attributeValue, 'rdfObject', 'value');
 
                 }).then(function(done) {
-                    console.log.restore();
                     done.should.be.an('object');
                     done.vnid.should.equal('');
                     expect(done.error).to.be.undefined;
@@ -480,13 +474,13 @@ describe("vni-manager", function() {
                     done.componentName.should.equal('rdf-components/object');
                 }, function(fail) {
                     console.error(fail);
-                    console.log.restore();
                     throw Error(fail);
                 });
             });
         });
 
         it("should increment & decrement the totalVnis and totalDefaultVnis counters on VNI creation and deletion", function() {
+            this.timeout(2500);
 
             var nodeInstance;
             var testData = "Creativity is intelligence having fun";
@@ -549,6 +543,7 @@ describe("vni-manager", function() {
         });
 
         it("should decrement the totalVnis and totalDefaultVnis counters when all VNIs are deleted", function() {
+            this.timeout(3000);
 
             var nodeInstance;
             var testData = "The best road to progress is freedom's road.";
@@ -612,6 +607,8 @@ describe("vni-manager", function() {
         describe("#clearTransientInputs", function() {
 
             it("should not delete single IIP VNIs", function() {
+                this.timeout(2500);
+
                 var attributeName = 'MeadowFarm';
                 var attributeValue = 'Nelly';
                 var nodeVni;
@@ -645,23 +642,19 @@ describe("vni-manager", function() {
                                           vni.outputState({data: { [key]: value},
                                                            lm: createLm()});
                                       }}
-                    )},
-                    omega: 'core/Output'
+                    )}
 
                }).then(function(network) {
-                   var omega = network.processes.omega.component;
-                   network.graph.addEdge('node', 'output', 'omega', 'in');
+                   var node = network.processes.node.component;
 
                    return new Promise(function(done, fail) {
 
-                       test.onOutPortData(omega, 'out', done);
+                       test.onOutPortData(node, 'output', done);
 
-                       sinon.stub(console,'log');
                        network.graph.addInitial(attributeName, 'node', 'key');
                        network.graph.addInitial(attributeValue, 'node', 'value');
 
                    }).then(function(done) {
-                       console.log.restore();
                        test.verifyState(done, '', {[attributeName]: attributeValue});
 
                        // Verify we still have the same input states on the VNI
@@ -671,13 +664,14 @@ describe("vni-manager", function() {
                 
                    }, function(fail) {
                        console.error(fail);
-                       console.log.restore();
                        throw Error(fail);
                    });
                });
            });
 
            it("should delete mixed IIP/packet VNIs", function() {
+                this.timeout(2500);
+
                 var attributeName = 'MeadowFarm';
                 var attributeValue = 'Brindle';
                 var nodeVni;
@@ -712,29 +706,23 @@ describe("vni-manager", function() {
                                           vni.outputState({data: { [key]: value},
                                                            lm: createLm()});
                                       }}
-                    )},
-                    omega: 'core/Output'
+                    )}
 
                }).then(function(network) {
-                   var omega = network.processes.omega.component;
+                   var node = network.processes.node.component;
 
                    // Set up an edge though we won't use it 
                    network.graph.addEdge('repeater', 'out', 'node', 'value');
 
-                   network.graph.addEdge('node', 'output', 'omega', 'in');
-
                    return new Promise(function(done, fail) {
 
-                       test.onOutPortData(omega, 'out', done);
-
-                       sinon.stub(console,'log');
+                       test.onOutPortData(node, 'output', done);
 
                        // Send IIP input to the node
                        network.graph.addInitial(attributeName, 'node', 'key');
                        network.graph.addInitial(attributeValue, 'node', 'value'); 
 
                    }).then(function(done) {
-                       console.log.restore();
                        test.verifyState(done, '', {[attributeName]: attributeValue});
 
                        // Verify we still have the same key, but value is cleared
@@ -744,13 +732,14 @@ describe("vni-manager", function() {
                 
                    }, function(fail) {
                        console.error(fail);
-                       console.log.restore();
                        throw Error(fail);
                    });
                });
            });
 
            it("should delete single packet input VNI", function() {
+                this.timeout(2500);
+
                 var attributeName = 'MeadowFarm';
                 var attributeValue = 'Bessie';
                 var nodeVni;
@@ -785,24 +774,20 @@ describe("vni-manager", function() {
                                           vni.outputState({data: { [key]: value},
                                                            lm: createLm()});
                                       }}
-                    )},
-                    omega: 'core/Output'
+                    )}
 
                }).then(function(network) {
-                   var omega = network.processes.omega.component;
+                   var node = network.processes.node.component;
                    network.graph.addEdge('repeater', 'out', 'node', 'value');
-                   network.graph.addEdge('node', 'output', 'omega', 'in');
 
                    return new Promise(function(done, fail) {
 
-                       test.onOutPortData(omega, 'out', done);
+                       test.onOutPortData(node, 'output', done);
 
-                       sinon.stub(console,'log');
                        network.graph.addInitial(attributeName, 'node', 'key');
                        network.graph.addInitial(attributeValue, 'repeater', 'in');
 
                    }).then(function(done) {
-                       console.log.restore();
                        test.verifyState(done, '', {[attributeName]: attributeValue});
 
                        // Verify we still have the same key, but value is cleared
@@ -812,13 +797,14 @@ describe("vni-manager", function() {
                 
                    }, function(fail) {
                        console.error(fail);
-                       console.log.restore();
                        throw Error(fail);
                    });
                });
            });
 
            it("should delete a multi packet input VNI", function() {
+                this.timeout(3000);
+ 
                 var attributeName = 'MeadowFarm';
                 var attributeValue1 = 'Jenny';
                 var attributeValue2 = 'Boss';
@@ -857,26 +843,22 @@ describe("vni-manager", function() {
                                           vni.outputState({data: {[key]: values[0] + " & " + values[1]},
                                                            lm: createLm()});
                                       }}
-                    )},
-                    omega: 'core/Output'
+                    )}
 
                }).then(function(network) {
-                   var omega = network.processes.omega.component;
+                   var node = network.processes.node.component;
                    network.graph.addEdge('repeater1', 'out', 'node', 'value');
                    network.graph.addEdge('repeater2', 'out', 'node', 'value');
-                   network.graph.addEdge('node', 'output', 'omega', 'in');
 
                    return new Promise(function(done) {
 
-                       test.onOutPortData(omega, 'out', done);
+                       test.onOutPortData(node, 'output', done);
 
-                       sinon.stub(console,'log');
                        network.graph.addInitial(attributeName, 'node', 'key');
                        network.graph.addInitial(attributeValue1, 'repeater1', 'in');
                        network.graph.addInitial(attributeValue2, 'repeater2', 'in');
 
                    }).then(function(done) {
-                       console.log.restore();
                        test.verifyState(done, '', {[attributeName]: 'Jenny & Boss'});
 
                        // Verify we still have the same key, but value is cleared

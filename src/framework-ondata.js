@@ -204,9 +204,9 @@ function handleError( vni, port, lastErrorState  ) {
             // State was not sent on to an attached port, and we do have error data
             // so go ahead and log it for debugging/support use.
             if ( state.data.stack ) { 
-                console.error( state.data.stack );
+                logger.error( state.data.stack );
             } else { 
-                console.error( state.data );
+                logger.error( state.data );
             }
         }
     }

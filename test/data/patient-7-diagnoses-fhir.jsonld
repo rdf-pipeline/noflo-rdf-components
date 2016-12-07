@@ -1,0 +1,114 @@
+[ { resourceType: 'DiagnosticReport',
+    id: '100417-4559064',
+    identifier: 
+     [ [ { use: 'usual',
+           type: 
+            { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
+              text: 'cmumpss:Kg_Patient_Diagnosis-100417' },
+           value: 'cmumpss:Kg_Patient_Diagnosis-100417' } ] ],
+    status: 'final',
+    category: 'OTH',
+    code: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'V70.5 H',
+            userSelected: false } ],
+       text: 'V70.5 H' },
+    subject: { reference: 'Patient/2-000007', display: 'BUNNY,BUGS' },
+    conclusion: 'V70.5 H',
+    codedDiagnosis: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'V70.5 H',
+            userSelected: false } ],
+       text: 'V70.5 H' },
+    presentedForm: 
+     [ { _id: '100417-4559064',
+         type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+         label: '27642;OTHER EXAMINATION DEFINED POPULATION',
+         'problem-100417': '27642;OTHER EXAMINATION DEFINED POPULATION',
+         'patient-100417': { id: '2-000007', label: 'BUNNY,BUGS' },
+         'status-100417': 'Active',
+         'location-100417': { id: '44-154', label: 'OPTOMETRY ANY HEALTH CLINIC' },
+         'date_of_onset-100417': { value: '1990-01-01', type: 'xsd:date' },
+         'diagnosis-100417': 'V70.5 H' } ] },
+  { resourceType: 'DiagnosticReport',
+    id: '100417-4562039',
+    identifier: 
+     [ [ { use: 'usual',
+           type: 
+            { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
+              text: 'cmumpss:Kg_Patient_Diagnosis-100417' },
+           value: 'cmumpss:Kg_Patient_Diagnosis-100417' } ] ],
+    status: 'final',
+    category: 'OTH',
+    code: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'V72.12',
+            userSelected: false } ],
+       text: 'V72.12' },
+    subject: { reference: 'Patient/2-000007', display: 'BUNNY,BUGS' },
+    conclusion: 'V72.12',
+    codedDiagnosis: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'V72.12',
+            userSelected: false } ],
+       text: 'V72.12' },
+    presentedForm: 
+     [ { _id: '100417-4562039',
+         type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+         label: '27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT',
+         'problem-100417': '27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT',
+         'patient-100417': { id: '2-000007', label: 'BUNNY,BUGS' },
+         'status-100417': 'Active',
+         'location-100417': { id: '44-5083', label: 'HEARING CONSERVATION CLINIC' },
+         'date_of_onset-100417': { value: '1990-01-01', type: 'xsd:date' },
+         'diagnosis-100417': 'V72.12' } ] },
+  { resourceType: 'DiagnosticReport',
+    id: '100417-4568875',
+    identifier: 
+     [ [ { use: 'usual',
+           type: 
+            { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
+              text: 'cmumpss:Kg_Patient_Diagnosis-100417' },
+           value: 'cmumpss:Kg_Patient_Diagnosis-100417' } ] ],
+    status: 'final',
+    category: 'OTH',
+    code: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'V70.5 2',
+            userSelected: false } ],
+       text: 'V70.5 2' },
+    subject: { reference: 'Patient/2-000007', display: 'BUNNY,BUGS' },
+    conclusion: 'V70.5 2',
+    codedDiagnosis: 
+     { coding: 
+        [ { system: 'cmumps',
+            version: '0.0.1',
+            code: 'cmumps',
+            display: 'V70.5 2',
+            userSelected: false } ],
+       text: 'V70.5 2' },
+    presentedForm: 
+     [ { _id: '100417-4568875',
+         type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+         label: '19227;PERIODIC PREVENTION EXAMINATION',
+         'problem-100417': '19227;PERIODIC PREVENTION EXAMINATION',
+         'patient-100417': { id: '2-000007', label: 'BUNNY,BUGS' },
+         'status-100417': 'Active',
+         'location-100417': { id: '44-38', label: 'MILITARY SICKCALL ANY HEALTH CLINIC' },
+         'date_of_onset-100417': { value: '1990-01-01', type: 'xsd:date' },
+         'diagnosis-100417': 'V70.5 2' } ] } ]

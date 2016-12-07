@@ -5,8 +5,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var _ = require('underscore');
 var fs = require('fs');
 
@@ -37,9 +35,9 @@ describe('cmumpsfhir-prescriptions', function() {
 
         it('should return undefined if data is empty', function() {
             var node = test.createComponent(factory);
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             expect(factory.updater.call(node.vni(''), {})).to.be.undefined;
-            logger.warn.restore();
+            logger.verbose('warn');
         });
 
         it('should convert patient prescriptions to fhir', function() {
@@ -99,8 +97,8 @@ describe('cmumpsfhir-prescriptions', function() {
 
                     var data = fs.readFileSync(testFile, 'utf-8');
                     network.graph.addInitial(data, 'translator', 'data');
-                    network.graph.addInitial('', 'cmumpsFile', 'in');
-                    network.graph.addInitial('', 'fhirFile', 'in');
+                    network.graph.addInitial('/tmp/patient-7-prescriptions-cmumps.jsonld', 'cmumpsFile', 'in');
+                    network.graph.addInitial('/tmp/patient-7-prescriptions-fhir.jsonld', 'fhirFile', 'in');
 
 
                 }).then(function(done) {

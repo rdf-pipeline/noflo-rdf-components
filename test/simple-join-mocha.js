@@ -92,7 +92,7 @@ describe('simple-join', function() {
         });
 
         it('should send updated 3 element hash when resolved in a noflo network', function() {
-            this.timeout(2500);
+            this.timeout(3000);
 
             // Create a test network with the object and vni-data-output components
             return test.createNetwork(

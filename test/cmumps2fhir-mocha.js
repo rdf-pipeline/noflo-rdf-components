@@ -36,10 +36,10 @@ describe('cmumps2fhir', function() {
     });
 
     it('should return empty object if input data is empty', function() {
-        sinon.stub(logger, 'warn');
+        logger.silence('warn');
         var node = test.createComponent(componentFactory({}, vniManager));
         expect(cmumps2fhir.call(node.vni(), {})).to.be.empty;
-        logger.warn.restore();
+        logger.verbose('warn');
     });
 
     it('should extract data using the specified extractor function', function() {
@@ -131,9 +131,9 @@ describe('cmumps2fhir', function() {
         var cmumpsFile='/tmp/cmumpsExtract.out';
         var fhirFile='/tmp/fhirTranslation.out';
 
-        sinon.stub(logger, 'info');
+        logger.silence('info');
         var results = cmumps2fhir.call(node.vni(), testData, extractor, translator, cmumpsFile, fhirFile);
-        logger.info.restore();
+        logger.verbose('dir');
 
         results.should.equal('https://github.com/fhir-pipeline');
 

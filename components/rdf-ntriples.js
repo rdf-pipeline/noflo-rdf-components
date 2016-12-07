@@ -8,6 +8,7 @@ var wrapper = require('../src/javascript-wrapper.js');
 /**
  * Converts an RDF JS Interface Graph object into an object with the property
  * 'tokens' containing an Array of N-Triples tokens. tokens.join('') will produce an N-Triples string.
+ * This is useful for AllegroGraph.
  * @param input RDF JS Interface Graph object
  * @see https://www.w3.org/TR/rdf-interfaces/#graphs
  */

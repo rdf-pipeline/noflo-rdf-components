@@ -2,6 +2,7 @@
 
 # Clears a graph and loads the graph-url as the data into an optional graph-uri
 # This file uses http://handlebarsjs.com/
+# The resulting document is SPARQL Update (tested with AllegroGraph)
 
 CLEAR {{#if graph-uri}}SILENT GRAPH <{{{graph-uri}}}>{{else}}DEFAULT{{/if}};
 

@@ -4,8 +4,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var test = require('./common-test');
 var factory = require('../components/add-metadata');
 
@@ -64,30 +62,25 @@ describe("add-metadata", function() {
             return test.createNetwork(
                  { metadata: 'rdf-components/parse-json',
                    data: 'rdf-components/parse-json',
-                   addMetadata: 'rdf-components/add-metadata',
-                   finito: 'core/Output'}
+                   addMetadata: 'rdf-components/add-metadata'}
 
            ).then(function(network) {
 
                 var metadata = network.processes.metadata.component;
                 var data = network.processes.data.component;
                 var addMetadata = network.processes.addMetadata.component;
-                var finito = network.processes.finito.component;
 
                 return new Promise(function(done, fail) {
 
-                    test.onOutPortData(finito, 'out', done);
+                    test.onOutPortData(addMetadata, 'output', done);
         
                     network.graph.addEdge('data', 'output', 'addMetadata', 'data');
                     network.graph.addEdge('metadata', 'output', 'addMetadata', 'metadata');
-                    network.graph.addEdge('addMetadata', 'output', 'finito', 'in');
 
-                    sinon.stub(console,'log');
                     network.graph.addInitial(JSON.stringify(testData), 'data', 'input');
                     network.graph.addInitial(JSON.stringify(testMetadata), 'metadata', 'input');
 
                 }).then(function(done) {
-                    console.log.restore();
                     done.should.be.an('object');
                     test.verifyState(done, '', testData);
                     var metadataKeys = Object.keys(testMetadata);
@@ -96,7 +89,6 @@ describe("add-metadata", function() {
                     });
                 }, function(fail) {
                     console.error(fail);
-                    console.log.restore();
                     throw Error(fail);
                 }); 
             }); 

@@ -4,7 +4,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
+var logger = require('../src/logger');
 
 var test = require('./common-test');
 var factory = require('../components/add-metadatum');
@@ -58,36 +58,33 @@ describe('add-metadatum', function() {
             return test.createNetwork(
                  { alpha: 'rdf-components/parse-json',
                    valueRepeater: 'core/Repeat',
-                   addMetadatum: 'rdf-components/add-metadatum',
-                   omega: 'core/Output'}
+                   addMetadatum: 'rdf-components/add-metadatum'}
 
            ).then(function(network) {
                 var alpha = network.processes.alpha.component;
                 var valueRepeater = network.processes.valueRepeater.component;
                 var addMetadatum = network.processes.addMetadatum.component;
-                var omega = network.processes.omega.component;
 
                 return new Promise(function(done, fail) {
 
-                    test.onOutPortData(omega, 'out', done);
+                    test.onOutPortData(addMetadatum, 'output', done);
         
                     network.graph.addEdge('alpha', 'output', 'addMetadatum', 'data');
                     network.graph.addEdge('valueRepeater', 'out', 'addMetadatum', 'value');
-                    network.graph.addEdge('addMetadatum', 'output', 'omega', 'in');
 
-                    sinon.stub(console,'log');
+                    logger.silence('warn');
                     network.graph.addInitial(testdata, 'alpha', 'input');
                     network.graph.addInitial(attributeName, 'addMetadatum', 'name');
                     network.graph.addInitial(attributeValue, 'valueRepeater', 'in');
 
                 }).then(function(done) {
-                    console.log.restore();
+                    logger.verbose('warn');
                     done.should.be.an('object');
                     test.verifyState(done, '', JSON.parse(testdata));
                     done[attributeName].should.equal(attributeValue);
                 }, function(fail) {
                     console.error(fail);
-                    console.log.restore();
+                    logger.verbose('warn');
                     throw Error(fail);
                 }); 
             }); 

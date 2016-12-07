@@ -9,7 +9,7 @@ var chaiAsPromised = require('chai-as-promised');
 chai.should();
 chai.use(chaiAsPromised);
 
-var sinon = require('sinon');
+var logger = require('../src/logger');
 
 var _ = require('underscore');
 
@@ -416,7 +416,7 @@ describe('merge-patient-lab-iips', function() {
         it("should handle JSON parse errors", function() {
             this.timeout(2500);
             var node = test.createComponent(compFactory);
-            sinon.stub(console, 'error');
+            logger.silence('error');
             return new Promise(function(done, fail){
 
                 test.onOutPortData(node, 'error', fail);
@@ -432,7 +432,6 @@ describe('merge-patient-lab-iips', function() {
 
              }).then(function(payload){
 
-                console.error.restore();
                 payload.should.exist;
                 payload.should.not.be.empty;
                 payload.should.have.all.keys('vnid', 'data', 'error', 'stale', 
@@ -452,7 +451,7 @@ describe('merge-patient-lab-iips', function() {
                 errorState.data.toString().should.contain('Error: Unable to parse parameter');
              }, function(fail) {
 
-                console.error.restore();
+                logger.verbose('warn');
                 assert.isNotOk(fail);
              });
         });

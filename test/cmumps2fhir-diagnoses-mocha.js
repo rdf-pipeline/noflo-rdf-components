@@ -5,8 +5,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var _ = require('underscore');
 var fs = require('fs');
 
@@ -37,9 +35,9 @@ describe('cmumpsfhir-diagnoses', function() {
 
         it('should return undefined if data is empty', function() {
             var node = test.createComponent(factory);
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             expect(factory.updater.call(node.vni(''), {})).to.be.undefined;
-            logger.warn.restore();
+            logger.verbose('warn');
         });
 
         it('should convert patient diagnoses to fhir', function() {
@@ -49,9 +47,7 @@ describe('cmumpsfhir-diagnoses', function() {
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
             // Call the updater
-            sinon.stub(console, 'log');
             var translation = factory.updater.call(vni,parsedData);
-            console.log.restore();
 
             // validate results
             translation.should.not.be.empty;
@@ -73,9 +69,7 @@ describe('cmumpsfhir-diagnoses', function() {
             test.rmFile(cmumpsFile);
             test.rmFile(fhirFile);
 
-            sinon.stub(console, 'log');
             var translation = factory.updater.call(node.vni(''), parsedData, cmumpsFile, fhirFile);
-            console.log.restore(); 
 
             translation.should.not.be.empty;
 
@@ -109,13 +103,11 @@ describe('cmumpsfhir-diagnoses', function() {
 
                     var data = fs.readFileSync(testFile, 'utf-8');
 
-                    sinon.stub(console, 'log');
                     network.graph.addInitial(data, 'translator', 'data');
-                    network.graph.addInitial('', 'cmumpsFile', 'in');
-                    network.graph.addInitial('', 'fhirFile', 'in');
+                    network.graph.addInitial('/tmp/patient-7-diagnoses-cmumps.jsonld', 'cmumpsFile', 'in');
+                    network.graph.addInitial('/tmp/patient-7-diagnoses-fhir.jsonld', 'fhirFile', 'in');
 
                 }).then(function(done) {
-                    console.log.restore();
                     done.should.exist;
                     done.should.not.be.empty;
                     done.should.be.an('object');

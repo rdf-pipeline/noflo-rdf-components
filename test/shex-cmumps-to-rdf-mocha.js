@@ -11,7 +11,6 @@ var should = chai.should();
 
 var _ = require('underscore');
 var fs = require('fs');
-var winston = require('winston');
 
 var logger = require('../src/logger');
 var test = require('./common-test');
@@ -56,7 +55,7 @@ var graphContext = {
    }
 };
 describe('shex-cmumps-to-rdf', function() {
-    logger.remove('console');
+    logger.silence();
 
     it('should exist as a function', function() {
         compFactory.should.exist;
@@ -81,6 +80,7 @@ describe('shex-cmumps-to-rdf', function() {
     }); 
 
     it('should throw an error if passed invalid JSON', function() {
+        this.timeout(4000);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 shex: "rdf-components/shex-cmumps-to-rdf"
@@ -92,6 +92,7 @@ describe('shex-cmumps-to-rdf', function() {
     }); 
 
     it('should throw an error if passed input data with no context', function() {
+        this.timeout(2500);
         return new Promise(function(done, fail) {
             test.createNetwork({
                 shex: "rdf-components/shex-cmumps-to-rdf"

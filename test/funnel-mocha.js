@@ -8,10 +8,15 @@ var should = chai.should();
 
 var sinon = require('sinon');
 
-var test = require('./common-test');
-var factory = require('../components/funnel');
+var os = require('os');
+
+var format = require('../src/format');
 var logger = require('../src/logger');
 var profiler = require('../src/profiler');
+
+var factory = require('../components/funnel');
+
+var test = require('./common-test');
 
 describe('funnel', function() {
 
@@ -32,9 +37,7 @@ describe('funnel', function() {
             var node = test.createComponent(factory);
             var vni = node.vni('');
             var input = 'un';
-            sinon.stub(console,'log');
             var result = factory.updater.call(vni, input);
-            console.log.restore();
             result.should.equal(input);
         });
 
@@ -44,12 +47,10 @@ describe('funnel', function() {
             var input1 = 'un';
             var input2 = 'deux';
 
-            sinon.stub(console,'log');
             var result = factory.updater.call(vni, input1);
             result.should.equal(input1);
 
             result = factory.updater.call(vni, input2);
-            console.log.restore();
             expect(result).to.be.undefined;
         });
 
@@ -60,7 +61,6 @@ describe('funnel', function() {
             var input2 = 'deux';
 
             // Feed in first input
-            sinon.stub(console,'log');
             var result = factory.updater.call(vni, input1);
             result.should.equal(input1);
 
@@ -73,7 +73,6 @@ describe('funnel', function() {
 
             // Second input should now be popped off the queue and returned
             result.should.equal(input2);
-            console.log.restore();
         });
 
         it('Should funnel three inputs, one at a time', function() {
@@ -84,7 +83,6 @@ describe('funnel', function() {
             var input3 = 'trois';
 
             // Feed in first input
-            sinon.stub(console,'log');
             var result = factory.updater.call(vni, input1);
             result.should.equal(input1);
 
@@ -103,7 +101,6 @@ describe('funnel', function() {
             // Feed back the 2nd input, indicating it is now done and verify we get the 3rd input
             result = factory.updater.call(vni, input2);
             result.should.equal(input3);
-            console.log.restore();
         });
     });
 
@@ -119,27 +116,23 @@ describe('funnel', function() {
             profiler.pipelineMetrics.totalVnis = 0;
 
             return test.createNetwork(
-                 { funnel: 'rdf-components/funnel',
-                   omega: 'core/Output'}
+                 {funnel: 'rdf-components/funnel'}
 
            ).then(function(network) {
                 var funnel = network.processes.funnel.component;
-                var omega = network.processes.omega.component;
 
                 return new Promise(function(done, fail) {
 
-                    test.onOutPortData(omega, 'out', done);
-        
-                    network.graph.addEdge('funnel', 'output', 'omega', 'in');
+                    test.onOutPortData(funnel, 'output', done);
+                    test.onOutPortData(funnel, 'error', fail);
 
-                    // sinon.stub(console,'log');
-                    sinon.stub(console,'log', function(message) { 
+                    sinon.stub(logger,'info', function(message) { 
                         logBuffer = _.isUndefined(logBuffer) ? message : logBuffer +  message;
                     });
                     network.graph.addInitial(input1, 'funnel', 'input');
 
                 }).then(function(done) {
-                    console.log.restore();
+                    logger.info.restore();
 
                     logBuffer.should.contain('Total VNIs: 1');
                     logBuffer.should.contain('Default VNIs: 1');
@@ -149,8 +142,8 @@ describe('funnel', function() {
                     done.funnelId.should.exist;
                     done.funnelId.should.equal(input1);
                 }, function(fail) {
-                    console.error(fail);
-                    console.log.restore();
+                    logger.info.restore();
+                    logger.error(fail);
                     throw Error(fail);
                 }); 
             }); 
@@ -175,14 +168,14 @@ describe('funnel', function() {
                 return new Promise(function(done, fail) {
 
                     test.onOutPortData(extractPatientId, 'out', done);
+                    test.onOutPortData(funnel, 'error', fail);
         
                     network.graph.addEdge('funnel', 'output', 'extractPatientId', 'in');
                     network.graph.addEdge('extractPatientId', 'out', 'funnel', 'input');
 
-                    sinon.stub(console,'log', function(message) { 
+                    sinon.stub(logger,'info', function(message) { 
                         logBuffer = _.isUndefined(logBuffer) ? message : logBuffer +  message;
                     });
-                    sinon.stub(logger,'warn');
                     network.graph.addInitial('patientId', 'extractPatientId', 'key');
                     network.graph.addInitial('patientId', 'funnel', 'metadata_key');
                     network.graph.addInitial(input1, 'funnel', 'input');
@@ -193,8 +186,6 @@ describe('funnel', function() {
                         test.onOutPortData(funnel, 'output', done2);
                         network.graph.addInitial(input2, 'funnel', 'input');
                     }).then(function(done2) {
-                        console.log.restore();
-                        logger.warn.restore();
                         logBuffer.should.contain('Total VNIs: 1');
                         logBuffer.should.contain('Default VNIs: 1');
                         test.verifyState(done2, '', input2);
@@ -202,11 +193,97 @@ describe('funnel', function() {
                         done2.patientId.should.equal(input2);
                     });
                 }, function(fail) {
-                    console.error(fail);
-                    console.log.restore();
+                    logger.error(fail);
                     throw Error(fail);
                 }); 
             }); 
         });
+    });
+
+    describe('memory testing', function() {
+
+        it('heap should not grow', function(done) {
+
+            // verify we can control garbage collection for this test.
+            if (_.isUndefined(global.gc)) {
+                console.warn('        skipping heap growth test; run with --expose-gc');
+                return done();
+            }
+
+            return test.createNetwork(
+                 { funnel: 'rdf-components/funnel'}
+
+            ).then(function(network) {
+                var funnel = network.processes.funnel.component;
+
+                var max = 50;
+                var inputs = [];
+                for (var i=0; i < max; i++) {
+                    inputs.push(i);
+                }
+
+                var count = 0;
+                var validator = function(result) {
+                    // validate the funnel returned what we expect
+                    result.should.be.an('object');
+                    result.vnid.should.equal('');
+                    result.data.should.equal(count.toString());
+                    expect(result.error).to.be.undefined;
+                    result.componentName.should.equal('rdf-components/funnel');
+                    result.patientId.should.equal(result.data);
+                    result.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+
+                    // Notify the funnel we are done processing this one
+                    network.graph.addInitial(result.data, 'funnel', 'input');
+                    count++;
+                };
+
+                // Build a list of promises to execute a file-loader component request
+                var promiseFactories =  _.map(inputs, function(input, i) {
+                    var payload = (i == 0) ? [{payload: input.toString(), componentName: 'funnel', portName: 'input'},
+                                               {payload: 'patientId', componentName: 'funnel', portName: 'metadata_key'}]
+                                               : [{payload: input.toString(), componentName: 'funnel', portName: 'input'}];
+                    return test.executePromise.bind(test, network, funnel, payload, validator);
+                });
+
+                // Garbage collect & get initial heap use
+                global.gc();
+                var initHeap = process.memoryUsage().heapUsed;
+                var initFreeMem = os.freemem();
+
+                // Execute our calls to funnel, one at a time
+                return Promise.resolve(test.executeSequentially(promiseFactories)).then(function() {
+
+                    // wait until the funnel receives the last completion message from validator and completes
+                    setTimeout(function() {
+
+                       // run garbage collection
+                       global.gc();
+
+                       // check to see if the heap has grown or not
+                       var finishHeap = process.memoryUsage().heapUsed;
+                       var heapDelta = finishHeap - initHeap;
+                       if (heapDelta > 0) {
+                           logger.error('        Funnel component heap grew!  After ' + max + 
+                                        ' executions, heap difference=' + format.bytesToMb(heapDelta));
+                           heapDelta.should.not.be.greaterThan(0);
+                       }
+ 
+                       // check whether our free memory has decreased
+                       var finishMem = os.freemem();
+                       var freeMemDelta = finishMem - initFreeMem;
+                       if (freeMemDelta < 0) {
+                           logger.error('        O/S Free memory decreased!  After ' + max + 
+                                        ' executions, free memory difference=' + format.bytesToMb(-freeMemDelta));
+                           freeMemDelta.should.not.be.lessThan(0);
+                       }
+
+                       done();
+                    }, 200);
+               });
+
+            });
+        });
+
     });
 });

@@ -1,39 +1,43 @@
 // logger.js
 
-var path = require('path');
 var _ = require('underscore');
-var winston = require('winston');
-var stackTrace = require('stack-trace');
+
+var levels = [
+    'debug',
+    'dir',
+    'log',
+    'info',
+    'warn',
+    'error',
+    'assert'
+];
 
 /**
  * Creates a custom logger for this package
  */
-module.exports = new winston.Logger({
-    transports: [
-        new winston.transports.Console({
-            name: 'console',
-            level: 'warn',
-            colorize: true
-        }),
-        new winston.transports.File({
-            name: 'rdf-components',
-            filename: 'rdf-components.log',
-            level: 'info'
-        })
-    ]
-});
+module.exports = {
+    time: console.time.bind(console),
+    timeEnd: console.timeEnd.bind(console),
+    silence: function(limit) {
+        levels.forEach(function(level) {
+            if (!limit || limit == 'all' || levels.indexOf(level) <= levels.indexOf(limit))
+                this[level] = _.noop;
+        }, this);
+    },
+    verbose: function(limit) {
+        levels.forEach(function(level) {
+            if (levels.indexOf(level) >= levels.indexOf(limit))
+                this[level] = logging(console, level);
+        }, this);
+    }
+};
 
-module.exports.rewriters.push(function(level, msg, meta) {
-    if (!meta.nodeInstance) return meta;
-    var obj = meta.nodeName || meta.inputStates ? {} : _.clone(meta);
-    var frame = stackTrace.get()[5];
-    var functionName = frame.getFunctionName();
-    var filename = path.basename(frame.getFileName());
-    return _.omit(_.extend(obj, {
-        source: filename,
-        caller: functionName,
-        node: meta.nodeInstance.nodeName,
-        comp: meta.nodeInstance.componentName,
-        nodeInstance: null
-    }), _.negate(Boolean));
-});
+module.exports.verbose('all');
+module.exports.silence('debug');
+
+function logging(console, level) {
+    var prop = level == 'debug' ? 'log' : level;
+    return function (/* arguments */) {
+        return console[prop].apply(console, arguments);
+    };
+}

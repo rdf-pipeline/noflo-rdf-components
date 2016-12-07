@@ -1,6 +1,8 @@
 // xml-to-rdf.js
 
 var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
 
 var assert = chai.assert;
 var expect = chai.expect;
@@ -8,9 +10,14 @@ var should = chai.should();
 
 var _ = require('underscore');
 var fs = require('fs');
+var os = require('os');
+
+var compFactory = require('../components/xml-to-rdf');
+
+var format = require('../src/format');
+var logger = require('../src/logger');
 
 var test = require('./common-test');
-var compFactory = require('../components/xml-to-rdf');
 
 describe('xml-to-rdf', function() {
 
@@ -77,7 +84,7 @@ describe('xml-to-rdf', function() {
 
    describe('functional behavior', function() {
        it('should translate patient demographics fhir xml to RDF in a noflo network', function() {
-           this.timeout(5000);
+           this.timeout(3500);
 
            // Get classpath for this operating system and check it exists
            var classpath = test.saxonClasspath();
@@ -148,7 +155,7 @@ describe('xml-to-rdf', function() {
        });
 
        it('should translate patient prescription fhir xml to RDF in a noflo network', function() {
-          this.timeout(3750);
+          this.timeout(4000);
            return test.createNetwork(
                 { node1: 'core/Repeat',
                   node2: 'core/Repeat',
@@ -217,37 +224,28 @@ describe('xml-to-rdf', function() {
        it('should translate patient procedures fhir xml to RDF in a noflo network', function() {
           this.timeout(5000);
            return test.createNetwork(
-                { node1: 'core/Repeat',
-                  node2: 'core/Repeat',
-                  node3: 'core/Repeat',
-                  node4: 'core/Repeat',
-                  node5: { getComponent: compFactory }
+                { sources: 'core/Repeat',
+                  xmlToRdf: { getComponent: compFactory }
             }).then(function(network) {
-
+                var sources = network.processes.sources.component;
+                var xmlToRdf = network.processes.xmlToRdf.component;
+                network.graph.addEdge('sources', 'out', 'xmlToRdf', 'sources');
+    
                 return new Promise(function(done, fail) {
 
-                    // True noflo component - not facade
-                    var node1 = network.processes.node1.component;
-                    var node2 = network.processes.node2.component;
-                    var node3 = network.processes.node3.component;
-                    var node4 = network.processes.node4.component;
-                    var node5 = network.processes.node5.component;
+                    test.onOutPortData(xmlToRdf, 'output', done);
+                    test.onOutPortData(xmlToRdf, 'error', fail);
 
-                    test.onOutPortData(node5, 'output', done);
-                    test.onOutPortData(node5, 'error', fail);
+                    network.graph.addInitial(['./test/data/testProcedure1.xml',
+                                              './test/data/testProcedure2.xml'],
+                                             'sources', 
+                                             'in');
 
-                    network.graph.addEdge('node1', 'out', 'node5', 'sources');
-                    network.graph.addEdge('node2', 'out', 'node5', 'classpath');
-                    network.graph.addEdge('node3', 'out', 'node5', 'transform');
-                    network.graph.addEdge('node4', 'out', 'node5', 'outdir');
-
-		    network.graph.addInitial( ['./test/data/testProcedure1.xml', './test/data/testProcedure2.xml'], 'node1', 'in');
-                    
                     var classpath = test.saxonClasspath();
-                    network.graph.addInitial(classpath, 'node2', 'in');
+                    network.graph.addInitial(classpath, 'xmlToRdf', 'classpath');
 
-                    network.graph.addInitial('./xslt/fhir-xml-to-rdf.xsl', 'node3', 'in');
-                    network.graph.addInitial('/tmp/', 'node4', 'in');
+                    network.graph.addInitial('./xslt/fhir-xml-to-rdf.xsl', 'xmlToRdf', 'transform');
+                    network.graph.addInitial('/tmp/', 'xmlToRdf', 'outdir');
 
                 }).then(function(done) {
 
@@ -268,7 +266,7 @@ describe('xml-to-rdf', function() {
                     expect(done.stale).to.be.undefined;
                     expect(done.groupLm).to.be.undefined;
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                    done.componentName.should.equal('node5');
+                    done.componentName.should.equal('xmlToRdf');
 
                     // Now check the file
                     var results = fs.readFileSync(done.data[0], 'utf8');
@@ -287,7 +285,95 @@ describe('xml-to-rdf', function() {
                 });
            });
        });
+   });
 
+   describe('memory testing', function() {
+
+       /**
+        * This test currently fails because there is a memory leak in the xslt4node library.
+        * See: https://github.com/e2ebridge/xslt4node/issues/9
+        */
+       it('heap should not grow and free memory should not drop significantly', function(done) {
+
+           // verify we can control garbage collection for this test.
+           if (_.isUndefined(global.gc)) {
+               console.warn('        skipping heap growth test; run with --expose-gc');
+               return done();
+           }
+
+           this.timeout(6000);
+
+           return test.createNetwork(
+                { sources: 'core/Repeat',
+                  xmlToRdf: { getComponent: compFactory }
+
+            }).then(function(network) {
+                var sources = network.processes.sources.component;
+                var xmlToRdf = network.processes.xmlToRdf.component;
+                
+                network.graph.addEdge('sources', 'out', 'xmlToRdf', 'sources');
+
+                var max = 10;
+                var inputs = [];
+                for (var i=0; i < max; i++) { 
+                    inputs.push(['./test/data/testProcedure1.xml', './test/data/testProcedure2.xml']);
+                }
+
+                var count = 0;
+                var validator = function(vni) { 
+                    count++;
+                    vni.vnid.should.equal('');
+                    vni.data.should.be.an('array');
+                    var data = vni.data.toString();
+                    data.should.contain('/tmp/rdf-fhir-urn:local:fhir:Procedure:Procedure-1074046-');
+                    data.should.contain('/tmp/rdf-fhir-urn:local:fhir:Procedure:Procedure-1277097-');
+                    expect(vni.error).to.be.undefined;
+                    expect(vni.stale).to.be.undefined;
+                    expect(vni.groupLm).to.be.undefined;
+                    vni.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+                    vni.componentName.should.equal('xmlToRdf');
+                };
+
+                // Build a list of promises to execute a component request
+                var promiseFactories =  _.map(inputs, function(input, i) {
+                    var payload = (i == 0) ? [{payload: input, componentName: 'xmlToRdf', portName: 'sources'},
+                                              {payload: test.saxonClasspath(), componentName: 'xmlToRdf', portName: 'classpath'},
+                                              {payload: './xslt/fhir-xml-to-rdf.xsl', componentName: 'xmlToRdf', portName: 'transform'},
+                                              {payload: '/tmp/', componentName: 'xmlToRdf', portName: 'outdir'}]
+                                           : [{payload: input, componentName: 'xmlToRdf', portName: 'sources'}];
+                    return test.executePromise.bind(test, network, xmlToRdf, payload, validator);
+                });
+
+                // Garbage collect & get initial heap use
+                global.gc();
+                var initHeap = process.memoryUsage().heapUsed;
+                var initFreeMem = os.freemem();
+                
+                // Execute our 100 calls to funnel, one at a time
+                return Promise.resolve(test.executeSequentially(promiseFactories)).then(function(results) {
+                       global.gc();
+
+                       // check to see if the heap has grown or not
+                       var finishHeap = process.memoryUsage().heapUsed;
+                       var heapDelta = finishHeap - initHeap;
+                       if (heapDelta > 0) {
+                           logger.error('\n        Component heap grew after a run with ' + max +
+                                         ' component calls!  Heap difference=' + format.bytesToMb(heapDelta));
+                           heapDelta.should.not.be.above(0);
+                       }
+
+                       // check whether our free memory has decreased
+                       var finishMem = os.freemem();
+                       var freeMemDelta = finishMem - initFreeMem;
+                       if (freeMemDelta < 0) {
+                           logger.error('\n        O/S Free memory decreased after a run with ' + max +
+                                         ' component calls!  Free memory difference=' + format.bytesToMb(-freeMemDelta));
+                           freeMemDelta.should.not.be.below(0);
+                       } 
+                       done();
+                });
+            });
+       });
    });
 });
 

@@ -11,6 +11,16 @@ var expect = chai.expect;
 var noflo = require('noflo');
 var _ = require('underscore');
 var fs = require('fs');
+var logger = require('../src/logger');
+
+before(function() {
+    logger.silence('info');
+});
+
+after(function() {
+    logger.verbose('all');
+    logger.silence('debug');
+});
 
 module.exports = {
 
@@ -108,6 +118,84 @@ module.exports = {
                  }
              });
         }
+    },
+
+    /**
+     * Executes a single promise factory
+     *
+     * @param network a handle to the noflo network under test
+     * @param component component under test within the network
+     * @param inputs an array of inputs to be sent to start the test.
+     *        Inputs must have:
+     *            - payload data to be sent
+     *            - component in the network to which payload should be sent
+     *            - portName port on the component to which payload should be sent
+     * @param validation optional parameter that can be either the expect object result or
+     *                   a function to be called to validate the results when promise completes
+     */
+    executePromise: function(network, component, inputs, validation) {
+
+        // Save the current test context for use within the promise
+        var test = this;
+
+        return new Promise(function(done, fail) {
+
+            // Listen to the output and error ports of component under test
+            test.onOutPortData(component, 'output', done);
+            test.onOutPortData(component, 'error', fail);
+
+            // If we have some inputs, walk the list and send them
+            if (!_.isEmpty(inputs)) {
+
+                // send each input to its specified component and port
+                inputs.forEach( function(input) {
+                    network.graph.addInitial(input.payload, input.componentName, input.portName);
+                });
+            }
+
+        }).then(function(done) {
+
+           // Are we doing validation?
+           if (!_.isUndefined(validation)) {
+
+              if (_.isFunction(validation)) {
+                 // Got a function to do validation - call it now
+                 validation.call(test, done, inputs);
+
+              } else if (_.isObject(done)) {
+                  done.should.deep.equal(validation);
+              } else {
+                  done.should.equal(validation);
+              }
+
+              return done;
+           }
+
+        }, function(fail) {
+            logger.error('Test failure: ',fail);
+            throw Error(fail);
+        });
+    },
+
+    /**
+     *  Process each promise sequentially.
+     *
+     * @param promiseFactories an array of promise factories that will build and execute a promise
+     *
+     * @return an array of with the promise results of each factory
+     */
+    executeSequentially: function(promiseFactories) {
+        var result = Promise.resolve();
+        var results = [];
+
+        // Execute each promise, one at a time
+        promiseFactories.forEach(function (promiseFactory, index) {
+           result = result.then(promiseFactory);
+           results.push(result);
+        });
+
+        // Wait until all promises complete and return the results of each in an array
+        return Promise.all(results);
     },
 
     sendData: function(node, port, payload) {
