@@ -80,7 +80,7 @@ describe('translate-demographics-cmumps2fhir', function() {
 
     describe('functional behavior', function() {
        it('should convert patient demographics to fhir in a noflo network', function() {
-           this.timeout(2500);
+           this.timeout(4000);
            return test.createNetwork(
                { funnel: 'rdf-components/funnel',
                  repeatData: 'rdf-components/repeat-data',
@@ -156,7 +156,7 @@ describe('translate-demographics-cmumps2fhir', function() {
        });
 
        it("should maintain state with a unique graphURI for each VNI with a distinct VNID", function() {
-           this.timeout(3000);
+           this.timeout(5000);
            return test.createNetwork(
                { funnel: 'rdf-components/funnel',
                  repeatData: 'rdf-components/repeat-data',

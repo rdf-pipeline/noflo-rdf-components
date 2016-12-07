@@ -222,7 +222,7 @@ describe('xml-to-rdf', function() {
        });
 
        it('should translate patient procedures fhir xml to RDF in a noflo network', function() {
-          this.timeout(4000);
+          this.timeout(5000);
            return test.createNetwork(
                 { sources: 'core/Repeat',
                   xmlToRdf: { getComponent: compFactory }
@@ -255,9 +255,9 @@ describe('xml-to-rdf', function() {
 
                     done.should.have.all.keys('vnid','data','groupLm','lm','stale','error', 'componentName');
                     done.vnid.should.equal('');
-
                     done.data.should.be.an('array');
                     done.data.should.have.length(2);
+
                     var doneData = done.data.toString();
                     doneData.should.contain('/tmp/rdf-fhir-urn:local:fhir:Procedure:Procedure-1074046-');
                     doneData.should.contain('/tmp/rdf-fhir-urn:local:fhir:Procedure:Procedure-1277097-');
