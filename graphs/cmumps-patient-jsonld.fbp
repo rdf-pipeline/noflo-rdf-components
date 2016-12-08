@@ -15,7 +15,6 @@ OUTPORT=parseJson.OUTPUT:OUTPUT
 'http://{+authority}/patient_graph{?dataset,datatype,patientid}' -> URL request
 
 # Default request URL parameters
-'10.255.241.50:8080' -> VALUE setAuthority
 'datatype=all' -> IN parameters(adapters/PropStringToObject) OUT -> PARAMETERS request
 
 # Request Headers
