@@ -89,6 +89,7 @@ describe('file-loader', function() {
                expect(state.error).to.be.undefined;
                expect(state.stale).to.be.undefined;
                expect(state.groupLm).to.be.undefined;
+               expect(state.id).to.be.undefined;
                state.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
            });
 
@@ -98,6 +99,54 @@ describe('file-loader', function() {
            numberOfSends.should.equal(3);
         });
 
+        it("should use default VNI for sequential sending when configured to do so", function() {
+           var node = test.createComponent(factory);
+           var testfile = __dirname+"/data/ids.txt";
+           process.env.floadEnvVar = testfile;
+
+           var result = factory.updater.call(node.vni(''), 'floadEnvVar', 'UTF-8', true);
+           result.should.equal('1');
+           var outputState = node.vni('').outputState();
+           outputState.vnid.should.equal('');
+           expect(outputState.error).to.be.undefined;
+           expect(outputState.stale).to.be.undefined;
+           expect(outputState.groupLm).to.be.undefined;
+           outputState.id.should.equal('1');
+
+           result = factory.updater.call(node.vni(''), 'floadEnvVar', 'UTF-8', true, 'patientId');
+           result.should.equal('2');
+           outputState = node.vni('').outputState();
+           outputState.vnid.should.equal('');
+           expect(outputState.error).to.be.undefined;
+           expect(outputState.stale).to.be.undefined;
+           expect(outputState.groupLm).to.be.undefined;
+           outputState.patientId.should.equal('2');
+        });
+
+        it("should set specified metadata key", function() {
+           var node = test.createComponent(factory);
+           var testfile = __dirname+"/data/ids.txt";
+           process.env.floadEnvVar = testfile;
+
+           var outPort = node.outPorts.output;
+           var numberOfSends = 0;
+           sinon.stub(outPort,'sendIt', function(state) {
+               numberOfSends++;
+               state.should.be.an('object');
+               state.vnid.should.equal(numberOfSends.toString());
+               state.data.should.equal(numberOfSends.toString());
+               state.patientId.should.equal(numberOfSends.toString());
+               expect(state.error).to.be.undefined;
+               expect(state.stale).to.be.undefined;
+               expect(state.groupLm).to.be.undefined;
+               state.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
+           });
+
+           var result = factory.updater.call(node.vni(''), 'floadEnvVar', 'UTF-8', false, 'patientId');
+           outPort.sendIt.restore();
+           expect(result).to.be.undefined;
+           numberOfSends.should.equal(3);
+        });
     });
 
     describe('functional behavior', function() {
