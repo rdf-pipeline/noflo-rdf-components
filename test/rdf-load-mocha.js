@@ -5,6 +5,8 @@ var chaiAsPromised = require('chai-as-promised');
 chai.should();
 chai.use(chaiAsPromised);
 
+var sinon = require('sinon');
+
 var _ = require('underscore');
 var noflo = require('noflo');
 var test = require('./common-test');
@@ -48,6 +50,26 @@ describe('rdf-load', function() {
             }]
         }]
     };
+
+    it("should throw error when json-ld graph fails to load", function() {
+        this.timeout(4000);
+        return test.createNetwork({
+            load: rdfLoad
+        }).then(function(network){
+            var output = noflo.internalSocket.createSocket();
+            network.processes.load.component.outPorts.output.attach(output);
+            return new Promise(function(done) {
+                output.on('data', done);
+                sinon.stub( console, 'error');
+                network.graph.addInitial("bad-media-type", 'load', 'media');
+            }).then(function(done) {
+                console.error.restore();
+                done.vnid.should.equal('');
+                done.error.should.equal.true;
+            });
+        });
+    });
+
     it("should load a json-ld graph", function() {
         this.timeout(6000);
         return test.createNetwork({
@@ -61,6 +83,7 @@ describe('rdf-load', function() {
             });
         }).should.eventually.have.property('data').that.include.keys('triples');
     });
+
     it("should round trip a graph", function() {
         this.timeout(6000);
         // creating 2 node graph (rdfLoad & rdfJsonld components)
