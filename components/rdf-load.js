@@ -41,7 +41,10 @@ module.exports = wrapper(function(options, media, graph, input) {
             graph.graphURI = graphURI;
             return graph;
         });
+    }).catch(function(e) {
+      throw Error("RDF load error processing RDF: "+e);
     });
+
 })
 
 /**
