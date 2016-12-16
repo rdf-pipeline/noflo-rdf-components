@@ -41,7 +41,7 @@ describe('funnel', function() {
             result.should.equal(input);
         });
 
-        it('Given two distinct inputs, should undefined on the second input', function() {
+        it('Given two distinct inputs, should be undefined on the second input', function() {
             var node = test.createComponent(factory);
             var vni = node.vni('');
             var input1 = 'un';
@@ -101,6 +101,44 @@ describe('funnel', function() {
             // Feed back the 2nd input, indicating it is now done and verify we get the 3rd input
             result = factory.updater.call(vni, input2);
             result.should.equal(input3);
+        });
+
+        it('Should not queue the same input twice', function() {
+            var node = test.createComponent(factory);
+            var vni = node.vni('');
+            var input1 = 'uno';
+            var input2 = 'dos';
+            var input3 = 'tres';
+
+            sinon.stub(logger,'warn');
+            var result = factory.updater.call(vni, input1);
+            result.should.equal(input1);
+
+            result = factory.updater.call(vni, input1);
+            expect(result).to.be.undefined;
+
+            result = factory.updater.call(vni, input2);
+            result.should.equal(input2);
+
+            result = factory.updater.call(vni, input1);
+            expect(result).to.be.undefined;
+
+            result = factory.updater.call(vni, input2);
+            expect(result).to.be.undefined;
+
+            result = factory.updater.call(vni, input3);
+            result.should.equal(input3);
+
+            result = factory.updater.call(vni, input1);
+            expect(result).to.be.undefined;
+
+            result = factory.updater.call(vni, input2);
+            expect(result).to.be.undefined;
+
+            result = factory.updater.call(vni, input3);
+            expect(result).to.be.undefined;
+ 
+            logger.warn.restore();
         });
     });
 

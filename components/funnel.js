@@ -14,6 +14,7 @@ var wrapper = require('../src/javascript-wrapper.js');
 module.exports = wrapper({description: "Builds a queue of input, and feeds each input, " +
                                        "one at a time through the funnel, waiting for a " +
                                        "completion signal before sending the next one.",
+                          isTransient: true,
                           icon: "filter",
                           updater: funnel});
 
@@ -55,7 +56,7 @@ function funnel(input, metadata_key) {
     // Initialize the funnel state in node instance the first time through
     if (_.isUndefined(node.funnel)) {
         node['funnel'] = {};
-        node.funnel.executed = 0;
+        node.funnel.executed = [];
         node.funnel.queue = []; 
         node.funnel.executing = '';
         node.funnel.startTime = Date.now();
@@ -74,14 +75,14 @@ function funnel(input, metadata_key) {
 
        // Just finished executing - ready for the next one
        logger.info('Completed processing id:',funnel.executing);
-       funnel.executed++;
+       funnel.executed.push(funnel.executing);
        if (funnel.queue.length > 0) { 
            // get the next one from the queue
            funnel.executing =  funnel.queue.shift();
            stateFactory.clearMetadata(this.outputState());
            this.outputState({[metadataKey]: funnel.executing});
            logger.info('\n********************************************************************\n'+
-                       'Completed execution ' + funnel.executed +' ids\n' +
+                       'Completed execution ' + _.keys(funnel.executed).length +' ids\n' +
                        'funnel sending:' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids in the queue' +
                        '\nfunnel queue:' + funnel.queue +
@@ -89,14 +90,13 @@ function funnel(input, metadata_key) {
                        '\nDefault VNIs: ' + pipelineMetrics.totalDefaultVnis +
                        '\n\nMemory Usage (free/total): ' + format.bytesToMb(os.freemem()) + '/' + format.bytesToMb(os.totalmem()) +
                        '\n********************************************************************\n');
-           logger.info('Processing id:',funnel.executing);
            return funnel.executing;
 
         } else {
            funnel.executing = '';
            var elapsedTime = msToString(Date.now() - funnel.startTime);
            logger.info('\n********************************************************************\n'+
-                       'Completed execution ' + funnel.executed +' ids\n' +
+                       'Completed execution ' + _.keys(funnel.executed).length +' ids\n' +
                        'Nothing left in funnel.  Elapsed time: ' + elapsedTime +
                        '\n\nTotal VNIs: ', pipelineMetrics.totalVnis, 
                        '\nDefault VNIs: ', pipelineMetrics.totalDefaultVnis,
@@ -104,11 +104,25 @@ function funnel(input, metadata_key) {
                        '\n********************************************************************\n');
         }
 
-    } else if (_.isEmpty(funnel.executing) && !_.isEmpty(funnelInput)) {
+    } else {
+
+        if (inQueue(funnelInput, funnel.queue)) {
+            logger.warn('Already queued ',funnelInput);
+            return;
+        }
+
+        if (inQueue(funnelInput, funnel.executed)) { 
+            logger.warn('Already processed ',funnelInput);
+            return;
+        }
+
+
+        if (_.isEmpty(funnel.executing) && !_.isEmpty(funnelInput)) {
+           // Nothing executing right now, and we do have new input, so execute it
 
            funnel.executing = funnelInput;
            logger.info('\n********************************************************************\n'+
-                       'Completed execution '+ funnel.executed +' ids\n' +
+                       'Completed execution '+ _.keys(funnel.executed).length +' ids\n' +
                        'funnel sending:' + funnel.executing +
                        '\n' + funnel.queue.length + ' ids remaining in the queue' +
                        '\nfunnel queue:' + funnel.queue + 
@@ -121,16 +135,25 @@ function funnel(input, metadata_key) {
            this.outputState({[metadataKey]: funnel.executing});
            return funnel.executing;
 
-    } else {
+        } else {
 
-       // Already have something else executing so queue this input request
-       if (!_.isEmpty(funnelInput)) { 
-           if (-1 === _.indexOf(funnel.queue, funnelInput)) {
-               funnel.queue.push(funnelInput);
-               logger.info('funnel saved input to queue.  Funnel:',funnel);
-           } 
-       }
+            // Already have something else executing so queue this input request
+            if (!_.isEmpty(funnelInput)) { 
+                if (-1 === _.indexOf(funnel.queue, funnelInput)) {
+                    funnel.queue.push(funnelInput);
+                    logger.info('funnel saved input to queue.  Funnel:',funnel);
+                } 
+            }
+        }
     } 
+}
+
+function inQueue(input, queue) { 
+    var queued = _.find(queue, function(current) {
+        return current === input;
+    });  
+
+    return !_.isUndefined(queued);
 }
 
 /**
