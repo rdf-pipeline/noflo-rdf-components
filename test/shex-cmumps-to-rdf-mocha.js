@@ -16,7 +16,7 @@ var logger = require('../src/logger');
 var test = require('./common-test');
 var compFactory = require('../components/shex-cmumps-to-rdf');
 
-var testFile = __dirname + '/../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
+var testFile = __dirname + '/data/cmumps-patient7-diagnostics.jsonld';
 var graphContext = {
     "@context": {
         fhir: "http://hl7.org/fhir/",
