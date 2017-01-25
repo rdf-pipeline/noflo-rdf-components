@@ -1,12 +1,12 @@
 "use strict";
 
-// var RDFStore = require("rdfstore");
 var fs = require("fs");
 var util=require("util");
 
 var N3 = require("n3");
 var N3Util = N3.Util;
 var ShEx = require("shex");
+var ShExParser = ShEx.Parser;
 var ShExLoader = ShEx.Loader;
 var ShExValidator = ShEx.Validator;
 var Mapper = ShEx.Mapper;
@@ -36,8 +36,9 @@ function schemaPromise (typeToShape, key, fromto) {
                 }
 
 	        try {
-	            // now("loaded typeToShape[" + key + "][" + saveAs + "]");
-	            return resolve(ShEx.Parser().parse(res));
+                    // now("loaded typeToShape[" + key + "][" + saveAs + "]");
+                    var parser = ShExParser.construct();
+                    return resolve(parser.parse(res));
 	        } catch (e) {
 	            reject(e);
 	        }
@@ -82,14 +83,20 @@ function ShExMapGraph (fromGraph, typeToShape, base, staticBindings, makeTargetN
         } else {
             var ent = typeToShape[key];
             // console.warn("ignoring " + key, 
-            //              key in typeToShape, ent ? typeToShape[key].from !== null : null, ent ? typeToShape[key].to !== null : null);
+            //               key in typeToShape, ent ? typeToShape[key].from !== null : null, ent ? typeToShape[key].to !== null : null);
         }
 
         return ret;
     }, [])).then(function (log) {
-          targetFixup(toGraph);
-          // now("Shexiface processed", log.length, " Diagnostic records.");
-          return {data:toGraph, log:log};
+
+        try {
+            targetFixup(toGraph);
+        } catch (e) {
+            console.warn(e.stack);
+        }
+
+        // now("Shexiface processed", log.length, " Diagnostic records.");
+        return {data:toGraph, log:log};
     });
 }
 
@@ -103,9 +110,10 @@ function mapLoadedShapes(fromSchema, toSchema, fromGraph, toGraph, fromNode, toN
     var validator = ShExValidator.construct(fromSchema);
     Mapper.register(validator);
 
-  // run validator
+    // run validator
     var val = validator.validate(fromGraph, fromNode, null);
     if ("errors" in val) {
+        console.error("Validation failed: ",val);
         return false;
     }
 
@@ -116,7 +124,12 @@ function mapLoadedShapes(fromSchema, toSchema, fromGraph, toGraph, fromNode, toN
 
     // now("resultBindings:", resultBindings);
     var map = Mapper.materializer(toSchema, nextBNode);
-    map.materialize(resultBindings, toNode, toGraph);
+    try {
+         map.materialize(resultBindings, toNode, undefined, toGraph);
+    } catch(e) { 
+        console.error(e.stack);
+        throw e;
+    }
 
     return true;
 }
