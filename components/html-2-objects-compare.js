@@ -25,6 +25,7 @@ var executionCount = 0;
 module.exports = jswrapper({
 
     description: "Generate an HTML page that compares two JavaScript objects side-by-side for easy visual comparison.",
+    icon: 'columns',
 
     inPorts: { 
         file: {
