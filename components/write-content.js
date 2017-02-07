@@ -24,7 +24,7 @@ module.exports = wrapper(function(filename, data, options) {
     var absolute = path.resolve(__dirname, '..', filename);
     var content = _.isUndefined(data) ? '' : data;
     if (_.isObject(content)) { 
-        content = JSON.stringify(content);
+        content = JSON.stringify(content, null, 2);
     }
 
     return new Promise(function(resolve, reject){
