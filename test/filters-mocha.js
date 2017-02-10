@@ -374,7 +374,6 @@ describe('filters', function() {
             var cmumpsType = "cmumpss:Lab_Result-63";
             var filter = [{jsonpointer: "/type", value: cmumpsType}];
             var labwork = filters.filterByJsonPointers.call(this, jsonData, filter, '/@graph');
-            fs.writeFileSync('/tmp/labwork',JSON.stringify(labwork, undefined, 2));
             labwork.should.be.an('array');
             labwork.should.have.length(1);
 
