@@ -9,8 +9,9 @@
  */
 
 var _ = require('underscore');
-
 var jsonpointer = require('json-pointer');
+
+var dataUtils = require('./data-utils');
 
 module.exports = {
     filterByAttributes: filterByAttributes,
@@ -31,7 +32,7 @@ module.exports = {
  * @param start              JSON pointer to the place in the data to start filtering
  */
 function filterByAttributes(json_data, filter_attributes, start) {
-    var data = parseData(json_data, "Filter by attributes API", "JSON data");
+    var data = dataUtils.parseData(json_data, "Filter by attributes API", "JSON data");
 
     // point to wherever in the data we should start looking.  
     if (!_.isEmpty(start)) { 
@@ -43,7 +44,7 @@ function filterByAttributes(json_data, filter_attributes, start) {
     }
 
     // Parse the filter attributes if they are still strings and verify we got an arry of filters. 
-    var filters = parseData(filter_attributes, "Filter by attributes API", "filter JSON data");
+    var filters = dataUtils.parseData(filter_attributes, "Filter by attributes API", "filter JSON data");
     if (!_.isArray(filters)) { 
         throw Error('Filter by attributes API expects an array of attributes to be matched!');
     }
@@ -69,7 +70,7 @@ function filterByAttributes(json_data, filter_attributes, start) {
  */
 function filterByLiterals(json_data, filter_attributes, start) {
     
-    var data = parseData(json_data, "Filter by literals API", "JSON data");
+    var data = dataUtils.parseData(json_data, "Filter by literals API", "JSON data");
 
     // Adjust to point to wherever in the data we should start filtering 
     // Note this will return relative values
@@ -82,7 +83,7 @@ function filterByLiterals(json_data, filter_attributes, start) {
     }
 
     // Parse the filter attributes if they are still strings and verify we have an array of filters
-    var filters = parseData(filter_attributes, "Filter by literals API", "filter JSON data");
+    var filters = dataUtils.parseData(filter_attributes, "Filter by literals API", "filter JSON data");
     if (!_.isArray(filters)) { 
         throw Error('Filter by literals API expects an array of literal filters, i.e., array of strings, numbers, and booleans!');
     }
@@ -116,7 +117,7 @@ function filterByLiterals(json_data, filter_attributes, start) {
 
 function filterByJsonPointers(json_data, filter_attributes, start) {
 
-    var data = parseData(json_data, "Filter by JSON pointers API", "JSON data");
+    var data = dataUtils.parseData(json_data, "Filter by JSON pointers API", "JSON data");
 
     // Adjust to point to wherever in the data we should start filtering
     // Note this will return relative values
@@ -129,7 +130,7 @@ function filterByJsonPointers(json_data, filter_attributes, start) {
     }
 
     // Parse the filter attributes if they are still strings and verify we have an array of filters
-    var filters = parseData(filter_attributes, "Filter by JSON pointers API", "filter JSON data");
+    var filters = dataUtils.parseData(filter_attributes, "Filter by JSON pointers API", "filter JSON data");
     if (!_.isArray(filters)) {
         throw Error('Filter by JSON pointers API expects an array of format [{jsonpointer: <pointer>, value: <value>}]!');
     }
@@ -150,28 +151,4 @@ function filterByJsonPointers(json_data, filter_attributes, start) {
         );
         return matches;
     });
-}
-
-/**
- * Verifies that filter received data to filter.  If the data is a string, parses it as JSON
- * to get the equivalent javascript object.  If it is already a non-empty javascript object,
- * just returns it.
- * 
- * @param data data to be checked and parsed.
- * @param filterType filter name whose data is being processed 
- *                    e.g., "Filter by attribute", "Filter by literal"
- * @param dataType description of data being parsed, e.g, JSON data, filter data.
- *                 This is used for more helpful error messages
- */
-function parseData(data, filterType, dataType) { 
-
-    if (_.isEmpty(data)) {
-        throw Error(filterType + " requires " + dataType + " to parse!");
-    }
-
-    try {
-        return (_.isString(data)) ? JSON.parse(data) : data;
-    } catch (e) {
-        throw new Error(filterType + " is unable to parse " + dataType + ": "+e.message+"!");
-    }
 }
