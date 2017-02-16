@@ -44,6 +44,7 @@
     "promise": "^7.0.4",
     "raw-body": "^2.1.5",
     "rdfstore": "~0.9.17",
+    "request": "^2.79.0",
     "shex": "~0.8.6",
     "translators": "git+https://www.github.com/rdf-pipeline/translators",
     "underscore": "~1.8.3",
