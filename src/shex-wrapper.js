@@ -12,6 +12,7 @@ var wrapperHelper = require('./wrapper-helper');
 var N3 = require("n3");
 var jsonld = require("jsonld").promises;
 var shexiface = require("../shex/shexiface");
+var n3Utils = require("../components/lib/n3-utils");
 
 /**
  * This module provides a Shex wrapper.  It is responsible for setting up the
@@ -62,7 +63,7 @@ function fRunUpdater(nodeDef, vni) {
             resolve(nodeDef.preprocess.call(vni, input));
         else
             resolve(input);
-    }).then(jsonld_to_n3).then(function shexmap(fromGraph) {
+    }).then(n3Utils.jsonldToN3).then(function shexmap(fromGraph) {
         var makeTargetNode = _.partial(nodeDef.makeTargetNode, fromGraph);
         return shexiface(fromGraph, nodeDef.myTypeToShape, nodeDef.myBase,
 		        nodeDef.staticBindings, makeTargetNode, nodeDef.targetFixup
@@ -81,28 +82,6 @@ function fRunUpdater(nodeDef, vni) {
         wrapperHelper.handleUpdaterException(vni, e);
     });
 };
-
-function jsonld_to_n3(json) {
-    return jsonld.toRDF(json, {}).then(function(dataset) {
-        var inGraph = N3.Store();
-        _.each(dataset, function(triples, graphName) {
-            _.each(triples, function(triple) {
-                inGraph.addTriple({
-                    subject: toN3(triple.subject),
-                    predicate: toN3(triple.predicate),
-                    object: toN3(triple.object),
-                    graph: graphName == '@default' ? undefined : graphName
-                });
-            });
-        });
-        return inGraph;
-    });
-}
-
-function toN3(term) {
-    if (term.type != 'literal') return term.value;
-    else return N3.Util.createLiteral(term.value, term.language || term.datatype);
-}
 
 function n3_to_jsonld(vocab, n3) {
     return new Promise(function(resolve) {
