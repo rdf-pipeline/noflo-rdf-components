@@ -120,6 +120,25 @@ module.exports = {
         }
     },
 
+    /** 
+     * Log an error message and return an Error that can be used to terminate the test
+     * 
+     * @param string a tring to be logged and used as the Error message
+     * @param e (optional) exception associated with the error message
+     * 
+     * @return an Error containing the specified string as its message
+     */
+    error: function(string, e) {
+
+        if (_.isEmpty(e)) { 
+            logger.error(string);
+        } else { 
+            logger.error(string, e);
+        }
+
+        return Error(string);
+    },
+
     /**
      * Executes a single promise factory
      *
