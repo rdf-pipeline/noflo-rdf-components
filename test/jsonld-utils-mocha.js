@@ -2,8 +2,10 @@
 
 var chai = require('chai');
 var should = chai.should();
+var expect = chai.expect;
 
 var _ = require('underscore');
+var fs = require('fs');
 
 var jsonldUtils = require('../components/lib/jsonld-utils');
 var logger = require('../src/logger');
@@ -23,7 +25,7 @@ describe('jsonld-utils', function() {
             return jsonldUtils.getContext().then(
 
                 function(context) {
-                    done(test.error("Expected a failure in jsonld-utils data with no arguments test, but did not get one!"));
+                    done(test.error("Expected a failure in getContext with no arguments test, but did not get one!"));
                 },
 
                 function(fail) {
@@ -32,7 +34,7 @@ describe('jsonld-utils', function() {
                     done();
 
             }).catch(function(e) {
-               done(test.error("Exception in jsonld-utils getContext API gracefully when no data!\n",e));
+               done(test.error("Exception in jsonld-utils getContext API no data test!\n",e));
             });
         });
 
@@ -229,5 +231,80 @@ describe('jsonld-utils', function() {
             });
         });
 
+    }); 
+
+    describe('#jsonldToNormalizedRdf', function() {
+
+        it("should throw an error if no arguments specified", function(done) {
+            return jsonldUtils.jsonldToNormalizedRdf().then(
+
+                function(context) {
+                    done(test.error("Expected a failure in jsonldToNormalizedRdf no arguments test, but did not get one!"));
+                },
+
+                function(fail) {
+                    // Expected path - verify we got the expected error
+                    fail.toString().should.equal("jsonldToNormalizedRdf called with no JSON data!");
+                    done();
+
+            }).catch(function(e) {
+               done(test.error("Exception in jsonld-utils jsonldToNormalizedRdf API no data test!\n",e));
+            });
+        });
+
+        it("should convert simple JSON-LD to normalized RDF", function(done) {
+
+            var json = { 
+                "@context": { 
+                    "cmumpss": "http://hokukahu.com/schema/cmumpss#",
+                    "xsd": "http://www.w3.org/2001/XMLSchema#",
+                    "@base": "http://hokukahu.com/systems/cmumps-1/",
+                    "id": "@id",
+                    "type": "@type",
+                    "value": "@value",
+                    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                    "label": {
+                        "@id": "rdfs:label"
+                    }
+                },
+                "@graph": [
+                   { "type": "cmumpss:Patient-2",
+                     "id": "2-000007",
+                     "label": "BUNNY,BUGS" } ] 
+             };
+
+            return jsonldUtils.jsonldToNormalizedRdf(json).then(
+                function(result) {
+                    result.should.equal(
+                       '<http://hokukahu.com/systems/cmumps-1/2-000007> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/cmumpss#Patient-2> .\n'+
+                       '<http://hokukahu.com/systems/cmumps-1/2-000007> <http://www.w3.org/2000/01/rdf-schema#label> \"BUNNY,BUGS\" .\n');
+                    done();
+                }, 
+                function(fail) {
+                    done(test.error("jsonldToNormalizedRdf API is unable to process simple JSON-LD: " + fail));
+
+            }).catch(function(e) {
+               done(test.error("Exception in jsonld-utils jsonldToNormalizedRdf API converting simple JSON-LD to normalized RDF!\n",e));
+            });
+
+        });
+
+        it("should convert patient-7 demographics to normalized RDF", function(done) {
+           var demographics = JSON.parse(fs.readFileSync(__dirname + '/data/cmumps-patient7-demographics.jsonld','utf8'));
+           var expected = fs.readFileSync(__dirname + '/data/cmumps-patient7-demographics.ttl','utf8');
+
+            return jsonldUtils.jsonldToNormalizedRdf(demographics).then(
+                function(result) {
+                    expect(result.trim()).to.equal(expected.trim());
+                    done();
+                }, 
+                function(fail) {
+                    done(test.error("jsonldToNormalizedRdf API is unable to process simple JSON-LD: " + fail));
+
+            }).catch(function(e) {
+               done(test.error("Exception in jsonld-utils jsonldToNormalizedRdf API converting simple JSON-LD to normalized RDF!\n",e));
+            });
+           
+        });
     }); 
 });
