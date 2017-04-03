@@ -8,11 +8,13 @@ var _ = require('underscore');
 
 var request = require('request');
 var url = require('url');
+var jsonld = require('jsonld').promises;
 
 var logger = require('../../src/logger');
 
 module.exports = {
-    getContext: getContext 
+    getContext: getContext,
+    jsonldToNormalizedRdf: jsonldToNormalizedRdf 
 };
 
 /** 
@@ -23,8 +25,8 @@ module.exports = {
  * the default context will be used - useful for local testing when off 
  * the network or VPN.  A warning will be printed if this is done.
  * 
- * @param data           JSON-LD data 
- * @param defaultContext the default context to be used
+ * @param data           (required) JSON-LD data 
+ * @param defaultContext (optional) the default context to be used
  * 
  * @return the resolved fully defined context or a reject error
  */
@@ -62,5 +64,34 @@ function getContext(data, defaultContext) {
         } else {
             resolve(context);
         }
+    });
+}
+
+/**
+ * Normalize JSON-LD using the RDF Dataset Normalization Algorithm 
+ * (URDNA2015), see: http://json-ld.github.io/normalization/spec/ 
+ * 
+ * @param json (required) JSON-LD data to be normalized
+ * 
+ * @return the resolved normalized RDF or a reject error
+ */
+function jsonldToNormalizedRdf(json) { 
+
+    if (_.isEmpty(json)) return Promise.reject("jsonldToNormalizedRdf called with no JSON data!");
+
+    return new Promise(function(resolve, reject) {
+        jsonld.normalize(json, 
+                         { algorithm: 'URDNA2015', format: 'application/nquads' }, 
+                         function(error, normalizedRdf) {
+
+                             if (error) {
+                                 reject('Unable to convert JSON-LD to normalized RDF! '+error);
+                             }
+               
+                             // normalized is a string that is a canonical representation of the document 
+                             // that can be used for hashing, comparison, etc. 
+                             resolve(normalizedRdf);
+                         }
+        );
     });
 }
