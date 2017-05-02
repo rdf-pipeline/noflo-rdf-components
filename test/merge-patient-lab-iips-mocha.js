@@ -330,41 +330,25 @@ describe('merge-patient-lab-iips', function() {
 
     describe('functional behavior', function() {
 
-        it("should have input states after input", function() {
+        it("should have input states after input", function(done) {
             var node = test.createComponent(compFactory);
-            test.sendData(node, 'patient',
-                           {id: '001',  name: 'Alice', dob: '1979-01-23' });
+            test.sendData(node, 'patient', {id: '001',  name: 'Alice', dob: '1979-01-23' });
 
             stubs.promiseLater().then(function(){
-                return node.vni().inputStates('patient');
-            }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['vnid', 'data', 'error', 'lm', 'stale'])); 
+                var state = node.vni().inputStates('patient');
+                test.verifyState(state, '', { id: '001', name: 'Alice', dob: '1979-01-23' });
+                done();
+             });
         });
 
-        it("should have patient input state data after input", function() {
+        it("should have labwork input state after input", function(done) {
             var node = test.createComponent(compFactory);
-            test.sendData(node, 'patient',
-                           {id: '001',  name: 'Alice', dob: '1979-01-23' });
+            test.sendData(node, 'labwork', {id: '001',  glucose: '75',  date: '2012-02-01'});
             stubs.promiseLater().then(function(){
-                return node.vni().inputStates('patient');
-            }).then(_.property('data')).should.become({id: '001',  name: 'Alice', dob: '1979-01-23' });
-        });
-
-        it("should have labwork input state after input", function() {
-            var node = test.createComponent(compFactory);
-            test.sendData(node, 'labwork',
-                                         {id: '001',  glucose: '75',  date: '2012-02-01'});
-            stubs.promiseLater().then(function(){
-                return node.vni().inputStates('labwork');
-            }).then(_.keys).then(_.sortBy).should.become(_.sortBy(['data', 'lm']));
-        });
-
-        it("should have labwork input state data after input", function() {
-            var node = test.createComponent(compFactory);
-            test.sendData(node, 'labwork',
-                                         {id: '001',  glucose: '75',  date: '2012-02-01'});
-            stubs.promiseLater().then(function(){
-                return node.vni().inputStates('labwork');
-            }).then(_.property('data')).should.become({id: '001',  glucose: '75',  date: '2012-02-01'});
+                var state = node.vni().inputStates('labwork');
+                test.verifyState(state, '', {id: '001',  glucose: '75',  date: '2012-02-01'});
+                done();
+            });
         });
 
         it("should have patient and labwork output state after input ports processing", function() {
@@ -390,18 +374,16 @@ describe('merge-patient-lab-iips', function() {
                     network.graph.addInitial({id: '001', name: 'Alice', dob: '1979-01-23'}, 'node1', 'in');
                     network.graph.addInitial({id: '001', glucose: '75', date: '2012-02-01'}, 'node2', 'in');
 
-                }).then(function(done) {
-
+                }).then(function(payload) {
                     // verify we got the output state we expect
- 
-                    done.should.exist;
-                    done.should.not.be.empty;
-                    done.should.have.ownProperty('vnid');
-                    done.vnid.should.equal('');
-                    done.should.be.an('object');
-                    done.should.have.ownProperty('data');
+                    payload.should.exist;
+                    payload.should.not.be.empty;
+                    payload.should.have.ownProperty('vnid');
+                    payload.vnid.should.equal('');
+                    payload.should.be.an('object');
+                    payload.should.have.ownProperty('data');
 
-                    var data = done.data;
+                    var data = payload.data;
                     data.should.be.an('object');
                     data.should.have.all.keys('id', 'name', 'dob', 'glucose', 'date');
                     data.id.should.equal('001');
@@ -409,6 +391,9 @@ describe('merge-patient-lab-iips', function() {
                     data.dob.should.equal('1979-01-23');
                     data.glucose.should.equal('75');
                     data.date.should.equal('2012-02-01');
+                }).catch(function(e) { 
+                    logger.error('Error in processing patient and labwork:',e);
+                    throw Error(e);
                 });
             });
         });

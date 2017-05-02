@@ -143,7 +143,7 @@ describe('jsonld-attribute-sampler', function() {
             }); 
         }); 
 
-        it("should find for new json pointers as new demographics data arrive", function(done) {
+        it("should find new json pointers as new demographics data arrive", function(done) {
 
             var data0 = 
                 {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
@@ -323,7 +323,7 @@ describe('jsonld-attribute-sampler', function() {
                         throw Error("    Jsonld attribute sampler failed to create sample file " + sampleFile + "!");
                     }
                     var sampleFileContents = fs.readFileSync(sampleFile, 'utf-8');
-                    JSON.parse(sampleFileContents).should.deep.equal(data["@graph"]);
+                    JSON.parse(sampleFileContents).should.deep.equal(data);
     
                     cleanup([jsonpointersFile, sampleFile]);
                 });
@@ -396,10 +396,10 @@ function processDatasets(type, data, patientIds, jsonpointerResults, sampleResul
 
             // Verify that both sample files have the expected content
             var sampleFileContents = fs.readFileSync(sampleFile1, 'utf-8');
-            JSON.parse(sampleFileContents).should.deep.equal(data[0]["@graph"]);
+            JSON.parse(sampleFileContents).should.deep.equal(data[0]);
 
             sampleFileContents = fs.readFileSync(sampleFile2, 'utf-8');
-            JSON.parse(sampleFileContents).should.deep.equal(data[1]["@graph"]);
+            JSON.parse(sampleFileContents).should.deep.equal(data[1]);
 
             // It all looks good, so clean up now
             cleanup([jsonpointersFile, sampleFile1, sampleFile2]);

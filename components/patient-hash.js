@@ -3,7 +3,10 @@
 var _ = require('underscore');
 var util = require('util');
 
-var extractor = require('translators').cmumps;
+var demographicsTranslator = require('translators').demographics;
+var diagnosesTranslator = require('translators').diagnoses;
+var prescriptionsTranslator = require('translators').prescriptions;
+var proceduresTranslator = require('translators').procedures;
 
 var createLm = require('../src/create-lm');
 var stateFactory = require('../src/create-state');
@@ -83,7 +86,7 @@ function patientHash(patient_json, translator_components, metadata_key) {
         }
     }
 
-    var patientDemographics = extractor.extractDemographics(patient); 
+    var patientDemographics = demographicsTranslator.extractDemographics(patient); 
     var outState = this.outputState();
     if (_.isEmpty(patientDemographics) && _.isUndefined(outState[metadata_key])) {
         logger.debug('No demographics; outstate = ',outState);
@@ -105,15 +108,15 @@ function patientHash(patient_json, translator_components, metadata_key) {
                   break;
               }
               case 'diagnosis': {
-                  addToHash(extractor.extractDiagnoses(patient), translator, patientId);
+                  addToHash(diagnosesTranslator.extractDiagnoses(patient), translator, patientId);
                   break;
               }
               case 'prescription': {
-                  addToHash(extractor.extractMedications(patient), translator, patientId);
+                  addToHash(prescriptionsTranslator.extractMedications(patient), translator, patientId);
                   break;
               }
               case 'procedure': {
-                  addToHash(extractor.extractProcedures(patient), translator, patientId);
+                  addToHash(proceduresTranslator.extractProcedures(patient), translator, patientId);
                   break;
               }
          }

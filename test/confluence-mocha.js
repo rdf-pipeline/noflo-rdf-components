@@ -43,7 +43,7 @@ describe('confluence', function() {
                              'input': stateFactory('', 'one')});
             stateFactory.addMetadata(vni.inputStates('hash'), {patientId: 1});
             stateFactory.addMetadata(vni.inputStates('input'), {patientId: 1});
-            sinon.stub(logger,'warn', function(message) { 
+            sinon.stub(logger,'warn').callsFake(function(message) { 
                 logger.warn.restore(); 
                 message.should.equal("No metadata key found; defaulting metadata key to patientId.");
                 done(); 
@@ -59,7 +59,7 @@ describe('confluence', function() {
                              'input': stateFactory('', 'one')});
             stateFactory.addMetadata(vni.inputStates('hash'), {patientId: 1});
             stateFactory.addMetadata(vni.inputStates('input'), {patientId: 1});
-            sinon.stub(logger,'warn', function(message) { 
+            sinon.stub(logger,'warn').callsFake(function(message) { 
                 logger.warn.restore(); 
                 message.should.equal("No metadata key found; defaulting metadata key to patientId.");
                 done(); 
@@ -89,12 +89,12 @@ describe('confluence', function() {
             var input = 'ringo';
             node.vni('').inputStates({'hash': stateFactory('', hash),
                                       'input': stateFactory('', input)});
-            sinon.stub(logger, 'warn');
+            logger.silence('warn');
             stateFactory.addMetadata(node.vni('').inputStates('hash'), 
                                      {patientId: 1});
             expect(factory.updater.bind(node.vni(''), hash, input)).to.throw(Error,
                    /Confluence requires a metadata key on the input VNI to identify the completed task!/);
-            logger.warn.restore();
+            logger.verbose('warn');
         });
 
         it('should match one element hash with task and return result', function() {
@@ -198,7 +198,7 @@ describe('confluence', function() {
             var vni_again = node.vni('1');
             vni_again.inputStates({'input': stateFactory('1', again)});
             stateFactory.addMetadata(vni_again.inputStates('input'), {id: 'Summer-Breeze-1'});
-            sinon.stub(logger, "warn", function(message) { 
+            sinon.stub(logger, "warn").callsFake(function(message) { 
                 logger.warn.restore();
                 message.startsWith("\nAlready processed").should.be.true;
             });
@@ -421,7 +421,7 @@ describe('confluence', function() {
                     network.graph.addEdge('demographicsNode', 'output', 'confluence', 'input');
                     network.graph.addEdge('prescriptionsNode', 'output', 'confluence', 'input');
 
-                    sinon.stub(logger, 'warn');
+                    logger.silence('warn');
                     network.graph.addInitial( {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
                                                prescription: 'rdf-components/translate-prescription-cmumps2fhir'}, 
                                               'translators', 'in');
@@ -430,13 +430,13 @@ describe('confluence', function() {
 
 
                 }).then(function(done) {
-                    logger.warn.restore();
+                    logger.verbose('warn');
                     done.should.be.an('object');
                     done.data.should.equal('Completed processing 2-000007');
                     done.patientId.should.equal('2-000007'); 
                     expect(confluence.vnis).to.be.undefined;
                 }, function(fail) {
-                    logger.warn.restore();
+                    logger.verbose('warn');
                     console.error(fail);
                     throw Error(fail);
                 }); 

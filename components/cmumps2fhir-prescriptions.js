@@ -3,7 +3,6 @@
 var _ = require('underscore');
 var util = require('util');
 
-var extractor = require('translators').cmumps;
 var translator = require('translators').prescriptions;
 
 var logger = require('../src/logger');
@@ -35,7 +34,7 @@ function cmumps2fhirPrescriptions(data, cmumps_file, fhir_file) {
 
     var prescriptions = cmumps2fhir.call(this,
                                          data,
-                                         extractor.extractMedications,
+                                         translator.extractMedications,
                                          translator.translatePrescriptionsFhir,
                                          cmumps_file,
                                          fhir_file);

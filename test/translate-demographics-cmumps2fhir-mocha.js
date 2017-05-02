@@ -8,12 +8,12 @@ var should = chai.should();
 var _ = require('underscore');
 var fs = require('fs');
 
-var extractor = require('translators').cmumps;
-
 var factory = require('../components/translate-demographics-cmumps2fhir');
 var logger = require('../src/logger');
 var stateFactory = require('../src/create-state');
 var test = require('./common-test');
+
+var translator = require('translators').demographics;
 
 var testFile = __dirname + '/data/cmumps-patient7.jsonld';
 
@@ -47,7 +47,7 @@ describe('translate-demographics-cmumps2fhir', function() {
             var node = test.createComponent(factory);
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-            var demographics = extractor.extractDemographics(parsedData);
+            var demographics = translator.extractDemographics(parsedData);
             var translation = factory.updater.call(node.vni(''), demographics);
             translation.should.not.be.empty;
             translation.should.be.an('array');
@@ -62,7 +62,7 @@ describe('translate-demographics-cmumps2fhir', function() {
             var node = test.createComponent(factory);
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-            var demographics = extractor.extractDemographics(parsedData);
+            var demographics = translator.extractDemographics(parsedData);
 
             var cmumpsFile='/tmp/cmumpsDemographics.out';
             var fhirFile='/tmp/fhirDemographics.out';

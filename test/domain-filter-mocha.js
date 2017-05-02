@@ -6,8 +6,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var fs = require('fs');
 
 var factory = require('../components/domain-filter');

@@ -414,7 +414,7 @@ describe("jsupdater-behaviour", function() {
     it("should log error port if nothing is attached", function() {
         this.timeout(3750);
         return new Promise(function(done, fail){
-            sinon.stub(console, 'error', function (message) {
+            sinon.stub(console, 'error').callsFake(function (message) {
                  done(message);
             });
             afterEach(_.once(console.error.restore.bind(console.error)));

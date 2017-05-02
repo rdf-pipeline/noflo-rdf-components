@@ -14,9 +14,6 @@ var componentFactory = require('../src/noflo-component-factory');
 var stateFactory = require('../src/create-state');
 var vniManager = require('../src/vni-manager');
 
-var extractor = require('translators').cmumps;
-var translator = require('translators').demographics;
-
 var cmumps2fhir = require('../components/cmumps2fhir');
 var logger = require('../src/logger');
 var test = require('./common-test');
@@ -56,7 +53,7 @@ describe('cmumps2fhir', function() {
     it('should gracefully handle a failed extraction', function() {
 
         var warned = false;
-        sinon.stub(logger, 'warn', function(message) { 
+        sinon.stub(logger, 'warn').callsFake(function(message) { 
              // should get a warning like "No patient cmumps data found".
              warned = true;
         });
@@ -87,7 +84,7 @@ describe('cmumps2fhir', function() {
     it('should gracefully handle a failed translation', function() {
 
         var warned = false;
-        sinon.stub(logger, 'warn', function(message) { 
+        sinon.stub(logger, 'warn').callsFake(function(message) { 
              // should get a warning like "No patient cmumps data found".
              warned = true;
         });
@@ -162,14 +159,15 @@ describe('cmumps2fhir', function() {
                                   "resourceType": "Procedure"});
         vni.outputState(outState);
 
+        var translator = require('translators').procedures;
         var results = cmumps2fhir.call(vni, 
                                        parsedData, 
-                                       extractor.extractProcedures,
+                                       translator.extractProcedures,
                                        translator.translateProceduresFhir);
 
         results.should.be.an('array');
-        results[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
-                                       'status', 'dateReported', 'verified', 'provider');
+        results[0].should.include.keys('resourceType', 'id', 'subject', 'status', 'category',
+                                       'code', 'performer', 'performedDateTime', 'encounter');
 
         vni.outputState().graphUri.should.equal('urn:local:fhir:PatientId-2468:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
 
@@ -194,14 +192,14 @@ describe('cmumps2fhir', function() {
                                  {"patientId": patientId});
         vni.outputState(outState);
 
+        var translator = require('translators').procedures;
         var results = cmumps2fhir.call(vni, 
                                        parsedData, 
-                                       extractor.extractProcedures,
+                                       translator.extractProcedures,
                                        translator.translateProceduresFhir);
-
         results.should.be.an('array');
-        results[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
-                                       'status', 'dateReported', 'verified', 'provider');
+        results[0].should.include.keys('resourceType', 'id', 'subject', 'status', 'category',
+                                       'code', 'performer', 'performedDateTime', 'encounter');
 
         vni.outputState().graphUri.should.equal('urn:local:fhir:PatientId-8642:rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
     });
@@ -217,9 +215,11 @@ describe('cmumps2fhir', function() {
         var node = test.createComponent(componentFactory({}, vniManager));
         var vni = node.vni('');
         vni.nodeInstance = {"componentName": "rdf/test-translator"};
+
+        var translator = require('translators').demographics;
         var results = cmumps2fhir.call(vni, 
                                        parsedData, 
-                                       extractor.extractDemographics,
+                                       translator.extractDemographics,
                                        translator.translateDemographicsFhir);
 
         // Verify initial results
@@ -237,7 +237,7 @@ describe('cmumps2fhir', function() {
         patientData['marital_status-2'] = {id:'11-1', label: 'MARRIED'};
         var results2 = cmumps2fhir.call(vni, 
                                         parsedData, 
-                                        extractor.extractDemographics,
+                                        translator.extractDemographics,
                                         translator.translateDemographicsFhir);
 
         // Verify the update occured but graph URI is the same.
@@ -261,10 +261,11 @@ describe('cmumps2fhir', function() {
         var vni = node.vni('');
         vni.nodeInstance = {"componentName": "rdf/demographics-translator"};
  
+        var demographicsTranslator = require('translators').demographics;
         var results = cmumps2fhir.call(vni, 
                                        parsedData, 
-                                       extractor.extractDemographics,
-                                       translator.translateDemographicsFhir);
+                                       demographicsTranslator.extractDemographics,
+                                       demographicsTranslator.translateDemographicsFhir);
 
         // Verify initial results
         results.should.be.an('array');
@@ -274,15 +275,16 @@ describe('cmumps2fhir', function() {
 
         // Now we'll do procedure translation
         vni.nodeInstance = {"componentName": "rdf/procedure-translator"};
+        var proceduresTranslator = require('translators').procedures;
         var results2 = cmumps2fhir.call(vni, 
                                        parsedData, 
-                                       extractor.extractProcedures,
-                                       translator.translateProceduresFhir);
+                                       proceduresTranslator.extractProcedures,
+                                       proceduresTranslator.translateProceduresFhir);
 
         // Verify results are for procedure and we got an array of both translator graph URIs
         results2.should.be.an('array');
-        results2[0].should.include.keys('type', 'label', 'description', 'comments', 'source',
-                                        'status', 'dateReported', 'verified', 'provider');
+        results2[0].should.include.keys('resourceType', 'id', 'subject', 'status', 'category',
+                                        'code', 'performer', 'performedDateTime', 'encounter');
         vni.outputState().graphUri.should.equal('urn:local:fhir::rdf%2Fprocedure-translator:Procedure:Procedure-1074046');
 
     });

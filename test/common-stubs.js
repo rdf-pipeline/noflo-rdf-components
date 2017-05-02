@@ -33,6 +33,8 @@ module.exports = {
         return new Promise(function(cb) {
 
             setTimeout(cb, 50);
+        }, function cbFail(err) { 
+            console.error('promiseLater failed:',err);
         }).then(_.constant(result));
 
     }

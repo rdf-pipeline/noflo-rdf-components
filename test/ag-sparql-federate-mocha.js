@@ -37,9 +37,9 @@ describe('ag-sparql-federate', function() {
             });
             server.listen(port);
             var authFileName = path.join(os.tmpdir(), 'temp-ag-federate-auth');
-            afterEach(_.once(fs.unlink.bind(fs, authFileName)));
+            afterEach(_.once(fs.unlinkSync.bind(fs, authFileName)));
             var listFileName = path.join(os.tmpdir(), 'temp-ag-federate-list');
-            afterEach(_.once(fs.unlink.bind(fs, listFileName)));
+            afterEach(_.once(fs.unlinkSync.bind(fs, listFileName)));
             test.createNetwork({
                 federate: "rdf-components/ag-sparql-federate"
             }).then(function(network) {

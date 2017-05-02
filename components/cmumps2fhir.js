@@ -5,8 +5,6 @@ var _ = require('underscore');
 var fs = require('fs');
 var util = require('util');
 
-var extractor = require('translators').cmumps;
-
 var logger = require('../src/logger');
 
 /** 

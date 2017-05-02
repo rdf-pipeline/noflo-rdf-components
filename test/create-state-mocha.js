@@ -15,7 +15,7 @@ var test = require('./common-test');
 var stateFactory = require('../src/create-state');
 var logger = require('../src/logger');
 
-describe("Create-state API", function() {
+describe("create-state", function() {
 
     it("should exist as a function", function() {
         stateFactory.should.exist;
@@ -253,7 +253,7 @@ describe("Create-state API", function() {
 
   });
 
-  describe("State metadata APIs", function() {
+  describe("state metadata APIs", function() {
 
     describe("#addMetadata", function() {
         it("should throw an error if no parameter is provided", function() {
@@ -262,7 +262,7 @@ describe("Create-state API", function() {
         });
 
         it("should warn if undefined state was provided", function(done) {
-            sinon.stub(logger, 'warn', function(message) {
+            sinon.stub(logger, 'warn').callsFake(function(message) {
                 // Should get warning message 
                 if (message === 'Attempted to add metadata to an invalid state.')
                     done();
@@ -274,7 +274,7 @@ describe("Create-state API", function() {
         });
 
         it("should warn if empty state was provided", function(done) {
-            sinon.stub(logger, 'warn', function(message) {
+            sinon.stub(logger, 'warn').callsFake(function(message) {
                 // Should get warning message 
                 if (message === 'Attempted to add metadata to an invalid state.')
                     done();

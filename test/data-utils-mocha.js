@@ -6,8 +6,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var fs = require('fs');
 var os = require('os');
 
@@ -46,7 +44,7 @@ describe("data-utils", function() {
 
         it("should throw an error if data is not JSON", function() {
             expect(dataUtils.parseData.bind(this, "Garbage In")).to.throw(Error,
-                "parseData API is unable to parse data: Unexpected token G!");
+                "parseData API is unable to parse data: Unexpected token G in JSON at position 0!");
         });
 
         it("should parse JSON", function() {
@@ -122,7 +120,7 @@ describe("data-utils", function() {
             fs.writeFileSync(filepath, content);
 
             expect(dataUtils.readJsonData.bind(this, filepath, 'utf-8', componentName, description)).to.throw(Error,
-                componentName + " is unable to parse " + description + ": Unexpected token W!");
+                componentName + " is unable to parse " + description + ": Unexpected token W in JSON at position 0!");
             fs.unlinkSync(filepath);
         });
 

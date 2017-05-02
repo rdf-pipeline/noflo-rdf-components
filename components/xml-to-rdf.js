@@ -5,6 +5,7 @@ var _ = require('underscore');
 var fs = require('fs');
 var readline = require('readline');
 
+// NOTE: xlst4node requires Java 6
 var xslt4node = require('xslt4node');
 var first=true;
 

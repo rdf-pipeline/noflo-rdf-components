@@ -5,11 +5,12 @@ var chaiAsPromised = require('chai-as-promised');
 chai.should();
 chai.use(chaiAsPromised);
 
-var sinon = require('sinon');
-
 var _ = require('underscore');
 var noflo = require('noflo');
+
+var logger = require('../src/logger');
 var test = require('./common-test');
+
 var rdfLoad = require('../components/rdf-load');
 var rdfJsonld = require('../components/rdf-jsonld');
 
@@ -60,10 +61,11 @@ describe('rdf-load', function() {
             network.processes.load.component.outPorts.output.attach(output);
             return new Promise(function(done) {
                 output.on('data', done);
-                sinon.stub( console, 'error');
+                logger.silence('error');
+    
                 network.graph.addInitial("bad-media-type", 'load', 'media');
             }).then(function(done) {
-                console.error.restore();
+                logger.verbose('error');
                 done.vnid.should.equal('');
                 done.error.should.equal.true;
             });

@@ -8,6 +8,8 @@ chai.use(chaiAsPromised);
 var _ = require('underscore');
 var noflo = require('noflo');
 var test = require('./common-test');
+
+var join = require('../components/join-array');
 var rdfLoad = require('../components/rdf-load');
 var rdfJsonld = require('../components/rdf-jsonld');
 var rdfNtriples = require('../components/rdf-ntriples');
@@ -40,25 +42,29 @@ describe('rdf-ntriples', function() {
             loadJson: rdfLoad,
             ntriples: rdfNtriples,
             extract: "ExtractProperty",
-            join: "objects/Join",
+            join: join,
             loadNtriples: rdfLoad,
             jsonld: rdfJsonld
         }).then(function(network){
-            network.graph.addEdge('loadJson', 'output', 'ntriples', 'input');
-            network.graph.addEdge('ntriples', 'output', 'extract', 'in');
-            network.graph.addEdge('extract', 'out', 'join', 'in');
-            network.graph.addEdge('join', 'out', 'loadNtriples', 'input');
-            network.graph.addEdge('loadNtriples', 'output', 'jsonld', 'input');
-            network.graph.addInitial('text/turtle', 'loadNtriples', 'media');
-            network.graph.addInitial('', 'join', 'delimiter');
-            network.graph.addInitial(frame, 'jsonld', 'frame');
-            network.graph.addInitial('data', 'extract', 'key');
-            var output = noflo.internalSocket.createSocket();
-            network.processes.jsonld.component.outPorts.output.attach(output);
-            return new Promise(function(done, fail) {
-                output.on('data', done);
+            return new Promise(function(done, fail) { 
+                var lastComponent = network.processes.jsonld.component;
+                test.onOutPortData(lastComponent, 'output', done);
+                test.onOutPortData(lastComponent, 'error', fail);
+
+                network.graph.addEdge('loadJson', 'output', 'ntriples', 'input');
+                network.graph.addEdge('ntriples', 'output', 'extract', 'in');
+                network.graph.addEdge('extract', 'out', 'join', 'input');
+                network.graph.addEdge('join', 'output', 'loadNtriples', 'input');
+                network.graph.addEdge('loadNtriples', 'output', 'jsonld', 'input');
+
+                network.graph.addInitial('', 'join', 'delimiter');
+                network.graph.addInitial('text/turtle', 'loadNtriples', 'media');
+                network.graph.addInitial(frame, 'jsonld', 'frame');
+                network.graph.addInitial('data', 'extract', 'key');
                 network.graph.addInitial(cynthia, 'loadJson', 'input');
+            }).then(function(done) { 
+                test.verifyState(done, '', cynthia);
             });
-        }).should.eventually.have.property('data').that.eql(cynthia);
+        });
     });
 });

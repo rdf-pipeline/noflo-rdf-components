@@ -58,19 +58,24 @@ describe('file-loader', function() {
         });
 
         it("should log a warning if file_envvar referenced file has no content", function() {
-            var testfile = os.tmpdir() + './testfile.txt';
-            fs.writeFile(testfile, '', function() { 
+            var testfile = '/tmp/testfile.txt';
+            fs.writeFile(testfile, '', function(err) { 
+                if (err) {
+                    logger.error("Unable to create test file: "+ testfile + "!  "+err);
+                    throw Error(err);
+                }
+
                 process.env.floadEnvVar = testfile;
                 var node = test.createComponent(factory);
                 
                 var warning;
-                sinon.stub(logger,'warn', function(message) {
+                sinon.stub(logger,'warn').callsFake(function(message) {
                     warning = message;
                 });
                 var result = factory.updater.call(node.vni(''), 'floadEnvVar');
                 logger.warn.restore();
 		warning.should.be.a('string');
-		warning.should.equal("No data found in " + process.env.floadEnvVar);
+                warning.should.equal("No data found in /tmp/testfile.txt specified by environment var floadEnvVar");
            });
         });
 
@@ -81,7 +86,7 @@ describe('file-loader', function() {
 
            var outPort = node.outPorts.output;
            var numberOfSends = 0;
-           sinon.stub(outPort,'sendIt', function(state) {
+           sinon.stub(outPort,'sendIt').callsFake(function(state) {
                numberOfSends++;
                state.should.be.an('object');
                state.vnid.should.equal(numberOfSends.toString());
@@ -130,7 +135,7 @@ describe('file-loader', function() {
 
            var outPort = node.outPorts.output;
            var numberOfSends = 0;
-           sinon.stub(outPort,'sendIt', function(state) {
+           sinon.stub(outPort,'sendIt').callsFake(function(state) {
                numberOfSends++;
                state.should.be.an('object');
                state.vnid.should.equal(numberOfSends.toString());

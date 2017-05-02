@@ -110,7 +110,8 @@ describe('funnel', function() {
             var input2 = 'dos';
             var input3 = 'tres';
 
-            sinon.stub(logger,'warn');
+            logger.silence('warn');
+
             var result = factory.updater.call(vni, input1);
             result.should.equal(input1);
 
@@ -138,7 +139,7 @@ describe('funnel', function() {
             result = factory.updater.call(vni, input3);
             expect(result).to.be.undefined;
  
-            logger.warn.restore();
+            logger.verbose('warn');
         });
     });
 
@@ -164,7 +165,7 @@ describe('funnel', function() {
                     test.onOutPortData(funnel, 'output', done);
                     test.onOutPortData(funnel, 'error', fail);
 
-                    sinon.stub(logger,'info', function(message) { 
+                    sinon.stub(logger,'info').callsFake(function(message) { 
                         logBuffer = _.isUndefined(logBuffer) ? message : logBuffer +  message;
                     });
                     network.graph.addInitial(input1, 'funnel', 'input');
@@ -211,7 +212,7 @@ describe('funnel', function() {
                     network.graph.addEdge('funnel', 'output', 'extractPatientId', 'in');
                     network.graph.addEdge('extractPatientId', 'out', 'funnel', 'input');
 
-                    sinon.stub(logger,'info', function(message) { 
+                    sinon.stub(logger,'info').callsFake(function(message) { 
                         logBuffer = _.isUndefined(logBuffer) ? message : logBuffer +  message;
                     });
                     network.graph.addInitial('patientId', 'extractPatientId', 'key');
