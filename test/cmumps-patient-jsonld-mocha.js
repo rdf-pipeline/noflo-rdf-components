@@ -12,7 +12,7 @@ var test = require('./common-test');
 
 
 describe('cmumps-patient-jsonld subgraph', function() {
-    var dataset = 'c'+'h'+'c'+'s'+'-ab';
+    var dataset = 'c'+'h'+'c'+'s'+'-nc';
 
     it("should build correct URL for patient 1000004", function() {
         this.timeout(3250);
@@ -64,11 +64,15 @@ describe('cmumps-patient-jsonld subgraph', function() {
     });
 
     xit("should GET remote jsonld for patient 1000004", function() {
+
         // WARNING: Be sure that you single-quote the authority when
 	// setting the CMUMPS_AUTHORITY env var on the command line!  
 	// Otherwise the shell may strip off the port number.
 	//   % export CMUMPS_AUTHORITY='192.168.10.50:8080'
-        process.env.CMUMPS_AUTHORITY.should.exist;
+        if (_.isUndefined(process.env.CMUMPS_AUTHORITY)) { 
+            throw Error("No CMUMPS_AUTHORITY environment variable with host:port for testing found.");
+        }
+        process.env.CMUMPS_AUTHORITY.should.not.be.empty;
 
         return test.createNetwork({
             cmumps: "rdf-components/cmumps-patient-jsonld"
