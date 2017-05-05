@@ -1,0 +1,33 @@
+{
+   "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+
+   "@graph": [
+     {
+       "type": "cmumpss:Patient-2",
+       "identifier": "2-000007",
+       "dob-2": {
+         "type": "xsd:date",
+         "value": "1990-01-01"
+       },
+       "street_address-2": "100 MAIN ST",
+       "city-2": "ANYTOWN",
+       "zip_code-2": "60040",
+       "state-2": "NEW YORK",
+       "label": "BUNNY,BUGS",
+       "phone-2" : "555 555 5555",
+       "erelationship-2" : {
+         "identifier" : "8140-20",
+         "label" : "OTHER RELATIONSHIP"
+       },
+       "emergency_contact-2" : "RUNNAH, ROAD",
+       "ephone-2" : "555 555 5558",
+       "estreet_address-2" : "7000 InternalTest Boulevard",
+       "ecity-2" : "ALBUQUERQUE",
+       "ezip-2" : "55555",
+       "fmp-2": {
+         "identifier": "8110-20",
+         "label": "20"
+       }
+    }
+  ]
+}

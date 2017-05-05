@@ -68,7 +68,7 @@
             "deers_address_updated-2": true,
             "geo_loc_of_ship_unit-2": {
                 "id": "5-17",
-                "label": "MYSTATE"
+                "label": "NEW MEXICO"
             },
             "dob-2": {
                 "type": "xsd:date",
@@ -2850,7 +2850,7 @@
             },
             "mtf_division-52": {
                 "id": "40_8-1",
-                "label": "ANYTOWN, USA"
+                "label": "ANYTOWN, NY"
             },
             "status-52": "DISCONTINUED",
             "refills_remaining-52": "0",
@@ -3121,7 +3121,7 @@
             "rx_-52": "B636181",
             "patient-52": {
                 "id": "2-000007",
-                "label": "BUNNY, BUGS"
+                "label": "BUNNY,BUGS"
             },
             "provider-52": {
                 "id": "6-11111",
@@ -3207,7 +3207,7 @@
                         "type": "xsd:dateTime"
                     },
                     "logged_by-52_02": {
-                        "id": "3-11111",
+                        "id": "3-11113",
                         "label": "BUNNY,BUGS"
                     },
                     "remarks-52_02": "Quantity exceeds maximum allowed of 168",
@@ -3222,7 +3222,7 @@
                     }
                 },
                 {
-                    "id": "52_02-2_7810414",
+                    "id": "52_02-2_7810415",
                     "type": "cmumpss:Activity_Log-52_02",
                     "activity_log-52_02": {
                         "value": "1990-01-01T00:00:00",
@@ -3380,7 +3380,7 @@
             "label": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of appropriat",
             "patient": {
                 "id": "Patient-000007",
-                "label": "BUNNY, BUGS"
+                "label": "BUNNY,BUGS"
             },
             "_id": "Procedure-1074046",
             "description": {
@@ -3394,7 +3394,7 @@
             },
             "dateReported": {
                 "value": "1990-01-01T00:00:00",
-                "type": "xsd#dateTime"
+                "type": "xsd:dateTime"
             },
             "source": {
                 "id": "HDDConcept-1450368",
