@@ -102,27 +102,27 @@ describe('html-2-objects-compare', function() {
 
                 // Now verify that we got the expected file output.  We'll do 
                 // this by comparing the expected file against the file we actually got
-                var expectedStats = fs.stat(expectedFilePath); 
+                var expectedStats = fs.statSync(expectedFilePath); 
                 fs.stat(filePath, function(error, stats) {
 
                     stats.should.not.be.empty;
                     stats.should.deep.equal(expectedStats);
 
-                    var expected_fd = fs.open(expectedfilePath, 'r');
+                    var expected_fd = fs.openSync(expectedfilePath, 'r');
                     fs.open(filePath, 'r', function(error, fd) {
     
                         var buf = new Buffer(stats.size);
                         var expectedBuf = new Buffer(stats.size);
                    
-                        fs.read(fd, expectedBuf, 0, expectedBuf.length);
+                        fs.readSync(fd, expectedBuf, 0, expectedBuf.length);
                         fs.read(fd, buf, 0, buf.length, null, function(error, bytesRead, buf) {
                             var data = buf.toString('utf8', 0, buf.length).replace(/\r?\n|\r/,'');
                             var expectedData = expectedBuf.toString('utf8', 0, expectedBuf.length).replace(/\r?\n|\r/,'');
                             data.should.equal(expectedData);
-                        });
+                        }); 
 
                         fs.close(fd);
-                    });
+                     });
                 });
             });  
         }); 

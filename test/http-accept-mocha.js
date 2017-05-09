@@ -51,10 +51,10 @@ describe('http-accept', function() {
                 var output = noflo.internalSocket.createSocket();
                 network.processes.accept.component.outPorts.output.attach(output);
                 output.on('data', done);
-                network.graph.addInitial(1337, 'accept', 'listen');
+                network.graph.addInitial(1338, 'accept', 'listen');
                 var req = http.request({
                     method: 'POST',
-                    port: 1337,
+                    port: 1338,
                     path: '/'
                 });
                 req.write("Hello World");
@@ -78,10 +78,10 @@ describe('http-accept', function() {
                 error.on('data', fail);
                 var output = noflo.internalSocket.createSocket();
                 network.processes.accept.component.outPorts.output.attach(output);
-                network.graph.addInitial(1337, 'webserver', 'listen');
+                network.graph.addInitial(1339, 'webserver', 'listen');
                 var req = http.request({
                     method: 'POST',
-                    port: 1337,
+                    port: 1339,
                     path: '/'
                 }, function(res){
                     done(res.statusCode);
@@ -101,10 +101,10 @@ describe('http-accept', function() {
                 var output = noflo.internalSocket.createSocket();
                 network.processes.accept.component.outPorts.output.attach(output);
                 output.on('data', done);
-                network.graph.addInitial(1337, 'accept', 'listen');
+                network.graph.addInitial(1340, 'accept', 'listen');
                 var req = http.request({
                     method: 'POST',
-                    port: 1337,
+                    port: 1340,
                     path: '/',
                     headers: {
                         'Content-Type': 'application/json'
@@ -130,10 +130,10 @@ describe('http-accept', function() {
             network.processes.accept.component.outPorts.output.attach(error);
             error.on('data', done);
             network.graph.addInitial('application/json', 'accept', 'type');
-            network.graph.addInitial(1337, 'webserver', 'listen');
+            network.graph.addInitial(1341, 'webserver', 'listen');
             var req = http.request({
                 method: 'POST',
-                port: 1337,
+                port: 1341,
                 path: '/',
                 headers: {
                     'Content-Type': 'text/plain'

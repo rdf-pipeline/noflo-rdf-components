@@ -8,7 +8,7 @@ var should = chai.should();
 var _ = require('underscore');
 var fs = require('fs');
 
-var extractor = require('translators').cmumps;
+var translator = require('translators').diagnoses;
 
 var factory = require('../components/translate-diagnosis-cmumps2fhir');
 var logger = require('../src/logger');
@@ -46,7 +46,7 @@ describe('translate-diagnosis-cmumps2fhir', function() {
             var node = test.createComponent(factory);
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-            var diagnosis = extractor.extractDiagnoses(parsedData);
+            var diagnosis = translator.extractDiagnoses(parsedData);
 
             var translation = factory.updater.call(node.vni(''), diagnosis);
 
@@ -64,7 +64,7 @@ describe('translate-diagnosis-cmumps2fhir', function() {
             var node = test.createComponent(factory);
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
-            var diagnosis = extractor.extractDiagnoses(parsedData);
+            var diagnosis = translator.extractDiagnoses(parsedData);
 
             var cmumpsFile='/tmp/cmumpsDiagnosis.out';
             var fhirFile='/tmp/fhirDiagnosis.out';

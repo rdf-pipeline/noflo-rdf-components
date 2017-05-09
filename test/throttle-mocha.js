@@ -61,7 +61,7 @@ describe('throttle', function() {
                 var node = test.createComponent(factory);
                 
                 var warning;
-                sinon.stub(logger,'warn', function(message) {
+                sinon.stub(logger,'warn').callsFake(function(message) {
                     warning = message;
                 });
                 var result = factory.updater.call(node.vni(''), "1", 'throttleEnvVar');

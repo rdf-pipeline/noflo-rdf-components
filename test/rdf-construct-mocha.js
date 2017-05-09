@@ -36,7 +36,7 @@ describe('rdf-construct subgraph', function() {
         }]
     };
 
-    it("should parse text/turtle", function(done) {
+    it("should parse text/turtle", function() { 
         this.timeout(3250);
 
         var server = http.createServer();
@@ -65,21 +65,21 @@ describe('rdf-construct subgraph', function() {
 
             }).then(function(result) { 
                 result.should.be.an('object');
-                result.data.should.deep.equal([ 
+                test.verifyState(result, 
+                    '',  // vnid
                     { '@id': 'http://dbpedia.org/resource/John_Lennon',
                       'http://xmlns.com/foaf/0.1/name': 'John Lennon',
                       'http://schema.org/spouse': { 
                            '@id': 'http://dbpedia.org/resource/Cynthia_Lennon' } 
                     } 
-                ]);
-                done();
+                );
             }).catch(function(e) { 
                 throw Error('should parse text/turtle test exception: ',e);
             });
         });
     });
 
-    it("should parse text/turtle into JSON LD", function(done) {
+    it("should parse text/turtle into JSON LD", function() { 
         this.timeout(3250);
 
         var server = http.createServer();
@@ -134,12 +134,11 @@ describe('rdf-construct subgraph', function() {
                       ] 
                     }
                 );
-                done();
             });
         });
     });
 
-    it("should round trip jsonld through SPARQL service", function(done) {
+    it("should round trip jsonld through SPARQL service", function() {
         this.timeout(5000);
 
         // Verify we have the rdf_auth_file env variable set so we have auth credentials
@@ -148,7 +147,7 @@ describe('rdf-construct subgraph', function() {
             console.warn("    The \"round trip jsonld through SPARQL service\" test requires an RDF auth file path in env var \"rdf_auth_file\"");
             console.warn("    Building an auth file is documented here: https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2");
             console.warn("    Skipping the round trip jsonld through SPARQL service test!");
-            done();
+            return;
         } else { 
 
             // Check whether the endpoint (which is on the VPN) is accessible 
@@ -158,7 +157,7 @@ describe('rdf-construct subgraph', function() {
                 if (!_.isEmpty(error)) { 
                     console.warn("    Unable to access the Allegrograph endpoint.  Are you on the VPN?");
                     console.warn("    The \"round trip jsonld through SPARQL service\" test requires VPN access to proceed.  Skipping this test.");
-                    done();
+                    return;
                 } else { 
 
                     return test.createNetwork({
@@ -194,7 +193,6 @@ describe('rdf-construct subgraph', function() {
                                       },
                                       'http://xmlns.com/foaf/0.1/name': 'John Lennon' } 
                                 ]);
-                                done();
                             });
                         });
                     });

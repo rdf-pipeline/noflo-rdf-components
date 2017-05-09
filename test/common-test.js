@@ -55,8 +55,13 @@ module.exports = {
                 });
                 network.connect(function(err){
                     if (err) return reject(err);
-                    network.start();
-                    resolve(network);
+                    network.start(function(err) { 
+                       if (err) {
+                           console.error("Unable to start network:",err);
+                           return reject(err);
+                       }
+                       return resolve(network);
+                    });
                 });
             }, true);
         }).then(function(network){

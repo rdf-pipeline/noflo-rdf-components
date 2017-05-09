@@ -72,7 +72,7 @@ describe('rdf-jsonld', function() {
     it('should throw an error if frame cannot be parsed', function() {
         this.nodeInstance = {};
         expect(rdfJsonld.updater.bind(this, cynthia, 'A bad frame')).to.throw(Error,
-            "Rdf-Jsonld component is unable to parse frame: Unexpected token A!");
+            "Rdf-Jsonld component is unable to parse frame: Unexpected token A in JSON at position 0!");
     });
 
     it('should throw an error if filter Bnode attributes is empty', function() {
@@ -84,7 +84,7 @@ describe('rdf-jsonld', function() {
     it('should throw an error if filter Bnode attributes cannot be parsed', function() {
         this.nodeInstance = {};
         expect(rdfJsonld.updater.bind(this, cynthia, frame, 'Garbage')).to.throw(Error,
-            "Rdf-Jsonld component is unable to parse filter bNode attributes: Unexpected token G!");
+            "Rdf-Jsonld component is unable to parse filter bNode attributes: Unexpected token G in JSON at position 0!");
     });
 
     it("should round trip a graph", function() {

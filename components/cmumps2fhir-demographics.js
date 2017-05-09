@@ -3,7 +3,6 @@
 var _ = require('underscore');
 var util = require('util');
 
-var extractor = require('translators').cmumps;
 var translator = require('translators').demographics;
 
 var cmumps2fhir = require('./cmumps2fhir');
@@ -37,7 +36,7 @@ function patientDemographics(data, cmumps_file, fhir_file) {
 
     var translation = cmumps2fhir.call(this,
                                        data,  
-                                       extractor.extractDemographics, 
+                                       translator.extractPatient, 
                                        translator.translateDemographicsFhir,
                                        cmumps_file,
                                        fhir_file);

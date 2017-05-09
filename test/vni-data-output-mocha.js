@@ -41,6 +41,9 @@ describe('vni-data-output graph', function() {
                 }).then(function(done) {
                     console.log.restore();
                     done.should.deep.equal({"knock knock": "who is there?"});
+                }).catch(function(e) {
+                    console.log.restore();
+                    throw e; 
                 });
             });
        });

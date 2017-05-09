@@ -150,7 +150,7 @@ describe('rdf-insert subgraph', function() {
         });
         server.listen(port);
         var authFileName = path.join(os.tmpdir(), 'temp-rdf-insert-auth');
-        afterEach(_.once(fs.unlink.bind(fs, authFileName)));
+        afterEach(_.once(fs.unlinkSync.bind(fs, authFileName)));
         return test.createNetwork({
             load: "rdf-components/rdf-load",
             insert: "rdf-components/rdf-insert"
@@ -176,7 +176,7 @@ describe('rdf-insert subgraph', function() {
         });
         server.listen(port);
         var authFileName = path.join(os.tmpdir(), 'temp-rdf-insert-auth');
-        afterEach(_.once(fs.unlink.bind(fs, authFileName)));
+        afterEach(_.once(fs.unlinkSync.bind(fs, authFileName)));
         return test.createNetwork({
             insert: "rdf-components/rdf-insert-jsonld"
         }).then(function(network){

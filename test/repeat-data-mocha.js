@@ -4,8 +4,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var should = chai.should();
 
-var sinon = require('sinon');
-
 var test = require('./common-test');
 var factory = require('../components/repeat-data');
 

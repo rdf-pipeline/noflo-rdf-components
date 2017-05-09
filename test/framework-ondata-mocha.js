@@ -434,7 +434,7 @@ describe("framework-ondata", function() {
                 test.onOutPortData(node, 'error', fail);
 
                 var logBuffer = '';
-                sinon.stub(logger, 'error', function (message) {
+                sinon.stub(logger, 'error').callsFake(function (message) {
                     logBuffer += message;
                 }); 
 
@@ -1227,7 +1227,7 @@ describe("framework-ondata", function() {
             }).then(function(network){
  
                 var testNode = network.processes.testNode.component;
-                sinon.stub(logger, 'debug', function (message) {
+                sinon.stub(logger, 'debug').callsFake(function (message) {
                     if ( message === 'testNode is not ready for to run updater yet.') { 
                         logger.debug.restore();
                         done();

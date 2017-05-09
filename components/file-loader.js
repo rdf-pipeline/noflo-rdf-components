@@ -38,9 +38,13 @@ function loader(file_envvar, encoding, use_default_vni, metadata_key, kick) {
         // Using one VNI for each id in the file (similar to a split); On this path,
         // we are sending all the VNIs downstream at once. 
         var filename = getFilename(file_envvar);
-        var ids = fs.readFileSync(filename, encoding).toString().split("\n");
+        var ids = _.filter( 
+            fs.readFileSync(filename, encoding).toString().split("\n"), 
+            function(id) {
+                return id !== '';    
+        });
         if (_.isEmpty(ids)) {
-            logger.warn('No data found in', process.env.file_envvar);
+            logger.warn('No data found in '+ filename + ' specified by environment var ' + file_envvar);
             return;
         }
 

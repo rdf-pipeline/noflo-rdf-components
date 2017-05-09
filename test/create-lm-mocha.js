@@ -24,7 +24,7 @@ describe('create-lm', function() {
         // Set up a stub on the date so we can be sure to get a unique LM 
         // with a counter value of 0
         var startingDate = Date.now()+1;
-        sinon.stub(Date, 'now', function() {
+        sinon.stub(Date, 'now').callsFake(function() {
             return startingDate;
         });
 
@@ -52,7 +52,7 @@ describe('create-lm', function() {
         // Set up a stub on the date so we can be sure to get a unique LM 
         // with a counter value of 0
         var startingDate = Date.now()+1;
-        sinon.stub(Date, 'now', function() {
+        sinon.stub(Date, 'now').callsFake(function() {
             return startingDate;
         });
 
