@@ -32,6 +32,7 @@
     "jsonld": "^0.4.11",
     "jsonpointer": "^4.0.1",
     "media-typer": "^0.3.0",
+    "minimatch": "^3.0.2",
     "mongodb-schema": "^6.1.0",
     "n3": "^0.9.1",
     "noflo": "^0.7.5",

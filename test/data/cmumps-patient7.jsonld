@@ -3121,7 +3121,7 @@
             "rx_-52": "B636181",
             "patient-52": {
                 "id": "2-000007",
-                "label": "BUNNY, BUGS"
+                "label": "BUNNY,BUGS"
             },
             "provider-52": {
                 "id": "6-11111",
@@ -3380,7 +3380,7 @@
             "label": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of appropriat",
             "patient": {
                 "id": "Patient-000007",
-                "label": "BUNNY, BUGS"
+                "label": "BUNNY,BUGS"
             },
             "_id": "Procedure-1074046",
             "description": {
@@ -3403,7 +3403,7 @@
             "verified": true,
             "provider": {
                 "id": "Provider-41200034",
-                "label": "MOUSE, MICKEY"
+                "label": "MOUSE,MICKEY"
             }
         }
     ]

@@ -12,6 +12,7 @@ var fs = require('fs');
 var util = require('util');
 
 var filters = require('../components/lib/filters');
+var logger = require('../src/logger');
 var test = require('./common-test');
 
 var jsonData = JSON.parse(fs.readFileSync(__dirname + '/data/cmumps-patient7.jsonld','utf8'));
@@ -30,30 +31,40 @@ describe('filters', function() {
 
     describe('#filterByAttributes', function() {
         it('should throw an error if no json data was specified', function() {
+            logger.silence('error');
             expect(filters.filterByAttributes.bind(this, undefined)).to.throw(Error,
                 /Filter by attributes API requires JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if json data was empty', function() {
+            logger.silence('error');
             expect(filters.filterByAttributes.bind(this, '')).to.throw(Error,
                 /Filter by attributes API requires JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if filter is not an array', function() {
+            logger.silence('error');
             expect(filters.filterByAttributes.bind(this, [{"alpha": "beta"}], {"alpha": "beta"})).to.throw(Error,
                 /Filter by attributes API expects an array of attributes to be matched!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if filter was empty', function() {
+            logger.silence('error');
             expect(filters.filterByAttributes.bind(this, [{"alpha": "beta"}], {})).to.throw(Error,
                 /Filter by attributes API requires filter JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should filter a JSON data for a single match', function() {
             var data = '[ {"alpha": "beta"}, {"gamma": "delta"} ]';
             var filter = '[ {"alpha": "beta"} ]';
             
+            logger.silence('error');
             expect(filters.filterByAttributes.call(this, data, filter)).to.deep.equal([{alpha: "beta"}]);
+            logger.verbose('error');
         });
 
         it('should filter a JSON data for with multiple matches', function() {
@@ -143,28 +154,38 @@ describe('filters', function() {
     describe('#filterByLiterals', function() {
 
         it('should throw an error if no json data was specified', function() {
+            logger.silence('error');
             expect(filters.filterByLiterals.bind(this, undefined)).to.throw(Error,
                 /Filter by literals API requires JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if json data was empty', function() {
+            logger.silence('error');
             expect(filters.filterByLiterals.bind(this, '')).to.throw(Error,
                 /Filter by literals API requires JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if JSON data is not an array', function() {
+            logger.silence('error');
             expect(filters.filterByLiterals.bind(this, {"alpha":"beta"}, ["alpha"])).to.throw(Error,
                 /Filter by literals API expects an array of JSON data to filter/);
+            logger.verbose('error');
         });
 
         it('should throw an error if filter was empty', function() {
+            logger.silence('error');
             expect(filters.filterByLiterals.bind(this, ["alpha", "beta"], [])).to.throw(Error,
                 /Filter by literals API requires filter JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if filters is not an array', function() {
+            logger.silence('error');
             expect(filters.filterByLiterals.bind(this, ["alpha", "beta"], {"alpha":"beta"})).to.throw(Error,
                 /Filter by literals API expects an array of literal filters, i.e., array of strings, numbers, and booleans/);
+            logger.verbose('error');
         });
 
         it('should gracefully handle case where everything is filtered out', function() {
@@ -202,31 +223,41 @@ describe('filters', function() {
 
     describe('#filterByJsonPointers', function() {
         it('should throw an error if no json data was specified', function() {
+            logger.silence('error');
             expect(filters.filterByJsonPointers.bind(this, undefined)).to.throw(Error,
                 /Filter by JSON pointers API requires JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if json data was empty', function() {
+            logger.silence('error');
             expect(filters.filterByJsonPointers.bind(this, '')).to.throw(Error,
                 /Filter by JSON pointers API requires JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if JSON data is not an array', function() {
+            logger.silence('error');
             expect(filters.filterByJsonPointers.bind(this, 
                                                      {"alpha":"beta"}, 
                                                      [{jsonpointer: "/alpha", value: "beta"}]))
                 .to.throw(Error,
                    /Filter by JSON pointers API expects an array of JSON data to filter!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if filters was empty', function() {
+            logger.silence('error');
             expect(filters.filterByJsonPointers.bind(this, [{"alpha": "beta"}], [])).to.throw(Error,
                 /Filter by JSON pointers API requires filter JSON data to parse!/);
+            logger.verbose('error');
         });
 
         it('should throw an error if filters is not an array', function() {
+            logger.silence('error');
             expect(filters.filterByJsonPointers.bind(this, [{"alpha": "beta"}], {"alpha":"beta"})).to.throw(Error,
                 "Filter by JSON pointers API expects an array of format [{jsonpointer: <pointer>, value: <value>}]!");
+            logger.verbose('error');
         });
 
         it('should gracefully handle case where everything is filtered out', function() {
@@ -425,10 +456,10 @@ describe('filters', function() {
             Object.keys(procedures[0]).should.have.length(11);
             procedures[0]._id.should.equal('Procedure-1074046');
             procedures[0].type.should.equal(cmumpsType);
-            procedures[0].patient.should.deep.equal({id: 'Patient-000007', label: 'BUNNY, BUGS'});
+            procedures[0].patient.should.deep.equal({id: 'Patient-000007', label: 'BUNNY,BUGS'});
             procedures[0].comments.should.equal('Encounter Procedure');
             procedures[0].verified.should.be.true;
-            procedures[0].provider.should.deep.equal({"id": "Provider-41200034", "label": "MOUSE, MICKEY"});
+            procedures[0].provider.should.deep.equal({"id": "Provider-41200034", "label": "MOUSE,MICKEY"});
         });
 
     });

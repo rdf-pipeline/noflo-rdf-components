@@ -12,6 +12,7 @@ var _ = require('underscore');
 var jsonpointer = require('json-pointer');
 
 var dataUtils = require('./data-utils');
+var errUtils = require('./error-utils');
 
 module.exports = {
     filterByAttributes: filterByAttributes,
@@ -40,13 +41,13 @@ function filterByAttributes(json_data, filter_attributes, start) {
     }
    
     if (!_.isArray(data)) {
-       throw Error('Filter by attributes API expects an array of JSON data to filter!');
+       throw errUtils.errorMessage('Filter by attributes API expects an array of JSON data to filter!');
     }
 
     // Parse the filter attributes if they are still strings and verify we got an arry of filters. 
     var filters = dataUtils.parseData(filter_attributes, "Filter by attributes API", "filter JSON data");
     if (!_.isArray(filters)) { 
-        throw Error('Filter by attributes API expects an array of attributes to be matched!');
+        throw errUtils.errorMessage('Filter by attributes API expects an array of attributes to be matched!');
     }
 
     // Apply each filter to the data to see which data elements match
@@ -79,19 +80,19 @@ function filterByLiterals(json_data, filter_attributes, start) {
     }
    
     if (!_.isArray(data)) {
-       throw Error('Filter by literals API expects an array of JSON data to filter!');
+       throw errUtils.errorMessage('Filter by literals API expects an array of JSON data to filter!');
     }
 
     // Parse the filter attributes if they are still strings and verify we have an array of filters
     var filters = dataUtils.parseData(filter_attributes, "Filter by literals API", "filter JSON data");
     if (!_.isArray(filters)) { 
-        throw Error('Filter by literals API expects an array of literal filters, i.e., array of strings, numbers, and booleans!');
+        throw errUtils.errorMessage('Filter by literals API expects an array of literal filters, i.e., array of strings, numbers, and booleans!');
     }
 
     // Verify the filters are really literals
     _.each(filters, function(filter) { 
         if (! (_.isString(filter) || _.isNumber(filter) || _.isBoolean(filter))) { 
-            throw Error('Filter by literals API expects all filters to be literals.  Received this invalid filter: '+filter+'.');
+            throw errUtils.errorMessage('Filter by literals API expects all filters to be literals.  Received this invalid filter: '+filter+'.');
         }
     });
 
@@ -126,13 +127,13 @@ function filterByJsonPointers(json_data, filter_attributes, start) {
     }
   
     if (!_.isArray(data)) {
-       throw Error('Filter by JSON pointers API expects an array of JSON data to filter!');
+       throw errUtils.errorMessage('Filter by JSON pointers API expects an array of JSON data to filter!');
     }
 
     // Parse the filter attributes if they are still strings and verify we have an array of filters
     var filters = dataUtils.parseData(filter_attributes, "Filter by JSON pointers API", "filter JSON data");
     if (!_.isArray(filters)) {
-        throw Error('Filter by JSON pointers API expects an array of format [{jsonpointer: <pointer>, value: <value>}]!');
+        throw errUtils.errorMessage('Filter by JSON pointers API expects an array of format [{jsonpointer: <pointer>, value: <value>}]!');
     }
 
     return _.filter(data, function(element) {
