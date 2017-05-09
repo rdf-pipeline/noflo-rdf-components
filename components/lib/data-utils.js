@@ -7,6 +7,8 @@
 var _ = require('underscore');
 var fs = require('fs');
 
+var errUtils = require('./error-utils');
+
 module.exports = {
     parseData: parseData,
     readFileData: readFileData,
@@ -29,13 +31,13 @@ function parseData(data, callerName, dataDescription) {
     var description = dataDescription || "data";
       
     if (_.isEmpty(data)) {
-        throw Error(caller + " requires " + description + " to parse!");
+        throw errUtils.errorMessage(caller + " requires " + description + " to parse!");
     }
 
     try {
         return (_.isString(data)) ? JSON.parse(data) : data;
     } catch (e) {
-        throw new Error(caller + " is unable to parse " + description + ": "+e.message+"!");
+        throw errUtils.errorMessage(caller + " is unable to parse " + description + ": "+e.message+"!");
     }
 }
 
@@ -56,13 +58,13 @@ function readFileData(filename, encoding, callerName, dataDescription) {
     description = (description.length > 1)  ? description + " " : description;
       
     if (_.isEmpty(filename)) {
-        throw Error(caller + " requires a " + description + "file name!");
+        throw errUtils.errorMessage(caller + " requires a " + description + "file name!");
     }
 
     try { 
         return fs.readFileSync(filename, encoding || 'utf-8');
     } catch(e) { 
-        throw new Error(caller + " is unable to read file " + filename + ": " + e.message);
+        throw errUtils.errorMessage(caller + " is unable to read file " + filename + ": " + e.message);
     }
 }
 

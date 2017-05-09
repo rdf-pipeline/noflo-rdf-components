@@ -1,0 +1,84 @@
+{
+    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+
+    "@graph": [
+        {
+            "type": "cmumpss:Patient-2",
+            "_id": "2-000007",
+            "identifier": "2-000007",
+            "patient_ssn-2": "777777777",
+            "sex-2": {
+                "id": "cmumpss:2__02_E-MALE",
+                "identifier": "cmumpss:2__02_E-MALE",
+                "label": "MALE"
+            },
+            "marital_status-2": {
+                "id": "11-2",
+                "identifier": "11-2",
+                "label": "DIVORCED"
+            },
+
+            "ephone-2" : "555 555 5558",
+            "erelationship-2" : {
+                "id" : "8140-20",
+                "identifier" : "8140-20",
+                "label" : "OTHER RELATIONSHIP"
+            },
+
+            "estate-2" : {
+                "id" : "5-17",
+                "identifier" : "5-17",
+                "label" : "NEW MEXICO"
+            },
+            "ezip-2" : "55555",
+
+            "fmp-2": {
+                "id": "8110-20",
+                "identifier": "8110-20",
+                "label": "20"
+            }
+         },
+
+        {
+            "_id": "52-40863",
+            "identifier": "52-40863",
+            "type": "cmumpss:Prescription-52",
+            "rx_-52": "H46358",
+            "patient-52": {
+                "id": "2-000007",
+                "identifier": "2-000007",
+                "label": "BUNNY,BUGS"
+            },
+            "provider-52": {
+                "id": "6-111111",
+                "identifier": "6-111111",
+                "label": "DUCK,DONALD"
+            },
+            "drug-52": {
+                "id": "50-260",
+                "identifier": "50-260",
+                "label": "PAINKILLER 400MG TAB",
+                "sameAs": "nddf:cdc008348",
+                "sameAsLabel": "PAINKILLER 400 MG TABLET"
+            },
+            "fill_dates-52": [
+                {
+                    "id": "52_01-1_40863",
+                    "identifier": "52_01-1_40863",
+                    "type": "cmumpss:Fill_Dates-52_01",
+                    "fill_dates-52_01": {
+                        "value": "1990-01-01T00:00:00",
+                        "type": "xsd:dateTime"
+                    },
+                    "fill_number-52_01": "1",
+                    "logged_by-52_01": {
+                        "id": "3-2",
+                        "identifier": "3-2",
+                        "label": "COYOTE, WILE E"
+                    },
+                    "qty-52_01": "120"
+                }
+            ]
+        }
+    ]
+}

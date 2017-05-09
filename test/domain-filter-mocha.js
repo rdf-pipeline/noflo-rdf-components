@@ -158,10 +158,10 @@ describe('domain-filter', function() {
             Object.keys(procedures[0]).should.have.length(11);
             procedures[0]._id.should.equal('Procedure-1074046');
             procedures[0].type.should.equal("Procedure");
-            procedures[0].patient.should.deep.equal({id: 'Patient-000007', label: 'BUNNY, BUGS'});
+            procedures[0].patient.should.deep.equal({id: 'Patient-000007', label: 'BUNNY,BUGS'});
             procedures[0].comments.should.equal('Encounter Procedure');
             procedures[0].verified.should.be.true;
-            procedures[0].provider.should.deep.equal({"id": "Provider-41200034", "label": "MOUSE, MICKEY"});
+            procedures[0].provider.should.deep.equal({"id": "Provider-41200034", "label": "MOUSE,MICKEY"});
         });
 
     });

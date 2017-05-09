@@ -10,6 +10,7 @@ var fs = require('fs');
 var os = require('os');
 
 var dataUtils = require('../components/lib/data-utils');
+var logger = require('../src/logger');
 var test = require('./common-test');
 
 describe("data-utils", function() {
@@ -26,25 +27,33 @@ describe("data-utils", function() {
 
     describe("#parseData", function() {
         it("should throw an error if no json data was specified", function() {
+            logger.silence('error');
             expect(dataUtils.parseData.bind(this)).to.throw(Error,
                 "parseData API requires data to parse!");
+            logger.verbose('error');
         });
 
         it("should throw an error if json data was empty", function() {
+            logger.silence('error');
             expect(dataUtils.parseData.bind(this, '')).to.throw(Error,
                 "parseData API requires data to parse!");
+            logger.verbose('error');
         });
 
         it("should throw an error if the data was empty, printing component and description", function() {
             var componentName = "TestComponent";
             var description = "test JSON"
+            logger.silence('error');
             expect(dataUtils.parseData.bind(this, '', componentName, description)).to.throw(Error,
                 componentName + " requires " + description + " to parse!");
+            logger.verbose('error');
         });
 
         it("should throw an error if data is not JSON", function() {
+            logger.silence('error');
             expect(dataUtils.parseData.bind(this, "Garbage In")).to.throw(Error,
                 "parseData API is unable to parse data: Unexpected token G in JSON at position 0!");
+            logger.verbose('error');
         });
 
         it("should parse JSON", function() {
@@ -58,29 +67,38 @@ describe("data-utils", function() {
     describe("#readFileData", function() {
 
         it("should throw an error if no json data was specified", function() {
+            logger.silence('error');
             expect(dataUtils.readFileData.bind(this)).to.throw(Error,
                 "readFileData API requires a file name!");
+            logger.verbose('error');
         });
 
         it("should throw an error if json data was empty", function() {
+            logger.silence('error');
             expect(dataUtils.readFileData.bind(this, '')).to.throw(Error,
                 "readFileData API requires a file name!");
+            logger.verbose('error');
         });
 
         it("should throw an error if the file name  was empty, printing component and description", function() {
             var componentName = "TestComponent";
             var description = "test";
+            logger.silence('error');
             expect(dataUtils.readFileData.bind(this, '', 'utf-8', componentName, description)).to.throw(Error,
                 componentName + " requires a " + description + " file name!");
+            logger.verbose('error');
         });
 
         it("should return an error if given non-existent file", function() {
             var filepath =  os.tmpdir() + "/wikiwiki" + Math.random() + ".json"
             try { 
+                logger.silence('error');
                 dataUtils.readFileData(filepath, 'utf-8', 'Test Component'); 
+                throw Error("No error reading non-existent file!!!");
             } catch(e) { 
+                logger.verbose('error');
                 e.message.should.contain('Test Component is unable to read file');
-            }
+            } 
         });
 
         it("should read a file and return contents", function () {
@@ -95,20 +113,26 @@ describe("data-utils", function() {
 
     describe("#readJsonData", function() {
         it("should throw an error if no json data was specified", function() {
+            logger.silence('error');
             expect(dataUtils.readJsonData.bind(this)).to.throw(Error,
                 "readJsonData API requires a file name!");
+            logger.verbose('error');
         });
 
         it("should throw an error if json data was empty", function() {
+            logger.silence('error');
             expect(dataUtils.readJsonData.bind(this, '')).to.throw(Error,
                 "readJsonData API requires a file name!");
+            logger.verbose('error');
         });
 
         it("should throw an error if the file name was empty, printing component and description", function() {
             var componentName = "TestComponent";
             var description = "test";
+            logger.silence('error');
             expect(dataUtils.readJsonData.bind(this, '', 'utf-8', componentName, description)).to.throw(Error,
                 componentName + " requires a " + description + " file name!");
+            logger.verbose('error');
         });
 
         it("should throw an error if the file could not be parsed, printing component and description", function() {
@@ -119,8 +143,10 @@ describe("data-utils", function() {
             var content = "What's up, JSON?";
             fs.writeFileSync(filepath, content);
 
+            logger.silence('error');
             expect(dataUtils.readJsonData.bind(this, filepath, 'utf-8', componentName, description)).to.throw(Error,
                 componentName + " is unable to parse " + description + ": Unexpected token W in JSON at position 0!");
+            logger.verbose('error');
             fs.unlinkSync(filepath);
         });
 
