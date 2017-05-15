@@ -8,9 +8,13 @@ var expect = chai.expect;
 
 var _ = require('underscore');
 var noflo = require('noflo');
-var test = require('./common-test');
+
+var logger = require('../src/logger');
+
 var rdfLoad = require('../components/rdf-load');
 var rdfJsonld = require('../components/rdf-jsonld');
+
+var test = require('./common-test');
 
 describe('rdf-jsonld', function() {
     var frame = {
@@ -53,38 +57,50 @@ describe('rdf-jsonld', function() {
 
     it('should throw an error if no input was specified', function() {
         this.nodeInstance = {};
+        logger.silence('error');
         expect(rdfJsonld.updater.bind(this, undefined)).to.throw(Error,
                "Rdf-Jsonld component requires input to parse!");
+        logger.verbose('error');
     });
 
     it('should throw an error if input is empty', function() {
         this.nodeInstance = {};
+        logger.silence('error');
         expect(rdfJsonld.updater.bind(this, '')).to.throw(Error,
             "Rdf-Jsonld component requires input to parse!");
+        logger.verbose('error');
     });
 
     it('should throw an error if frame is empty', function() {
         this.nodeInstance = {};
+        logger.silence('error');
         expect(rdfJsonld.updater.bind(this, cynthia, '')).to.throw(Error,
             "Rdf-Jsonld component requires frame to parse!");
+        logger.verbose('error');
     });
 
     it('should throw an error if frame cannot be parsed', function() {
         this.nodeInstance = {};
+        logger.silence('error');
         expect(rdfJsonld.updater.bind(this, cynthia, 'A bad frame')).to.throw(Error,
             "Rdf-Jsonld component is unable to parse frame: Unexpected token A in JSON at position 0!");
+        logger.verbose('error');
     });
 
     it('should throw an error if filter Bnode attributes is empty', function() {
         this.nodeInstance = {};
+        logger.silence('error');
         expect(rdfJsonld.updater.bind(this, cynthia, frame, '')).to.throw(Error,
             "Rdf-Jsonld component requires filter bNode attributes to parse!");
+        logger.verbose('error');
     });
 
     it('should throw an error if filter Bnode attributes cannot be parsed', function() {
         this.nodeInstance = {};
+        logger.silence('error');
         expect(rdfJsonld.updater.bind(this, cynthia, frame, 'Garbage')).to.throw(Error,
             "Rdf-Jsonld component is unable to parse filter bNode attributes: Unexpected token G in JSON at position 0!");
+        logger.verbose('error');
     });
 
     it("should round trip a graph", function() {
