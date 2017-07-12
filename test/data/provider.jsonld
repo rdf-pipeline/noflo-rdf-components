@@ -1,0 +1,32 @@
+{
+   "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+   "@id": "urn:local:provider-6",
+   "identifier": "6-26",
+   "label": "FLINTSTONE,WILMA",
+   "duty_phone_1-6": "000 111 2222",
+   "office_street_address_1-6": "180 Bedrock Blvd",
+   "office_city-6": "BEDROCK",
+   "office_state-6": {
+     "identifier": "5-17",
+     "label": "NEBRASKA"
+   },
+   "office_zipcode-6": {
+     "identifier": "5_8002-26744",
+     "label": "68501"
+   },
+   "class-6": {
+     "identifier": "7-19",
+     "label": "OUTSIDE PROVIDER"
+   },
+   "provider_id-6": "111223333",
+   "ssn-6": "111223333",
+   "require_supervising_provider-6": true,
+   "datetime_entered-6": {
+      "value": "1990-01-01T00:00:00",
+      "type": "xsd:dateTime"
+    },
+    "cmac_modification_date-6": {
+      "value": "1990-01-01",
+      "type": "xsd:date"
+    }
+}
