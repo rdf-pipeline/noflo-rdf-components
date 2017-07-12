@@ -14,7 +14,7 @@ var factory = require('../components/sequential-id-loader');
 var logger = require('../src/logger');
 var test = require('./common-test');
 
-describe('seqential-file-loader', function() {
+describe('seqential-id-loader', function() {
 
     it("should exist as a function", function() {
         factory.should.exist;

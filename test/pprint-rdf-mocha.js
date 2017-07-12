@@ -1,6 +1,8 @@
 /**
  * File: pprint-rdf-mocha.js
  * Unit tests for scripts/pprint-rdf-mocha.js 
+ * NOTE: pprint-rdf.py required python 3 and rdflib be installed on your system
+ *       These tests will fail if they are not. 
  */
 
 var _ = require('underscore');
