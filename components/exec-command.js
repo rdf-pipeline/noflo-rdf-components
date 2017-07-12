@@ -4,10 +4,25 @@ var _ = require('underscore');
 var exec = require('child_process').exec;
 
 var wrapper = require('../src/javascript-wrapper');
-module.exports = wrapper({description: "Execute a command.",
-                          icon: "tag",
-                          isTransient: true,
-                          updater: executeCommand});
+module.exports = wrapper({
+    description: "Execute a command.",
+    icon: 'play',
+    inPorts: {
+         command: {
+             description: "shell command to execute",
+             datatype: 'string',
+         },
+         optional_args: {
+             description: "optional arguments, e.g., -l",
+             datatype: 'string',
+         },
+         positional_args: {
+             description: "positional command arguments, e.g., a file name",
+             datatype: 'string',
+         }
+     },
+     isTransient: true,
+     updater: executeCommand});
 
 /**
  * Executes a command from a shell and returns whatever was in stdout
