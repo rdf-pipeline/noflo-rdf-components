@@ -1,6 +1,8 @@
 /**
  * File: compare-rdf-mocha.js
  * Unit tests for scripts/compare-rdf-mocha.js 
+ * NOTE: compare-rdf.py required python 3 and rdflib be installed on your system
+ *       These tests will fail if they are not. 
  */
 
 var _ = require('underscore');
@@ -21,7 +23,7 @@ var compareRdfPath = __dirname + '/../scripts/compare-rdf.py';
 var providerTtlFile = __dirname + "/data/provider.ttl";
 var providerJsonldFile = __dirname + "/data/provider.jsonld";
 
-describe("pprint-rdf", function() {
+describe("compare-rdf", function() {
 
     it("should exist as a file", function() {
         fs.existsSync(compareRdfPath).should.be.true;
