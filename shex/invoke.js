@@ -2,7 +2,7 @@
 
 // ShEx test tool
 
-var component = require("../components/shex-cmumps-to-rdf");
+var component = require("../components/shex-chcs-to-rdf");
 var fs = require('fs');
 
 var data = fs.readFileSync(process.argv[2], "utf8");

@@ -1,5 +1,5 @@
 {
-   "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+   "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
    "@id": "urn:local:provider-6",
    "identifier": "6-26",
    "label": "FLINTSTONE,WILMA",

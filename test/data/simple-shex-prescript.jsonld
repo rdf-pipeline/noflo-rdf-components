@@ -1,15 +1,15 @@
 {
-    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
 
     "@graph": [
         {
-            "type": "cmumpss:Patient-2",
+            "type": "chcss:Patient-2",
             "_id": "2-000007",
             "identifier": "2-000007",
             "patient_ssn-2": "777777777",
             "sex-2": {
-                "id": "cmumpss:2__02_E-MALE",
-                "identifier": "cmumpss:2__02_E-MALE",
+                "id": "chcss:2__02_E-MALE",
+                "identifier": "chcss:2__02_E-MALE",
                 "label": "MALE"
             },
             "marital_status-2": {
@@ -42,7 +42,7 @@
         {
             "_id": "52-40863",
             "identifier": "52-40863",
-            "type": "cmumpss:Prescription-52",
+            "type": "chcss:Prescription-52",
             "rx_-52": "H46358",
             "patient-52": {
                 "id": "2-000007",
@@ -65,7 +65,7 @@
                 {
                     "id": "52_01-1_40863",
                     "identifier": "52_01-1_40863",
-                    "type": "cmumpss:Fill_Dates-52_01",
+                    "type": "chcss:Fill_Dates-52_01",
                     "fill_dates-52_01": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"

@@ -1,5 +1,5 @@
-// shex-cmumps-to-rdf.js
-// This component converts patient medical CMUMPS lab records to FHIR RDF
+// shex-chcs-to-rdf.js
+// This component converts patient medical CHCS lab records to FHIR RDF
 // Pre and post processing is done here, however, the bulk of the shex processing is done by the shex-wrapper, which calls the shexiface module
 
 var _ = require('underscore');
@@ -13,51 +13,51 @@ var util = require('util');
 var logger = require('../src/logger');
 var wrapper = require('../src/shex-wrapper');
 var fhir = require("../shex/targets/fhir");
-var CMUMPS_NS = "http://hokukahu.com/schema/cmumpss#";
+var CHCS_NS = "http://hokukahu.com/schema/chcss#";
 
-var myTypeToShape = { // CMUMPS_path is just documentation.
-  "Order-101":    { from: null, to: null, targetType: null, CMUMPS_path: "orders" },
-  "101_03":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/qa_event_date-101" },
-  "101_05":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/status_change-101" },
-  "101_11":       { from: null, to: null, targetType: null, CMUMPS_path: "orders/order_required_data-101" },
-  "Result-63_07": { from: "CMUMPS_result.shex", to: "FHIR_DiagnosticReport.shex", targetType: "DiagnosticReport", CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
-  // "11_07":     { from: null, to: null, targetType: null, CMUMPS_path: "labs/clinical_chemistry-63/result-63_04" },
-  "2":            { from: null, to: null, targetType: null, CMUMPS_path: "demographics" },
-  "2_03":         { from: null, to: null, targetType: null, CMUMPS_path: "demographics/medical_record_type-2" },
-  "2_4":          { from: null, to: null, targetType: null, CMUMPS_path: "demographics/user_altering_patient_record-2" },
-  "Patient_Appointment-44_2": { from: null, to: null, targetType: null, CMUMPS_path: "appointments" },
-  "52":           { from: null, to: null, targetType: null, CMUMPS_path: "medsop" },
-  "52_00":        { from: null, to: null, targetType: null, CMUMPS_path: "medsop/activity_log-52" },
-  "52_01":        { from: null, to: null, targetType: null, CMUMPS_path: "medsop/fill_dates-52" },
-  "55":           { from: null, to: null, targetType: null, CMUMPS_path: "medsinp" },
-  //"63":         { from: "patient_labs_cmumps.shex", to: "patient_labs_fhir.shex", targetType: null, CMUMPS_path: "labs" },
-  "Lab_Result-63": { from: null, to: null, targetType: null, CMUMPS_path: "labs" },
-  "Clinical_Chemistry-63_04": { from: "CMUMPS_clinical_chemistry.shex", to: "FHIR_DiagnosticOrder.shex", targetType: "DiagnosticOrder", CMUMPS_path: "labs/clinical_chemistry-63" },
-  // "63_04":     { from: null, to: null, targetType: null, CMUMPS_path: "labs/clinical_chemistry-63" },
-  "63_832":       { from: null, to: null, targetType: null, CMUMPS_path: "labs/performing_lab_disclosures-63_04" },
-  "8810":         { from: null, to: null, targetType: null, CMUMPS_path: "allergies" },
-  "Medication_Profile-8810_3": { from: null, to: null, targetType: null, CMUMPS_path: "allergies/drug_allergy-8810" },
-  "Patient-2":    { from: null, to: null, targetType: null, CMUMPS_path: "patient" },
+var myTypeToShape = { // CHCS_path is just documentation.
+  "Order-101":    { from: null, to: null, targetType: null, CHCS_path: "orders" },
+  "101_03":       { from: null, to: null, targetType: null, CHCS_path: "orders/qa_event_date-101" },
+  "101_05":       { from: null, to: null, targetType: null, CHCS_path: "orders/status_change-101" },
+  "101_11":       { from: null, to: null, targetType: null, CHCS_path: "orders/order_required_data-101" },
+  "Result-63_07": { from: "CHCS_result.shex", to: "FHIR_DiagnosticReport.shex", targetType: "DiagnosticReport", CHCS_path: "labs/clinical_chemistry-63/result-63_04" },
+  // "11_07":     { from: null, to: null, targetType: null, CHCS_path: "labs/clinical_chemistry-63/result-63_04" },
+  "2":            { from: null, to: null, targetType: null, CHCS_path: "demographics" },
+  "2_03":         { from: null, to: null, targetType: null, CHCS_path: "demographics/medical_record_type-2" },
+  "2_4":          { from: null, to: null, targetType: null, CHCS_path: "demographics/user_altering_patient_record-2" },
+  "Patient_Appointment-44_2": { from: null, to: null, targetType: null, CHCS_path: "appointments" },
+  "52":           { from: null, to: null, targetType: null, CHCS_path: "medsop" },
+  "52_00":        { from: null, to: null, targetType: null, CHCS_path: "medsop/activity_log-52" },
+  "52_01":        { from: null, to: null, targetType: null, CHCS_path: "medsop/fill_dates-52" },
+  "55":           { from: null, to: null, targetType: null, CHCS_path: "medsinp" },
+  //"63":         { from: "patient_labs_chcs.shex", to: "patient_labs_fhir.shex", targetType: null, CHCS_path: "labs" },
+  "Lab_Result-63": { from: null, to: null, targetType: null, CHCS_path: "labs" },
+  "Clinical_Chemistry-63_04": { from: "CHCS_clinical_chemistry.shex", to: "FHIR_DiagnosticOrder.shex", targetType: "DiagnosticOrder", CHCS_path: "labs/clinical_chemistry-63" },
+  // "63_04":     { from: null, to: null, targetType: null, CHCS_path: "labs/clinical_chemistry-63" },
+  "63_832":       { from: null, to: null, targetType: null, CHCS_path: "labs/performing_lab_disclosures-63_04" },
+  "8810":         { from: null, to: null, targetType: null, CHCS_path: "allergies" },
+  "Medication_Profile-8810_3": { from: null, to: null, targetType: null, CHCS_path: "allergies/drug_allergy-8810" },
+  "Patient-2":    { from: null, to: null, targetType: null, CHCS_path: "patient" },
 }
 
 module.exports = wrapper({
-    fromFormat: "cmumpss",
+    fromFormat: "chcss",
     toFormat: "fhir",
-    myBase: CMUMPS_NS,
+    myBase: CHCS_NS,
     staticBindings: fhir.staticBindings,
     makeTargetNode: makeTargetNode,
     targetFixup: fhir.targetFixup,
     myTypeToShape: myTypeToShape,
     vocab: "http://hl7.org/fhir/",
-    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph', 'cmumpss_prefix'],
+    inPorts: ['input', 'source_graph', 'target_graph', 'meta_graph', 'chcss_prefix'],
     preprocess: preprocess,
     postprocess: postprocess
 });
 
 function makeTargetNode (fromGraph, key, s) {
-    var cmumpsIDPredicate = "http://hokukahu.com/schema/cmumpss#identifier";
+    var chcsIDPredicate = "http://hokukahu.com/schema/chcss#identifier";
 	var namespace = "urn:local:fhir:" + myTypeToShape[key].targetType + ":";
-	var object = fromGraph.find(s, cmumpsIDPredicate, null)[0].object;
+	var object = fromGraph.find(s, chcsIDPredicate, null)[0].object;
 	var value = /^"([^]*)"/.exec(object)[1];
 	return namespace + value;
 }
@@ -68,27 +68,27 @@ function preprocess(data) {
        // console.log('data: ',util.inspect(data, {depth:null})+'\n');logger.debug
 
    if (_.isEmpty(data)) {
-        throw Error("shex-cmumps-to-rdf component requires cmumps data to parse!");
+        throw Error("shex-chcs-to-rdf component requires chcs data to parse!");
     }
   
     var parsedData;
     try {
        var parsedData = (_.isString(data)) ? JSON.parse(data) : data;
     } catch (e) {
-        throw new Error("shex-cmumps-to-rdf component is unable to parse input data: "+e.message);
+        throw new Error("shex-chcs-to-rdf component is unable to parse input data: "+e.message);
     }
     
     if (_.isUndefined(parsedData['@context']) || _.isUndefined(parsedData['@graph'])) {
-        throw new Error("shex-cmumps-to-rdf component expects @context and @graph specification on input data!");
+        throw new Error("shex-chcs-to-rdf component expects @context and @graph specification on input data!");
     }
 
 
-    var cmumpss_prefix = this.inputStates('cmumpss_prefix') || {data: 'cmumpss'};
-    graphContext["@context"][cmumpss_prefix.data] = CMUMPS_NS;
+    var chcss_prefix = this.inputStates('chcss_prefix') || {data: 'chcss'};
+    graphContext["@context"][chcss_prefix.data] = CHCS_NS;
     parsedData["@context"] = graphContext["@context"];
     parsedData["@graph"] = parsedData["@graph"].filter(function (ob) {
         // Filter to known types for cleaned.jsonld, 2.1 w, 4.2 w/o
-        return ob.type.substr(1 + cmumpss_prefix.data.length) in myTypeToShape;
+        return ob.type.substr(1 + chcss_prefix.data.length) in myTypeToShape;
     });  
 
     // normalize the identifer attribute - deep map any id or _id attribute to 
@@ -182,11 +182,11 @@ var graphContext = {
         "icd9cm": "http://hokukahu.com/schema/icd9cm#",
         "npi": "http://hokukahu.com/schema/npi#",
         "nddf": "http://hokukahu.com/schema/nddf#",
-        "@vocab": CMUMPS_NS,
-        "cmumpss": CMUMPS_NS,
+        "@vocab": CHCS_NS,
+        "chcss": CHCS_NS,
         "prov": "http://www.w3.org/ns/prov#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
-        "@base": "http://hokukahu.com/systems/cmumps-1/",
+        "@base": "http://hokukahu.com/systems/chcs-1/",
         "_id": "@id",
         "id": "@id",
         "type": "@type",

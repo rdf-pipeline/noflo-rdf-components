@@ -1,11 +1,11 @@
 {
-    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
 
     "@graph": [
 
 
         {
-            "type": "cmumpss:Patient-2",
+            "type": "chcss:Patient-2",
             "_id": "2-000008",
             "patient_ssn-2": "888888888",
             "street_address-2": "100 MAIN ST",
@@ -23,7 +23,7 @@
             "ssn-2": "888888888",
             "dod_id_-2": "8888888880",
             "sex-2": {
-                "id": "cmumpss:2__02_E-MALE",
+                "id": "chcss:2__02_E-MALE",
                 "label": "MALE"
             },
             "marital_status-2": {
@@ -54,7 +54,7 @@
                 "label": "20"
             },
             "registration_type-2": {
-                "id": "cmumpss:2_8002_E-MINI",
+                "id": "chcss:2_8002_E-MINI",
                 "label": "MINI"
             },
             "branch_of_service_last-2": {
@@ -93,7 +93,7 @@
                         "type": "xsd:dateTime",
                         "value": "1990-01-01T00:00:00"
                     },
-                    "type": "cmumpss:2_4",
+                    "type": "chcss:2_4",
                     "id": "2_4-1_000007"
                 }
             ],
@@ -120,7 +120,7 @@
                         "id": "8125-1",
                         "label": "OUTPATIENT"
                     },
-                    "type": "cmumpss:2_03",
+                    "type": "chcss:2_03",
                     "id": "2_03-1_000007",
                     "record_room-2_03": {
                         "id": "44-100",
@@ -134,7 +134,7 @@
                 "label": "DUCK,DONALD"
             },
             "registration_incomplete-2": {
-                "id": "cmumpss:2__0991_E-REGISTRATION_IS_COMPLETE",
+                "id": "chcss:2__0991_E-REGISTRATION_IS_COMPLETE",
                 "label": "REGISTRATION_IS_COMPLETE"
             },
             "active_duty-2": true,
@@ -147,7 +147,7 @@
                 "label": "FUDD,ELMER"
             },
             "organ_donor-2": {
-                "id": "cmumpss:2_9001_01_E-UNDECIDED",
+                "id": "chcss:2_9001_01_E-UNDECIDED",
                 "label": "UNDECIDED"
             }
         },
@@ -162,7 +162,7 @@
                 "label": "FUDD,ELMER"
             },
             "label": "FUDD,ELMER",
-            "type": "cmumpss:8810",
+            "type": "chcss:8810",
             "drug_allergy-8810": [
                 {
                     "allergy_selection-8810_03": {
@@ -170,7 +170,7 @@
                         "label": "NKDA"
                     },
                     "comment-8810_03": "Reaction(s): Unknown",
-                    "type": "cmumpss:8810_03",
+                    "type": "chcss:8810_03",
                     "id": "8810_03-1_000007",
                     "label": "NKDA"
                 }
@@ -182,7 +182,7 @@
 
         {
             "_id": "44_2-6780505",
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "date_appointment_made-44_2": {
                 "type": "xsd:date",
                 "value": "1990-01-01"
@@ -210,7 +210,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -230,11 +230,11 @@
                 "label": "DUCK,DONALD"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointment_status-44_2": {
@@ -275,7 +275,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -295,12 +295,12 @@
                 "label": "MOUSE,MICKEY"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointment_status-44_2": {
@@ -340,7 +340,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -360,12 +360,12 @@
                 "label": "SAILOR,POPEYE"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointment_status-44_2": {
@@ -407,7 +407,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -427,12 +427,12 @@
                 "label": "BIRD,TWEETY"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointment_status-44_2": {
@@ -474,7 +474,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -494,12 +494,12 @@
                 "label": "MOUSE,MICKEY"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointment_status-44_2": {
@@ -540,7 +540,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -560,12 +560,12 @@
                 "label": "MOUSE,MICKEY"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointment_status-44_2": {
@@ -605,7 +605,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -625,12 +625,12 @@
                 "label": "FLINTSTONE,FRED"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointment_status-44_2": {
@@ -672,7 +672,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "patient_status-44_2": {
-                "id": "cmumpss:44_2_8_E-OUTPATIENT",
+                "id": "chcss:44_2_8_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "meprs_code-44_2": {
@@ -692,12 +692,12 @@
                 "label": "PIG,PORKY"
             },
             "walkin-44_2": {
-                "id": "cmumpss:44_2_20_E-WALK_IN",
+                "id": "chcss:44_2_20_E-WALK_IN",
                 "label": "WALK_IN"
             },
-            "type": "cmumpss:44_2",
+            "type": "chcss:44_2",
             "workload_type-44_2": {
-                "id": "cmumpss:44_2_74_E-NON_COUNT",
+                "id": "chcss:44_2_74_E-NON_COUNT",
                 "label": "NON_COUNT"
             },
             "appointent_status-44_2": {
@@ -712,7 +712,7 @@
         {
             "_id": "63-000007",
             "micro_conversion_flag-63": {
-                "id": "cmumpss:63__03_E-Micro_result_converted_for_4_41",
+                "id": "chcss:63__03_E-Micro_result_converted_for_4_41",
                 "label": "Micro_result_converted_for_4_41"
             },
             "label": "FUDD,ELMER",
@@ -730,13 +730,13 @@
                         {
                             "id": "63_832-1_9999999.111111_000007",
                             "disclosure_id-63_832": "1",
-                            "type": "cmumpss:63_832",
+                            "type": "chcss:63_832",
                             "disclosure_text-63_832": "fake text",
                             "label": "1"
                         }
                     ],
                     "origin_of_result-63_04": {
-                        "id": "cmumpss:63_04__24_E-PERFORMING_LABORATORY",
+                        "id": "chcss:63_04__24_E-PERFORMING_LABORATORY",
                         "label": "PERFORMING_LABORATORY"
                     },
                     "collection_sample-63_04": {
@@ -770,7 +770,7 @@
                                 "label": "SOME-1 AB"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -801,7 +801,7 @@
                                 "id": "6-222",
                                 "label": "POOH,WINNIE"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "1_07-4220_9999999.111111_0001007",
                             "lab_method-63_07": {
                                 "id": "8710-2972",
@@ -823,7 +823,7 @@
                         "value": "1990-01-01"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:Clinical_Chemistry-63_04",
+                    "type": "chcss:Clinical_Chemistry-63_04",
                     "id": "63_04-9999999.111111_000007"
                 },
                 {
@@ -866,7 +866,7 @@
                                 "label": "INPROCESSING SOME SCREEN"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -895,7 +895,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-3429_9999999.111111_000007",
                             "lab_method-63_07": {
                                 "id": "8710-1426",
@@ -917,7 +917,7 @@
                         "value": "1990-01-01"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:Clinical_Chemistry-63_04",
+                    "type": "chcss:Clinical_Chemistry-63_04",
                     "id": "63_04-9999999.111111_000007"
                 },
                 {
@@ -960,7 +960,7 @@
                                 "label": "GLUCOSE"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -989,7 +989,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-175_9999999.111111_000007",
                             "lab_method-63_07": {
                                 "id": "8710-2222",
@@ -1011,7 +1011,7 @@
                         "value": "1990-01-01"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:Clinical_Chemistry-63_04",
+                    "type": "chcss:Clinical_Chemistry-63_04",
                     "id": "63_04-9999999.836398_000007"
                 },
                 {
@@ -1054,7 +1054,7 @@
                                 "label": "INPROCESSING VARICELLA AB"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -1083,7 +1083,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-3618_9999999.836399_000007",
                             "lab_method-63_07": {
                                 "id": "8710-1594",
@@ -1105,7 +1105,7 @@
                         "value": "1990-01-01"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:Clinical_Chemistry-63_04",
+                    "type": "chcss:Clinical_Chemistry-63_04",
                     "id": "63_04-9999999.836399_000007"
                 },
                 {
@@ -1148,7 +1148,7 @@
                                 "label": "INPROCESSING SICKLE CELL TEST"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -1177,7 +1177,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-3428_9999999.1111_000007",
                             "lab_method-63_07": {
                                 "id": "8710-1425",
@@ -1202,7 +1202,7 @@
                                 "label": "INPROCESSING RPR"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -1231,7 +1231,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-3475_9999999.1111_000007",
                             "lab_method-63_07": {
                                 "id": "8710-1468",
@@ -1256,7 +1256,7 @@
                                 "label": "INPROCESSING G6PD"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -1285,7 +1285,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-3484_9999999.1111_000007",
                             "lab_method-63_07": {
                                 "id": "8710-1474",
@@ -1310,7 +1310,7 @@
                                 "label": "INPROCESSING ABO"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -1339,7 +1339,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-4102_9999999.1111_000007",
                             "lab_method-63_07": {
                                 "id": "8710-2036",
@@ -1364,7 +1364,7 @@
                                 "label": "INPROCESSING RH"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -1393,7 +1393,7 @@
                                 "id": "6-33333",
                                 "label": "FUDD,ELMER"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "11_07-4103_9999999.1111_000007",
                             "lab_method-63_07": {
                                 "id": "8710-2037",
@@ -1415,7 +1415,7 @@
                         "value": "1990-01-01"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:Clinical_Chemistry-63_04",
+                    "type": "chcss:Clinical_Chemistry-63_04",
                     "id": "63_04-9999999.1111_000007"
                 }
             ],
@@ -1423,7 +1423,7 @@
                 "id": "2-000008",
                 "label": "FUDD,ELMER"
             },
-            "type": "cmumpss:Lab_Result-63"
+            "type": "chcss:Lab_Result-63"
         },
 
 
@@ -1434,7 +1434,7 @@
                 "id": "2-000008",
                 "label": "FUDD,ELMER"
             },
-            "type": "cmumpss:55",
+            "type": "chcss:55",
             "label": "FUDD,ELMER"
         },
 
@@ -1463,7 +1463,7 @@
                 {
                     "qty-52_01": "60",
                     "fill_cost_flag-52_01": {
-                        "id": "cmumpss:52_01_16_E-PDTS",
+                        "id": "chcss:52_01_16_E-PDTS",
                         "label": "PDTS"
                     },
                     "outpatient_site-52_01": {
@@ -1471,7 +1471,7 @@
                         "label": "ANY HEALTH CLINIC"
                     },
                     "oib_suspense-52_01": {
-                        "id": "cmumpss:52_01_1_02_E-Added_to_the_Suspense_file",
+                        "id": "chcss:52_01_1_02_E-Added_to_the_Suspense_file",
                         "label": "Added_to_the_Suspense_file"
                     },
                     "mtf_division-52_01": {
@@ -1480,12 +1480,12 @@
                     },
                     "id": "52_01-1_5915650",
                     "action-52_01": {
-                        "id": "cmumpss:52_01_7_E-ORIGINAL_FILL",
+                        "id": "chcss:52_01_7_E-ORIGINAL_FILL",
                         "label": "ORIGINAL_FILL"
                     },
                     "label": "1990-01-01T00:00:00Z",
                     "suspense-52_01": {
-                        "id": "cmumpss:52_01_10_E-SUSPENSE_WARNING_LABELS",
+                        "id": "chcss:52_01_10_E-SUSPENSE_WARNING_LABELS",
                         "label": "SUSPENSE_WARNING_LABELS"
                     },
                     "fill_cost-52_01": "2.77",
@@ -1494,14 +1494,14 @@
                         "label": "1111111"
                     },
                     "workload_counted-52_01": {
-                        "id": "cmumpss:52_01_14_E-YES__WORKLOAD_WAS_COUNTED",
+                        "id": "chcss:52_01_14_E-YES__WORKLOAD_WAS_COUNTED",
                         "label": "YES__WORKLOAD_WAS_COUNTED"
                     },
                     "logged_by-52_01": {
                         "id": "3-55555",
                         "label": "MOUSE,MICKEY"
                     },
-                    "type": "cmumpss:52_01",
+                    "type": "chcss:52_01",
                     "meprs_code-52_01": {
                         "id": "8119-490",
                         "label": "BHFJ"
@@ -1511,7 +1511,7 @@
                         "value": "1990-01-01"
                     },
                     "oib_ascii_disposition-52_01": {
-                        "id": "cmumpss:52_01_1_03_E-Not_billable",
+                        "id": "chcss:52_01_1_03_E-Not_billable",
                         "label": "Not_billable"
                     },
                     "pdts_pharmacy_number-52_01": "1471200",
@@ -1522,7 +1522,7 @@
                         "value": "1990-01-01T00:00:00"
                     },
                     "pdts_sent-52_01": {
-                        "id": "cmumpss:52_01_2_01_E-Message_Sent_to_PDTS",
+                        "id": "chcss:52_01_2_01_E-Message_Sent_to_PDTS",
                         "label": "Message_Sent_to_PDTS"
                     }
                 }
@@ -1530,7 +1530,7 @@
             "refills-52": "0",
             "days_supply-52": "30",
             "status-52": {
-                "id": "cmumpss:52__11_E-DISCONTINUED",
+                "id": "chcss:52__11_E-DISCONTINUED",
                 "label": "DISCONTINUED"
             },
             "label": "R2222222",
@@ -1540,7 +1540,7 @@
                 "id": "6-77777",
                 "label": "SAILOR,POPEYE"
             },
-            "type": "cmumpss:52",
+            "type": "chcss:52",
             "mtf_division-52": {
                 "id": "40_8-4",
                 "label": "ANY HEALTH CLINIC"
@@ -1581,7 +1581,7 @@
                         "type": "xsd:dateTime",
                         "value": "1990-01-01T00:00:00"
                     },
-                    "type": "cmumpss:52_00",
+                    "type": "chcss:52_00",
                     "remarks-52_00": "fake text",
                     "label": "1990-01-01T00:00:00Z",
                     "reason_code-52_00": {
@@ -1638,7 +1638,7 @@
                 {
                     "qty-52_01": "60",
                     "fill_cost_flag-52_01": {
-                        "id": "cmumpss:52_01_16_E-PDTS",
+                        "id": "chcss:52_01_16_E-PDTS",
                         "label": "PDTS"
                     },
                     "outpatient_site-52_01": {
@@ -1646,7 +1646,7 @@
                         "label": "ANY PHARMACY"
                     },
                     "oib_suspense-52_01": {
-                        "id": "cmumpss:52_01_1_02_E-Added_to_the_Suspense_file",
+                        "id": "chcss:52_01_1_02_E-Added_to_the_Suspense_file",
                         "label": "Added_to_the_Suspense_file"
                     },
                     "mtf_division-52_01": {
@@ -1655,12 +1655,12 @@
                     },
                     "id": "52_01-1_5916846",
                     "action-52_01": {
-                        "id": "cmumpss:52_01_7_E-ORIGINAL_FILL",
+                        "id": "chcss:52_01_7_E-ORIGINAL_FILL",
                         "label": "ORIGINAL_FILL"
                     },
                     "label": "1990-01-01T00:00:00Z",
                     "suspense-52_01": {
-                        "id": "cmumpss:52_01_10_E-PRINTED_WARNING_LABELS",
+                        "id": "chcss:52_01_10_E-PRINTED_WARNING_LABELS",
                         "label": "PRINTED_WARNING_LABELS"
                     },
                     "fill_cost-52_01": "2.77",
@@ -1669,14 +1669,14 @@
                         "label": "6954238"
                     },
                     "workload_counted-52_01": {
-                        "id": "cmumpss:52_01_14_E-YES__WORKLOAD_WAS_COUNTED",
+                        "id": "chcss:52_01_14_E-YES__WORKLOAD_WAS_COUNTED",
                         "label": "YES__WORKLOAD_WAS_COUNTED"
                     },
                     "logged_by-52_01": {
                         "id": "3-8888",
                         "label": "BIRD,TWEETY"
                     },
-                    "type": "cmumpss:52_01",
+                    "type": "chcss:52_01",
                     "meprs_code-52_01": {
                         "id": "8119-490",
                         "label": "BHFJ"
@@ -1693,7 +1693,7 @@
                     "fill_number-52_01": "1",
                     "pdts_fill_cost-52_01": "2.77",
                     "message_type_51-52_01": {
-                        "id": "cmumpss:52_01_2_11_E-BILLING",
+                        "id": "chcss:52_01_2_11_E-BILLING",
                         "label": "BILLING"
                     },
                     "fill_dates-52_01": {
@@ -1701,11 +1701,11 @@
                         "value": "1990-01-01T00:00:00"
                     },
                     "pdts_sent-52_01": {
-                        "id": "cmumpss:52_01_2_01_E-Message_Sent_to_PDTS",
+                        "id": "chcss:52_01_2_01_E-Message_Sent_to_PDTS",
                         "label": "Message_Sent_to_PDTS"
                     },
                     "ncpdp_version_number-52_01": {
-                        "id": "cmumpss:52_01_2_1_E-5_1",
+                        "id": "chcss:52_01_2_1_E-5_1",
                         "label": "5_1"
                     }
                 }
@@ -1713,7 +1713,7 @@
             "refills-52": "0",
             "expanded_sig-52": "TAKE ONE TABLET BY MOUTH~TWICE A DAY TILL ALL TAKEN~~",
             "status-52": {
-                "id": "cmumpss:52__11_E-EXPIRED",
+                "id": "chcss:52__11_E-EXPIRED",
                 "label": "EXPIRED"
             },
             "last_label_print_date-52": {
@@ -1728,7 +1728,7 @@
                 "id": "6-77777",
                 "label": "SAILOR,POPEYE"
             },
-            "type": "cmumpss:52",
+            "type": "chcss:52",
             "mtf_division-52": {
                 "id": "40_8-4",
                 "label": "ANY HEALTH CLINIC"
@@ -1770,7 +1770,7 @@
                         "type": "xsd:dateTime",
                         "value": "1990-01-01T00:00:00"
                     },
-                    "type": "cmumpss:52_00",
+                    "type": "chcss:52_00",
                     "remarks-52_00": "",
                     "label": "1990-01-01T00:00:00Z",
                     "reason_code-52_00": {
@@ -1794,7 +1794,7 @@
                         "type": "xsd:dateTime",
                         "value": "1990-01-01T00:00:00"
                     },
-                    "type": "cmumpss:52_00",
+                    "type": "chcss:52_00",
                     "remarks-52_00": "fake text",
                     "label": "1990-01-01T00:00:00Z",
                     "reason_code-52_00": {
@@ -1832,7 +1832,7 @@
                         "label": "ANY PHARMACY"
                     },
                     "associated_fill_number-52_00": "1",
-                    "type": "cmumpss:52_00",
+                    "type": "chcss:52_00",
                     "id": "52_00-3_5916846"
                 }
             ],
@@ -1862,7 +1862,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "collection_method-101": {
-                "id": "cmumpss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
+                "id": "chcss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
                 "label": "WARD_CLINIC_COLLECT___DELIVER"
             },
             "collection_sample-101": {
@@ -1884,11 +1884,11 @@
             },
             "unexpanded_times-101": "NOW",
             "activity-101": {
-                "id": "cmumpss:101_2_01_E-INACTIVE",
+                "id": "chcss:101_2_01_E-INACTIVE",
                 "label": "INACTIVE"
             },
             "nonmodifiable-101": {
-                "id": "cmumpss:101_3_02_E-NONMODIFIABLE",
+                "id": "chcss:101_3_02_E-NONMODIFIABLE",
                 "label": "NONMODIFIABLE"
             },
             "user_sig_date_time-101": {
@@ -1896,18 +1896,18 @@
                 "value": "1990-01-01T00:00:00"
             },
             "origin_of_order-101": {
-                "id": "cmumpss:101_1_15_E-VERBAL",
+                "id": "chcss:101_1_15_E-VERBAL",
                 "label": "VERBAL"
             },
             "inactive_status-101": {
-                "id": "cmumpss:101_2_03_E-RESULTED",
+                "id": "chcss:101_2_03_E-RESULTED",
                 "label": "RESULTED"
             },
             "order_type-101": {
                 "id": "102-4",
                 "label": "LAB"
             },
-            "type": "cmumpss:101",
+            "type": "chcss:101",
             "user_sig-101": {
                 "id": "3-11111",
                 "label": "DUCK,DONALD"
@@ -1933,7 +1933,7 @@
                 "label": "MED. ASSESSMENT_MOT 0000"
             },
             "resulted_task_flag-101": {
-                "id": "cmumpss:101_161_E-1",
+                "id": "chcss:101_161_E-1",
                 "label": "1"
             },
             "lab_test-101": {
@@ -1941,7 +1941,7 @@
                 "label": "GLUCOSE"
             },
             "schedule_type-101": {
-                "id": "cmumpss:101_5_06_E-NOW",
+                "id": "chcss:101_5_06_E-NOW",
                 "label": "NOW"
             },
             "priority-101": {
@@ -1951,7 +1951,7 @@
             "display_text-101": " GLUCOSE~WARD/CLINIC COLLECT~MARBLE-BLOOD~MARBLE  on 01 JAN 1990@0000",
             "batch_id_number-101": "051028-02294",
             "in_outpatient-101": {
-                "id": "cmumpss:101__04_E-OUTPATIENT",
+                "id": "chcss:101__04_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "start_date_time-101": {
@@ -1988,7 +1988,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "collection_method-101": {
-                "id": "cmumpss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
+                "id": "chcss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
                 "label": "WARD_CLINIC_COLLECT___DELIVER"
             },
             "collection_sample-101": {
@@ -2010,11 +2010,11 @@
             },
             "unexpanded_times-101": "NOW",
             "activity-101": {
-                "id": "cmumpss:101_2_01_E-INACTIVE",
+                "id": "chcss:101_2_01_E-INACTIVE",
                 "label": "INACTIVE"
             },
             "nonmodifiable-101": {
-                "id": "cmumpss:101_3_02_E-NONMODIFIABLE",
+                "id": "chcss:101_3_02_E-NONMODIFIABLE",
                 "label": "NONMODIFIABLE"
             },
             "user_sig_date_time-101": {
@@ -2022,18 +2022,18 @@
                 "value": "1990-01-01T00:00:00"
             },
             "origin_of_order-101": {
-                "id": "cmumpss:101_1_15_E-VERBAL",
+                "id": "chcss:101_1_15_E-VERBAL",
                 "label": "VERBAL"
             },
             "inactive_status-101": {
-                "id": "cmumpss:101_2_03_E-RESULTED",
+                "id": "chcss:101_2_03_E-RESULTED",
                 "label": "RESULTED"
             },
             "order_type-101": {
                 "id": "102-4",
                 "label": "LAB"
             },
-            "type": "cmumpss:101",
+            "type": "chcss:101",
             "user_sig-101": {
                 "id": "3-11111",
                 "label": "DUCK,DONALD"
@@ -2059,7 +2059,7 @@
                 "label": "MED. ASSESSMENT_MOT 0000"
             },
             "resulted_task_flag-101": {
-                "id": "cmumpss:101_161_E-1",
+                "id": "chcss:101_161_E-1",
                 "label": "1"
             },
             "lab_test-101": {
@@ -2067,7 +2067,7 @@
                 "label": "INPROCESSING VARICELLA AB"
             },
             "schedule_type-101": {
-                "id": "cmumpss:101_5_06_E-NOW",
+                "id": "chcss:101_5_06_E-NOW",
                 "label": "NOW"
             },
             "priority-101": {
@@ -2077,7 +2077,7 @@
             "display_text-101": " INPROCESSING VARICELLA AB~WARD/CLINIC COLLECT~MARBLE-BLOOD~MARBLE  on 01 Jan 1990@0000",
             "batch_id_number-101": "051028-02294",
             "in_outpatient-101": {
-                "id": "cmumpss:101__04_E-OUTPATIENT",
+                "id": "chcss:101__04_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "start_date_time-101": {
@@ -2114,7 +2114,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "collection_method-101": {
-                "id": "cmumpss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
+                "id": "chcss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
                 "label": "WARD_CLINIC_COLLECT___DELIVER"
             },
             "collection_sample-101": {
@@ -2136,11 +2136,11 @@
             },
             "unexpanded_times-101": "NOW",
             "activity-101": {
-                "id": "cmumpss:101_2_01_E-INACTIVE",
+                "id": "chcss:101_2_01_E-INACTIVE",
                 "label": "INACTIVE"
             },
             "nonmodifiable-101": {
-                "id": "cmumpss:101_3_02_E-NONMODIFIABLE",
+                "id": "chcss:101_3_02_E-NONMODIFIABLE",
                 "label": "NONMODIFIABLE"
             },
             "user_sig_date_time-101": {
@@ -2148,18 +2148,18 @@
                 "value": "1990-01-01T00:00:00"
             },
             "origin_of_order-101": {
-                "id": "cmumpss:101_1_15_E-VERBAL",
+                "id": "chcss:101_1_15_E-VERBAL",
                 "label": "VERBAL"
             },
             "inactive_status-101": {
-                "id": "cmumpss:101_2_03_E-RESULTED",
+                "id": "chcss:101_2_03_E-RESULTED",
                 "label": "RESULTED"
             },
             "order_type-101": {
                 "id": "102-4",
                 "label": "LAB"
             },
-            "type": "cmumpss:101",
+            "type": "chcss:101",
             "user_sig-101": {
                 "id": "3-11111",
                 "label": "DUCK,DONALD"
@@ -2185,7 +2185,7 @@
                 "label": "MED. ASSESSMENT_MOT 0000"
             },
             "resulted_task_flag-101": {
-                "id": "cmumpss:101_161_E-1",
+                "id": "chcss:101_161_E-1",
                 "label": "1"
             },
             "lab_test-101": {
@@ -2193,7 +2193,7 @@
                 "label": "0000 INPROCESSING PANEL01JAN90"
             },
             "schedule_type-101": {
-                "id": "cmumpss:101_5_06_E-NOW",
+                "id": "chcss:101_5_06_E-NOW",
                 "label": "NOW"
             },
             "priority-101": {
@@ -2203,7 +2203,7 @@
             "display_text-101": " 0000 INPROCESSING PANEL01JAN90~WARD/CLINIC COLLECT & DELIVER~BLOOD~LAV  on 01 Jan 1990@0000",
             "batch_id_number-101": "051028-02294",
             "in_outpatient-101": {
-                "id": "cmumpss:101__04_E-OUTPATIENT",
+                "id": "chcss:101__04_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "start_date_time-101": {
@@ -2241,7 +2241,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "collection_method-101": {
-                "id": "cmumpss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
+                "id": "chcss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
                 "label": "WARD_CLINIC_COLLECT___DELIVER"
             },
             "collection_sample-101": {
@@ -2263,11 +2263,11 @@
             },
             "unexpanded_times-101": "NOW",
             "activity-101": {
-                "id": "cmumpss:101_2_01_E-INACTIVE",
+                "id": "chcss:101_2_01_E-INACTIVE",
                 "label": "INACTIVE"
             },
             "nonmodifiable-101": {
-                "id": "cmumpss:101_3_02_E-NONMODIFIABLE",
+                "id": "chcss:101_3_02_E-NONMODIFIABLE",
                 "label": "NONMODIFIABLE"
             },
             "user_sig_date_time-101": {
@@ -2275,18 +2275,18 @@
                 "value": "1990-01-01T00:00:00"
             },
             "origin_of_order-101": {
-                "id": "cmumpss:101_1_15_E-VERBAL",
+                "id": "chcss:101_1_15_E-VERBAL",
                 "label": "VERBAL"
             },
             "inactive_status-101": {
-                "id": "cmumpss:101_2_03_E-RESULTED",
+                "id": "chcss:101_2_03_E-RESULTED",
                 "label": "RESULTED"
             },
             "order_type-101": {
                 "id": "102-4",
                 "label": "LAB"
             },
-            "type": "cmumpss:101",
+            "type": "chcss:101",
             "user_sig-101": {
                 "id": "3-11111",
                 "label": "DUCK,DONALD"
@@ -2312,7 +2312,7 @@
                 "label": "MED. ASSESSMENT_MOT 0000"
             },
             "resulted_task_flag-101": {
-                "id": "cmumpss:101_161_E-1",
+                "id": "chcss:101_161_E-1",
                 "label": "1"
             },
             "lab_test-101": {
@@ -2320,7 +2320,7 @@
                 "label": "INPROCESSING SOME SCREEN"
             },
             "schedule_type-101": {
-                "id": "cmumpss:101_5_06_E-NOW",
+                "id": "chcss:101_5_06_E-NOW",
                 "label": "NOW"
             },
             "priority-101": {
@@ -2330,7 +2330,7 @@
             "display_text-101": " INPROCESSING SOME SCREEN~WARD/CLINIC COLLECT~URINE  on 01 Jan 1990@0000",
             "batch_id_number-101": "051028-02294",
             "in_outpatient-101": {
-                "id": "cmumpss:101__04_E-OUTPATIENT",
+                "id": "chcss:101__04_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "start_date_time-101": {
@@ -2368,7 +2368,7 @@
                 "value": "1990-01-01T00:00:00"
             },
             "collection_method-101": {
-                "id": "cmumpss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
+                "id": "chcss:101_110_03_E-WARD_CLINIC_COLLECT___DELIVER",
                 "label": "WARD_CLINIC_COLLECT___DELIVER"
             },
             "collection_sample-101": {
@@ -2390,11 +2390,11 @@
             },
             "unexpanded_times-101": "NOW",
             "activity-101": {
-                "id": "cmumpss:101_2_01_E-INACTIVE",
+                "id": "chcss:101_2_01_E-INACTIVE",
                 "label": "INACTIVE"
             },
             "nonmodifiable-101": {
-                "id": "cmumpss:101_3_02_E-NONMODIFIABLE",
+                "id": "chcss:101_3_02_E-NONMODIFIABLE",
                 "label": "NONMODIFIABLE"
             },
             "user_sig_date_time-101": {
@@ -2402,18 +2402,18 @@
                 "value": "1990-01-01T00:00:00"
             },
             "origin_of_order-101": {
-                "id": "cmumpss:101_1_15_E-VERBAL",
+                "id": "chcss:101_1_15_E-VERBAL",
                 "label": "VERBAL"
             },
             "inactive_status-101": {
-                "id": "cmumpss:101_2_03_E-RESULTED",
+                "id": "chcss:101_2_03_E-RESULTED",
                 "label": "RESULTED"
             },
             "order_type-101": {
                 "id": "102-4",
                 "label": "LAB"
             },
-            "type": "cmumpss:101",
+            "type": "chcss:101",
             "order_required_data-101": [
                 {
                     "display_order-101_11": "1",
@@ -2423,7 +2423,7 @@
                     },
                     "label": "SOME SPECIMEN SOURCE",
                     "user_response-101_11": "8",
-                    "type": "cmumpss:101_11",
+                    "type": "chcss:101_11",
                     "id": "101_11-10_12317627"
                 }
             ],
@@ -2452,7 +2452,7 @@
                 "label": "MED. ASSESSMENT_MOT 0000"
             },
             "resulted_task_flag-101": {
-                "id": "cmumpss:101_161_E-1",
+                "id": "chcss:101_161_E-1",
                 "label": "1"
             },
             "lab_test-101": {
@@ -2460,7 +2460,7 @@
                 "label": "SOME-1 AB"
             },
             "schedule_type-101": {
-                "id": "cmumpss:101_5_06_E-NOW",
+                "id": "chcss:101_5_06_E-NOW",
                 "label": "NOW"
             },
             "priority-101": {
@@ -2470,7 +2470,7 @@
             "display_text-101": " SOME-1 AB~WARD/CLINIC COLLECT~SOME TUBE~SOME TUBE  on 01 Jan 1990@0000",
             "batch_id_number-101": "051028-02294",
             "in_outpatient-101": {
-                "id": "cmumpss:101__04_E-OUTPATIENT",
+                "id": "chcss:101__04_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "start_date_time-101": {
@@ -2508,12 +2508,12 @@
                 "value": "1990-01-01T00:00:00"
             },
             "order_modified-101": {
-                "id": "cmumpss:101_3_01_E-ORDER_MODIFIED",
+                "id": "chcss:101_3_01_E-ORDER_MODIFIED",
                 "label": "ORDER_MODIFIED"
             },
             "drug_unit-101": "EA",
             "origin_of_order-101": {
-                "id": "cmumpss:101_1_15_E-HANDWRITTEN",
+                "id": "chcss:101_1_15_E-HANDWRITTEN",
                 "label": "HANDWRITTEN"
             },
             "meprs_code-101": {
@@ -2522,7 +2522,7 @@
             },
             "days_supply-101": "30",
             "activity-101": {
-                "id": "cmumpss:101_2_01_E-INACTIVE",
+                "id": "chcss:101_2_01_E-INACTIVE",
                 "label": "INACTIVE"
             },
             "outpat_med_expiration_date-101": {
@@ -2530,7 +2530,7 @@
                 "value": "1990-01-01"
             },
             "resulted_task_flag-101": {
-                "id": "cmumpss:101_161_E-1",
+                "id": "chcss:101_161_E-1",
                 "label": "1"
             },
             "user_sig_date_time-101": {
@@ -2539,7 +2539,7 @@
             },
             "label": "051101-00181",
             "inactive_status-101": {
-                "id": "cmumpss:101_2_03_E-DISCONTINUED",
+                "id": "chcss:101_2_03_E-DISCONTINUED",
                 "label": "DISCONTINUED"
             },
             "status_change-101": [
@@ -2558,7 +2558,7 @@
                         "value": "1990-01-01T00:00:00"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:101_05",
+                    "type": "chcss:101_05",
                     "id": "101_05-1_12323465"
                 }
             ],
@@ -2567,7 +2567,7 @@
                 "label": "RX"
             },
             "quantity-101": "60",
-            "type": "cmumpss:101",
+            "type": "chcss:101",
             "_refills-101": "0",
             "user_sig-101": {
                 "id": "3-20004",
@@ -2591,7 +2591,7 @@
                     },
                     "label": "1990-01-01T00:00:00Z",
                     "warning_message-101_03": "fake text",
-                    "type": "cmumpss:101_03",
+                    "type": "chcss:101_03",
                     "id": "101_03-1_12323465",
                     "qa_event_type-101_03": {
                         "id": "102_1-30",
@@ -2606,7 +2606,7 @@
                     },
                     "label": "1990-01-01T00:00:00Z",
                     "warning_message-101_03": "fake text",
-                    "type": "cmumpss:101_03",
+                    "type": "chcss:101_03",
                     "id": "101_03-2_12323465",
                     "qa_event_type-101_03": {
                         "id": "102_1-30",
@@ -2655,7 +2655,7 @@
             "display_text-101": " PENICILLIN VK 250MG TAB ($0.00)--PO 250M~T1 TAB PO BID TAT RF0 #60 DS30  on 01 Jan 1990@0000",
             "batch_id_number-101": "051101-00178",
             "in_outpatient-101": {
-                "id": "cmumpss:101__04_E-OUTPATIENT",
+                "id": "chcss:101__04_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "start_date_time-101": {
@@ -2702,7 +2702,7 @@
             },
             "days_supply-101": "30",
             "activity-101": {
-                "id": "cmumpss:101_2_01_E-INACTIVE",
+                "id": "chcss:101_2_01_E-INACTIVE",
                 "label": "INACTIVE"
             },
             "outpat_med_expiration_date-101": {
@@ -2715,11 +2715,11 @@
                 "value": "1990-01-01T00:00:00"
             },
             "origin_of_order-101": {
-                "id": "cmumpss:101_1_15_E-PHARMACY",
+                "id": "chcss:101_1_15_E-PHARMACY",
                 "label": "PHARMACY"
             },
             "inactive_status-101": {
-                "id": "cmumpss:101_2_03_E-DISCONTINUED",
+                "id": "chcss:101_2_03_E-DISCONTINUED",
                 "label": "DISCONTINUED"
             },
             "status_change-101": [
@@ -2741,7 +2741,7 @@
                         "value": "1990-01-01T00:00:00"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:101_05",
+                    "type": "chcss:101_05",
                     "id": "101_05-1_12326497"
                 }
             ],
@@ -2749,7 +2749,7 @@
                 "id": "102-9",
                 "label": "RX"
             },
-            "type": "cmumpss:101",
+            "type": "chcss:101",
             "_refills-101": "0",
             "user_sig-101": {
                 "id": "3-8888",
@@ -2793,11 +2793,11 @@
             },
             "display_text-101": " PENICILLIN VK 250MG TAB ($0.00)--PO 250M~T1 TAB PO BID TAT RF0 #60 DS30  on 01 Jan 1990@0000",
             "resulted_task_flag-101": {
-                "id": "cmumpss:101_161_E-1",
+                "id": "chcss:101_161_E-1",
                 "label": "1"
             },
             "in_outpatient-101": {
-                "id": "cmumpss:101__04_E-OUTPATIENT",
+                "id": "chcss:101__04_E-OUTPATIENT",
                 "label": "OUTPATIENT"
             },
             "start_date_time-101": {
@@ -2820,7 +2820,7 @@
 
         {
             "_id": "52-40863",
-            "type": "cmumpss:Prescription-52",
+            "type": "chcss:Prescription-52",
             "label": "H46358",
             "rx_-52": "H46358",
             "patient-52": {
@@ -2890,7 +2890,7 @@
             "activity_log-52": [
                 {
                     "id": "52_02-1_40863",
-                    "type": "cmumpss:Activity_Log-52_02",
+                    "type": "chcss:Activity_Log-52_02",
                     "activity_log-52_02": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"
@@ -2914,7 +2914,7 @@
             "fill_dates-52": [
                 {
                     "id": "52_01-1_40863",
-                    "type": "cmumpss:Fill_Dates-52_01",
+                    "type": "chcss:Fill_Dates-52_01",
                     "fill_dates-52_01": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"
@@ -2948,7 +2948,7 @@
 
         {
             "_id": "52-7810413",
-            "type": "cmumpss:Prescription-52",
+            "type": "chcss:Prescription-52",
             "label": "B636180",
             "rx_-52": "B636180",
             "patient-52": {
@@ -3033,7 +3033,7 @@
             "activity_log-52": [
                 {
                     "id": "52_02-1_7810413",
-                    "type": "cmumpss:Activity_Log-52_02",
+                    "type": "chcss:Activity_Log-52_02",
                     "activity_log-52_02": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"
@@ -3057,7 +3057,7 @@
             "fill_dates-52": [
                 {
                     "id": "52_01-1_7810413",
-                    "type": "cmumpss:Fill_Dates-52_01",
+                    "type": "chcss:Fill_Dates-52_01",
                     "fill_dates-52_01": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"
@@ -3116,7 +3116,7 @@
 
         {
             "_id": "52-7810414",
-            "type": "cmumpss:Prescription-52",
+            "type": "chcss:Prescription-52",
             "label": "B636181",
             "rx_-52": "B636181",
             "patient-52": {
@@ -3201,7 +3201,7 @@
             "activity_log-52": [
                 {
                     "id": "52_02-1_7810414",
-                    "type": "cmumpss:Activity_Log-52_02",
+                    "type": "chcss:Activity_Log-52_02",
                     "activity_log-52_02": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"
@@ -3223,7 +3223,7 @@
                 },
                 {
                     "id": "52_02-2_7810414",
-                    "type": "cmumpss:Activity_Log-52_02",
+                    "type": "chcss:Activity_Log-52_02",
                     "activity_log-52_02": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"
@@ -3247,7 +3247,7 @@
             "fill_dates-52": [
                 {
                     "id": "52_01-1_7810414",
-                    "type": "cmumpss:Fill_Dates-52_01",
+                    "type": "chcss:Fill_Dates-52_01",
                     "fill_dates-52_01": {
                         "value": "1990-01-01T00:00:00",
                         "type": "xsd:dateTime"
@@ -3305,7 +3305,7 @@
 
         {
             "_id": "100417-4559064",
-            "type": "cmumpss:Kg_Patient_Diagnosis-100417",
+            "type": "chcss:Kg_Patient_Diagnosis-100417",
             "label": "27642;OTHER EXAMINATION DEFINED POPULATION",
             "problem-100417": "27642;OTHER EXAMINATION DEFINED POPULATION",
             "patient-100417": {
@@ -3329,7 +3329,7 @@
 
         {
             "_id": "100417-4562039",
-            "type": "cmumpss:Kg_Patient_Diagnosis-100417",
+            "type": "chcss:Kg_Patient_Diagnosis-100417",
             "label": "27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT",
             "problem-100417": "27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT",
             "patient-100417": {
@@ -3353,7 +3353,7 @@
 
         {
             "_id": "100417-4568875",
-            "type": "cmumpss:Kg_Patient_Diagnosis-100417",
+            "type": "chcss:Kg_Patient_Diagnosis-100417",
             "label": "19227;PERIODIC PREVENTION EXAMINATION",
             "problem-100417": "19227;PERIODIC PREVENTION EXAMINATION",
             "patient-100417": {

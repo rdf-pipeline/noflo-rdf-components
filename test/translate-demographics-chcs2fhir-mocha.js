@@ -1,4 +1,4 @@
-// translate-demographics-cmumps2fhir-mocha.js
+// translate-demographics-chcs2fhir-mocha.js
 
 var chai = require('chai');
 
@@ -8,16 +8,16 @@ var should = chai.should();
 var _ = require('underscore');
 var fs = require('fs');
 
-var factory = require('../components/translate-demographics-cmumps2fhir');
+var factory = require('../components/translate-demographics-chcs2fhir');
 var logger = require('../src/logger');
 var stateFactory = require('../src/create-state');
 var test = require('./common-test');
 
 var translator = require('translators').demographics;
 
-var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+var testFile = __dirname + '/data/chcs-patient7.jsonld';
 
-describe('translate-demographics-cmumps2fhir', function() {
+describe('translate-demographics-chcs2fhir', function() {
 
     it('should exist as a function', function() {
         factory.should.exist;
@@ -64,16 +64,16 @@ describe('translate-demographics-cmumps2fhir', function() {
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
             var demographics = translator.extractDemographics(parsedData);
 
-            var cmumpsFile='/tmp/cmumpsDemographics.out';
+            var chcsFile='/tmp/chcsDemographics.out';
             var fhirFile='/tmp/fhirDemographics.out';
-            test.rmFile(cmumpsFile);
+            test.rmFile(chcsFile);
             test.rmFile(fhirFile);
 
-            var translation = factory.updater.call(node.vni(''), demographics, cmumpsFile, fhirFile);
+            var translation = factory.updater.call(node.vni(''), demographics, chcsFile, fhirFile);
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
-            fs.accessSync(cmumpsFile, fs.F_OK);
+            fs.accessSync(chcsFile, fs.F_OK);
             fs.accessSync(fhirFile, fs.F_OK);
         });
     });
@@ -86,9 +86,9 @@ describe('translate-demographics-cmumps2fhir', function() {
                  repeatData: 'rdf-components/repeat-data',
                  readContent: 'rdf-components/read-content',
                  patientHash: 'rdf-components/patient-hash',
-                 cmumpsFile: 'core/Repeat',
+                 chcsFile: 'core/Repeat',
                  fhirFile: 'core/Repeat',
-                 translator: 'rdf-components/translate-demographics-cmumps2fhir'
+                 translator: 'rdf-components/translate-demographics-chcs2fhir'
             }).then(function(network) {
 
                 return new Promise(function(done, fail) {
@@ -104,14 +104,14 @@ describe('translate-demographics-cmumps2fhir', function() {
                     network.graph.addEdge('repeatData', 'output', 'readContent', 'filename');
                     network.graph.addEdge('readContent', 'output', 'patientHash', 'patient_json');
 
-                    network.graph.addEdge('cmumpsFile', 'out', 'translator', 'cmumps_file');
+                    network.graph.addEdge('chcsFile', 'out', 'translator', 'chcs_file');
                     network.graph.addEdge('fhirFile', 'out', 'translator', 'fhir_file');
                     network.graph.addEdge('patientHash', 'output', 'translator', 'input');
 
                     test.onOutPortData(translator, 'output', done);
                     test.onOutPortData(translator, 'error', fail);
 
-                    var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+                    var testFile = __dirname + '/data/chcs-patient7.jsonld';
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
@@ -120,12 +120,12 @@ describe('translate-demographics-cmumps2fhir', function() {
                     network.graph.addInitial('patientId', 'funnel', 'metadata_key');
                     network.graph.addInitial('2-000007', 'funnel', 'input');
 
-                    var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+                    var testFile = __dirname + '/data/chcs-patient7.jsonld';
                     network.graph.addInitial(testFile, 'repeatData', 'new_data');
 
                     network.graph.addInitial('patientId', 'patientHash', 'metadata_key');
 
-                    network.graph.addInitial('', 'cmumpsFile', 'in');
+                    network.graph.addInitial('', 'chcsFile', 'in');
                     network.graph.addInitial('', 'fhirFile', 'in');
 
                 }).then(function(done) {
@@ -136,7 +136,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                     done.should.be.an('object');
 
                     done.should.include.keys('vnid','data','groupLm','lm','stale','error', 'componentName', 'graphUri');
-                    done.vnid.should.equal('cmumpss:Patient-2:2-000007:2-000007');
+                    done.vnid.should.equal('chcss:Patient-2:2-000007:2-000007');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
                                                   'birthDate', 'address', 'maritalStatus');
@@ -145,8 +145,8 @@ describe('translate-demographics-cmumps2fhir', function() {
                     expect(done.stale).to.be.undefined;
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                    done.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
-                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007');
+                    done.componentName.should.equal('rdf-components/translate-demographics-chcs2fhir');
+                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-demographics-chcs2fhir:Patient:2-000007');
     
                 }, function(fail) {
                     console.error('fail: ',fail);
@@ -162,9 +162,9 @@ describe('translate-demographics-cmumps2fhir', function() {
                  repeatData: 'rdf-components/repeat-data',
                  readContent: 'rdf-components/read-content',
                  patientHash: 'rdf-components/patient-hash',
-                 cmumpsFile: 'core/Repeat',
+                 chcsFile: 'core/Repeat',
                  fhirFile: 'core/Repeat',
-                 translator: 'rdf-components/translate-demographics-cmumps2fhir'
+                 translator: 'rdf-components/translate-demographics-chcs2fhir'
            }).then(function(network) {
 
                var funnel = network.processes.funnel.component;
@@ -180,7 +180,7 @@ describe('translate-demographics-cmumps2fhir', function() {
                   network.graph.addEdge('repeatData', 'output', 'readContent', 'filename');
                   network.graph.addEdge('readContent', 'output', 'patientHash', 'patient_json');
 
-                  network.graph.addEdge('cmumpsFile', 'out', 'translator', 'cmumps_file');
+                  network.graph.addEdge('chcsFile', 'out', 'translator', 'chcs_file');
                   network.graph.addEdge('fhirFile', 'out', 'translator', 'fhir_file');
                   network.graph.addEdge('patientHash', 'output', 'translator', 'input');
 
@@ -192,24 +192,24 @@ describe('translate-demographics-cmumps2fhir', function() {
                   network.graph.addInitial('patientId', 'funnel', 'metadata_key');
                   network.graph.addInitial('2-000007', 'funnel', 'input');
 
-                  var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+                  var testFile = __dirname + '/data/chcs-patient7.jsonld';
                   network.graph.addInitial(testFile, 'repeatData', 'new_data');
 
                   network.graph.addInitial('patientId', 'patientHash', 'metadata_key');
 
-                  network.graph.addInitial('', 'cmumpsFile', 'in');
+                  network.graph.addInitial('', 'chcsFile', 'in');
                   network.graph.addInitial('', 'fhirFile', 'in');
 
               }).then(function(done) {
                   done.should.be.an('object');
                   done.should.include.keys('vnid','data','groupLm','lm','stale','error', 
                                            'componentName', 'graphUri');
-                  done.vnid.should.equal('cmumpss:Patient-2:2-000007:2-000007');
+                  done.vnid.should.equal('chcss:Patient-2:2-000007:2-000007');
                   done.data.should.be.an('object');
                   done.data.should.include.keys('resourceType', 'identifier', 'name', 'gender', 
                                                 'birthDate', 'address', 'maritalStatus');
-                  done.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
-                  done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007');
+                  done.componentName.should.equal('rdf-components/translate-demographics-chcs2fhir');
+                  done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-demographics-chcs2fhir:Patient:2-000007');
 
                   return new Promise(function(done2) {
 
@@ -217,20 +217,20 @@ describe('translate-demographics-cmumps2fhir', function() {
                       network.graph.addInitial('patientId', 'funnel', 'metadata_key');
                       network.graph.addInitial('2-000008', 'funnel', 'input');
 
-                      var testFile2 = __dirname + '/data/cmumps-patient8.jsonld';
+                      var testFile2 = __dirname + '/data/chcs-patient8.jsonld';
                       network.graph.addInitial(testFile2, 'repeatData', 'new_data');
 
                    }).then(function(done2) {
                       logger.verbose('warn');
-                      done2.vnid.should.equal('cmumpss:Patient-2:2-000008:2-000008');
+                      done2.vnid.should.equal('chcss:Patient-2:2-000008:2-000008');
                       done2.should.include.keys('vnid','data','groupLm','lm','stale','error', 
                                                  'componentName', 'graphUri');
-                      done2.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
-                      done2.graphUri.should.equal('urn:local:fhir:2-000008:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000008');
+                      done2.componentName.should.equal('rdf-components/translate-demographics-chcs2fhir');
+                      done2.graphUri.should.equal('urn:local:fhir:2-000008:rdf-components%2Ftranslate-demographics-chcs2fhir:Patient:2-000008');
 
-                      done.vnid.should.equal('cmumpss:Patient-2:2-000007:2-000007');
-                      done.componentName.should.equal('rdf-components/translate-demographics-cmumps2fhir');
-                      done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007');
+                      done.vnid.should.equal('chcss:Patient-2:2-000007:2-000007');
+                      done.componentName.should.equal('rdf-components/translate-demographics-chcs2fhir');
+                      done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-demographics-chcs2fhir:Patient:2-000007');
                    });
 
                  });

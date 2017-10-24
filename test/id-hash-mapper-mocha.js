@@ -79,7 +79,7 @@ describe('id-mapper', function() {
             process.env.mapFileEnvVar = __dirname + '/data/id-hash-map.json';
 
             // get simple test patient data
-            var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+            var testFile = __dirname + '/data/chcs-patient7.jsonld';
             var data = fs.readFileSync(testFile);
             var input = JSON.parse(data);
  
@@ -96,7 +96,7 @@ describe('id-mapper', function() {
             process.env.mapFileEnvVar = __dirname + '/data/id-hash-map.json';
 
             // get simple test patient data
-            var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+            var testFile = __dirname + '/data/chcs-patient7.jsonld';
             var data = fs.readFileSync(testFile);
             var input = JSON.parse(data);
  
@@ -125,7 +125,7 @@ describe('id-mapper', function() {
             process.env.mapFileEnvVar = __dirname + '/data/id-hash-map.json';
 
             // get simple test patient data
-            var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+            var testFile = __dirname + '/data/chcs-patient7.jsonld';
             var data = fs.readFileSync(testFile);
             var input = JSON.parse(data);
  
@@ -162,7 +162,7 @@ describe('id-mapper', function() {
                     network.graph.addEdge('readInputFile', 'out', 'parseJson', 'in');
                     network.graph.addEdge('parseJson', 'out', 'mapper', 'input');
 
-                    var testFile = __dirname + '/data/cmumps-patient8.jsonld';
+                    var testFile = __dirname + '/data/chcs-patient8.jsonld';
                     network.graph.addInitial(testFile, 'readInputFile', 'in');
 
 		    network.graph.addInitial('2-000008', 'mapper', 'id');
@@ -200,7 +200,7 @@ describe('id-mapper', function() {
                     network.graph.addEdge('readInputFile', 'out', 'parseJson', 'in');
                     network.graph.addEdge('parseJson', 'out', 'mapper', 'input');
 
-                    var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+                    var testFile = __dirname + '/data/chcs-patient7.jsonld';
                     network.graph.addInitial(testFile, 'readInputFile', 'in'); 
 
                     network.graph.addInitial('2-000007', 'mapper', 'id');
@@ -218,7 +218,7 @@ describe('id-mapper', function() {
                         test.onOutPortData(mapper, 'output', done2);
                         network.graph.addInitial('2-000008', 'mapper', 'id');
  
-                        var testFile2 = __dirname + '/data/cmumps-patient8.jsonld';
+                        var testFile2 = __dirname + '/data/chcs-patient8.jsonld';
                         network.graph.addInitial(testFile2, 'readInputFile', 'in'); 
 
                     }).then(function(done2) {

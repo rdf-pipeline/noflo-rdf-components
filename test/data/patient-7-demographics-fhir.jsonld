@@ -4,7 +4,7 @@
     identifier: 
      [ { use: 'usual',
          type: 
-          { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
+          { coding: [ { code: 'chcss', display: 'chcss' } ],
             text: '777777777' },
          value: '777777777' } ],
     name: { use: 'usual', family: [ 'BUNNY' ], given: [ 'BUGS DOC' ] },
@@ -25,9 +25,9 @@
     contact: 
      [ { relationship: 
           [ { coding: 
-               [ { system: 'cmumps',
+               [ { system: 'chcs',
                    version: '0.0.1',
-                   code: 'cmumps',
+                   code: 'chcs',
                    display: { id: '8140-20', label: 'OTHER RELATIONSHIP' },
                    userSelected: false } ],
               text: { id: '8140-20', label: 'OTHER RELATIONSHIP' } } ],
@@ -41,9 +41,9 @@
             type: 'postal' } } ],
     communication: 
      [ { coding: 
-          [ { system: 'cmumps',
+          [ { system: 'chcs',
               version: '0.0.1',
-              code: 'cmumps',
+              code: 'chcs',
               display: 'English',
               userSelected: false } ],
          text: 'English' } ],

@@ -143,10 +143,10 @@ function now() {
 }
 
 function dumpTriples (triples) {
-    var base = 'http://hokukahu.com/systems/cmumps-1/';
+    var base = 'http://hokukahu.com/systems/chcs-1/';
     var writer = N3.Writer({
 	prefixes: {
-	    '': 'http://hokukahu.com/schema/cmumpss#',
+	    '': 'http://hokukahu.com/schema/chcss#',
 	    xsd: 'http://www.w3.org/2001/XMLSchema#',
 	    rdfs: 'http://www.w3.org/2000/01/rdf-schema#'
 	}

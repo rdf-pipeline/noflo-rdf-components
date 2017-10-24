@@ -1,4 +1,4 @@
-PREFIX cmumps: <http://hokukahu.com/schema/cmumpss#>
+PREFIX chcs: <http://hokukahu.com/schema/chcss#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX map: <http://shex.io/extensions/Map/#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -8,40 +8,40 @@ BASE <http://hokukahu.com/shapes/>
 start = @<Lab_Result-63>
 
 <Lab_Result-63> {                             # <63-000007>
-  a [cmumps:Lab_Result-63];
-  cmumps:patient-63 @<Patient-2>;                                                      # <2-000007>
-  cmumps:clinical_chemistry-63 @<Clinical_Chemistry-63_04>+                            # <63_04-9999999.1111_000007>
+  a [chcs:Lab_Result-63];
+  chcs:patient-63 @<Patient-2>;                                                      # <2-000007>
+  chcs:clinical_chemistry-63 @<Clinical_Chemistry-63_04>+                            # <63_04-9999999.1111_000007>
 }
 
 <Patient-2> {                                 # <2-000007>
-  a                                   [cmumps:Patient-2];
-  cmumps:identifier                   LITERAL  %map:{ fm:patient.identifier %};        # "2-000007"
+  a                                   [chcs:Patient-2];
+  chcs:identifier                   LITERAL  %map:{ fm:patient.identifier %};        # "2-000007"
   rdfs:label                          LITERAL;                                         # "BUNNY,BUGS"
 }
 
 <Clinical_Chemistry-63_04> {                  # <63_04-9999999.1111_000007>
-  a                                   [cmumps:Clinical_Chemistry-63_04];
-  cmumps:identifier                   LITERAL  %map:{ fm:order.identifier %};          # "63_04-9999999.1111_000007"
-  cmumps:login_date_time-63_04        LITERAL  %map:{ fm:apparentDate %};              # "1990-01-01T00:00:00Z"
-  cmumps:specimen-63_04 {                                                              # <61-70>
+  a                                   [chcs:Clinical_Chemistry-63_04];
+  chcs:identifier                   LITERAL  %map:{ fm:order.identifier %};          # "63_04-9999999.1111_000007"
+  chcs:login_date_time-63_04        LITERAL  %map:{ fm:apparentDate %};              # "1990-01-01T00:00:00Z"
+  chcs:specimen-63_04 {                                                              # <61-70>
     rdfs:label                        LITERAL  %map:{ fm:specimen.type %} }?;          # "BLOOD"
-  cmumps:collection_sample-63_04 {                                                     # <62-3>
+  chcs:collection_sample-63_04 {                                                     # <62-3>
     rdfs:label                        LITERAL  %map:{ fm:container.type %} }?;         # "HIV TUBE"
-  cmumps:date_time_specimen_taken-63_04 xsd:dateTime %map:{ fm:specimen.receivedTime %}; # "1990-01-01T00:00:00"^^xsd:dateTime
-  cmumps:hcp-63_04 {                                                                   # <6-485>
+  chcs:date_time_specimen_taken-63_04 xsd:dateTime %map:{ fm:specimen.receivedTime %}; # "1990-01-01T00:00:00"^^xsd:dateTime
+  chcs:hcp-63_04 {                                                                   # <6-485>
     rdfs:label                        LITERAL  %map:{ fm:collection.collector %} };    # "POOH,WINNIE"
-  cmumps:lab_work_element-63_04 {                                                      # <44-966>
+  chcs:lab_work_element-63_04 {                                                      # <44-966>
     rdfs:label                        LITERAL  %map:{ fm:diagrpt.performer %} };       # "LABORATORY BMC 0000"
-  cmumps:result-63_04                 @<Result-63_07>+                                 # <11_07-4103_9999999.1111_000007>
+  chcs:result-63_04                 @<Result-63_07>+                                 # <11_07-4103_9999999.1111_000007>
 }
 
 <Result-63_07> {                              # <11_07-4103_9999999.1111_000007>
-  a                                   [cmumps:Result-63_07];
-  cmumps:identifier                   LITERAL  %map:{ fm:order.identifier %};          # "11_07-4103_9999999.1111_000007"
-  cmumps:test-63_07 {                                                                  # <60-4103>
+  a                                   [chcs:Result-63_07];
+  chcs:identifier                   LITERAL  %map:{ fm:order.identifier %};          # "11_07-4103_9999999.1111_000007"
+  chcs:test-63_07 {                                                                  # <60-4103>
     rdfs:label                        LITERAL  %map:{ fm:Observation.code %} };        # "INPROCESSING RH"
-  cmumps:lab_method-63_07 {                                                            # <8710-2037>
+  chcs:lab_method-63_07 {                                                            # <8710-2037>
     rdfs:label                        LITERAL  %map:{ fm:Observation.code2 %} };       # "INPROCESSING RH"
-  cmumps:enter_date_time-63_07        LITERAL  %map:{ fm:diagRpt.issued %};            # "1990-01-01T00:00:08"^^xsd:dateTime
+  chcs:enter_date_time-63_07        LITERAL  %map:{ fm:diagRpt.issued %};            # "1990-01-01T00:00:08"^^xsd:dateTime
 }
 

@@ -1,4 +1,4 @@
-// translate-procedure-cmumps2fhir-mocha.js
+// translate-procedure-chcs2fhir-mocha.js
 
 var chai = require('chai');
 
@@ -10,13 +10,13 @@ var fs = require('fs');
 
 var translator = require('translators').procedures;
 
-var factory = require('../components/translate-procedure-cmumps2fhir');
+var factory = require('../components/translate-procedure-chcs2fhir');
 var logger = require('../src/logger');
 var test = require('./common-test');
 
-var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+var testFile = __dirname + '/data/chcs-patient7.jsonld';
 
-describe('translate-procedure-cmumps2fhir', function() {
+describe('translate-procedure-chcs2fhir', function() {
 
     it('should exist as a function', function() {
         factory.should.exist;
@@ -62,16 +62,16 @@ describe('translate-procedure-cmumps2fhir', function() {
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
             var procedures = translator.extractProcedures(parsedData);
 
-            var cmumpsFile='/tmp/cmumpsProcedures.out';
+            var chcsFile='/tmp/chcsProcedures.out';
             var fhirFile='/tmp/fhirProcedures.out';
-            test.rmFile(cmumpsFile);
+            test.rmFile(chcsFile);
             test.rmFile(fhirFile);
 
-            var translation = factory.updater.call(node.vni(''), procedures, cmumpsFile, fhirFile);
+            var translation = factory.updater.call(node.vni(''), procedures, chcsFile, fhirFile);
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
-            fs.accessSync(cmumpsFile, fs.F_OK);
+            fs.accessSync(chcsFile, fs.F_OK);
             fs.accessSync(fhirFile, fs.F_OK);
         });
     });
@@ -82,9 +82,9 @@ describe('translate-procedure-cmumps2fhir', function() {
            return test.createNetwork(
                 { repeaterNode: 'core/Repeat',
                   patientHashNode: 'rdf-components/patient-hash',
-                  cmumpsFileNode: 'core/Repeat',
+                  chcsFileNode: 'core/Repeat',
                   fhirFileNode: 'core/Repeat',
-                  translatorNode: 'rdf-components/translate-procedure-cmumps2fhir'
+                  translatorNode: 'rdf-components/translate-procedure-chcs2fhir'
             }).then(function(network) {
 
                 return new Promise(function(done, fail) {
@@ -95,20 +95,20 @@ describe('translate-procedure-cmumps2fhir', function() {
 
                     network.graph.addEdge('repeaterNode', 'out', 'patientHashNode', 'patient_json');
 
-                    network.graph.addEdge('cmumpsFileNode', 'out', 'translatorNode', 'cmumps_file');
+                    network.graph.addEdge('chcsFileNode', 'out', 'translatorNode', 'chcs_file');
                     network.graph.addEdge('fhirFileNode', 'out', 'translatorNode', 'fhir_file');
                     network.graph.addEdge('patientHashNode', 'output', 'translatorNode', 'input');
 
                     test.onOutPortData(translatorNode, 'output', done);
                     test.onOutPortData(translatorNode, 'error', fail);
 
-                    var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+                    var testFile = __dirname + '/data/chcs-patient7.jsonld';
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
                     logger.silence('warn');
                     network.graph.addInitial(parsedData, 'repeaterNode', 'in');
-                    network.graph.addInitial('', 'cmumpsFileNode', 'in');
+                    network.graph.addInitial('', 'chcsFileNode', 'in');
                     network.graph.addInitial('', 'fhirFileNode', 'in');
 
                 }).then(function(done) {
@@ -127,8 +127,8 @@ describe('translate-procedure-cmumps2fhir', function() {
                     expect(done.stale).to.be.undefined;
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                    done.componentName.should.equal('rdf-components/translate-procedure-cmumps2fhir');
-                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-procedure-cmumps2fhir:Procedure:Procedure-1074046');
+                    done.componentName.should.equal('rdf-components/translate-procedure-chcs2fhir');
+                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-procedure-chcs2fhir:Procedure:Procedure-1074046');
                 }, function(fail) {
                     logger.verbose('warn');
                     console.error('fail: ',fail);

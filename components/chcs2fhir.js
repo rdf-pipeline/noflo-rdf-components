@@ -1,5 +1,5 @@
-// cmumps2fhir.js
-// Helper for the cmumps2fhir-* and translate-* components since the logic is similar for all of them.
+// chcs2fhir.js
+// Helper for the chcs2fhir-* and translate-* components since the logic is similar for all of them.
 
 var _ = require('underscore');
 var fs = require('fs');
@@ -8,51 +8,51 @@ var util = require('util');
 var logger = require('../src/logger');
 
 /** 
- * Given some cmumps patient data, this helper extracts the piece of interest (e.g, demographics),  
+ * Given some chcs patient data, this helper extracts the piece of interest (e.g, demographics),  
  * translates it to FHIR, and returns it.
  * 
- * @param data cmumps patient data to be translated
- * @param extractor the function for extracting the cmumps data of interest
- * @param translator the function for cmumps to fhir translation
- * @param cmumpsFile  output path for writing json intermediate file for cmumps data
+ * @param data chcs patient data to be translated
+ * @param extractor the function for extracting the chcs data of interest
+ * @param translator the function for chcs to fhir translation
+ * @param chcsFile  output path for writing json intermediate file for chcs data
  * @param fhirFile output path for writing json intermediate file for fhir data
  * 
  * @return the patient's data in FHIR format
  */
-module.exports = function(data, extractor, translator, cmumpsFile, fhirFile) { 
+module.exports = function(data, extractor, translator, chcsFile, fhirFile) { 
 
     if (_.isUndefined(data)) { 
-        throw Error("Cmumps2fhir requires data to translate!");
+        throw Error("Chcs2fhir requires data to translate!");
     }
 
     // Parse string json input (from IIP) if that's what we got 
     var patientData = _.isString(data) ? JSON.parse(data) : data;
 
     // Extract all patient demographic data from dataset
-    var cmumpsData = _.isUndefined(extractor) ? patientData: extractor(patientData);
+    var chcsData = _.isUndefined(extractor) ? patientData: extractor(patientData);
 
-    // Write intermediate cmumps json file for debug purposes
-    writeFile(cmumpsFile, cmumpsData);
+    // Write intermediate chcs json file for debug purposes
+    writeFile(chcsFile, chcsData);
 
-    if (_.isEmpty(cmumpsData)) {
+    if (_.isEmpty(chcsData)) {
         // This may be normal in some cases, so log a warning in case it's not, and return 
-        if (!_.isUndefined(extractor)) logger.warn("No patient cmumps data found!");
+        if (!_.isUndefined(extractor)) logger.warn("No patient chcs data found!");
         return;
     }
 
     var fhirData;
-    if (_.isArray(cmumpsData)) { 
-        fhirData = _.map(cmumpsData, function(cmumpsDatum) {
-            return _.isUndefined(translator) ? cmumpsDatum : translator(cmumpsDatum);
+    if (_.isArray(chcsData)) { 
+        fhirData = _.map(chcsData, function(chcsDatum) {
+            return _.isUndefined(translator) ? chcsDatum : translator(chcsDatum);
         })
     } else {
-        fhirData = _.isUndefined(translator) ? cmumpsData : translator(cmumpsData);
+        fhirData = _.isUndefined(translator) ? chcsData : translator(chcsData);
     }
 
     if (_.isEmpty(fhirData)) {
         // This may be normal in some cases, so just log a warning we got nothing, and return 
         if (!_.isUndefined(translator)) 
-            logger.warn("No patient cmumps data translated to fhir! Input data was:", data);
+            logger.warn("No patient chcs data translated to fhir! Input data was:", data);
     } else { 
         // Set the graph URI in the VNI for use by downstream components
         this.outputState({graphUri: graphUri.call(this, fhirData)});

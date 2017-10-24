@@ -75,9 +75,9 @@ describe("compare-rdf", function() {
 
   });
 
-  describe("--cmumps option", function() {
+  describe("--chcs option", function() {
 
-      it("should load a JSON-LD file & a Turtle file with cmumps context prefixes & compare them", function(done) {
+      it("should load a JSON-LD file & a Turtle file with chcs context prefixes & compare them", function(done) {
           var command = compareRdfPath + " -c " + providerTtlFile + " " + providerJsonldFile
           exec(command, function (error, stdout, stderr) {
               expect(error).to.be.null;

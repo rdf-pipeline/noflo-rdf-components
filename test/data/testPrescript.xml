@@ -5,15 +5,15 @@
 <use value="usual"/>
 <type>
 <coding>
-<system value="cmumps"/>
+<system value="chcs"/>
 <version value="0.0.1"/>
-<code value="cmumps"/>
+<code value="chcs"/>
 <display value="Prescription"/>
 <userSelected value="false"/>
 </coding>
 <text value="Prescription"/>
 </type>
-<system value="cmumps"/>
+<system value="chcs"/>
 <value value="52-7810413"/>
 </identifier>
 <status value="completed"/>
@@ -32,20 +32,20 @@
 <quantity>
 <value value="60"/>
 <unit value="unsupplied"/>
-<system value="cmumps"/>
-<code value="cmumps"/>
+<system value="chcs"/>
+<code value="chcs"/>
 </quantity>
 <daysSupply>
 <value value="30"/>
 <unit value="unsupplied"/>
-<system value="cmumps"/>
-<code value="cmumps"/>
+<system value="chcs"/>
+<code value="chcs"/>
 </daysSupply>
 <medicationCodeableConcept>
 <coding>
-<system value="cmumps"/>
+<system value="chcs"/>
 <version value="0.0.1"/>
-<code value="cmumps"/>
+<code value="chcs"/>
 <display value="OYS SHL CALCIUM 500MG + VIT D 200IU"/>
 <userSelected value="false"/>
 </coding>
@@ -62,9 +62,9 @@
 <text value="T1 TB PO BID #60 RF3"/>
 <additionalInstructions>
 <coding>
-<system value="cmumps"/>
+<system value="chcs"/>
 <version value="0.0.1"/>
-<code value="cmumps"/>
+<code value="chcs"/>
 <display value="TAKE ONE TABLET BY MOUTH~TWICE A DAY  ~"/>
 <userSelected value="false"/>
 </coding>
@@ -78,9 +78,9 @@
 </repeat>
 <code>
 <coding>
-<system value="cmumps"/>
+<system value="chcs"/>
 <version value="0.0.1"/>
-<code value="cmumps"/>
+<code value="chcs"/>
 <display value="T1 TB PO BID #60 RF3"/>
 <userSelected value="false"/>
 </coding>

@@ -36,7 +36,7 @@ PREFIX : <http://hl7.org/fhir/DiagnosticReport.>
     fhir:reference {
       :identifier {
         a [fhir:Identifier];
-        fhir:Identifier.system    { fhir:value LITERAL %map:{ fm:order.idsystem %} }; # hard-coded for cmumps
+        fhir:Identifier.system    { fhir:value LITERAL %map:{ fm:order.idsystem %} }; # hard-coded for chcs
         fhir:Identifier.value     { fhir:value LITERAL %map:{ fm:order.identifier %} }
       }    
     }
@@ -103,7 +103,7 @@ PREFIX : <http://hl7.org/fhir/Patient.>
 <Patient> {
   :identifier {
     a [fhir:Identifier];
-    fhir:Identifier.system    { fhir:value LITERAL %map:{ fm:subject.idsystem %} }; # hard-coded for cmumps
+    fhir:Identifier.system    { fhir:value LITERAL %map:{ fm:subject.idsystem %} }; # hard-coded for chcs
     fhir:Identifier.value     { fhir:value LITERAL %map:{ fm:subject.identifier %} }
   }
 }

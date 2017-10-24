@@ -5,8 +5,8 @@
 <use value="usual"/>
 <type>
 <coding>
-<code value="cmumpss"/>
-<display value="cmumpss"/>
+<code value="chcss"/>
+<display value="chcss"/>
 </coding>
 <text value="1277097"/>
 </type>
@@ -19,9 +19,9 @@
 <status value="completed"/>
 <category>
 <coding>
-<system value="cmumps"/>
+<system value="chcs"/>
 <version value="0.0.1"/>
-<code value="cmumps"/>
+<code value="chcs"/>
 <display value="HDDConcept-1450368"/>
 <userSelected value="false"/>
 </coding>
@@ -29,9 +29,9 @@
 </category>
 <code>
 <coding>
-<system value="cmumps"/>
+<system value="chcs"/>
 <version value="0.0.1"/>
-<code value="cmumps"/>
+<code value="chcs"/>
 <display value="HDDConcept-1450368"/>
 <userSelected value="false"/>
 </coding>

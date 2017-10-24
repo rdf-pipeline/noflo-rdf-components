@@ -24,10 +24,10 @@
         "height": 72
       }
     },
-    "rdf-components/cmumps2fhir-demographics_7irxa": {
-      "component": "rdf-components/cmumps2fhir-demographics",
+    "rdf-components/chcs2fhir-demographics_7irxa": {
+      "component": "rdf-components/chcs2fhir-demographics",
       "metadata": {
-        "label": "cmumps2fhir-demographics",
+        "label": "chcs2fhir-demographics",
         "x": 828,
         "y": 144,
         "width": 72,
@@ -62,7 +62,7 @@
         "port": "output"
       },
       "tgt": {
-        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
+        "process": "rdf-components/chcs2fhir-demographics_7irxa",
         "port": "data"
       },
       "metadata": {
@@ -71,7 +71,7 @@
     },
     {
       "src": {
-        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
+        "process": "rdf-components/chcs2fhir-demographics_7irxa",
         "port": "output"
       },
       "tgt": {
@@ -83,23 +83,23 @@
       }
     },
     {
-      "data": "test/data/cmumps-patient7.jsonld",
+      "data": "test/data/chcs-patient7.jsonld",
       "tgt": {
         "process": "rdf-components/read-content_phpms",
         "port": "filename"
       }
     },
     {
-      "data": "/tmp/cmumps.txt",
+      "data": "/tmp/chcs.txt",
       "tgt": {
-        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
-        "port": "cmumps_file"
+        "process": "rdf-components/chcs2fhir-demographics_7irxa",
+        "port": "chcs_file"
       }
     },
     {
       "data": "/tmp/fhir.txt",
       "tgt": {
-        "process": "rdf-components/cmumps2fhir-demographics_7irxa",
+        "process": "rdf-components/chcs2fhir-demographics_7irxa",
         "port": "fhir_file"
       }
     }

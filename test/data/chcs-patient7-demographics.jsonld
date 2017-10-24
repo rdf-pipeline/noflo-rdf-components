@@ -1,11 +1,11 @@
 {
-    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
 
     "@graph": [
 
 
         {
-            "type": "cmumpss:Patient-2",
+            "type": "chcss:Patient-2",
             "_id": "2-000007",
             "patient_ssn-2": "777777777",
             "street_address-2": "100 MAIN ST",
@@ -23,7 +23,7 @@
             "ssn-2": "777777777",
             "dod_id_-2": "7777777770",
             "sex-2": {
-                "id": "cmumpss:2__02_E-MALE",
+                "id": "chcss:2__02_E-MALE",
                 "label": "MALE"
             },
             "marital_status-2": {
@@ -54,7 +54,7 @@
                 "label": "20"
             },
             "registration_type-2": {
-                "id": "cmumpss:2_8002_E-MINI",
+                "id": "chcss:2_8002_E-MINI",
                 "label": "MINI"
             },
             "branch_of_service_last-2": {
@@ -93,7 +93,7 @@
                         "type": "xsd:dateTime",
                         "value": "1990-01-01T00:00:00"
                     },
-                    "type": "cmumpss:2_4",
+                    "type": "chcss:2_4",
                     "id": "2_4-1_000007"
                 }
             ],
@@ -120,7 +120,7 @@
                         "id": "8125-1",
                         "label": "OUTPATIENT"
                     },
-                    "type": "cmumpss:2_03",
+                    "type": "chcss:2_03",
                     "id": "2_03-1_000007",
                     "record_room-2_03": {
                         "id": "44-100",
@@ -134,7 +134,7 @@
                 "label": "DUCK,DONALD"
             },
             "registration_incomplete-2": {
-                "id": "cmumpss:2__0991_E-REGISTRATION_IS_COMPLETE",
+                "id": "chcss:2__0991_E-REGISTRATION_IS_COMPLETE",
                 "label": "REGISTRATION_IS_COMPLETE"
             },
             "active_duty-2": true,
@@ -147,7 +147,7 @@
                 "label": "BUNNY,BUGS"
             },
             "organ_donor-2": {
-                "id": "cmumpss:2_9001_01_E-UNDECIDED",
+                "id": "chcss:2_9001_01_E-UNDECIDED",
                 "label": "UNDECIDED"
             }
         }

@@ -1,9 +1,9 @@
 {
-    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
 
     "@graph": [
         {
-            "type": "cmumpss:Patient-2",
+            "type": "chcss:Patient-2",
             "_id": "2-000007",
             "patient_ssn-2": "777777777",
             "street_address-2": "100 MAIN ST",
@@ -21,7 +21,7 @@
             "ssn-2": "777777777",
             "dod_id_-2": "7777777770",
             "sex-2": {
-                "id": "cmumpss:2__02_E-MALE",
+                "id": "chcss:2__02_E-MALE",
                 "label": "MALE"
             },
             "marital_status-2": {
@@ -47,7 +47,7 @@
                 "label": "20"
             },
             "registration_type-2": {
-                "id": "cmumpss:2_8002_E-MINI",
+                "id": "chcss:2_8002_E-MINI",
                 "label": "MINI"
             },
             "branch_of_service_last-2": {
@@ -86,7 +86,7 @@
                         "type": "xsd:dateTime",
                         "value": "1990-01-01T00:00:00Z"
                     },
-                    "type": "cmumpss:2_4",
+                    "type": "chcss:2_4",
                     "id": "2_4-1_000007"
                 }
             ],
@@ -113,7 +113,7 @@
                         "id": "8125-1",
                         "label": "OUTPATIENT"
                     },
-                    "type": "cmumpss:2_03",
+                    "type": "chcss:2_03",
                     "id": "2_03-1_000007",
                     "record_room-2_03": {
                         "id": "44-100",
@@ -127,7 +127,7 @@
                 "label": "DUCK,DONALD"
             },
             "registration_incomplete-2": {
-                "id": "cmumpss:2__0991_E-REGISTRATION_IS_COMPLETE",
+                "id": "chcss:2__0991_E-REGISTRATION_IS_COMPLETE",
                 "label": "REGISTRATION_IS_COMPLETE"
             },
             "active_duty-2": true,
@@ -140,7 +140,7 @@
                 "label": "BUNNY,BUGS"
             },
             "organ_donor-2": {
-                "id": "cmumpss:2_9001_01_E-UNDECIDED",
+                "id": "chcss:2_9001_01_E-UNDECIDED",
                 "label": "UNDECIDED"
             }
         },
@@ -153,7 +153,7 @@
                 "label": "BUNNY,BUGS"
             },
             "label": "BUNNY,BUGS",
-            "type": "cmumpss:8810",
+            "type": "chcss:8810",
             "drug_allergy-8810": [
                 {
                     "allergy_selection-8810_03": {
@@ -161,7 +161,7 @@
                         "label": "NKDA"
                     },
                     "comment-8810_03": "Reaction(s): Unknown",
-                    "type": "cmumpss:8810_03",
+                    "type": "chcss:8810_03",
                     "id": "8810_03-1_000007",
                     "label": "NKDA"
                 }
@@ -172,7 +172,7 @@
         {
             "_id": "63-000007",
             "micro_conversion_flag-63": {
-                "id": "cmumpss:63__03_E-Micro_result_converted_for_4_41",
+                "id": "chcss:63__03_E-Micro_result_converted_for_4_41",
                 "label": "Micro_result_converted_for_4_41"
             },
             "label": "BUNNY,BUGS",
@@ -190,13 +190,13 @@
                         {
                             "id": "63_832-1_9999999.111111_000007",
                             "disclosure_id-63_832": "1",
-                            "type": "cmumpss:63_832",
+                            "type": "chcss:63_832",
                             "disclosure_text-63_832": "fake text",
                             "label": "1"
                         }
                     ],
                     "origin_of_result-63_04": {
-                        "id": "cmumpss:63_04__24_E-PERFORMING_LABORATORY",
+                        "id": "chcss:63_04__24_E-PERFORMING_LABORATORY",
                         "label": "PERFORMING_LABORATORY"
                     },
                     "collection_sample-63_04": {
@@ -230,7 +230,7 @@
                                 "label": "SOME-1 AB"
                             },
                             "rnr_action-63_07": {
-                                "id": "cmumpss:11_07__18_E-INITIALED",
+                                "id": "chcss:11_07__18_E-INITIALED",
                                 "label": "INITIALED"
                             },
                             "certify_person-63_07": {
@@ -261,7 +261,7 @@
                                 "id": "6-222",
                                 "label": "POOH,WINNIE"
                             },
-                            "type": "cmumpss:Result-63_07",
+                            "type": "chcss:Result-63_07",
                             "id": "1_07-4220_9999999.111111_0001007",
                             "lab_method-63_07": {
                                 "id": "8710-2972",
@@ -283,7 +283,7 @@
                         "value": "1990-01-01"
                     },
                     "label": "1990-01-01T00:00:00Z",
-                    "type": "cmumpss:Clinical_Chemistry-63_04",
+                    "type": "chcss:Clinical_Chemistry-63_04",
                     "id": "63_04-9999999.111111_000007"
                 }
             ],
@@ -291,7 +291,7 @@
                 "id": "2-000007",
                 "label": "BUNNY,BUGS"
             },
-            "type": "cmumpss:Lab_Result-63"
+            "type": "chcss:Lab_Result-63"
         }
     ]
 }

@@ -24,7 +24,7 @@ var FILTER_TEMPLATES = {
  * Given an array of json data, extracts the elements the contain the specified attributes.",
  *
  * @param data          Javascript data or a JSON string to be parsed, and filtered.
- * @param domain        A cmumps domain: demographics, diagnoses, prescriptions, labs, procedures
+ * @param domain        A chcs domain: demographics, diagnoses, prescriptions, labs, procedures
  * @param prefix        An optional prefix to apply for some domains
  */
 function filter(data, domain, prefix) { 

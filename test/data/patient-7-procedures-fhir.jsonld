@@ -3,24 +3,24 @@
     identifier: 
      [ { use: 'usual',
          type: 
-          { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
+          { coding: [ { code: 'chcss', display: 'chcss' } ],
             text: '1074046' },
          value: 'Procedure/1074046' } ],
     subject: { reference: 'Patient/2-000007', display: 'BUNNY, BUGS' },
     status: 'completed',
     category: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'HDDConcept-1450368',
             userSelected: false } ],
        text: 'HDDConcept-1450368' },
     code: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'HDDConcept-1450368',
             userSelected: false } ],
        text: 'HDDConcept-1450368' },
@@ -28,9 +28,9 @@
      [ { actor: { reference: 'Provider-41200034', display: 'MOUSE, MICKEY' },
          role: 
           { coding: 
-             [ { system: 'cmumps',
+             [ { system: 'chcs',
                  version: '0.0.1',
-                 code: 'cmumps',
+                 code: 'chcs',
                  display: 'provider',
                  userSelected: false } ],
             text: 'provider' } } ],

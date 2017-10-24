@@ -1,4 +1,4 @@
-// cmumps2fhir-mocha.js
+// chcs2fhir-mocha.js
 
 var chai = require('chai');
 
@@ -14,47 +14,47 @@ var componentFactory = require('../src/noflo-component-factory');
 var stateFactory = require('../src/create-state');
 var vniManager = require('../src/vni-manager');
 
-var cmumps2fhir = require('../components/cmumps2fhir');
+var chcs2fhir = require('../components/chcs2fhir');
 var logger = require('../src/logger');
 var test = require('./common-test');
 
-var testFile = '../node_modules/translators/data/fake_cmumps/patient-7/cmumps-patient7.jsonld';
+var testFile = '../node_modules/translators/data/fake_chcs/patient-7/chcs-patient7.jsonld';
 
-describe('cmumps2fhir', function() {
+describe('chcs2fhir', function() {
 
     it('should exist as a function', function() {
-        cmumps2fhir.should.exist;
-        cmumps2fhir.should.be.a('function');
+        chcs2fhir.should.exist;
+        chcs2fhir.should.be.a('function');
     });
 
     it('should throw an error if input data is undefined', function() {
-        expect(cmumps2fhir).to.throw(Error,
-            /Cmumps2fhir requires data to translate!/);
+        expect(chcs2fhir).to.throw(Error,
+            /Chcs2fhir requires data to translate!/);
     });
 
     it('should return empty object if input data is empty', function() {
         logger.silence('warn');
         var node = test.createComponent(componentFactory({}, vniManager));
-        expect(cmumps2fhir.call(node.vni(), {})).to.be.empty;
+        expect(chcs2fhir.call(node.vni(), {})).to.be.empty;
         logger.verbose('warn');
     });
 
     it('should extract data using the specified extractor function', function() {
         var node = test.createComponent(componentFactory({}, vniManager));
-        var testData = '{"@context": "https://github.com/cmumps-pipeline?token=ACA8nzdawL"}';
+        var testData = '{"@context": "https://github.com/chcs-pipeline?token=ACA8nzdawL"}';
         var extractor = function(data) {
             return data['@context'].match(/^(https\:\/\/[A-Za-z0-9\/\-\.]+).*/)[1];
 	}
 
-        var results = cmumps2fhir.call(node.vni(), testData, extractor);
-        results.should.equal('https://github.com/cmumps-pipeline');
+        var results = chcs2fhir.call(node.vni(), testData, extractor);
+        results.should.equal('https://github.com/chcs-pipeline');
     });
 
     it('should gracefully handle a failed extraction', function() {
 
         var warned = false;
         sinon.stub(logger, 'warn').callsFake(function(message) { 
-             // should get a warning like "No patient cmumps data found".
+             // should get a warning like "No patient chcs data found".
              warned = true;
         });
 
@@ -64,7 +64,7 @@ describe('cmumps2fhir', function() {
             return;  // return nothing
 	}
 
-        var results = cmumps2fhir.call(node.vni(), testData, extractor);
+        var results = chcs2fhir.call(node.vni(), testData, extractor);
         logger.warn.restore();
 
         expect(results).to.be.undefined;
@@ -73,11 +73,11 @@ describe('cmumps2fhir', function() {
 
     it('should translate data using the specified translator function', function() {
         var node = test.createComponent(componentFactory({}, vniManager));
-        var testData = '{"@context": "https://github.com/cmumps-pipeline"}';
+        var testData = '{"@context": "https://github.com/chcs-pipeline"}';
         var translator = function(data) {
-            return data['@context'].replace('cmumps', 'fhir');
+            return data['@context'].replace('chcs', 'fhir');
 	}
-        var results = cmumps2fhir.call(node.vni(), testData, undefined, translator);
+        var results = chcs2fhir.call(node.vni(), testData, undefined, translator);
         results.should.equal('https://github.com/fhir-pipeline');
     });
 
@@ -85,7 +85,7 @@ describe('cmumps2fhir', function() {
 
         var warned = false;
         sinon.stub(logger, 'warn').callsFake(function(message) { 
-             // should get a warning like "No patient cmumps data found".
+             // should get a warning like "No patient chcs data found".
              warned = true;
         });
 
@@ -95,7 +95,7 @@ describe('cmumps2fhir', function() {
             return;  // return nothing
 	}
 
-        var results = cmumps2fhir.call(node.vni(), testData, undefined, translator);
+        var results = chcs2fhir.call(node.vni(), testData, undefined, translator);
         logger.warn.restore();
 
         expect(results).to.be.undefined;
@@ -104,45 +104,45 @@ describe('cmumps2fhir', function() {
 
     it('should extract data and translate it using the specified extractor and translator', function() {
         var node = test.createComponent(componentFactory({}, vniManager));
-        var testData = '{"@context": "https://github.com/cmumps-pipeline?token=ACA8nzdawL"}';
+        var testData = '{"@context": "https://github.com/chcs-pipeline?token=ACA8nzdawL"}';
         var extractor = function(data) {
             return {'@context': data['@context'].match(/^(https\:\/\/[A-Za-z0-9\/\-\.]+).*/)[1]};
 	}
         var translator = function(data) {
-            return data['@context'].replace('cmumps', 'fhir');
+            return data['@context'].replace('chcs', 'fhir');
 	}
 
-        var results = cmumps2fhir.call(node.vni(), testData, extractor, translator);
+        var results = chcs2fhir.call(node.vni(), testData, extractor, translator);
         results.should.equal('https://github.com/fhir-pipeline');
     });
 
     it('should write data to the specified intermediate files', function() {
         var node = test.createComponent(componentFactory({}, vniManager));
-        var testData = '{"@context": "https://github.com/cmumps-pipeline?token=ACA8nzdawL"}';
+        var testData = '{"@context": "https://github.com/chcs-pipeline?token=ACA8nzdawL"}';
         var extractor = function(data) {
             return {'@context': data['@context'].match(/^(https\:\/\/[A-Za-z0-9\/\-\.]+).*/)[1]};
 	}
         var translator = function(data) {
-            return data['@context'].replace('cmumps', 'fhir');
+            return data['@context'].replace('chcs', 'fhir');
 	}
-        var cmumpsFile='/tmp/cmumpsExtract.out';
+        var chcsFile='/tmp/chcsExtract.out';
         var fhirFile='/tmp/fhirTranslation.out';
 
         logger.silence('info');
-        var results = cmumps2fhir.call(node.vni(), testData, extractor, translator, cmumpsFile, fhirFile);
+        var results = chcs2fhir.call(node.vni(), testData, extractor, translator, chcsFile, fhirFile);
         logger.verbose('dir');
 
         results.should.equal('https://github.com/fhir-pipeline');
 
         // Verify the expected 2 files exist
-        fs.accessSync(cmumpsFile, fs.F_OK);
+        fs.accessSync(chcsFile, fs.F_OK);
         fs.accessSync(fhirFile, fs.F_OK);
     });
 
     it("should generate a graph URI with patient id and resource type metadata if they are available", function() {
 
         // get simple test patient data
-        var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+        var testFile = __dirname + '/data/chcs-patient7.jsonld';
         var data = fs.readFileSync(testFile);
         var parsedData = JSON.parse(data); 
 
@@ -160,7 +160,7 @@ describe('cmumps2fhir', function() {
         vni.outputState(outState);
 
         var translator = require('translators').procedures;
-        var results = cmumps2fhir.call(vni, 
+        var results = chcs2fhir.call(vni, 
                                        parsedData, 
                                        translator.extractProcedures,
                                        translator.translateProceduresFhir);
@@ -176,7 +176,7 @@ describe('cmumps2fhir', function() {
     it("should generate a graph URI with patient id metadata if it is available", function() {
 
         // get simple test patient data
-        var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+        var testFile = __dirname + '/data/chcs-patient7.jsonld';
         var data = fs.readFileSync(testFile);
         var parsedData = JSON.parse(data); 
 
@@ -193,7 +193,7 @@ describe('cmumps2fhir', function() {
         vni.outputState(outState);
 
         var translator = require('translators').procedures;
-        var results = cmumps2fhir.call(vni, 
+        var results = chcs2fhir.call(vni, 
                                        parsedData, 
                                        translator.extractProcedures,
                                        translator.translateProceduresFhir);
@@ -207,7 +207,7 @@ describe('cmumps2fhir', function() {
     it("should keep the same graph id for translator if it does not change", function() {
 
         // get simple test patient data
-        var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+        var testFile = __dirname + '/data/chcs-patient7.jsonld';
         var data = fs.readFileSync(testFile);
         var parsedData = JSON.parse(data); 
 
@@ -217,7 +217,7 @@ describe('cmumps2fhir', function() {
         vni.nodeInstance = {"componentName": "rdf/test-translator"};
 
         var translator = require('translators').demographics;
-        var results = cmumps2fhir.call(vni, 
+        var results = chcs2fhir.call(vni, 
                                        parsedData, 
                                        translator.extractDemographics,
                                        translator.translateDemographicsFhir);
@@ -235,7 +235,7 @@ describe('cmumps2fhir', function() {
         // Now call it again with updated marital status
         var patientData = parsedData['@graph'][0];
         patientData['marital_status-2'] = {id:'11-1', label: 'MARRIED'};
-        var results2 = cmumps2fhir.call(vni, 
+        var results2 = chcs2fhir.call(vni, 
                                         parsedData, 
                                         translator.extractDemographics,
                                         translator.translateDemographicsFhir);
@@ -251,7 +251,7 @@ describe('cmumps2fhir', function() {
     it("should update to the most recent translator metadata when generating a graphUri", function() {
 
         // get simple test patient data
-        var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+        var testFile = __dirname + '/data/chcs-patient7.jsonld';
         var data = fs.readFileSync(testFile);
         var parsedData = JSON.parse(data); 
 
@@ -262,7 +262,7 @@ describe('cmumps2fhir', function() {
         vni.nodeInstance = {"componentName": "rdf/demographics-translator"};
  
         var demographicsTranslator = require('translators').demographics;
-        var results = cmumps2fhir.call(vni, 
+        var results = chcs2fhir.call(vni, 
                                        parsedData, 
                                        demographicsTranslator.extractDemographics,
                                        demographicsTranslator.translateDemographicsFhir);
@@ -276,7 +276,7 @@ describe('cmumps2fhir', function() {
         // Now we'll do procedure translation
         vni.nodeInstance = {"componentName": "rdf/procedure-translator"};
         var proceduresTranslator = require('translators').procedures;
-        var results2 = cmumps2fhir.call(vni, 
+        var results2 = chcs2fhir.call(vni, 
                                        parsedData, 
                                        proceduresTranslator.extractProcedures,
                                        proceduresTranslator.translateProceduresFhir);

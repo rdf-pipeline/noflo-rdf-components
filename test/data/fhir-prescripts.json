@@ -7,25 +7,25 @@
             "type": {
                 "coding": [
                     {
-                        "system": "cmumps",
+                        "system": "chcs",
                         "version": "0.0.1",
-                        "code": "cmumps",
+                        "code": "chcs",
                         "display": "Prescription",
                         "userSelected": false
                     }
                 ],
                 "text": "Prescription"
             },
-            "system": "cmumps",
+            "system": "chcs",
             "value": "52-40863"
         },
         "status": "completed",
         "medicationCodeableConcept": {
             "coding": [
                 {
-                    "system": "cmumps",
+                    "system": "chcs",
                     "version": "0.0.1",
-                    "code": "cmumps",
+                    "code": "chcs",
                     "display": "PAINKILLER 400MG TAB",
                     "userSelected": false
                 }
@@ -53,14 +53,14 @@
         "quantity": {
             "value": 120,
             "unit": "unsupplied",
-            "system": "cmumps",
-            "code": "cmumps"
+            "system": "chcs",
+            "code": "chcs"
         },
         "daysSupply": {
             "value": 120,
             "unit": "unsupplied",
-            "system": "cmumps",
-            "code": "cmumps"
+            "system": "chcs",
+            "code": "chcs"
         },
         "whenPrepared": "1990-01-01T00:00:00Z",
         "whenHandedOver": "1990-01-01T00:00:00Z",
@@ -89,9 +89,9 @@
                     "code": {
                         "coding": [
                             {
-                                "system": "cmumps",
+                                "system": "chcs",
                                 "version": "0.0.1",
-                                "code": "cmumps",
+                                "code": "chcs",
                                 "display": "T1 TAB Q1D #120 RF0",
                                 "userSelected": false
                             }
@@ -111,25 +111,25 @@
             "type": {
                 "coding": [
                     {
-                        "system": "cmumps",
+                        "system": "chcs",
                         "version": "0.0.1",
-                        "code": "cmumps",
+                        "code": "chcs",
                         "display": "Prescription",
                         "userSelected": false
                     }
                 ],
                 "text": "Prescription"
             },
-            "system": "cmumps",
+            "system": "chcs",
             "value": "52-7810413"
         },
         "status": "completed",
         "medicationCodeableConcept": {
             "coding": [
                 {
-                    "system": "cmumps",
+                    "system": "chcs",
                     "version": "0.0.1",
-                    "code": "cmumps",
+                    "code": "chcs",
                     "display": "OYS SHL CALCIUM 500MG + VIT D 200IU",
                     "userSelected": false
                 }
@@ -157,14 +157,14 @@
         "quantity": {
             "value": 60,
             "unit": "unsupplied",
-            "system": "cmumps",
-            "code": "cmumps"
+            "system": "chcs",
+            "code": "chcs"
         },
         "daysSupply": {
             "value": 30,
             "unit": "unsupplied",
-            "system": "cmumps",
-            "code": "cmumps"
+            "system": "chcs",
+            "code": "chcs"
         },
         "whenPrepared": "1990-01-01T00:00:00",
         "whenHandedOver": "1990-01-01T00:00:00",
@@ -183,9 +183,9 @@
                 "additionalInstructions": {
                     "coding": [
                         {
-                            "system": "cmumps",
+                            "system": "chcs",
                             "version": "0.0.1",
-                            "code": "cmumps",
+                            "code": "chcs",
                             "display": "TAKE ONE TABLET BY MOUTH~TWICE A DAY  ~",
                             "userSelected": false
                         }
@@ -205,9 +205,9 @@
                     "code": {
                         "coding": [
                             {
-                                "system": "cmumps",
+                                "system": "chcs",
                                 "version": "0.0.1",
-                                "code": "cmumps",
+                                "code": "chcs",
                                 "display": "T1 TB PO BID #60 RF3",
                                 "userSelected": false
                             }
@@ -227,25 +227,25 @@
             "type": {
                 "coding": [
                     {
-                        "system": "cmumps",
+                        "system": "chcs",
                         "version": "0.0.1",
-                        "code": "cmumps",
+                        "code": "chcs",
                         "display": "Prescription",
                         "userSelected": false
                     }
                 ],
                 "text": "Prescription"
             },
-            "system": "cmumps",
+            "system": "chcs",
             "value": "52-7810414"
         },
         "status": "completed",
         "medicationCodeableConcept": {
             "coding": [
                 {
-                    "system": "cmumps",
+                    "system": "chcs",
                     "version": "0.0.1",
-                    "code": "cmumps",
+                    "code": "chcs",
                     "display": "RECLIPSEN TAB 28-DAY (DESOGEN EQ)",
                     "userSelected": false
                 }
@@ -273,14 +273,14 @@
         "quantity": {
             "value": 169,
             "unit": "unsupplied",
-            "system": "cmumps",
-            "code": "cmumps"
+            "system": "chcs",
+            "code": "chcs"
         },
         "daysSupply": {
             "value": 84,
             "unit": "unsupplied",
-            "system": "cmumps",
-            "code": "cmumps"
+            "system": "chcs",
+            "code": "chcs"
         },
         "whenPrepared": "1990-01-01T00:00:00",
         "whenHandedOver": "1990-01-01T00:00:00",
@@ -299,9 +299,9 @@
                 "additionalInstructions": {
                     "coding": [
                         {
-                            "system": "cmumps",
+                            "system": "chcs",
                             "version": "0.0.1",
-                            "code": "cmumps",
+                            "code": "chcs",
                             "display": "TAKE ONE TABLET BY MOUTH~EVERY DAY  ~",
                             "userSelected": false
                         }
@@ -316,9 +316,9 @@
                     "code": {
                         "coding": [
                             {
-                                "system": "cmumps",
+                                "system": "chcs",
                                 "version": "0.0.1",
-                                "code": "cmumps",
+                                "code": "chcs",
                                 "display": "T1 TAB PO QD #169 RF0",
                                 "userSelected": false
                             }

@@ -15,8 +15,8 @@
          a fhir:CodeableConcept;
          fhir:CodeableConcept.coding [ 
             a fhir:Coding;
-            fhir:Coding.code [ fhir:value "cmumpss" ];
-            fhir:Coding.display [ fhir:value "cmumpss" ];
+            fhir:Coding.code [ fhir:value "chcss" ];
+            fhir:Coding.display [ fhir:value "chcss" ];
           ];
          fhir:CodeableConcept.text [ fhir:value "777777777" ]
        ];

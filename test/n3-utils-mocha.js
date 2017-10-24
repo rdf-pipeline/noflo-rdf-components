@@ -21,20 +21,20 @@ var n3Utils = require("../components/lib/n3-utils");
 var logger = require("../src/logger");
 var test = require("./common-test");
 
-var demographics = JSON.parse(fs.readFileSync(__dirname + "/data/cmumps-patient7-demographics.jsonld"));
+var demographics = JSON.parse(fs.readFileSync(__dirname + "/data/chcs-patient7-demographics.jsonld"));
 var simpleDemographics = JSON.parse(fs.readFileSync(__dirname + "/data/simple-patient7.jsonld"));
 
 // var shexPrescriptions = JSON.parse(fs.readFileSync(__dirname + "/data/shex-patient7-prescriptions.jsonld"));
 var shexPrescriptions = JSON.parse(fs.readFileSync(__dirname + "/data/simple-shex-prescript.jsonld"));
 
-var patient7 = JSON.parse(fs.readFileSync(__dirname + "/data/cmumps-patient7.jsonld"));
+var patient7 = JSON.parse(fs.readFileSync(__dirname + "/data/chcs-patient7.jsonld"));
 
 var frame = {
-       "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld"
+       "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld"
 };
 var graph_frame = {
-       "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
-       "@graph": [{"@id": "http://hokukahu.com/systems/cmumps-1/2-000007"}]
+       "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
+       "@graph": [{"@id": "http://hokukahu.com/systems/chcs-1/2-000007"}]
 };
 
 describe("n3-utils", function() {
@@ -106,42 +106,42 @@ describe("n3-utils", function() {
 
                             var subjects = _.uniq(_.pluck(triples, 'subject'));
                             subjects.should.have.length(3);
-                            subjects.should.contain('http://hokukahu.com/systems/cmumps-1/2-000007');
-                            subjects.should.contain('http://hokukahu.com/systems/cmumps-1/8140-20');
-                            subjects.should.contain('http://hokukahu.com/systems/cmumps-1/8110-20');
+                            subjects.should.contain('http://hokukahu.com/systems/chcs-1/2-000007');
+                            subjects.should.contain('http://hokukahu.com/systems/chcs-1/8140-20');
+                            subjects.should.contain('http://hokukahu.com/systems/chcs-1/8110-20');
 
                             var predicates = _.uniq(_.pluck(triples, 'predicate'));
                             predicates.should.deep.equal([ 
                                 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-                                'http://hokukahu.com/schema/cmumpss#city-2',
-                                'http://hokukahu.com/schema/cmumpss#dob-2',
-                                'http://hokukahu.com/schema/cmumpss#ecity-2',
-                                'http://hokukahu.com/schema/cmumpss#emergency_contact-2',
-                                'http://hokukahu.com/schema/cmumpss#ephone-2',
-                                'http://hokukahu.com/schema/cmumpss#erelationship-2',
-                                'http://hokukahu.com/schema/cmumpss#estreet_address-2',
-                                'http://hokukahu.com/schema/cmumpss#ezip-2',
-                                'http://hokukahu.com/schema/cmumpss#fmp-2',
-                                'http://hokukahu.com/schema/cmumpss#identifier',
-                                'http://hokukahu.com/schema/cmumpss#phone-2',
-                                'http://hokukahu.com/schema/cmumpss#state-2',
-                                'http://hokukahu.com/schema/cmumpss#street_address-2',
-                                'http://hokukahu.com/schema/cmumpss#zip_code-2',
+                                'http://hokukahu.com/schema/chcss#city-2',
+                                'http://hokukahu.com/schema/chcss#dob-2',
+                                'http://hokukahu.com/schema/chcss#ecity-2',
+                                'http://hokukahu.com/schema/chcss#emergency_contact-2',
+                                'http://hokukahu.com/schema/chcss#ephone-2',
+                                'http://hokukahu.com/schema/chcss#erelationship-2',
+                                'http://hokukahu.com/schema/chcss#estreet_address-2',
+                                'http://hokukahu.com/schema/chcss#ezip-2',
+                                'http://hokukahu.com/schema/chcss#fmp-2',
+                                'http://hokukahu.com/schema/chcss#identifier',
+                                'http://hokukahu.com/schema/chcss#phone-2',
+                                'http://hokukahu.com/schema/chcss#state-2',
+                                'http://hokukahu.com/schema/chcss#street_address-2',
+                                'http://hokukahu.com/schema/chcss#zip_code-2',
                                 'http://www.w3.org/2000/01/rdf-schema#label',
-                                'http://hokukahu.com/schema/cmumpss#identifer']);
+                                'http://hokukahu.com/schema/chcss#identifer']);
 
                             var objects = _.pluck(triples, 'object');
                             objects.should.deep.equal([ 
-                                'http://hokukahu.com/schema/cmumpss#Patient-2',
+                                'http://hokukahu.com/schema/chcss#Patient-2',
                                 '"ANYTOWN"^^http://www.w3.org/2001/XMLSchema#string',
                                 '"1990-01-01"^^http://www.w3.org/2001/XMLSchema#date',
                                 '"ALBUQUERQUE"^^http://www.w3.org/2001/XMLSchema#string',
                                 '"RUNNAH, ROAD"^^http://www.w3.org/2001/XMLSchema#string',
                                 '"555 555 5558"^^http://www.w3.org/2001/XMLSchema#string',
-                                'http://hokukahu.com/systems/cmumps-1/8140-20',
+                                'http://hokukahu.com/systems/chcs-1/8140-20',
                                 '"7000 InternalTest Boulevard"^^http://www.w3.org/2001/XMLSchema#string',
                                 '"55555"^^http://www.w3.org/2001/XMLSchema#string',
-                                'http://hokukahu.com/systems/cmumps-1/8110-20',
+                                'http://hokukahu.com/systems/chcs-1/8110-20',
                                 '"2-000007"^^http://www.w3.org/2001/XMLSchema#string',
                                 '"555 555 5555"^^http://www.w3.org/2001/XMLSchema#string',
                                 '"NEW YORK"^^http://www.w3.org/2001/XMLSchema#string',
@@ -178,15 +178,15 @@ describe("n3-utils", function() {
 
 			    var subjects = _.uniq(_.pluck(triples, 'subject'));
                             subjects.should.have.length(230);
-                            subjects.should.contain('http://hokukahu.com/systems/cmumps-1/Procedure-1074046');
-                            subjects.should.contain('http://hokukahu.com/systems/cmumps-1/Patient-000007');
-                            subjects.should.contain('http://hokukahu.com/systems/cmumps-1/Provider-41200034');
+                            subjects.should.contain('http://hokukahu.com/systems/chcs-1/Procedure-1074046');
+                            subjects.should.contain('http://hokukahu.com/systems/chcs-1/Patient-000007');
+                            subjects.should.contain('http://hokukahu.com/systems/chcs-1/Provider-41200034');
 
                             var predicates = _.uniq(_.pluck(triples, 'predicate'));
                             predicates.should.have.length(261);
-                            predicates.should.contain('http://hokukahu.com/schema/cmumpss#name-2');
-                            predicates.should.contain('http://hokukahu.com/schema/cmumpss#email_address-2');
-                            predicates.should.contain('http://hokukahu.com/schema/cmumpss#verified');
+                            predicates.should.contain('http://hokukahu.com/schema/chcss#name-2');
+                            predicates.should.contain('http://hokukahu.com/schema/chcss#email_address-2');
+                            predicates.should.contain('http://hokukahu.com/schema/chcss#verified');
 
                             var objects = _.uniq(_.pluck(triples, 'object'));
                             objects.should.have.length(476);
@@ -324,20 +324,20 @@ describe("n3-utils", function() {
                     }).then(
                         function(ttl) { 
                             ttl.should.be.a.string;
-                            ttl.should.contain('<http://hokukahu.com/schema/cmumpss#patient-100417> <http://hokukahu.com/systems/cmumps-1/2-000007>;');
-                            ttl.should.contain('a <http://hokukahu.com/schema/cmumpss#Patient-2>;');
+                            ttl.should.contain('<http://hokukahu.com/schema/chcss#patient-100417> <http://hokukahu.com/systems/chcs-1/2-000007>;');
+                            ttl.should.contain('a <http://hokukahu.com/schema/chcss#Patient-2>;');
 
-                            ttl.should.contain('a <http://hokukahu.com/schema/cmumpss#Prescription-52>;');
-                            ttl.should.contain('<http://hokukahu.com/systems/cmumps-1/52-40863> <http://www.w3.org/2000/01/rdf-schema#label> "H46358"^^<http://www.w3.org/2001/XMLSchema#string>;');
-                            ttl.should.contain('<http://hokukahu.com/systems/cmumps-1/52-7810413> <http://www.w3.org/2000/01/rdf-schema#label> "B636180"^^<http://www.w3.org/2001/XMLSchema#string>;');
-                            ttl.should.contain('<http://hokukahu.com/systems/cmumps-1/52-7810414> <http://www.w3.org/2000/01/rdf-schema#label> "B636181"^^<http://www.w3.org/2001/XMLSchema#string>;');
+                            ttl.should.contain('a <http://hokukahu.com/schema/chcss#Prescription-52>;');
+                            ttl.should.contain('<http://hokukahu.com/systems/chcs-1/52-40863> <http://www.w3.org/2000/01/rdf-schema#label> "H46358"^^<http://www.w3.org/2001/XMLSchema#string>;');
+                            ttl.should.contain('<http://hokukahu.com/systems/chcs-1/52-7810413> <http://www.w3.org/2000/01/rdf-schema#label> "B636180"^^<http://www.w3.org/2001/XMLSchema#string>;');
+                            ttl.should.contain('<http://hokukahu.com/systems/chcs-1/52-7810414> <http://www.w3.org/2000/01/rdf-schema#label> "B636181"^^<http://www.w3.org/2001/XMLSchema#string>;');
 
-                            ttl.should.contain('a <http://hokukahu.com/schema/cmumpss#Procedure>;');
+                            ttl.should.contain('a <http://hokukahu.com/schema/chcss#Procedure>;');
 
-                            ttl.should.contain('<http://hokukahu.com/schema/cmumpss#101_110_03_E-WARD_CLINIC_COLLECT___DELIVER> <http://www.w3.org/2000/01/rdf-schema#label> "WARD_CLINIC_COLLECT___DELIVER"^^<http://www.w3.org/2001/XMLSchema#string>.');
-                            ttl.should.contain('a <http://hokukahu.com/schema/cmumpss#101>;');
-                            ttl.should.contain('<http://hokukahu.com/schema/cmumpss#rx_-52> "B0000000"^^<http://www.w3.org/2001/XMLSchema#string>;');
-                            ttl.should.contain('<http://hokukahu.com/systems/cmumps-1/Provider-41200034> <http://www.w3.org/2000/01/rdf-schema#label> "MOUSE,MICKEY"^^<http://www.w3.org/2001/XMLSchema#string>.');
+                            ttl.should.contain('<http://hokukahu.com/schema/chcss#101_110_03_E-WARD_CLINIC_COLLECT___DELIVER> <http://www.w3.org/2000/01/rdf-schema#label> "WARD_CLINIC_COLLECT___DELIVER"^^<http://www.w3.org/2001/XMLSchema#string>.');
+                            ttl.should.contain('a <http://hokukahu.com/schema/chcss#101>;');
+                            ttl.should.contain('<http://hokukahu.com/schema/chcss#rx_-52> "B0000000"^^<http://www.w3.org/2001/XMLSchema#string>;');
+                            ttl.should.contain('<http://hokukahu.com/systems/chcs-1/Provider-41200034> <http://www.w3.org/2000/01/rdf-schema#label> "MOUSE,MICKEY"^^<http://www.w3.org/2001/XMLSchema#string>.');
                             done();
                     });
 
@@ -477,7 +477,7 @@ describe("n3-utils", function() {
 
         it("should convert an N3 diagnosis to framed JSON-LD", function(done) {
             var frame = {
-                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [{"@type": "Kg_Patient_Diagnosis-100417"}]
             }; 
 
@@ -496,7 +496,7 @@ describe("n3-utils", function() {
                         var roundtrip = json['@graph'][0]; 
                         var original = 
                             _.findWhere(patient7['@graph'], 
-                                        {"type": "cmumpss:Kg_Patient_Diagnosis-100417"});
+                                        {"type": "chcss:Kg_Patient_Diagnosis-100417"});
                         compareElements(original, roundtrip);
                         done();
                     }).catch(function(e) { 
@@ -509,7 +509,7 @@ describe("n3-utils", function() {
         });
         it("should convert an N3 store of ShEx style prescriptions to framed JSON-LD", function(done) {
             var frame = {
-                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [{"@type": "Prescription-52",
                              "@requireAll": true }]
             };
@@ -527,7 +527,7 @@ describe("n3-utils", function() {
                     }).then( function(json) {
                         var originalPrescriptions = 
                             _.where(shexPrescriptions['@graph'], 
-                                    {'type': 'cmumpss:Prescription-52'});
+                                    {'type': 'chcss:Prescription-52'});
                         _.each(originalPrescriptions, function(original) { 
                             var id = original['identifier'];
                             var roundtrip = _.findWhere(json['@graph'], {'identifier': id});
@@ -545,7 +545,7 @@ describe("n3-utils", function() {
 
         it("should convert an N3 procedure to framed JSON-LD", function(done) {
             var frame = {
-                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [{"@type": "Procedure"}]
             }; 
 
@@ -576,7 +576,7 @@ describe("n3-utils", function() {
 
         it("should convert an N3 store of patient-7 to framed JSON-LD", function(done) {
             var frame = {
-                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                 "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [{"@id": "2-000007"}]
             };
 
@@ -617,16 +617,16 @@ function getId(element) {
 }
 
 /**
- * Remove the cmumpss: prefix from all type attributes in a graph
+ * Remove the chcss: prefix from all type attributes in a graph
  * 
  * @return updated graph
  */
 function removeTypePrefix(graph) {
 
-    // If graph is an array, walk the list of elements removing the cmumpss: prefix from any types
+    // If graph is an array, walk the list of elements removing the chcss: prefix from any types
     if (_.isArray(graph)) { 
          var unprefixedGraph = _.map(graph, function(element) {
-             element['type'] = _.isUndefined(element['type']) ? undefined : element['type'].replace("cmumpss:", "");
+             element['type'] = _.isUndefined(element['type']) ? undefined : element['type'].replace("chcss:", "");
              return element; 
          });
 
@@ -634,7 +634,7 @@ function removeTypePrefix(graph) {
     } 
 
     // Just one element (not an array - handle it and return
-    graph['type'] = _.isUndefined(graph['type']) ? undefined : graph['type'].replace("cmumpss:", "");
+    graph['type'] = _.isUndefined(graph['type']) ? undefined : graph['type'].replace("chcss:", "");
     return graph;
 }
 
@@ -645,30 +645,30 @@ function removeTypePrefix(graph) {
  */ 
 function verifySimpleDemographicsJson(json) { 
     json.should.deep.equal([ 
-        { '@type': [ 'http://hokukahu.com/schema/cmumpss#Patient-2' ],
-          'http://hokukahu.com/schema/cmumpss#city-2': 'ANYTOWN',
-          'http://hokukahu.com/schema/cmumpss#dob-2': 
+        { '@type': [ 'http://hokukahu.com/schema/chcss#Patient-2' ],
+          'http://hokukahu.com/schema/chcss#city-2': 'ANYTOWN',
+          'http://hokukahu.com/schema/chcss#dob-2': 
                  { '@type': 'http://www.w3.org/2001/XMLSchema#date',
                    '@value': '1990-01-01' },
-          'http://hokukahu.com/schema/cmumpss#ecity-2': 'ALBUQUERQUE',
-          'http://hokukahu.com/schema/cmumpss#emergency_contact-2': 'RUNNAH, ROAD',
-          'http://hokukahu.com/schema/cmumpss#ephone-2': '555 555 5558',
-          'http://hokukahu.com/schema/cmumpss#erelationship-2': { '@id': '_:15' },
-          'http://hokukahu.com/schema/cmumpss#estreet_address-2': '7000 InternalTest Boulevard',
-          'http://hokukahu.com/schema/cmumpss#ezip-2': '55555',
-          'http://hokukahu.com/schema/cmumpss#fmp-2': { '@id': '_:21' },
-          'http://hokukahu.com/schema/cmumpss#identifier': '2-000007',
-          'http://hokukahu.com/schema/cmumpss#phone-2': '555 555 5555',
-          'http://hokukahu.com/schema/cmumpss#state-2': 'NEW YORK',
-          'http://hokukahu.com/schema/cmumpss#street_address-2': '100 MAIN ST',
-          'http://hokukahu.com/schema/cmumpss#zip_code-2': '60040',
+          'http://hokukahu.com/schema/chcss#ecity-2': 'ALBUQUERQUE',
+          'http://hokukahu.com/schema/chcss#emergency_contact-2': 'RUNNAH, ROAD',
+          'http://hokukahu.com/schema/chcss#ephone-2': '555 555 5558',
+          'http://hokukahu.com/schema/chcss#erelationship-2': { '@id': '_:15' },
+          'http://hokukahu.com/schema/chcss#estreet_address-2': '7000 InternalTest Boulevard',
+          'http://hokukahu.com/schema/chcss#ezip-2': '55555',
+          'http://hokukahu.com/schema/chcss#fmp-2': { '@id': '_:21' },
+          'http://hokukahu.com/schema/chcss#identifier': '2-000007',
+          'http://hokukahu.com/schema/chcss#phone-2': '555 555 5555',
+          'http://hokukahu.com/schema/chcss#state-2': 'NEW YORK',
+          'http://hokukahu.com/schema/chcss#street_address-2': '100 MAIN ST',
+          'http://hokukahu.com/schema/chcss#zip_code-2': '60040',
           'http://www.w3.org/2000/01/rdf-schema#label': 'BUNNY,BUGS' 
         },
         { '@id': '_:15',
-          'http://hokukahu.com/schema/cmumpss#identifier': '8140-20',
+          'http://hokukahu.com/schema/chcss#identifier': '8140-20',
           'http://www.w3.org/2000/01/rdf-schema#label': 'OTHER RELATIONSHIP' },
         { '@id': '_:21',
-          'http://hokukahu.com/schema/cmumpss#identifier': '8110-20',
+          'http://hokukahu.com/schema/chcss#identifier': '8110-20',
           'http://www.w3.org/2000/01/rdf-schema#label': '20' } 
     ]);
 }
@@ -742,25 +742,25 @@ function compareElements(original, roundtrip) {
  */
 function verifySimpleDemographicsTtl(ttl) { 
     var simpleLine = ttl.replace(/(?:\r\n|\r|\n)/g, ' ');
-    simpleLine.should.equal('<http://hokukahu.com/systems/cmumps-1/2-000007> a <http://hokukahu.com/schema/cmumpss#Patient-2>;\
-     <http://hokukahu.com/schema/cmumpss#city-2> "ANYTOWN"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#dob-2> "1990-01-01"^^<http://www.w3.org/2001/XMLSchema#date>;\
-     <http://hokukahu.com/schema/cmumpss#ecity-2> "ALBUQUERQUE"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#emergency_contact-2> "RUNNAH, ROAD"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#ephone-2> "555 555 5558"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#erelationship-2> <http://hokukahu.com/systems/cmumps-1/8140-20>;\
-     <http://hokukahu.com/schema/cmumpss#estreet_address-2> "7000 InternalTest Boulevard"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#ezip-2> "55555"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#fmp-2> <http://hokukahu.com/systems/cmumps-1/8110-20>;\
-     <http://hokukahu.com/schema/cmumpss#identifier> "2-000007"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#phone-2> "555 555 5555"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#state-2> "NEW YORK"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#street_address-2> "100 MAIN ST"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#zip_code-2> "60040"^^<http://www.w3.org/2001/XMLSchema#string>;\
+    simpleLine.should.equal('<http://hokukahu.com/systems/chcs-1/2-000007> a <http://hokukahu.com/schema/chcss#Patient-2>;\
+     <http://hokukahu.com/schema/chcss#city-2> "ANYTOWN"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#dob-2> "1990-01-01"^^<http://www.w3.org/2001/XMLSchema#date>;\
+     <http://hokukahu.com/schema/chcss#ecity-2> "ALBUQUERQUE"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#emergency_contact-2> "RUNNAH, ROAD"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#ephone-2> "555 555 5558"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#erelationship-2> <http://hokukahu.com/systems/chcs-1/8140-20>;\
+     <http://hokukahu.com/schema/chcss#estreet_address-2> "7000 InternalTest Boulevard"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#ezip-2> "55555"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#fmp-2> <http://hokukahu.com/systems/chcs-1/8110-20>;\
+     <http://hokukahu.com/schema/chcss#identifier> "2-000007"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#phone-2> "555 555 5555"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#state-2> "NEW YORK"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#street_address-2> "100 MAIN ST"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#zip_code-2> "60040"^^<http://www.w3.org/2001/XMLSchema#string>;\
      <http://www.w3.org/2000/01/rdf-schema#label> "BUNNY,BUGS"^^<http://www.w3.org/2001/XMLSchema#string>.\
- <http://hokukahu.com/systems/cmumps-1/8140-20> <http://hokukahu.com/schema/cmumpss#identifier> "8140-20"^^<http://www.w3.org/2001/XMLSchema#string>;\
+ <http://hokukahu.com/systems/chcs-1/8140-20> <http://hokukahu.com/schema/chcss#identifier> "8140-20"^^<http://www.w3.org/2001/XMLSchema#string>;\
      <http://www.w3.org/2000/01/rdf-schema#label> "OTHER RELATIONSHIP"^^<http://www.w3.org/2001/XMLSchema#string>.\
- <http://hokukahu.com/systems/cmumps-1/8110-20> <http://www.w3.org/2000/01/rdf-schema#label> "20"^^<http://www.w3.org/2001/XMLSchema#string>;\
-     <http://hokukahu.com/schema/cmumpss#identifer> "8110-20"^^<http://www.w3.org/2001/XMLSchema#string>. ');
+ <http://hokukahu.com/systems/chcs-1/8110-20> <http://www.w3.org/2000/01/rdf-schema#label> "20"^^<http://www.w3.org/2001/XMLSchema#string>;\
+     <http://hokukahu.com/schema/chcss#identifer> "8110-20"^^<http://www.w3.org/2001/XMLSchema#string>. ');
 
 }

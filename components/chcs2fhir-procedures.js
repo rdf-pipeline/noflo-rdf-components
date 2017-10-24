@@ -1,41 +1,41 @@
-// cmumps2fhir-cmumpsProcedures.js
+// chcs2fhir-chcsProcedures.js
 
 var _ = require('underscore');
 
 var translator = require('translators').procedures;
 
 var logger = require('../src/logger');
-var cmumps2fhir = require('./cmumps2fhir');
+var chcs2fhir = require('./chcs2fhir');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper({description: "Extracts CMUMPS procedures from a dataset and translates them into FHIR",
+module.exports = wrapper({description: "Extracts CHCS procedures from a dataset and translates them into FHIR",
                           icon: 'language',
-                          updater: cmumps2fhirProcedures});
+                          updater: chcs2fhirProcedures});
 
 /** 
- * Extracts the patient cmumpsProcedures from a cmumps graph and translates it to FHIR format.
+ * Extracts the patient chcsProcedures from a chcs graph and translates it to FHIR format.
  * 
- * @param data cmumps patient data to be translated
- * @param cmumps_file {string} output path for writing json intermediate file for cmumps data.
+ * @param data chcs patient data to be translated
+ * @param chcs_file {string} output path for writing json intermediate file for chcs data.
  *                             May be undefined.
  * @param fhir_file {string} output path for writing json intermediate file for fhir data.
  *                             May be undefined.
  * @return an array of the patient's procedure data in FHIR format
  */
-function cmumps2fhirProcedures(data, cmumps_file, fhir_file) {
+function chcs2fhirProcedures(data, chcs_file, fhir_file) {
 
     logger.debug('Enter', {nodeInstance: this.nodeInstance});
     // console.log('data: ',util.inspect(data,{depth:null})+'\n');
 
     if (_.isUndefined(data)) {
-        throw Error("Cmumps2fhir procedures component requires data to translate!");
+        throw Error("Chcs2fhir procedures component requires data to translate!");
     }
 
-    var procedures = cmumps2fhir.call(this,
+    var procedures = chcs2fhir.call(this,
                                       data,
                                       translator.extractProcedures,
                                       translator.translateProceduresFhir,
-                                      cmumps_file,
+                                      chcs_file,
                                       fhir_file);
 
     // How many procedures do we have?

@@ -15,7 +15,7 @@ var filters = require('../components/lib/filters');
 var logger = require('../src/logger');
 var test = require('./common-test');
 
-var jsonData = JSON.parse(fs.readFileSync(__dirname + '/data/cmumps-patient7.jsonld','utf8'));
+var jsonData = JSON.parse(fs.readFileSync(__dirname + '/data/chcs-patient7.jsonld','utf8'));
 
 describe('filters', function() {
 
@@ -354,9 +354,9 @@ describe('filters', function() {
             );
         });
 
-        it('should extract demographics from CMUMPS', function() {
-            var cmumpsType = "cmumpss:Patient-2";
-            var filter = [{jsonpointer: "/type", value: cmumpsType}];
+        it('should extract demographics from CHCS', function() {
+            var chcsType = "chcss:Patient-2";
+            var filter = [{jsonpointer: "/type", value: chcsType}];
             var demographics = filters.filterByJsonPointers.call(this, jsonData, filter, '/@graph');
 
             demographics.should.be.an('array');
@@ -366,14 +366,14 @@ describe('filters', function() {
             Object.keys(demographics[0]).should.have.length(48);
 
             demographics[0]._id.should.equal('2-000007');
-            demographics[0].type.should.equal(cmumpsType);
-            demographics[0]['sex-2'].should.deep.equal({ id: 'cmumpss:2__02_E-MALE', label: 'MALE' });
-            demographics[0]['organ_donor-2'].should.deep.equal({ id: 'cmumpss:2_9001_01_E-UNDECIDED', label: 'UNDECIDED' });
+            demographics[0].type.should.equal(chcsType);
+            demographics[0]['sex-2'].should.deep.equal({ id: 'chcss:2__02_E-MALE', label: 'MALE' });
+            demographics[0]['organ_donor-2'].should.deep.equal({ id: 'chcss:2_9001_01_E-UNDECIDED', label: 'UNDECIDED' });
         });
 
-        it('should extract diagnoses from CMUMPS', function() {
-            var cmumpsType = "cmumpss:Kg_Patient_Diagnosis-100417";
-            var filter = [{jsonpointer: "/type", value: cmumpsType}];
+        it('should extract diagnoses from CHCS', function() {
+            var chcsType = "chcss:Kg_Patient_Diagnosis-100417";
+            var filter = [{jsonpointer: "/type", value: chcsType}];
             var diagnoses = filters.filterByJsonPointers.call(this, jsonData, filter, '/@graph');
 
             diagnoses.should.be.an('array');
@@ -381,38 +381,38 @@ describe('filters', function() {
 
             Object.keys(diagnoses[0]).should.have.length(9);
             diagnoses[0]._id.should.equal("100417-4559064");
-            diagnoses[0].type.should.equal(cmumpsType);
+            diagnoses[0].type.should.equal(chcsType);
             diagnoses[0]['patient-100417'].should.deep.equal({id: "2-000007", label: "BUNNY,BUGS"});
             diagnoses[0]['status-100417'].should.equal("Active");
             diagnoses[0]['diagnosis-100417'].should.equal("V70.5 H");
 
             Object.keys(diagnoses[1]).should.have.length(9);
             diagnoses[1]._id.should.equal("100417-4562039");
-            diagnoses[1].type.should.equal(cmumpsType);
+            diagnoses[1].type.should.equal(chcsType);
             diagnoses[1]['patient-100417'].should.deep.equal({id: "2-000007", label: "BUNNY,BUGS"});
             diagnoses[1]['status-100417'].should.equal("Active");
             diagnoses[1]['diagnosis-100417'].should.equal("V72.12");
 
             Object.keys(diagnoses[2]).should.have.length(9);
             diagnoses[2]._id.should.equal("100417-4568875");
-            diagnoses[2].type.should.equal(cmumpsType);
+            diagnoses[2].type.should.equal(chcsType);
             diagnoses[2]['patient-100417'].should.deep.equal({id: "2-000007", label: "BUNNY,BUGS"});
             diagnoses[2]['status-100417'].should.equal("Active");
             diagnoses[2]['diagnosis-100417'].should.equal("V70.5 2");
         });
 
-        it('should extract labwork from CMUMPS', function() {
-            var cmumpsType = "cmumpss:Lab_Result-63";
-            var filter = [{jsonpointer: "/type", value: cmumpsType}];
+        it('should extract labwork from CHCS', function() {
+            var chcsType = "chcss:Lab_Result-63";
+            var filter = [{jsonpointer: "/type", value: chcsType}];
             var labwork = filters.filterByJsonPointers.call(this, jsonData, filter, '/@graph');
             labwork.should.be.an('array');
             labwork.should.have.length(1);
 
             Object.keys(labwork[0]).should.have.length(6);
             labwork[0]['_id'].should.equal("63-000007");
-            labwork[0].type.should.equal(cmumpsType);
+            labwork[0].type.should.equal(chcsType);
             labwork[0]["micro_conversion_flag-63"].should.deep.equal(
-                {"id": "cmumpss:63__03_E-Micro_result_converted_for_4_41",
+                {"id": "chcss:63__03_E-Micro_result_converted_for_4_41",
                  "label": "Micro_result_converted_for_4_41"}
             );
             labwork[0].label.should.equal("BUNNY,BUGS");
@@ -421,9 +421,9 @@ describe('filters', function() {
             Object.keys(labwork[0]["clinical_chemistry-63"]).should.have.length(5);
         });
 
-        it('should extract prescriptions from CMUMPS', function() {
-            var cmumpsType = "cmumpss:Prescription-52";
-            var filter = [{jsonpointer: "/type", value: cmumpsType}];
+        it('should extract prescriptions from CHCS', function() {
+            var chcsType = "chcss:Prescription-52";
+            var filter = [{jsonpointer: "/type", value: chcsType}];
             var prescriptions = filters.filterByJsonPointers.call(this, jsonData, filter, '/@graph');
 
             prescriptions.should.be.an('array');
@@ -431,23 +431,23 @@ describe('filters', function() {
 
             Object.keys(prescriptions[0]).should.have.length(29);
             prescriptions[0]._id.should.equal('52-40863');
-            prescriptions[0].type.should.equal(cmumpsType);
+            prescriptions[0].type.should.equal(chcsType);
             prescriptions[0]['drug-52']['id'].should.equal("50-260");
 
             Object.keys(prescriptions[1]).should.have.length(35);
             prescriptions[1]._id.should.equal('52-7810413');
-            prescriptions[1].type.should.equal(cmumpsType);
+            prescriptions[1].type.should.equal(chcsType);
             prescriptions[1]['drug-52']['id'].should.equal("50-234072");
 
             Object.keys(prescriptions[2]).should.have.length(35);
             prescriptions[2]._id.should.equal('52-7810414');
-            prescriptions[2].type.should.equal(cmumpsType);
+            prescriptions[2].type.should.equal(chcsType);
             prescriptions[2]['drug-52']['id'].should.equal("50-3621");
         });
 
-        it('should extract procedures from CMUMPS', function() {
-            var cmumpsType = "Procedure";
-            var filter = [{jsonpointer: "/type", value: cmumpsType}];
+        it('should extract procedures from CHCS', function() {
+            var chcsType = "Procedure";
+            var filter = [{jsonpointer: "/type", value: chcsType}];
             var procedures = filters.filterByJsonPointers.call(this, jsonData, filter, '/@graph');
 
             procedures.should.be.an('array');
@@ -455,7 +455,7 @@ describe('filters', function() {
 
             Object.keys(procedures[0]).should.have.length(11);
             procedures[0]._id.should.equal('Procedure-1074046');
-            procedures[0].type.should.equal(cmumpsType);
+            procedures[0].type.should.equal(chcsType);
             procedures[0].patient.should.deep.equal({id: 'Patient-000007', label: 'BUNNY,BUGS'});
             procedures[0].comments.should.equal('Encounter Procedure');
             procedures[0].verified.should.be.true;

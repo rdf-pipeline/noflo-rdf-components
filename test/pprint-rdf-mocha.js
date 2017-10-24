@@ -49,9 +49,9 @@ describe("pprint-rdf", function() {
           exec(command, function (error, stdout, stderr) {
               expect(error).to.be.null;
               stderr.trim().length.should.equal(0);
-              stdout.should.contain('@prefix cmumpss: <http://hokukahu.com/schema/cmumpss#> .');
+              stdout.should.contain('@prefix chcss: <http://hokukahu.com/schema/chcss#> .');
               stdout.should.contain('<urn:local:provider-6>'); 
-              stdout.should.contain('    cmumpss:require_supervising_provider-6 true ;'); 
+              stdout.should.contain('    chcss:require_supervising_provider-6 true ;'); 
               done();
           });
       });
@@ -61,7 +61,7 @@ describe("pprint-rdf", function() {
           exec(command, function (error, stdout, stderr) {
               expect(error).to.be.null;
               stderr.trim().length.should.equal(0);
-              stdout.should.contain('@prefix ns1: <http://hokukahu.com/schema/cmumpss#> .');
+              stdout.should.contain('@prefix ns1: <http://hokukahu.com/schema/chcss#> .');
               stdout.should.contain('<urn:local:provider-6>'); 
               stdout.should.contain('    ns1:require_supervising_provider-6 true ;');
               done();
@@ -69,16 +69,16 @@ describe("pprint-rdf", function() {
       });
   });
 
-  describe("--cmumps option", function() {
+  describe("--chcs option", function() {
 
-      it("should load a Turtle file with cmumps context prefixes & format as canonical turtle", function(done) {
+      it("should load a Turtle file with chcs context prefixes & format as canonical turtle", function(done) {
           var command = pprintfRdfPath + " -c " + providerTtlFile;
           exec(command, function (error, stdout, stderr) {
               expect(error).to.be.null;
               stderr.trim().length.should.equal(0);
-              stdout.should.contain('@prefix cmumpss: <http://hokukahu.com/schema/cmumpss#> .');
+              stdout.should.contain('@prefix chcss: <http://hokukahu.com/schema/chcss#> .');
               stdout.should.contain('<urn:local:provider-6>'); 
-              stdout.should.contain('    cmumpss:require_supervising_provider-6 true ;'); 
+              stdout.should.contain('    chcss:require_supervising_provider-6 true ;'); 
               done();
           });
       });

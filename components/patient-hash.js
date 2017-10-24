@@ -13,14 +13,14 @@ var stateFactory = require('../src/create-state');
 var logger = require('../src/logger');
 var wrapper = require('../src/javascript-wrapper');
 
-module.exports = wrapper({description: "Given CMUMPS JSON patient data, builds a hash object of each "+
+module.exports = wrapper({description: "Given CHCS JSON patient data, builds a hash object of each "+
                                        "demographic, medication, procedure, and diagnosis, using the "+
                                        "resource ID as the key for each.",
                           icon: 'share-alt-square',
                           updater: patientHash});
 
 /**
- * Given a collection of CMUMPS patient JSON, maps the demographics, medications, diagnoses, & procedures
+ * Given a collection of CHCS patient JSON, maps the demographics, medications, diagnoses, & procedures
  * into a hash by resource ID for each.  This component is useful in setting up the patient
  * resources for use by translation wrapper components that will perform the actual translation.
  *
@@ -48,10 +48,10 @@ function patientHash(patient_json, translator_components, metadata_key) {
 
     // Ensure that we have translators for demographics, prescriptions, and procedures 
     //  - either those specified or the default ones
-    translators = translators || {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
-                                  diagnosis: 'rdf-components/translate-diagnosis-cmumps2fhir',
-                                  prescription: 'rdf-components/translate-prescription-cmumps2fhir',
-                                  procedure: 'rdf-components/translate-procedure-cmumps2fhir'};
+    translators = translators || {demographics: 'rdf-components/translate-demographics-chcs2fhir',
+                                  diagnosis: 'rdf-components/translate-diagnosis-chcs2fhir',
+                                  prescription: 'rdf-components/translate-prescription-chcs2fhir',
+                                  procedure: 'rdf-components/translate-procedure-chcs2fhir'};
 
     if (_.difference(Object.keys(translators), ['demographics', 'diagnosis', 
                                                 'prescription', 'procedure']).length > 0 ) {

@@ -392,7 +392,7 @@ describe('confluence', function() {
         it('should run in a noflo network', function() {
 	    this.timeout(13000);
 
-            var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+            var testFile = __dirname + '/data/chcs-patient7.jsonld';
             var data = fs.readFileSync(testFile);
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
@@ -400,8 +400,8 @@ describe('confluence', function() {
                  { filedata: 'core/Repeat',
                    translators: 'core/Repeat',
                    patientHashNode: 'rdf-components/patient-hash',
-                   demographicsNode: 'rdf-components/translate-demographics-cmumps2fhir',
-                   prescriptionsNode: 'rdf-components/translate-prescription-cmumps2fhir',
+                   demographicsNode: 'rdf-components/translate-demographics-chcs2fhir',
+                   prescriptionsNode: 'rdf-components/translate-prescription-chcs2fhir',
                    confluence: 'rdf-components/confluence'}
 
            ).then(function(network) {
@@ -422,8 +422,8 @@ describe('confluence', function() {
                     network.graph.addEdge('prescriptionsNode', 'output', 'confluence', 'input');
 
                     logger.silence('warn');
-                    network.graph.addInitial( {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
-                                               prescription: 'rdf-components/translate-prescription-cmumps2fhir'}, 
+                    network.graph.addInitial( {demographics: 'rdf-components/translate-demographics-chcs2fhir',
+                                               prescription: 'rdf-components/translate-prescription-chcs2fhir'}, 
                                               'translators', 'in');
                     network.graph.addInitial(parsedData, 'filedata', 'in');
                     network.graph.addInitial('patientId', 'confluence', 'metadata_key');

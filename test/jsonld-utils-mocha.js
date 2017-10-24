@@ -78,7 +78,7 @@ describe('jsonld-utils', function() {
 
             return jsonldUtils.getContext({"@context": context, 
                                            "@graph": [{
-                                              "type": "cmumpss:Patient-2",
+                                              "type": "chcss:Patient-2",
                                               "id": "2-000007",
                                               "label": "BUNNY,BUGS"
                                            }]
@@ -97,11 +97,11 @@ describe('jsonld-utils', function() {
             });
         });
 
-        it("should retrieve the cmumps url context", function(done) {
-            var context = "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld";
+        it("should retrieve the chcs url context", function(done) {
+            var context = "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld";
             return jsonldUtils.getContext({"@context": context, 
                                            "@graph": [{
-                                              "type": "cmumpss:Patient-2",
+                                              "type": "chcss:Patient-2",
                                               "id": "2-000007",
                                               "label": "BUNNY,BUGS"
                                            }]
@@ -116,10 +116,10 @@ describe('jsonld-utils', function() {
                                       icd9cm: 'http://hokukahu.com/schema/icd9cm#',
                                       npi: 'http://hokukahu.com/schema/npi#',
                                       nddf: 'http://hokukahu.com/schema/nddf#',
-                                      '@vocab': 'http://hokukahu.com/schema/cmumpss#',
-                                      cmumpss: 'http://hokukahu.com/schema/cmumpss#',
+                                      '@vocab': 'http://hokukahu.com/schema/chcss#',
+                                      chcss: 'http://hokukahu.com/schema/chcss#',
                                       xsd: 'http://www.w3.org/2001/XMLSchema#',
-                                      '@base': 'http://hokukahu.com/systems/cmumps-1/',
+                                      '@base': 'http://hokukahu.com/systems/chcs-1/',
                                       _id: '@id',
                                       id: '@id',
                                       type: '@type',
@@ -136,10 +136,10 @@ describe('jsonld-utils', function() {
                 },
 
                 function(fail) {
-                    done(test.error("jsonld-utils getContext API failed processing cmumps url context: "+fail));
+                    done(test.error("jsonld-utils getContext API failed processing chcs url context: "+fail));
 
             }).catch(function(e) {
-               done(test.error("Exception in jsonld-utils getContext API handling cmumps url context!\n",e));
+               done(test.error("Exception in jsonld-utils getContext API handling chcs url context!\n",e));
             });
         });
 
@@ -150,7 +150,7 @@ describe('jsonld-utils', function() {
             logger.silence('error');
             return jsonldUtils.getContext({ "@context": context, 
                                             "@graph": [{
-                                               "type": "cmumpss:Patient-2",
+                                               "type": "chcss:Patient-2",
                                                "id": "2-000007",
                                                "label": "BUNNY,BUGS"
                                              }] 
@@ -180,7 +180,7 @@ describe('jsonld-utils', function() {
             logger.silence('error');
             return jsonldUtils.getContext({ "@context": context, 
                                             "@graph": [{
-                                               "type": "cmumpss:Patient-2",
+                                               "type": "chcss:Patient-2",
                                                "id": "2-000007",
                                                "label": "BUNNY,BUGS"
                                              }] 
@@ -209,7 +209,7 @@ describe('jsonld-utils', function() {
             logger.silence('error');
             return jsonldUtils.getContext({ "@context": context, 
                                             "@graph": [{
-                                               "type": "cmumpss:Patient-2",
+                                               "type": "chcss:Patient-2",
                                                "id": "2-000007",
                                                "label": "BUNNY,BUGS"
                                              }] 
@@ -256,9 +256,9 @@ describe('jsonld-utils', function() {
 
             var json = { 
                 "@context": { 
-                    "cmumpss": "http://hokukahu.com/schema/cmumpss#",
+                    "chcss": "http://hokukahu.com/schema/chcss#",
                     "xsd": "http://www.w3.org/2001/XMLSchema#",
-                    "@base": "http://hokukahu.com/systems/cmumps-1/",
+                    "@base": "http://hokukahu.com/systems/chcs-1/",
                     "id": "@id",
                     "type": "@type",
                     "value": "@value",
@@ -268,7 +268,7 @@ describe('jsonld-utils', function() {
                     }
                 },
                 "@graph": [
-                   { "type": "cmumpss:Patient-2",
+                   { "type": "chcss:Patient-2",
                      "id": "2-000007",
                      "label": "BUNNY,BUGS" } ] 
              };
@@ -276,8 +276,8 @@ describe('jsonld-utils', function() {
             return jsonldUtils.jsonldToNormalizedRdf(json).then(
                 function(result) {
                     result.should.equal(
-                       '<http://hokukahu.com/systems/cmumps-1/2-000007> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/cmumpss#Patient-2> .\n'+
-                       '<http://hokukahu.com/systems/cmumps-1/2-000007> <http://www.w3.org/2000/01/rdf-schema#label> \"BUNNY,BUGS\" .\n');
+                       '<http://hokukahu.com/systems/chcs-1/2-000007> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hokukahu.com/schema/chcss#Patient-2> .\n'+
+                       '<http://hokukahu.com/systems/chcs-1/2-000007> <http://www.w3.org/2000/01/rdf-schema#label> \"BUNNY,BUGS\" .\n');
                     done();
                 }, 
                 function(fail) {
@@ -290,8 +290,8 @@ describe('jsonld-utils', function() {
         });
 
         it("should convert patient-7 demographics to normalized RDF", function(done) {
-           var demographics = JSON.parse(fs.readFileSync(__dirname + '/data/cmumps-patient7-demographics.jsonld','utf8'));
-           var expected = fs.readFileSync(__dirname + '/data/cmumps-patient7-demographics.ttl','utf8');
+           var demographics = JSON.parse(fs.readFileSync(__dirname + '/data/chcs-patient7-demographics.jsonld','utf8'));
+           var expected = fs.readFileSync(__dirname + '/data/chcs-patient7-demographics.ttl','utf8');
 
             return jsonldUtils.jsonldToNormalizedRdf(demographics).then(
                 function(result) {

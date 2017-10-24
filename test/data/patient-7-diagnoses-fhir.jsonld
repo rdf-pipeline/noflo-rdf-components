@@ -3,16 +3,16 @@
     identifier: 
      [ [ { use: 'usual',
            type: 
-            { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
-              text: 'cmumpss:Kg_Patient_Diagnosis-100417' },
-           value: 'cmumpss:Kg_Patient_Diagnosis-100417' } ] ],
+            { coding: [ { code: 'chcss', display: 'chcss' } ],
+              text: 'chcss:Kg_Patient_Diagnosis-100417' },
+           value: 'chcss:Kg_Patient_Diagnosis-100417' } ] ],
     status: 'final',
     category: 'OTH',
     code: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'V70.5 H',
             userSelected: false } ],
        text: 'V70.5 H' },
@@ -20,15 +20,15 @@
     conclusion: 'V70.5 H',
     codedDiagnosis: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'V70.5 H',
             userSelected: false } ],
        text: 'V70.5 H' },
     presentedForm: 
      [ { _id: '100417-4559064',
-         type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+         type: 'chcss:Kg_Patient_Diagnosis-100417',
          label: '27642;OTHER EXAMINATION DEFINED POPULATION',
          'problem-100417': '27642;OTHER EXAMINATION DEFINED POPULATION',
          'patient-100417': { id: '2-000007', label: 'BUNNY,BUGS' },
@@ -41,16 +41,16 @@
     identifier: 
      [ [ { use: 'usual',
            type: 
-            { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
-              text: 'cmumpss:Kg_Patient_Diagnosis-100417' },
-           value: 'cmumpss:Kg_Patient_Diagnosis-100417' } ] ],
+            { coding: [ { code: 'chcss', display: 'chcss' } ],
+              text: 'chcss:Kg_Patient_Diagnosis-100417' },
+           value: 'chcss:Kg_Patient_Diagnosis-100417' } ] ],
     status: 'final',
     category: 'OTH',
     code: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'V72.12',
             userSelected: false } ],
        text: 'V72.12' },
@@ -58,15 +58,15 @@
     conclusion: 'V72.12',
     codedDiagnosis: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'V72.12',
             userSelected: false } ],
        text: 'V72.12' },
     presentedForm: 
      [ { _id: '100417-4562039',
-         type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+         type: 'chcss:Kg_Patient_Diagnosis-100417',
          label: '27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT',
          'problem-100417': '27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT',
          'patient-100417': { id: '2-000007', label: 'BUNNY,BUGS' },
@@ -79,16 +79,16 @@
     identifier: 
      [ [ { use: 'usual',
            type: 
-            { coding: [ { code: 'cmumpss', display: 'cmumpss' } ],
-              text: 'cmumpss:Kg_Patient_Diagnosis-100417' },
-           value: 'cmumpss:Kg_Patient_Diagnosis-100417' } ] ],
+            { coding: [ { code: 'chcss', display: 'chcss' } ],
+              text: 'chcss:Kg_Patient_Diagnosis-100417' },
+           value: 'chcss:Kg_Patient_Diagnosis-100417' } ] ],
     status: 'final',
     category: 'OTH',
     code: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'V70.5 2',
             userSelected: false } ],
        text: 'V70.5 2' },
@@ -96,15 +96,15 @@
     conclusion: 'V70.5 2',
     codedDiagnosis: 
      { coding: 
-        [ { system: 'cmumps',
+        [ { system: 'chcs',
             version: '0.0.1',
-            code: 'cmumps',
+            code: 'chcs',
             display: 'V70.5 2',
             userSelected: false } ],
        text: 'V70.5 2' },
     presentedForm: 
      [ { _id: '100417-4568875',
-         type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+         type: 'chcss:Kg_Patient_Diagnosis-100417',
          label: '19227;PERIODIC PREVENTION EXAMINATION',
          'problem-100417': '19227;PERIODIC PREVENTION EXAMINATION',
          'patient-100417': { id: '2-000007', label: 'BUNNY,BUGS' },

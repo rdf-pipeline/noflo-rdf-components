@@ -22,21 +22,21 @@ def getArgs():
     parser.add_argument("file", help="path to file to print")
 
     # optional args (help is already preset - don't need here)
-    parser.add_argument("-c", "--cmumps", help="apply cmumps prefixes on turtle files",
+    parser.add_argument("-c", "--chcs", help="apply chcs prefixes on turtle files",
                         action="store_true")
 
     return parser.parse_args()
 
 
 # Loads JSON-LD and Turtle files into an RDF graph.
-def getData(filepath, cmumps): 
+def getData(filepath, chcs): 
     if filepath.endswith('.jsonld'):
 	return Graph().parse(filepath, format='json-ld')
 
     if filepath.endswith('.ttl'):
-        if cmumps:
-            return Graph().parse(data="""PREFIX : <http://hokukahu.com/schema/cmumpss#>
-                PREFIX cmumpss: <http://hokukahu.com/schema/cmumpss#>
+        if chcs:
+            return Graph().parse(data="""PREFIX : <http://hokukahu.com/schema/chcss#>
+                PREFIX chcss: <http://hokukahu.com/schema/chcss#>
                 PREFIX cpt: <http://hokukahu.com/schema/cpt#>
                 PREFIX fms: <http://datasets.caregraf.org/fms/>
                 PREFIX hptc: <http://hokukahu.com/schema/hptc#>
@@ -58,4 +58,4 @@ def getData(filepath, cmumps):
 
 # Main 
 args = getArgs();
-print "\n",getData(args.file, args.cmumps).serialize(format='turtle') 
+print "\n",getData(args.file, args.chcs).serialize(format='turtle') 

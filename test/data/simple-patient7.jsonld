@@ -1,9 +1,9 @@
 {
-   "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+   "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
 
    "@graph": [
      {
-       "type": "cmumpss:Patient-2",
+       "type": "chcss:Patient-2",
        "_id": "2-000007",
        "identifier": "2-000007",
        "dob-2": {

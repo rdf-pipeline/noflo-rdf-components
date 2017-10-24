@@ -1,4 +1,4 @@
-# cmumps-patient-jsonld.fbp
+# chcs-patient-jsonld.fbp
 
 # Takes a patient ID and returns JSON-LD.
 
@@ -16,7 +16,7 @@ OUTPORT=parseJson.OUTPUT:OUTPUT
 # authority host:port, e.g., localhost:8080
 'authority' -> KEY setAuthority(rdf-components/object) OUTPUT -> PARAMETERS request
 
-# dataset to query e.g.., cmumps-nc
+# dataset to query e.g.., chcs-nc
 'dataset'   -> KEY setDataset(rdf-components/object) OUTPUT -> PARAMETERS request
 
 'http://{+authority}/patient_graph{?dataset,datatype,patientid}' -> URL request

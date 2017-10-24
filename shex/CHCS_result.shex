@@ -1,4 +1,4 @@
-PREFIX cmumps: <http://hokukahu.com/schema/cmumpss#>
+PREFIX chcs: <http://hokukahu.com/schema/chcss#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX map: <http://shex.io/extensions/Map/#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -8,14 +8,14 @@ BASE <http://hokukahu.com/shapes/>
 start = @<result>
 
 <result> { # <11_07-3618_9999999.836399_000007>
-  a                                     [cmumps:Result-63_07];
-  ^cmumps:result-63_04 {
-    cmumps:identifier                     LITERAL  %map:{ fm:order.identifier %};       # "63-000007"
+  a                                     [chcs:Result-63_07];
+  ^chcs:result-63_04 {
+    chcs:identifier                     LITERAL  %map:{ fm:order.identifier %};       # "63-000007"
   };
-  cmumps:test-63_07 {
+  chcs:test-63_07 {
     rdfs:label                          LITERAL  %map:{ fm:Observation.code %} };     # <77-2345> "INPROCESSING ABO"
-  cmumps:lab_method-63_07 {
+  chcs:lab_method-63_07 {
     rdfs:label                          LITERAL  %map:{ fm:Observation.code2 %} };    # portable code <8710-2036> "INPROCESSING ABO ONLY"
-  cmumps:enter_date_time-63_07            LITERAL  %map:{ fm:diagRpt.issued %}          # "1990-01-01T10:54:04"^^xsd:dateTime
+  chcs:enter_date_time-63_07            LITERAL  %map:{ fm:diagRpt.issued %}          # "1990-01-01T10:54:04"^^xsd:dateTime
 }
 

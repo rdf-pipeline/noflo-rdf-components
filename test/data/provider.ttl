@@ -1,20 +1,20 @@
-<urn:local:provider-6> <http://hokukahu.com/schema/cmumpss#identifier> "6-26";
+<urn:local:provider-6> <http://hokukahu.com/schema/chcss#identifier> "6-26";
     <http://www.w3.org/2000/01/rdf-schema#label> "FLINTSTONE,WILMA";
-    <http://hokukahu.com/schema/cmumpss#duty_phone_1-6> "000 111 2222";
-    <http://hokukahu.com/schema/cmumpss#office_street_address_1-6> "180 Bedrock Blvd";
-    <http://hokukahu.com/schema/cmumpss#office_city-6> "BEDROCK";
-    <http://hokukahu.com/schema/cmumpss#office_state-6> _:b0;
-    <http://hokukahu.com/schema/cmumpss#office_zipcode-6> _:b1;
-    <http://hokukahu.com/schema/cmumpss#class-6> _:b2;
-    <http://hokukahu.com/schema/cmumpss#provider_id-6> "111223333";
-    <http://hokukahu.com/schema/cmumpss#ssn-6> "111223333";
-    <http://hokukahu.com/schema/cmumpss#require_supervising_provider-6> "true"^^<http://www.w3.org/2001/XMLSchema#boolean>;
-    <http://hokukahu.com/schema/cmumpss#datetime_entered-6> "1990-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
-    <http://hokukahu.com/schema/cmumpss#cmac_modification_date-6> "1990-01-01"^^<http://www.w3.org/2001/XMLSchema#date>.
-_:b0 <http://hokukahu.com/schema/cmumpss#identifier> "5-17";
+    <http://hokukahu.com/schema/chcss#duty_phone_1-6> "000 111 2222";
+    <http://hokukahu.com/schema/chcss#office_street_address_1-6> "180 Bedrock Blvd";
+    <http://hokukahu.com/schema/chcss#office_city-6> "BEDROCK";
+    <http://hokukahu.com/schema/chcss#office_state-6> _:b0;
+    <http://hokukahu.com/schema/chcss#office_zipcode-6> _:b1;
+    <http://hokukahu.com/schema/chcss#class-6> _:b2;
+    <http://hokukahu.com/schema/chcss#provider_id-6> "111223333";
+    <http://hokukahu.com/schema/chcss#ssn-6> "111223333";
+    <http://hokukahu.com/schema/chcss#require_supervising_provider-6> "true"^^<http://www.w3.org/2001/XMLSchema#boolean>;
+    <http://hokukahu.com/schema/chcss#datetime_entered-6> "1990-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <http://hokukahu.com/schema/chcss#cmac_modification_date-6> "1990-01-01"^^<http://www.w3.org/2001/XMLSchema#date>.
+_:b0 <http://hokukahu.com/schema/chcss#identifier> "5-17";
     <http://www.w3.org/2000/01/rdf-schema#label> "NEBRASKA".
-_:b1 <http://hokukahu.com/schema/cmumpss#identifier> "5_8002-26744";
+_:b1 <http://hokukahu.com/schema/chcss#identifier> "5_8002-26744";
     <http://www.w3.org/2000/01/rdf-schema#label> "68501".
-_:b2 <http://hokukahu.com/schema/cmumpss#identifier> "7-19";
+_:b2 <http://hokukahu.com/schema/chcss#identifier> "7-19";
     <http://www.w3.org/2000/01/rdf-schema#label> "OUTSIDE PROVIDER".
 

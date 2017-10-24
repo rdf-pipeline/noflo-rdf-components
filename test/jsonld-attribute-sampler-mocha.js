@@ -45,10 +45,10 @@ describe('jsonld-attribute-sampler', function() {
         it("should throw an error if no identifier is found", function() {
             var node = test.createComponent(factory);
             var data = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [
                     {
-                      "type": "cmumpss:Patient-2",
+                      "type": "chcss:Patient-2",
                       "_id": "2-000007",
                       "identifier": "2-000007",
                    }
@@ -63,10 +63,10 @@ describe('jsonld-attribute-sampler', function() {
             vni = node.vni('');
 
             var data = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [
                     {
-                      "type": "cmumpss:Patient-2",
+                      "type": "chcss:Patient-2",
                       "_id": "2-000007",
                       "identifier": "2-000007",
                    }
@@ -87,10 +87,10 @@ describe('jsonld-attribute-sampler', function() {
             vni = node.vni('');
 
             var data = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [
                     {
-                      "type": "cmumpss:Patient-2",
+                      "type": "chcss:Patient-2",
                       "_id": "2-000007",
                       "identifier": "2-000007",
                    }
@@ -122,7 +122,7 @@ describe('jsonld-attribute-sampler', function() {
                     throw Error("    Jsonld attribute sampler failed to create json pointers file " + jsonpointersFile + "!");
                 }
                 var jsonpointersFileContents = fs.readFileSync(jsonpointersFile, 'utf-8');
-                JSON.parse(jsonpointersFileContents).should.deep.equal({"/type": "cmumpss:Patient-2",
+                JSON.parse(jsonpointersFileContents).should.deep.equal({"/type": "chcss:Patient-2",
                                                                     "/_id": "2-000007",
                                                                     "/identifier": "2-000007"});
 
@@ -146,25 +146,25 @@ describe('jsonld-attribute-sampler', function() {
         it("should find new json pointers as new demographics data arrive", function(done) {
 
             var data0 = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [{
                       "_id": "2-000007",
-                      "type": "cmumpss:Patient-2",
+                      "type": "chcss:Patient-2",
                       "identifier": "2-000007"
                  }]
                };
             var data1 = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-8/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-8/context.jsonld",
                  "@graph": [{
                       "_id": "2-000008",
-                      "type": "cmumpss:Patient-2",
+                      "type": "chcss:Patient-2",
                       "identifier": "2-000008",
                       "label": "BUNNY,BUGS",
                       "phone-2" : "555 555 5555"
                   }]
                };
 
-            var expectedJsonPointers = {"/type": "cmumpss:Patient-2",
+            var expectedJsonPointers = {"/type": "chcss:Patient-2",
                                         "/_id": "2-000007",
                                         "/identifier": "2-000007",
                                         "/label": "BUNNY,BUGS",
@@ -181,19 +181,19 @@ describe('jsonld-attribute-sampler', function() {
         it("should find for new json pointers as new diagnoses data arrive", function(done) {
 
             var data0 = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [{
                       _id: '100417-4559064',
-                      type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+                      type: 'chcss:Kg_Patient_Diagnosis-100417',
                       label: '27642;OTHER EXAMINATION DEFINED POPULATION',
                       'problem-100417': '27642;OTHER EXAMINATION DEFINED POPULATION'
                  }]
                };
             var data1 = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-8/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-8/context.jsonld",
                  "@graph": [{
                      _id: '100417-4562039',
-                     type: 'cmumpss:Kg_Patient_Diagnosis-100417',
+                     type: 'chcss:Kg_Patient_Diagnosis-100417',
                      label: '27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT',
                      'problem-100417': '27224;ENCOUNTER FOR HEARING CONSERVATION AND TREATMENT',
                      'status-100417': 'Active',
@@ -203,7 +203,7 @@ describe('jsonld-attribute-sampler', function() {
 
             var expectedJsonPointers = {
 	        "/_id": "100417-4559064",
-	        "/type": "cmumpss:Kg_Patient_Diagnosis-100417",
+	        "/type": "chcss:Kg_Patient_Diagnosis-100417",
 	        "/label": "27642;OTHER EXAMINATION DEFINED POPULATION",
 	        "/problem-100417": "27642;OTHER EXAMINATION DEFINED POPULATION",
 	        "/status-100417": "Active",
@@ -221,7 +221,7 @@ describe('jsonld-attribute-sampler', function() {
         it("should find for new json pointers as new procedures data arrive", function(done) {
 
             var data0 = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [{
                      _id: 'Procedure-1074046',
                      type: 'Procedure',
@@ -229,7 +229,7 @@ describe('jsonld-attribute-sampler', function() {
                  }]
                };
             var data1 = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-8/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-8/context.jsonld",
                  "@graph": [{
                      _id: 'Procedure-1074047',
                      type: 'Procedure',
@@ -260,11 +260,11 @@ describe('jsonld-attribute-sampler', function() {
         it('should run in  a noflo network', function() {
 
             var data = 
-                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld",
+                {"@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld",
                  "@graph": [
                     {
                       "_id": "52-40863",
-                      "type": "cmumpss:Prescription-52",
+                      "type": "chcss:Prescription-52",
                       "label": "H46358",
                       'rx_-52': "H46358"
                    }
@@ -315,7 +315,7 @@ describe('jsonld-attribute-sampler', function() {
                     }
                     var jsonpointersFileContents = fs.readFileSync(jsonpointersFile, 'utf-8');
                     JSON.parse(jsonpointersFileContents).should.deep.equal({"/_id": "52-40863",
-                                                                        "/type": "cmumpss:Prescription-52",
+                                                                        "/type": "chcss:Prescription-52",
                                                                         "/label": "H46358",
                                                                         "/rx_-52": "H46358"});
 

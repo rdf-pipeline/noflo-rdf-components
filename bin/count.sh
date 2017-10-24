@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Given a mongodb database, get a count of the total number of cmumps mongodb collection attributes in the specified collections.
+# Given a mongodb database, get a count of the total number of chcs mongodb collection attributes in the specified collections.
 # This script relies on the mongodb-schema package to perform the attribute statistics gathering
 #    https://www.npmjs.com/package/mongodb-schema
 #

@@ -40,11 +40,11 @@ where {
     }}
   # ?graphPrefix = "urn:local:"
   bind( str( graphPrefix: ) as ?graphPrefix ) .
-  # ?gUri = "urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007"
+  # ?gUri = "urn:local:rdf-components%2Ftranslate-demographics-chcs2fhir:Patient:2-000007"
   bind( str(?g) as ?gUri ) .
-  # ?translatorResourcePatientId = "rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007"
+  # ?translatorResourcePatientId = "rdf-components%2Ftranslate-demographics-chcs2fhir:Patient:2-000007"
   bind( strafter( ?gUri, ?graphPrefix ) as ?translatorResourcePatientId ) .
-  # ?patientResource = "urn:local:rdf-components%2Ftranslate-demographics-cmumps2fhir:Patient:2-000007"
+  # ?patientResource = "urn:local:rdf-components%2Ftranslate-demographics-chcs2fhir:Patient:2-000007"
   bind( strafter( ?translatorResourcePatientId, ":" ) as ?resourcePatientId ) .
   # ?resource = "Patient"
   bind( strbefore( ?resourcePatientId, ":" ) as ?resource ) .

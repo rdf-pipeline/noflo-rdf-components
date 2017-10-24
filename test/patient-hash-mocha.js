@@ -35,8 +35,8 @@ describe("patient-hash", function() {
         it("should throw an error if given an unknown translator", function() {
             logger.silence('warn');
             expect(factory.updater.bind(this, 
-                                       {"type": "cmumpss:Patient-2", "_id": "2-000007"},
-                                       {demographics: 'rdf-components/translate-demographics-cmumps2fhir',
+                                       {"type": "chcss:Patient-2", "_id": "2-000007"},
+                                       {demographics: 'rdf-components/translate-demographics-chcs2fhir',
                                         bizarro: 'rdf-components/bizarro'}
                               )).to.throw(Error,
                 /Unknown translation. Supported translators are: 'demographics', 'diagnosis', 'prescriptions', 'procedures'./);
@@ -44,7 +44,7 @@ describe("patient-hash", function() {
         });
 
         it("should throw an error if given no demographic data", function() {
-            var prescriptionType = "cmumpss:Prescription-52";
+            var prescriptionType = "chcss:Prescription-52";
             var prescriptionId = "52-7810414";
             var prescription = { _id: prescriptionId,
                                  type: prescriptionType,
@@ -65,7 +65,7 @@ describe("patient-hash", function() {
             var prescriptionId = prescriptionType + ':' + prescriptionId;
 
             var testdata = 
-                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
+                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld", 
                   "@graph": [ prescription ]}; 
 
             // Invoke component updater
@@ -78,7 +78,7 @@ describe("patient-hash", function() {
         });
 
         it("should generate a hash if given only demographic data", function() {
-            var demographicsType = "cmumpss:Patient-2";
+            var demographicsType = "chcss:Patient-2";
             var patientId = "2-000007";
             var demographics = { "type": demographicsType,
                                  "_id": patientId, 
@@ -89,7 +89,7 @@ describe("patient-hash", function() {
                                  "state-2": "NY/USA",
                                  "label": "BUNNY,BUGS" };
             var testdata = 
-                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
+                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld", 
                   "@graph": [ demographics ]}; 
 
             // Invoke component updater
@@ -107,25 +107,25 @@ describe("patient-hash", function() {
 
             hash[demographicsId].should.be.an('object');
             hash[demographicsId].should.have.keys('data', 'translateBy');
-            hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-cmumps2fhir');
+            hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-chcs2fhir');
             hash[demographicsId].data.should.deep.equal(demographics);
 
             vni.outputState().patientId.should.equal(patientId);
         });
 
         it("should generate a hash if given diagnosis & demographics data", function() {
-            var demographicsType = "cmumpss:Patient-2";
+            var demographicsType = "chcss:Patient-2";
             var patientId = "2-000007";
             var demographics = { "type": demographicsType,
                                  "_id": patientId  };
 
             var demographicsId = demographicsType + ':' + patientId + ':' + patientId;
 
-            var diagnosisType = "cmumpss:Kg_Patient_Diagnosis-100417";
+            var diagnosisType = "chcss:Kg_Patient_Diagnosis-100417";
             var diagnosisId = "100417-4559064";
             var diagnosis = {
                 "_id": "100417-4559064",
-                "type": "cmumpss:Kg_Patient_Diagnosis-100417",
+                "type": "chcss:Kg_Patient_Diagnosis-100417",
                 "label": "27642;OTHER EXAMINATION DEFINED POPULATION",
                 "problem-100417": "27642;OTHER EXAMINATION DEFINED POPULATION",
                 "patient-100417": {
@@ -146,7 +146,7 @@ describe("patient-hash", function() {
             diagnosisId = diagnosisType + ':' + patientId + ':' + diagnosisId;
 
             var testdata = 
-                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
+                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld", 
                   "@graph": [ demographics,  diagnosis ]}; 
 
             // Invoke component updater
@@ -161,26 +161,26 @@ describe("patient-hash", function() {
 
             hash[demographicsId].should.be.an('object');
             hash[demographicsId].should.have.keys('data', 'translateBy');
-            hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-cmumps2fhir');
+            hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-chcs2fhir');
             hash[demographicsId].data.should.deep.equal(demographics);
             
             hash[diagnosisId].should.be.an('object');
             hash[diagnosisId].should.have.keys('data', 'translateBy');
-            hash[diagnosisId].translateBy.should.equal('rdf-components/translate-diagnosis-cmumps2fhir');
+            hash[diagnosisId].translateBy.should.equal('rdf-components/translate-diagnosis-chcs2fhir');
             hash[diagnosisId].data.should.deep.equal(diagnosis);
 
             vni.outputState().patientId.should.equal(patientId);
         });
 
         it("should generate a hash if given prescription & demographics data", function() {
-            var demographicsType = "cmumpss:Patient-2";
+            var demographicsType = "chcss:Patient-2";
             var patientId = "2-000007";
             var demographics = { "type": demographicsType,
                                  "_id": patientId  };
 
             var demographicsId = demographicsType + ':' + patientId + ':' + patientId;
 
-            var prescriptionType = "cmumpss:Prescription-52";
+            var prescriptionType = "chcss:Prescription-52";
             var prescriptionId = "52-7810414";
             var prescription = { _id: prescriptionId,
                                  type: prescriptionType,
@@ -201,7 +201,7 @@ describe("patient-hash", function() {
             prescriptionId = prescriptionType + ':' + patientId + ':' + prescriptionId;
 
             var testdata = 
-                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
+                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld", 
                   "@graph": [ demographics,  prescription ]}; 
 
             // Invoke component updater
@@ -216,19 +216,19 @@ describe("patient-hash", function() {
 
             hash[demographicsId].should.be.an('object');
             hash[demographicsId].should.have.keys('data', 'translateBy');
-            hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-cmumps2fhir');
+            hash[demographicsId].translateBy.should.equal('rdf-components/translate-demographics-chcs2fhir');
             hash[demographicsId].data.should.deep.equal(demographics);
             
             hash[prescriptionId].should.be.an('object');
             hash[prescriptionId].should.have.keys('data', 'translateBy');
-            hash[prescriptionId].translateBy.should.equal('rdf-components/translate-prescription-cmumps2fhir');
+            hash[prescriptionId].translateBy.should.equal('rdf-components/translate-prescription-chcs2fhir');
             hash[prescriptionId].data.should.deep.equal(prescription);
 
             vni.outputState().patientId.should.equal(patientId);
         });
 
         it("should generate a hash if given procedure & demographics data", function() {
-            var demographicsType = "cmumpss:Patient-2";
+            var demographicsType = "chcss:Patient-2";
             var patientId = "2-000007";
             var demographics = { "type": demographicsType,
                                  "_id": patientId  };
@@ -253,7 +253,7 @@ describe("patient-hash", function() {
             procedureId = procedureType+':' + patientId + ':' + procedureId;
 
             var testdata = 
-                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
+                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld", 
                   "@graph": [ demographics, procedure ]}; 
 
             // Invoke component updater
@@ -267,14 +267,14 @@ describe("patient-hash", function() {
 
             hash[procedureId].should.be.an('object');
             hash[procedureId].should.have.keys('data', 'translateBy');
-            hash[procedureId].translateBy.should.equal('rdf-components/translate-procedure-cmumps2fhir');
+            hash[procedureId].translateBy.should.equal('rdf-components/translate-procedure-chcs2fhir');
             hash[procedureId].data.should.deep.equal(procedure);
 
             vni.outputState().patientId.should.equal(patientId);
         });
 
         it("should generate a hash with custom translators (non-default)", function() {
-            var demographicsType = "cmumpss:Patient-2";
+            var demographicsType = "chcss:Patient-2";
             var patientId = "2-000007";
             var demographics = { "type": demographicsType,
                                  "_id": patientId, 
@@ -287,7 +287,7 @@ describe("patient-hash", function() {
             var demographicsId = demographicsType+':' + patientId + ':' + patientId;
 
             var testdata = 
-                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_cmumps/patient-7/context.jsonld", 
+                { "@context": "https://raw.githubusercontent.com/rdf-pipeline/translators/master/data/fake_chcs/patient-7/context.jsonld", 
                   "@graph": [ demographics ]}; 
 
             var customTranslators = {
@@ -332,7 +332,7 @@ describe("patient-hash", function() {
 
                     test.onOutPortData(patientHashNode, 'output', done);
 
-                    var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+                    var testFile = __dirname + '/data/chcs-patient7.jsonld';
                     var data = fs.readFileSync(testFile);
                     var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
 
@@ -343,13 +343,13 @@ describe("patient-hash", function() {
                     logger.verbose('warn');
                     done.vnid.should.equal('');
                     done.data.should.be.an('object');
-                    done.data.should.have.keys('cmumpss:Patient-2:2-000007:2-000007', 
-                                               'cmumpss:Kg_Patient_Diagnosis-100417:2-000007:100417-4559064',
-                                               'cmumpss:Kg_Patient_Diagnosis-100417:2-000007:100417-4562039',
-                                               'cmumpss:Kg_Patient_Diagnosis-100417:2-000007:100417-4568875',
-                                               'cmumpss:Prescription-52:2-000007:52-40863',
-                                               'cmumpss:Prescription-52:2-000007:52-7810413',
-                                               'cmumpss:Prescription-52:2-000007:52-7810414',
+                    done.data.should.have.keys('chcss:Patient-2:2-000007:2-000007', 
+                                               'chcss:Kg_Patient_Diagnosis-100417:2-000007:100417-4559064',
+                                               'chcss:Kg_Patient_Diagnosis-100417:2-000007:100417-4562039',
+                                               'chcss:Kg_Patient_Diagnosis-100417:2-000007:100417-4568875',
+                                               'chcss:Prescription-52:2-000007:52-40863',
+                                               'chcss:Prescription-52:2-000007:52-7810413',
+                                               'chcss:Prescription-52:2-000007:52-7810414',
                                                'Procedure:2-000007:Procedure-1074046');
                     Object.keys(done.data).forEach( function(key) { 
                         done.data[key].should.have.keys('data', 'translateBy');

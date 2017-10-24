@@ -7,7 +7,7 @@ var fs = require('fs');
 var jsonpointer = require('json-pointer');
 var util = require('util');
 
-var translators = require('translators').cmumps;
+var translators = require('translators').chcs;
 
 var format = require('../src/format.js');
 var logger = require('../src/logger');

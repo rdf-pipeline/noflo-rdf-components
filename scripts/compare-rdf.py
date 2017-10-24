@@ -25,7 +25,7 @@ def getArgs():
     parser.add_argument("file2", help="path to file to compare with first file")
 
     # optional args (help is already preset - don't need here)
-    parser.add_argument("-c", "--cmumps", help="apply cmumps prefixes on turtle files",
+    parser.add_argument("-c", "--chcs", help="apply chcs prefixes on turtle files",
                         action="store_true")
     parser.add_argument("-v", "--verbose", help="print detailed processing messages",
                         action="store_true")
@@ -34,14 +34,14 @@ def getArgs():
 
 
 # Loads JSON-LD and Turtle files into an RDF graph.
-def getData(filepath, cmumps): 
+def getData(filepath, chcs): 
     if filepath.endswith('.jsonld'):
 	return Graph().parse(filepath, format='json-ld')
 
     if filepath.endswith('.ttl'):
-        if cmumps:
-            return Graph().parse(data="""PREFIX : <http://hokukahu.com/schema/cmumpss#>
-                PREFIX cmumpss: <http://hokukahu.com/schema/cmumpss#>
+        if chcs:
+            return Graph().parse(data="""PREFIX : <http://hokukahu.com/schema/chcss#>
+                PREFIX chcss: <http://hokukahu.com/schema/chcss#>
                 PREFIX cpt: <http://hokukahu.com/schema/cpt#>
                 PREFIX fms: <http://datasets.caregraf.org/fms/>
                 PREFIX hptc: <http://hokukahu.com/schema/hptc#>
@@ -69,11 +69,11 @@ if args.verbose:
     print "Comparing files:", args.file1, "&", args.file2;
 
 # Load file data into a graph and serialize it to turtle
-ttl1 = getData(args.file1, args.cmumps).serialize(format='turtle') 
+ttl1 = getData(args.file1, args.chcs).serialize(format='turtle') 
 if args.verbose:
     print "File 1:\n",ttl1,"\n"
 
-ttl2 = getData(args.file2, args.cmumps).serialize(format='turtle')
+ttl2 = getData(args.file2, args.chcs).serialize(format='turtle')
 if args.verbose:
     print "File2:\n",ttl2,"\n"
 

@@ -1,4 +1,4 @@
-// translate-prescription-cmumps2fhir-mocha.js
+// translate-prescription-chcs2fhir-mocha.js
 
 var chai = require('chai');
 
@@ -10,13 +10,13 @@ var fs = require('fs');
 
 var translator = require('translators').prescriptions;
 
-var factory = require('../components/translate-prescription-cmumps2fhir');
+var factory = require('../components/translate-prescription-chcs2fhir');
 var logger = require('../src/logger');
 var test = require('./common-test');
 
-var testFile = __dirname + '/data/cmumps-patient7.jsonld';
+var testFile = __dirname + '/data/chcs-patient7.jsonld';
 
-describe('translate-prescriptions-cmumps2fhir', function() {
+describe('translate-prescriptions-chcs2fhir', function() {
 
     it('should exist as a function', function() {
         factory.should.exist;
@@ -63,16 +63,16 @@ describe('translate-prescriptions-cmumps2fhir', function() {
             var parsedData = JSON.parse(data); // readfile gives us a json object, so parse it
             var prescriptions = translator.extractPrescriptions(parsedData);
 
-            var cmumpsFile='/tmp/cmumpsPrescriptions.out';
+            var chcsFile='/tmp/chcsPrescriptions.out';
             var fhirFile='/tmp/fhirPrescriptions.out';
-            test.rmFile(cmumpsFile);
+            test.rmFile(chcsFile);
             test.rmFile(fhirFile);
 
-            var translation = factory.updater.call(node.vni(''), prescriptions, cmumpsFile, fhirFile);
+            var translation = factory.updater.call(node.vni(''), prescriptions, chcsFile, fhirFile);
             translation.should.not.be.empty;
 
             // Verify the expected 2 files exist
-            fs.accessSync(cmumpsFile, fs.F_OK);
+            fs.accessSync(chcsFile, fs.F_OK);
             fs.accessSync(fhirFile, fs.F_OK);
         });
 
@@ -85,9 +85,9 @@ describe('translate-prescriptions-cmumps2fhir', function() {
            return test.createNetwork(
                 { repeaterNode: 'core/Repeat',
                   patientHashNode: 'rdf-components/patient-hash',
-                  cmumpsFileNode: 'core/Repeat',
+                  chcsFileNode: 'core/Repeat',
                   fhirFileNode: 'core/Repeat',
-                  translatorNode: 'rdf-components/translate-prescription-cmumps2fhir'
+                  translatorNode: 'rdf-components/translate-prescription-chcs2fhir'
             }).then(function(network) {
                 return new Promise(function(done, fail) {
 
@@ -97,7 +97,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
 
                     network.graph.addEdge('repeaterNode', 'out', 'patientHashNode', 'patient_json');
 
-                    network.graph.addEdge('cmumpsFileNode', 'out', 'translatorNode', 'cmumps_file');
+                    network.graph.addEdge('chcsFileNode', 'out', 'translatorNode', 'chcs_file');
                     network.graph.addEdge('fhirFileNode', 'out', 'translatorNode', 'fhir_file');
                     network.graph.addEdge('patientHashNode', 'output', 'translatorNode', 'input');
 
@@ -109,7 +109,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
 
                     logger.silence('warn');
                     network.graph.addInitial(parsedData, 'repeaterNode', 'in');
-                    network.graph.addInitial('', 'cmumpsFileNode', 'in');
+                    network.graph.addInitial('', 'chcsFileNode', 'in');
                     network.graph.addInitial('', 'fhirFileNode', 'in');
 
                 }).then(function(done) {
@@ -119,7 +119,7 @@ describe('translate-prescriptions-cmumps2fhir', function() {
                     done.should.be.an('object');
 
                     done.should.include.keys('vnid','data','groupLm','lm','stale','error', 'componentName', 'graphUri');
-                    done.vnid.should.equal('cmumpss:Prescription-52:2-000007:52-40863');
+                    done.vnid.should.equal('chcss:Prescription-52:2-000007:52-40863');
                     done.data.should.be.an('object');
                     done.data.should.include.keys('resourceType','identifier','status','patient',
                                                      'quantity','dispenser','dosageInstruction');
@@ -128,8 +128,8 @@ describe('translate-prescriptions-cmumps2fhir', function() {
                     expect(done.stale).to.be.undefined;
                     done.groupLm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
                     done.lm.match(/^LM(\d+)\.(\d+)$/).should.have.length(3);
-                    done.componentName.should.equal('rdf-components/translate-prescription-cmumps2fhir');
-                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-prescription-cmumps2fhir:MedicationDispense:52-40863');
+                    done.componentName.should.equal('rdf-components/translate-prescription-chcs2fhir');
+                    done.graphUri.should.equal('urn:local:fhir:2-000007:rdf-components%2Ftranslate-prescription-chcs2fhir:MedicationDispense:52-40863');
 
                 }, function(fail) {
                     logger.verbose('warn');
